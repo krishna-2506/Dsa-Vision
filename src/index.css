@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-canvas: #090a0f;
+    --bg-surface: #0e111a;
+    --bg-elevated: #141724;
+    --border-subtle: rgba(255, 255, 255, 0.07);
+    --border-medium: rgba(255, 255, 255, 0.12);
+
+    /* Single core accent: Indigo */
+    --accent-primary: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.15);
+
+    /* Fixed 3-color semantic scale */
+    --semantic-easy: #10b981;
+    --semantic-medium: #f59e0b;
+    --semantic-hard: #f43f5e;
+
+    /* Typography */
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-canvas);
+    color: #f1f5f9;
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.011em;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: var(--font-mono);
+    letter-spacing: -0.025em;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+}
+
+/* Engineering Lab Notebook Texture */
+.notebook-grid {
+  background-color: #0c0e15;
+  background-image: 
+    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Subtle background grid */
+.bg-grid-subtle {
+  background-size: 28px 28px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+/* Smooth motion for pointer movement */
+.pointer-spring {
+  transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+/* Highlighted executing code line pulse */
+@keyframes lineGlow {
+  0%, 100% {
+    background-color: rgba(99, 102, 241, 0.16);
+  }
+  50% {
+    background-color: rgba(99, 102, 241, 0.28);
+  }
+}
+
+.active-code-line {
+  animation: lineGlow 2s infinite ease-in-out;
+  border-left: 2px solid #6366f1;
+}
