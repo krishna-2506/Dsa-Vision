@@ -7,10 +7,11 @@ export default function VisualizerUploader({
   onUploadSuccess,
   onClose,
   solutions = {},
-  userId
+  userId,
+  initialCode = ''
 }) {
   const fileInputRef = useRef(null);
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(initialCode || '');
   const [componentKey, setComponentKey] = useState(
     question.component_key || toCamelCase(question.title) + 'Visualizer'
   );
@@ -43,6 +44,28 @@ You MUST follow this exact component scaffold:
 \`\`\`jsx
 import React, { useState } from 'react';
 import ArrayView from '../components/primitives/ArrayView';
+// (Or import other primitives if needed: LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector)
+
+// 0. Multi-language production solution code with detailed educational comments
+export const solutions = {
+  cpp: \`// C++ Optimal Solution with line-by-line syntax & complexity comments
+class Solution {
+public:
+    // Detailed step comments explaining approach...
+};\\n\`,
+  python: \`# Python 3 Solution with thorough syntax & data structure comments
+class Solution:
+    # Detailed step comments explaining approach...
+    pass\\n\`,
+  java: \`// Java Solution with step-by-step logic breakdown
+class Solution {
+    // Detailed step comments explaining approach...
+}\\n\`,
+  javascript: \`// JavaScript Solution with in-line explanation
+var solve = function(...) {
+    // Detailed step comments explaining approach...
+};\\n\`,
+};
 
 export const meta = {
   display_id: '${question.display_id || 'Q-001'}',
@@ -54,20 +77,20 @@ export const meta = {
   description: ${JSON.stringify((question.description || '').slice(0, 140))}
 };
 
-// Realistic sample array for this problem
-const SAMPLE_DATA = [1, 8, 7, 56, 90];
+// Realistic sample array/data extracted directly from the problem statement & examples
+const SAMPLE_DATA = [/* realistic data from problem example */];
 
 export const steps = [
+  // IMPORTANT: Provide 6 to 12 thorough, sequential execution steps tracing the algorithm on SAMPLE_DATA
   {
     title: "1. Initialize State",
     codeLine: 4, // Exact line of C++ code executing
     code: "// In-line commented executing line...",
-    explanation: "Detailed educational explanation of what happens and why...",
+    explanation: "Detailed educational explanation of what happens in this step and why...",
     pointers: [{ index: 0, label: 'i', color: 'indigo' }],
     highlightIndices: [0],
     hudText: "Current state: initialized"
   }
-  // Add 4-7 thorough steps demonstrating the complete algorithm
 ];
 
 export default function ${componentKey}({ currentStep: externalStep, onStepChange }) {
@@ -100,16 +123,16 @@ export default function ${componentKey}({ currentStep: externalStep, onStepChang
       </div>
 
       {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
+      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[240px]">
         <ArrayView
           items={SAMPLE_DATA}
           pointers={stepData.pointers || []}
           matchIndices={stepData.highlightIndices || []}
         />
 
-        {/* 3. Real-Time HUD */}
-        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-          <span>Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
+        {/* 3. Real-Time HUD Status & Variables */}
+        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
+          <span className="text-zinc-400">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
         </div>
       </div>
 
@@ -124,6 +147,9 @@ export default function ${componentKey}({ currentStep: externalStep, onStepChang
 \`\`\`
 
 Rules:
+- Include \`export const solutions = { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }\` with fully commented solutions explaining syntax, line-by-line logic, and edge cases. These will automatically replace the old code in the database.
+- IMPORTANT: Ensure the visualizer has RICH ANIMATED VISUALS: accurately trace the problem's sample example across 6-12 step-by-step frames with moving pointers (e.g., start, end, left, right), highlighted active subarrays, and live HUD variables.
+- Use primitive components from \`../components/primitives/\` (ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector) or custom SVG/HTML visualizations.
 - Palette: Deep obsidian (#0b0d14, #0e111a, #08090e), Indigo (#6366f1), Emerald, Amber, Rose.
 - Explain code thoroughly with in-line comments line-by-line.
 - Return ONLY the complete, ready-to-run React JSX code.`;

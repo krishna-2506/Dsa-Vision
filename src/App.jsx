@@ -5,6 +5,7 @@ import VisualizerStudio from './components/VisualizerStudio';
 import SkillExportModal from './components/SkillExportModal';
 import AuthModal from './components/AuthModal';
 import UserDashboardModal from './components/UserDashboardModal';
+import ImportQuestionModal from './components/ImportQuestionModal';
 import { api } from './services/api';
 import { db } from './services/db';
 import { authService } from './services/auth';
@@ -15,6 +16,7 @@ export default function App() {
   const [activeView, setActiveView] = useState('library');
   const [activeQuestion, setActiveQuestion] = useState(null);
   const [skillModalOpen, setSkillModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
 
   // User auth & profile state
   const [currentUser, setCurrentUser] = useState(() => authService.getCurrentUser());
@@ -164,7 +166,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090a0f] text-slate-100 flex flex-col font-sans selection:bg-indigo-600 selection:text-white bg-grid-subtle">
+    <div className="min-h-screen bg-[#08090d] text-slate-100 flex flex-col font-sans bg-dots">
       {/* Top Navbar */}
       <Navbar
         activeView={activeView}
@@ -189,6 +191,7 @@ export default function App() {
             onToggleFavorite={handleToggleFavorite}
             onStatusChange={handleStatusChange}
             onOpenSkillModal={() => setSkillModalOpen(true)}
+            onOpenImportModal={() => setImportModalOpen(true)}
           />
         ) : (
           <VisualizerStudio
@@ -202,6 +205,13 @@ export default function App() {
           />
         )}
       </main>
+
+      {/* Import & Add Questions Modal */}
+      <ImportQuestionModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onImportSuccess={() => loadData()}
+      />
 
       {/* Gemini Skill Modal */}
       <SkillExportModal
@@ -224,7 +234,12 @@ export default function App() {
         userStats={userStats}
         onLogout={handleLogout}
         onRefreshStats={() => refreshUserStats(currentUser)}
+        onOpenQuestion={(qId) => {
+          const matched = questions.find(q => q.id === qId);
+          if (matched) handleOpenQuestion(matched);
+        }}
       />
+
 
       {/* Footer */}
       <footer className="border-t border-white/5 bg-[#07080c] py-5 text-center text-xs font-mono text-slate-500">

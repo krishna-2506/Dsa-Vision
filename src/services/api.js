@@ -90,6 +90,46 @@ export const api = {
     return null;
   },
 
+  async recordReview(userId, questionId, confidence = 'mastered') {
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, questionId, confidence })
+      });
+      return await res.json();
+    } catch (e) {
+      console.warn('Failed to record review', e);
+      return { success: false, error: e.message };
+    }
+  },
+
+  async getDueReviews(userId = null) {
+    try {
+      const url = userId ? `/api/reviews/due?userId=${encodeURIComponent(userId)}` : '/api/reviews/due';
+      const res = await fetch(url);
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch due reviews', e);
+    }
+    return [];
+  },
+
+  async bulkImportQuestions(questions = []) {
+    try {
+      const res = await fetch('/api/questions/bulk-import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questions })
+      });
+      return await res.json();
+    } catch (e) {
+      console.warn('Failed to bulk import questions', e);
+      return { success: false, error: e.message };
+    }
+  },
+
   async uploadVisualizer({ questionId, componentKey, code, userId }) {
     try {
       const res = await fetch('/api/upload-visualizer', {

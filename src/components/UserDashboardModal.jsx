@@ -27,8 +27,9 @@ export default function UserDashboardModal({
   onOpenAuth,
   onOpenQuestion
 }) {
-  const [tab, setTab] = useState('overview'); // 'overview' | 'contributions' | 'comparison'
+  const [tab, setTab] = useState('overview'); // 'overview' | 'revision' | 'contributions' | 'comparison'
   const [stats, setStats] = useState(null);
+  const [dueReviews, setDueReviews] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [comparisonUser, setComparisonUser] = useState(null);
   const [comparisonStats, setComparisonStats] = useState(null);
@@ -38,6 +39,7 @@ export default function UserDashboardModal({
     if (isOpen && currentUser) {
       loadStats();
       loadAllUsers();
+      loadDueReviews();
     }
   }, [isOpen, currentUser]);
 
@@ -47,6 +49,19 @@ export default function UserDashboardModal({
     const data = await api.getUserStats(currentUser.id);
     setStats(data);
     setLoading(false);
+  };
+
+  const loadDueReviews = async () => {
+    if (!currentUser?.id) return;
+    const due = await api.getDueReviews(currentUser.id);
+    setDueReviews(due || []);
+  };
+
+  const handleQuickReview = async (questionId, confidence) => {
+    await api.recordReview(currentUser?.id, questionId, confidence);
+    sound?.playSuccess?.();
+    loadDueReviews();
+    loadStats();
   };
 
   const loadAllUsers = async () => {
@@ -123,39 +138,53 @@ export default function UserDashboardModal({
         </div>
 
         {/* Tab switcher */}
-        <div className="grid grid-cols-3 gap-1 p-1 bg-[#08090e] rounded-xl border border-white/5 my-4 font-mono text-xs">
+        <div className="grid grid-cols-4 gap-1 p-1 bg-[#08090e] rounded-xl border border-white/5 my-4 font-mono text-xs">
           <button
             onClick={() => setTab('overview')}
-            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition cursor-pointer ${
+            className={`flex items-center justify-center gap-1 py-1.5 rounded-lg transition cursor-pointer ${
               tab === 'overview'
                 ? 'bg-indigo-600 text-white font-bold shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
             <BarChart3 className="w-3.5 h-3.5" />
-            <span>Progress & XP</span>
+            <span>Progress</span>
+          </button>
+          <button
+            onClick={() => setTab('revision')}
+            className={`flex items-center justify-center gap-1 py-1.5 rounded-lg transition cursor-pointer relative ${
+              tab === 'revision'
+                ? 'bg-indigo-600 text-white font-bold shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>Revision</span>
+            {dueReviews.length > 0 && (
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse ml-0.5" />
+            )}
           </button>
           <button
             onClick={() => setTab('contributions')}
-            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition cursor-pointer ${
+            className={`flex items-center justify-center gap-1 py-1.5 rounded-lg transition cursor-pointer ${
               tab === 'contributions'
                 ? 'bg-indigo-600 text-white font-bold shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>Contributions ({stats?.contributionsCount || 0})</span>
+            <span>Uploads ({stats?.contributionsCount || 0})</span>
           </button>
           <button
             onClick={() => setTab('comparison')}
-            className={`flex items-center justify-center gap-1.5 py-1.5 rounded-lg transition cursor-pointer ${
+            className={`flex items-center justify-center gap-1 py-1.5 rounded-lg transition cursor-pointer ${
               tab === 'comparison'
                 ? 'bg-indigo-600 text-white font-bold shadow-sm'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
-            <span>Friend Compare</span>
+            <span>Compare</span>
           </button>
         </div>
 
@@ -229,6 +258,115 @@ export default function UserDashboardModal({
                 <span className="text-[10px] text-slate-500 block">DAYS ACTIVE</span>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Tab: Spaced Repetition Revision Queue */}
+        {tab === 'revision' && (
+          <div className="space-y-4 overflow-y-auto pr-1 flex-1">
+            <div className="bg-[#08090e] p-4 rounded-xl border border-amber-500/20 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                    Spaced Repetition Review Queue
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono font-bold border border-amber-500/30">
+                    Leitner System
+                  </span>
+                </div>
+                <p className="text-[11px] font-mono text-slate-400 mt-1">
+                  Problems are scheduled for active recall (1d → 3d → 7d → 14d → 30d → 60d) to maximize long-term retention.
+                </p>
+              </div>
+              <div className="text-right font-mono">
+                <span className="text-2xl font-bold text-amber-400">{dueReviews.length}</span>
+                <span className="text-[10px] text-slate-500 block">DUE TODAY</span>
+              </div>
+            </div>
+
+            {/* List of due questions */}
+            {dueReviews.length > 0 ? (
+              <div className="space-y-2">
+                <div className="text-xs font-mono text-slate-400 flex items-center justify-between px-1">
+                  <span>Questions Due for Review Today:</span>
+                  <span className="text-[10px] text-amber-400">+20 XP per review</span>
+                </div>
+
+                {dueReviews.map((q) => (
+                  <div
+                    key={q.id}
+                    className="p-3 bg-[#08090e] border border-white/10 hover:border-amber-500/40 rounded-xl flex items-center justify-between transition group"
+                  >
+                    <div className="flex-1 min-w-0 pr-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-mono font-bold text-white truncate group-hover:text-amber-300 transition">
+                          {q.title}
+                        </span>
+                        <span
+                          className={`text-[9px] font-mono px-1.5 py-0.2 rounded border ${
+                            q.difficulty?.toLowerCase() === 'easy'
+                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                              : q.difficulty?.toLowerCase() === 'hard'
+                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                              : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                          }`}
+                        >
+                          {q.difficulty}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-slate-500">
+                        <span>Topic: {q.category}</span>
+                        <span>•</span>
+                        <span>Interval: {q.review_interval_days || 1}d</span>
+                        {q.last_reviewed_at && (
+                          <>
+                            <span>•</span>
+                            <span>Last: {new Date(q.last_reviewed_at).toLocaleDateString()}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => {
+                          if (onOpenQuestion) onOpenQuestion(q.id);
+                          onClose();
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-semibold transition flex items-center gap-1"
+                        title="Open in Visualizer Studio"
+                      >
+                        Launch
+                        <ChevronRight className="w-3 h-3" />
+                      </button>
+
+                      <button
+                        onClick={() => handleQuickReview(q.id, 'mastered')}
+                        className="px-2 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-[10px] font-mono font-bold transition"
+                        title="Mastered (Extend interval 2.5x)"
+                      >
+                        ✓ Easy
+                      </button>
+                      <button
+                        onClick={() => handleQuickReview(q.id, 'struggling')}
+                        className="px-2 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[10px] font-mono transition"
+                        title="Struggled (Reset interval to 1d)"
+                      >
+                        ↺ Reset
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center bg-[#08090e] rounded-xl border border-dashed border-white/10 text-slate-500 font-mono text-xs space-y-2">
+                <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                <p className="text-white font-semibold">All caught up on reviews for today!</p>
+                <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+                  When you solve problems and rate your confidence, they will automatically appear here based on optimal spaced repetition intervals.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

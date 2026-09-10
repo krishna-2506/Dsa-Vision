@@ -148,6 +148,41 @@ app.post('/api/notes/:id', (req, res) => {
   }
 });
 
+// POST /api/questions/bulk-import - Bulk import questions
+app.post('/api/questions/bulk-import', (req, res) => {
+  try {
+    const { questions } = req.body;
+    const result = dbService.bulkImportQuestions(questions);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/reviews - Record a spaced repetition review
+app.post('/api/reviews', (req, res) => {
+  try {
+    const { userId, questionId, confidence } = req.body;
+    if (!questionId) return res.status(400).json({ success: false, error: 'questionId is required' });
+    const result = dbService.recordReview(userId, questionId, confidence);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/reviews/due - Get questions due for spaced repetition review
+app.get('/api/reviews/due', (req, res) => {
+  try {
+    const userId = req.query.userId || null;
+    const dueList = dbService.getDueReviews(userId);
+    res.json({ success: true, data: dueList });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 // ----------------------------------------------------
 // DISCUSSION COMMENTS & COLLABORATIVE NOTES
 // ----------------------------------------------------
@@ -275,10 +310,47 @@ app.post('/api/questions', (req, res) => {
   }
 });
 
+// Helper to extract new multi-language solution code with educational comments
+function extractSolutionsFromCode(code) {
+  const solutions = {};
+  if (!code || typeof code !== 'string') return solutions;
+
+  const solBlockMatch = code.match(/export\s+const\s+solutions\s*=\s*({[\s\S]*?});/);
+  if (solBlockMatch) {
+    try {
+      const cppMatch = solBlockMatch[1].match(/cpp\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+      if (cppMatch) solutions.cpp = cppMatch[1].trim();
+
+      const pyMatch = solBlockMatch[1].match(/(?:python|py)\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+      if (pyMatch) solutions.python = pyMatch[1].trim();
+
+      const javaMatch = solBlockMatch[1].match(/java\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+      if (javaMatch) solutions.java = javaMatch[1].trim();
+
+      const jsMatch = solBlockMatch[1].match(/(?:javascript|js|ts|typescript)\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+      if (jsMatch) solutions.javascript = jsMatch[1].trim();
+    } catch (e) {}
+  }
+
+  const cppVar = code.match(/export\s+const\s+(?:code_cpp|cppCode|cppSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+  if (cppVar && !solutions.cpp) solutions.cpp = cppVar[1].trim();
+
+  const pyVar = code.match(/export\s+const\s+(?:code_python|pythonCode|pySolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+  if (pyVar && !solutions.python) solutions.python = pyVar[1].trim();
+
+  const javaVar = code.match(/export\s+const\s+(?:code_java|javaCode|javaSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+  if (javaVar && !solutions.java) solutions.java = javaVar[1].trim();
+
+  const jsVar = code.match(/export\s+const\s+(?:code_javascript|jsCode|jsSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+  if (jsVar && !solutions.javascript) solutions.javascript = jsVar[1].trim();
+
+  return solutions;
+}
+
 // POST /api/upload-visualizer - Save visualizer .jsx file and bind to question in SQLite
 app.post('/api/upload-visualizer', async (req, res) => {
   try {
-    const { questionId, componentKey, code, userId } = req.body;
+    const { questionId, componentKey, code, userId, solutions: providedSolutions } = req.body;
     if (!questionId || !code) {
       return res.status(400).json({ success: false, error: 'questionId and code are required' });
     }
@@ -290,8 +362,15 @@ app.post('/api/upload-visualizer', async (req, res) => {
     const filePath = path.resolve(process.cwd(), 'src', 'visualizers', `${key}.jsx`);
     fs.writeFileSync(filePath, code, 'utf8');
 
-    // Update question in SQLite
-    const updated = dbService.updateVisualizer(questionId, key);
+    // Extract solutions from code if not explicitly provided
+    const extractedSolutions = extractSolutionsFromCode(code);
+    const finalSolutions = {
+      ...(providedSolutions || {}),
+      ...extractedSolutions
+    };
+
+    // Update question and replace old code solutions in SQLite
+    const updated = dbService.updateVisualizer(questionId, key, finalSolutions);
 
     // Record user contribution if user provided
     if (userId) {
@@ -302,7 +381,12 @@ app.post('/api/upload-visualizer', async (req, res) => {
       }
     }
 
-    res.json({ success: true, componentKey: key, data: updated });
+    res.json({
+      success: true,
+      componentKey: key,
+      data: updated,
+      updatedSolutionsCount: Object.keys(finalSolutions).length
+    });
   } catch (err) {
     console.error('Error saving visualizer file:', err);
     res.status(500).json({ success: false, error: err.message });

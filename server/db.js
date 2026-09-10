@@ -118,21 +118,48 @@ sqlite.exec(`
 
 try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN approach TEXT");
-} catch (e) {
-  // Column already exists
-}
+} catch (e) {}
 
 try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN tags TEXT");
-} catch (e) {
-  // Column already exists
-}
+} catch (e) {}
 
 try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN display_id TEXT");
-} catch (e) {
-  // Column already exists
-}
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN next_review_date TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN confidence_level TEXT DEFAULT 'unrated'");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN review_interval_days INTEGER DEFAULT 1");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN last_reviewed_at TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE user_progress ADD COLUMN next_review_date TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE user_progress ADD COLUMN confidence_level TEXT DEFAULT 'unrated'");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE user_progress ADD COLUMN review_interval_days INTEGER DEFAULT 1");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE user_progress ADD COLUMN last_reviewed_at TEXT");
+} catch (e) {}
+
 
 // Seed default high-quality LeetCode problems if empty
 const countStmt = sqlite.prepare('SELECT COUNT(*) as count FROM questions');
@@ -700,13 +727,33 @@ export const dbService = {
     return this.getQuestion(id);
   },
 
-  updateVisualizer(questionId, componentKey) {
+  saveCodeSolutions(questionId, solutions = {}) {
+    if (!questionId || !solutions || typeof solutions !== 'object') return;
+    const delStmt = sqlite.prepare('DELETE FROM code_solutions WHERE question_id = ?');
+    delStmt.run(questionId);
+
+    const insStmt = sqlite.prepare(`
+      INSERT INTO code_solutions (question_id, language, code) VALUES (?, ?, ?)
+    `);
+    for (const [lang, code] of Object.entries(solutions)) {
+      if (code && typeof code === 'string' && code.trim()) {
+        insStmt.run(questionId, lang, code.trim());
+      }
+    }
+  },
+
+  updateVisualizer(questionId, componentKey, solutions = null) {
     const stmt = sqlite.prepare(`
       UPDATE questions
       SET component_key = ?, updated_at = datetime('now')
       WHERE id = ?
     `);
     stmt.run(componentKey, questionId);
+
+    if (solutions && Object.keys(solutions).length > 0) {
+      this.saveCodeSolutions(questionId, solutions);
+    }
+
     return this.getQuestion(questionId);
   },
 
@@ -1045,6 +1092,140 @@ export const dbService = {
     `).run(userId, questionId, content, now);
 
     return { success: true, updated_at: now };
+  },
+
+  // --- Spaced Repetition & Revision System ---
+  recordReview(userId, questionId, confidence = 'mastered') {
+    const today = new Date();
+    const nowIso = today.toISOString();
+    
+    // Get existing interval
+    let prevInterval = 1;
+    if (userId) {
+      const up = sqlite.prepare('SELECT review_interval_days FROM user_progress WHERE user_id = ? AND question_id = ?').get(userId, questionId);
+      if (up && up.review_interval_days) prevInterval = up.review_interval_days;
+    } else {
+      const q = sqlite.prepare('SELECT review_interval_days FROM questions WHERE id = ?').get(questionId);
+      if (q && q.review_interval_days) prevInterval = q.review_interval_days;
+    }
+
+    // Leitner spaced repetition interval calculator
+    let nextIntervalDays = 1;
+    if (confidence === 'mastered') {
+      nextIntervalDays = Math.min(60, Math.max(2, Math.round(prevInterval * 2.5)));
+    } else if (confidence === 'practicing') {
+      nextIntervalDays = Math.max(3, prevInterval);
+    } else if (confidence === 'struggling') {
+      nextIntervalDays = 1; // Reset to 1 day if struggled
+    }
+
+    const nextDate = new Date(today);
+    nextDate.setDate(nextDate.getDate() + nextIntervalDays);
+    const nextDateStr = nextDate.toISOString().split('T')[0];
+
+    // Update global question table
+    sqlite.prepare(`
+      UPDATE questions 
+      SET next_review_date = ?, confidence_level = ?, review_interval_days = ?, last_reviewed_at = ?, status = 'mastered', updated_at = datetime('now')
+      WHERE id = ?
+    `).run(nextDateStr, confidence, nextIntervalDays, nowIso, questionId);
+
+    // If userId provided, update user_progress as well
+    if (userId) {
+      sqlite.prepare(`
+        INSERT INTO user_progress (user_id, question_id, status, confidence_level, review_interval_days, next_review_date, last_reviewed_at, solved_at)
+        VALUES (?, ?, 'mastered', ?, ?, ?, ?, ?)
+        ON CONFLICT(user_id, question_id) DO UPDATE SET
+          status = 'mastered',
+          confidence_level = excluded.confidence_level,
+          review_interval_days = excluded.review_interval_days,
+          next_review_date = excluded.next_review_date,
+          last_reviewed_at = excluded.last_reviewed_at,
+          solved_at = COALESCE(user_progress.solved_at, excluded.solved_at)
+      `).run(userId, questionId, confidence, nextIntervalDays, nextDateStr, nowIso, nowIso);
+
+      // Award review XP (+20 XP for active recall review)
+      this.addXp(userId, 20);
+      this.updateUserStreak(userId);
+    }
+
+    return {
+      success: true,
+      questionId,
+      confidence,
+      review_interval_days: nextIntervalDays,
+      next_review_date: nextDateStr,
+      last_reviewed_at: nowIso
+    };
+  },
+
+  getDueReviews(userId = null) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    
+    if (userId) {
+      const rows = sqlite.prepare(`
+        SELECT q.*, up.confidence_level, up.review_interval_days, up.next_review_date, up.last_reviewed_at, up.status as user_status
+        FROM questions q
+        JOIN user_progress up ON q.id = up.question_id
+        WHERE up.user_id = ? 
+          AND up.next_review_date IS NOT NULL 
+          AND up.next_review_date <= ?
+        ORDER BY up.next_review_date ASC
+      `).all(userId, todayStr);
+      return rows;
+    }
+
+    const rows = sqlite.prepare(`
+      SELECT * FROM questions
+      WHERE next_review_date IS NOT NULL 
+        AND next_review_date <= ?
+      ORDER BY next_review_date ASC
+    `).all(todayStr);
+    return rows;
+  },
+
+  // --- Bulk Import System ---
+  bulkImportQuestions(questionsList = []) {
+    if (!Array.isArray(questionsList) || questionsList.length === 0) {
+      throw new Error('Import list must be a non-empty array of questions');
+    }
+
+    const results = [];
+    for (const item of questionsList) {
+      if (!item.title) continue;
+      const questionData = {
+        id: item.id || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        display_id: item.display_id || (item.leetcode_id ? `Q-${String(item.leetcode_id).padStart(3, '0')}` : null),
+        leetcode_id: item.leetcode_id || null,
+        title: item.title,
+        slug: item.slug || item.id,
+        category: item.category || item.topic || 'Algorithms',
+        difficulty: item.difficulty || 'Medium',
+        time_complexity: item.time_complexity || 'O(N)',
+        space_complexity: item.space_complexity || 'O(1)',
+        leetcode_url: item.leetcode_url || '',
+        description: item.description || '',
+        approach: item.approach || item.intuition || '',
+        tags: Array.isArray(item.tags) ? item.tags : (typeof item.tags === 'string' ? item.tags.split(',').map(t => t.trim()).filter(Boolean) : []),
+        status: item.status || 'to_learn',
+        component_key: item.component_key || (item.id || item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
+      };
+
+      const solutions = item.solutions || {};
+      if (item.code_cpp) solutions['cpp'] = item.code_cpp;
+      if (item.code_python) solutions['python'] = item.code_python;
+      if (item.code_java) solutions['java'] = item.code_java;
+      if (item.code_javascript) solutions['javascript'] = item.code_javascript;
+
+      const created = this.addQuestion(questionData, solutions);
+      results.push(created);
+    }
+
+    return {
+      success: true,
+      importedCount: results.length,
+      questions: results
+    };
   },
 
   seedDefaultUsers() {

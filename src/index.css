@@ -1,100 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --bg-canvas: #090a0f;
-    --bg-surface: #0e111a;
-    --bg-elevated: #141724;
-    --border-subtle: rgba(255, 255, 255, 0.07);
-    --border-medium: rgba(255, 255, 255, 0.12);
+    /* Canvas layers — warmer, less saturated than pure blue-grey */
+    --bg-canvas:   #08090d;
+    --bg-surface:  #0d0f18;
+    --bg-elevated: #111422;
+    --bg-overlay:  #0a0b10;
 
-    /* Single core accent: Indigo */
-    --accent-primary: #6366f1;
-    --accent-glow: rgba(99, 102, 241, 0.15);
+    /* Borders */
+    --border-faint:  rgba(255,255,255,0.05);
+    --border-subtle: rgba(255,255,255,0.08);
+    --border-medium: rgba(255,255,255,0.13);
 
-    /* Fixed 3-color semantic scale */
-    --semantic-easy: #10b981;
-    --semantic-medium: #f59e0b;
-    --semantic-hard: #f43f5e;
+    /* Single accent — violet-indigo, not generic indigo */
+    --accent:        #6366f1;
+    --accent-dim:    rgba(99,102,241,0.12);
+    --accent-glow:   rgba(99,102,241,0.18);
+
+    /* Semantic */
+    --easy:   #34d399;
+    --medium: #fbbf24;
+    --hard:   #f87171;
 
     /* Typography */
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
 
   body {
     margin: 0;
     padding: 0;
     background-color: var(--bg-canvas);
-    color: #f1f5f9;
+    color: #e2e8f0;
     font-family: var(--font-sans);
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
-    letter-spacing: -0.011em;
-  }
-
-  h1, h2, h3, .font-heading {
-    font-family: var(--font-mono);
-    letter-spacing: -0.025em;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 14px;
+    line-height: 1.6;
   }
 
   #root {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    width: 100%;
   }
 
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  /* Selection */
+  ::selection {
+    background: rgba(99,102,241,0.3);
+    color: #fff;
   }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+
+  /* Refined scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(255,255,255,0.18);
+  }
+
+  /* Remove default focus outline, use custom */
+  :focus-visible {
+    outline: 2px solid rgba(99,102,241,0.6);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
-/* Engineering Lab Notebook Texture */
-.notebook-grid {
-  background-color: #0c0e15;
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 16px 16px;
+/* ───────── Layout helpers ───────── */
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-/* Subtle background grid */
-.bg-grid-subtle {
-  background-size: 28px 28px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+/* ───────── Subtle dot-grid background ───────── */
+.bg-dots {
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-/* Smooth motion for pointer movement */
+/* ───────── Entry animations ───────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeUp 0.2s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.fade-in {
+  animation: fadeIn 0.15s ease-out both;
+}
+
+/* ───────── Pointer / arrow spring ───────── */
 .pointer-spring {
-  transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
   will-change: transform;
 }
 
-/* Highlighted executing code line pulse */
+/* ───────── Active code line glow ───────── */
 @keyframes lineGlow {
-  0%, 100% {
-    background-color: rgba(99, 102, 241, 0.16);
-  }
-  50% {
-    background-color: rgba(99, 102, 241, 0.28);
-  }
+  0%, 100% { background-color: rgba(99,102,241,0.13); }
+  50%       { background-color: rgba(99,102,241,0.24); }
+}
+.active-code-line {
+  animation: lineGlow 1.8s ease-in-out infinite;
+  border-left: 2px solid #6366f1;
 }
 
-.active-code-line {
-  animation: lineGlow 2s infinite ease-in-out;
-  border-left: 2px solid #6366f1;
+/* ───────── Difficulty dots ───────── */
+.dot-easy   { background-color: var(--easy); }
+.dot-medium { background-color: var(--medium); }
+.dot-hard   { background-color: var(--hard); }
+
+/* ───────── Nav pill ───────── */
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 0.625rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255,255,255,0.03);
+  color: #94a3b8;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+}
+.nav-pill:hover {
+  background: rgba(255,255,255,0.07);
+  color: #f1f5f9;
+  border-color: var(--border-medium);
+}
+
+/* ───────── Primary button ───────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2rem;
+  padding: 0 0.875rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: #4f46e5;
+  color: #fff;
+  border: 1px solid rgba(99,102,241,0.4);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.btn-primary:hover { background: #4338ca; }
+.btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+/* ───────── Ghost button ───────── */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid var(--border-subtle);
+  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.06);
+  color: #e2e8f0;
+}
+.btn-ghost:disabled { opacity: 0.35; cursor: default; }
+
+/* ───────── Card surface ───────── */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  transition: border-color 0.15s;
+}
+.card:hover {
+  border-color: var(--border-medium);
+}
+
+/* ───────── Underline tab ───────── */
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #64748b;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: #cbd5e1; }
+.tab-btn.active {
+  color: #f1f5f9;
+  border-color: #6366f1;
+  font-weight: 700;
 }

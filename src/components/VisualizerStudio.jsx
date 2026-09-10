@@ -40,13 +40,21 @@ import { visualizersRegistry } from '../visualizers';
 import { api } from '../services/api';
 import CodeViewer from './CodeViewer';
 import VisualizerUploader from './VisualizerUploader';
+import VariableInspector from './primitives/VariableInspector';
 
-function formatComplexity(text, maxChars = 32) {
-  if (!text) return 'O(1)';
-  let cleaned = String(text).replace(/^[-:=*#\s]+/, '').replace(/[*\/#\s]+$/, '').trim();
-  cleaned = cleaned.replace(/^(?:time|space)\s*complexity\s*[:=-]\s*/i, '').replace(/^(?:time|space)\s*[:=-]\s*/i, '').trim();
-  if (cleaned.length <= maxChars) return cleaned;
-  return cleaned.slice(0, maxChars).trim() + '...';
+function formatComplexity(text) {
+  if (!text) return '—';
+  const s = String(text);
+  // First try to extract a Big-O token like O(N), O(N log N), O(N²), O(V+E), etc.
+  const match = s.match(/O\([^)]{1,20}\)/i);
+  if (match) return match[0];
+  // Fall back: strip known prefixes and truncate
+  let cleaned = s
+    .replace(/^[-:=*#\s]+/, '')
+    .replace(/^(?:the\s+)?(?:time|space)\s+complexity\s+(?:of[^:]*?)?(?:is|:|-|=)\s*/i, '')
+    .replace(/^(?:time|space)\s*(?:complexity)?\s*[:=-]\s*/i, '')
+    .trim();
+  return cleaned.length <= 24 ? cleaned : cleaned.slice(0, 22) + '…';
 }
 
 export default function VisualizerStudio({
@@ -88,8 +96,14 @@ export default function VisualizerStudio({
   const [newNoteTitle, setNewNoteTitle] = useState('');
   const [newNoteContent, setNewNoteContent] = useState('');
   const [isPostingNote, setIsPostingNote] = useState(false);
-  const [privateNotes, setPrivateNotes] = useState('');
-  const [privateNotesSaved, setPrivateNotesSaved] = useState(false);
+  // Custom Input Sandbox & Preset State
+  const [customInput, setCustomInput] = useState('');
+  const [customTarget, setCustomTarget] = useState('');
+  const [showCustomSandbox, setShowCustomSandbox] = useState(false);
+  const [reviewSaved, setReviewSaved] = useState(false);
+  const [isBarDragging, setIsBarDragging] = useState(false);
+  const [preloadedUploadCode, setPreloadedUploadCode] = useState('');
+  const barFileInputRef = useRef(null);
 
   // Find index and previous / next questions
   const currentIndex = questions ? questions.findIndex((q) => q.id === question.id) : -1;
@@ -144,9 +158,6 @@ export default function VisualizerStudio({
     };
   }, [question.id, question.component_key, question.componentKey, currentUser?.id]);
 
-  // Active step data
-  const currentStepData = stepsList ? stepsList[currentStep] : null;
-  const activeCodeLine = currentStepData?.codeLine || null;
 
   const handleDirectCopyPrompt = () => {
     const key = question.component_key || toCamelCase(question.title) + 'Visualizer';
@@ -173,6 +184,28 @@ You MUST follow this exact component scaffold:
 \`\`\`jsx
 import React, { useState } from 'react';
 import ArrayView from '../components/primitives/ArrayView';
+// (Or import other primitives if needed: LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector)
+
+// 0. Multi-language production solution code with detailed educational comments
+export const solutions = {
+  cpp: \`// C++ Optimal Solution with line-by-line syntax & complexity comments
+class Solution {
+public:
+    // Detailed step comments explaining approach...
+};\n\`,
+  python: \`# Python 3 Solution with thorough syntax & data structure comments
+class Solution:
+    # Detailed step comments explaining approach...
+    pass\n\`,
+  java: \`// Java Solution with step-by-step logic breakdown
+class Solution {
+    // Detailed step comments explaining approach...
+}\n\`,
+  javascript: \`// JavaScript Solution with in-line explanation
+var solve = function(...) {
+    // Detailed step comments explaining approach...
+};\n\`,
+};
 
 export const meta = {
   display_id: '${question.display_id || 'Q-001'}',
@@ -184,20 +217,20 @@ export const meta = {
   description: ${JSON.stringify((question.description || '').slice(0, 140))}
 };
 
-// Realistic sample array for this problem
-const SAMPLE_DATA = [1, 8, 7, 56, 90];
+// Realistic sample array/data extracted directly from the problem statement & examples
+const SAMPLE_DATA = [/* realistic data from problem example */];
 
 export const steps = [
+  // IMPORTANT: Provide 6 to 12 thorough, sequential execution steps tracing the algorithm on SAMPLE_DATA
   {
     title: "1. Initialize State",
     codeLine: 4, // Exact line of C++ code executing
     code: "// In-line commented executing line...",
-    explanation: "Detailed educational explanation of what happens and why...",
+    explanation: "Detailed educational explanation of what happens in this step and why...",
     pointers: [{ index: 0, label: 'i', color: 'indigo' }],
     highlightIndices: [0],
     hudText: "Current state: initialized"
   }
-  // Add 4-7 thorough steps demonstrating the complete algorithm
 ];
 
 export default function ${key}({ currentStep: externalStep, onStepChange }) {
@@ -230,14 +263,16 @@ export default function ${key}({ currentStep: externalStep, onStepChange }) {
       </div>
 
       {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
+      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[240px]">
         <ArrayView items={SAMPLE_DATA} pointers={stepData.pointers || []} matchIndices={stepData.highlightIndices || []} />
-        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-          <span>Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
+        
+        {/* Real-time HUD Status & Variables */}
+        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
+          <span className="text-zinc-400">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
         </div>
       </div>
 
-      {/* 4. Explanation Footer */}
+      {/* 3. Explanation Footer */}
       <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
         <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
         {stepData.explanation}
@@ -248,9 +283,13 @@ export default function ${key}({ currentStep: externalStep, onStepChange }) {
 \`\`\`
 
 Rules:
+- Include \`export const solutions = { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }\` with fully commented solutions explaining syntax, line-by-line logic, and edge cases. These will automatically replace the old code in the database.
+- IMPORTANT: Ensure the visualizer has RICH ANIMATED VISUALS: accurately trace the problem's sample example across 6-12 step-by-step frames with moving pointers (e.g., start, end, left, right), highlighted active subarrays, and live HUD variables.
+- Use primitive components from \`../components/primitives/\` (ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector) or custom SVG/HTML visualizations.
 - Palette: Deep obsidian (#0b0d14, #0e111a, #08090e), Indigo (#6366f1), Emerald, Amber, Rose.
 - Explain code thoroughly with in-line comments line-by-line.
 - Return ONLY the complete, ready-to-run React JSX code.`;
+
 
     navigator.clipboard.writeText(promptText);
     sound.playStep(640);
@@ -367,6 +406,76 @@ Rules:
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentStep, maxSteps, isPlaying, prevQuestion, nextQuestion, onNavigateQuestion]);
 
+  // Compute active line and variables for real-time inspection & code sync
+  const currentStepData = stepsList ? stepsList[currentStep] : null;
+  const activeCodeLine = currentStepData?.codeLine || currentStepData?.line || null;
+  const currentVariables = currentStepData?.variables || {
+    ...(currentStepData?.low !== undefined ? { low: currentStepData.low } : {}),
+    ...(currentStepData?.high !== undefined ? { high: currentStepData.high } : {}),
+    ...(currentStepData?.mid !== undefined ? { mid: currentStepData.mid } : {}),
+    ...(currentStepData?.left !== undefined ? { left: currentStepData.left } : {}),
+    ...(currentStepData?.right !== undefined ? { right: currentStepData.right } : {}),
+    ...(currentStepData?.currentSum !== undefined ? { currentSum: currentStepData.currentSum } : {}),
+    ...(currentStepData?.status ? { status: currentStepData.status } : {})
+  };
+
+  const handleReviewConfidence = async (confidence) => {
+    await api.recordReview(currentUser?.id, question.id, confidence);
+    sound?.playSuccess?.();
+    setReviewSaved(true);
+    setTimeout(() => setReviewSaved(false), 2500);
+  };
+
+  const handleDirectFileDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsBarDragging(false);
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const content = evt.target?.result;
+        if (typeof content === 'string') {
+          setPreloadedUploadCode(content);
+          setShowUploader(true);
+          sound?.playSuccess?.();
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleBarFileInput = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const content = evt.target?.result;
+        if (typeof content === 'string') {
+          setPreloadedUploadCode(content);
+          setShowUploader(true);
+          sound?.playSuccess?.();
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleUploadSuccess = async (newKey, updatedQuestion) => {
+    setShowUploader(false);
+    setPreloadedUploadCode('');
+    // Automatically reload solutions from DB so new commented code replaces old code immediately in CodeViewer
+    const refreshedSolutions = await api.getCodeSolutions(question.id);
+    if (refreshedSolutions && Object.keys(refreshedSolutions).length > 0) {
+      setSolutions(refreshedSolutions);
+    }
+    if (onUpdateQuestion && updatedQuestion) {
+      onUpdateQuestion(updatedQuestion);
+    }
+    sound?.playSuccess?.();
+  };
+
+
   // Playback timer
   useEffect(() => {
     if (isPlaying) {
@@ -448,189 +557,61 @@ Rules:
     window.open(`/api/export/${encodeURIComponent(question.id)}`, '_blank');
   };
 
-  const handleUploadSuccess = (newKey) => {
-    onUpdateQuestion({ ...question, component_key: newKey });
-    setShowUploader(false);
-  };
+
+  const diffDot =
+    question.difficulty === 'Easy'   ? 'bg-emerald-400' :
+    question.difficulty === 'Medium' ? 'bg-amber-400'   :
+    question.difficulty === 'Hard'   ? 'bg-rose-400'    : 'bg-slate-500';
+
+  const diffText =
+    question.difficulty === 'Easy'   ? 'text-emerald-400' :
+    question.difficulty === 'Medium' ? 'text-amber-400'   :
+    question.difficulty === 'Hard'   ? 'text-rose-400'    : 'text-slate-500';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-      {/* 🧭 Question Navigator Bar (Previous, Next & Quick Jumper) */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#0e111a] border border-white/[0.08] p-2.5 sm:px-4 rounded-xl shadow-xl">
-        {/* Previous Question */}
-        <button
-          onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
-          disabled={!prevQuestion}
-          className="flex items-center gap-2 h-9 px-3 rounded-lg bg-white/[0.03] hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none text-slate-300 hover:text-white border border-white/5 text-xs font-mono transition group"
-          title={prevQuestion ? `Previous: #${prevQuestion.display_id} ${prevQuestion.title} (Shortcut: [ or Alt+Left)` : 'First problem'}
-        >
-          <ChevronLeft className="w-4 h-4 text-indigo-400 group-hover:-translate-x-0.5 transition-transform" />
-          <div className="flex items-center gap-1.5 text-left">
-            <span className="font-bold text-slate-200">Prev</span>
-            {prevQuestion && (
-              <span className="hidden sm:inline text-slate-400 max-w-[130px] truncate">
-                #{prevQuestion.display_id}
-              </span>
-            )}
-          </div>
-        </button>
+    <div className="max-w-[1280px] mx-auto px-6 py-6 space-y-4">
+      {/* ── Zone 1: Problem header ── */}
+      <div className="card p-4 sm:p-5">
+        {/* Title + meta row */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div className="flex items-start gap-3 min-w-0">
+            {/* Back */}
+            <button
+              onClick={onBack}
+              className="mt-0.5 p-1.5 rounded-md text-slate-500 hover:text-white hover:bg-white/[0.06] transition shrink-0"
+              title="Back to library (Esc)"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
 
-        {/* Center: Quick Problem Jumper & Counter */}
-        <div className="relative">
-          <button
-            onClick={() => setShowJumper(!showJumper)}
-            className="flex items-center gap-2 h-9 px-3.5 rounded-lg bg-[#08090e] hover:bg-white/5 border border-white/10 text-xs font-mono text-slate-200 hover:text-white transition shadow-inner"
-            title="Jump to any problem in Striver's Sheet"
-          >
-            <Layers className="w-3.5 h-3.5 text-indigo-400" />
-            <span className="font-bold text-indigo-400">#{question.display_id || 'Q'}</span>
-            <span className="text-slate-400 hidden xs:inline">
-              Problem {currentIndex >= 0 ? currentIndex + 1 : 1} of {questions.length || 369}
-            </span>
-            <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${showJumper ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Quick Jumper Dropdown Menu */}
-          {showJumper && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
-                onClick={() => setShowJumper(false)}
-              />
-              <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-80 sm:w-96 bg-[#0e111a] border border-white/15 rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden animate-in fade-in duration-150">
-                <div className="p-3 border-b border-white/5 bg-[#090b10] flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 flex-1 bg-[#08090e] px-2.5 py-1.5 rounded-lg border border-white/5">
-                    <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <input
-                      type="text"
-                      value={jumperSearch}
-                      onChange={(e) => setJumperSearch(e.target.value)}
-                      placeholder="Search Q-001, title, category..."
-                      className="bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none w-full font-mono"
-                      autoFocus
-                    />
-                    {jumperSearch && (
-                      <button onClick={() => setJumperSearch('')} className="text-slate-500 hover:text-white">
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setShowJumper(false)}
-                    className="p-1 rounded text-slate-400 hover:text-white"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="overflow-y-auto max-h-72 divide-y divide-white/5 font-mono text-xs">
-                  {filteredJumperQuestions.length === 0 ? (
-                    <div className="p-4 text-center text-slate-500 text-xs">
-                      No matching problems found
-                    </div>
-                  ) : (
-                    filteredJumperQuestions.map((q) => {
-                      const isCurrent = q.id === question.id;
-                      return (
-                        <div
-                          key={q.id}
-                          onClick={() => {
-                            if (onNavigateQuestion) onNavigateQuestion(q);
-                            setShowJumper(false);
-                          }}
-                          className={`p-2.5 flex items-center justify-between gap-2 cursor-pointer transition ${
-                            isCurrent
-                              ? 'bg-indigo-600/20 text-white font-bold'
-                              : 'hover:bg-white/5 text-slate-300'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-indigo-400 shrink-0 font-bold">
-                              #{q.display_id || q.leetcode_id}
-                            </span>
-                            <span className="truncate text-slate-200">{q.title}</span>
-                          </div>
-                          <span
-                            className={`text-[10px] uppercase font-bold px-1.5 py-0.2 rounded border shrink-0 ${
-                              q.difficulty === 'Easy'
-                                ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                                : q.difficulty === 'Medium'
-                                ? 'text-amber-400 bg-amber-500/10 border-amber-500/20'
-                                : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
-                            }`}
-                          >
-                            {q.difficulty}
-                          </span>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
+            <div className="min-w-0">
+              {/* ID + difficulty */}
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className={`w-2 h-2 rounded-full shrink-0 ${diffDot}`} title={question.difficulty} />
+                <span className={`text-[11px] font-mono font-semibold ${diffText}`}>{question.difficulty}</span>
+                {question.display_id && (
+                  <span className="text-[11px] font-mono text-slate-500">{question.display_id}</span>
+                )}
+                {question.leetcode_id && question.leetcode_id !== question.display_id && (
+                  <span className="text-[11px] font-mono text-slate-600">LC {question.leetcode_id}</span>
+                )}
+                <span className="text-[11px] font-mono text-slate-600">
+                  {(question.category || '').replace(/^\d+\.\s*/, '')}
+                </span>
               </div>
-            </>
-          )}
-        </div>
 
-        {/* Next Question */}
-        <button
-          onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
-          disabled={!nextQuestion}
-          className="flex items-center gap-2 h-9 px-3 rounded-lg bg-white/[0.03] hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none text-slate-300 hover:text-white border border-white/5 text-xs font-mono transition group"
-          title={nextQuestion ? `Next: #${nextQuestion.display_id} ${nextQuestion.title} (Shortcut: ] or Alt+Right)` : 'Last problem'}
-        >
-          <div className="flex items-center gap-1.5 text-right">
-            {nextQuestion && (
-              <span className="hidden sm:inline text-slate-400 max-w-[130px] truncate">
-                #{nextQuestion.display_id}
-              </span>
-            )}
-            <span className="font-bold text-slate-200">Next</span>
-          </div>
-          <ChevronRight className="w-4 h-4 text-indigo-400 group-hover:translate-x-0.5 transition-transform" />
-        </button>
-      </div>
+              {/* Title */}
+              <h1 className="font-sans font-bold text-[15px] sm:text-[16px] text-white leading-snug tracking-tight max-w-lg">
+                {question.title}
+              </h1>
 
-      {/* Studio Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0e111a] border border-white/[0.08] p-4 sm:p-5 rounded-xl">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="h-8 w-8 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 border border-white/5 transition"
-            title="Return to library"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              {question.display_id && (
-                <span className="font-mono text-xs font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-[4px] border border-indigo-500/25">
-                  #{question.display_id}
-                </span>
-              )}
-              {question.leetcode_id && question.leetcode_id !== question.display_id && (
-                <span className="font-mono text-xs font-bold text-slate-300 bg-white/5 px-2 py-0.5 rounded-[4px] border border-white/10">
-                  LC #{question.leetcode_id}
-                </span>
-              )}
-              <span
-                className={`text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-[4px] border ${
-                  question.difficulty === 'Easy'
-                    ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
-                    : question.difficulty === 'Medium'
-                    ? 'text-amber-400 bg-amber-500/10 border-amber-500/30'
-                    : 'text-rose-400 bg-rose-500/10 border-rose-500/30'
-                }`}
-              >
-                {question.difficulty}
-              </span>
-              <span className="text-xs font-mono text-slate-400">{question.category}</span>
+              {/* Tags */}
               {question.tags && question.tags.length > 0 && (
-                <div className="hidden sm:flex items-center gap-1.5 ml-1">
-                  {question.tags.map((tag) => (
+                <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                  {question.tags.slice(0, 4).map((tag) => (
                     <span
                       key={tag}
-                      className="text-[10px] font-mono text-indigo-300 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20"
+                      className="text-[10px] font-mono text-slate-600 hover:text-slate-400 transition cursor-default"
                     >
                       #{tag}
                     </span>
@@ -638,199 +619,288 @@ Rules:
                 </div>
               )}
             </div>
-            <h1 className="text-lg sm:text-xl font-mono font-bold text-white tracking-tight">{question.title}</h1>
+          </div>
+
+          {/* Right actions */}
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
+            {/* Complexity */}
+            <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 bg-white/[0.03] border border-white/[0.06] rounded-md px-3 py-1.5 shrink-0">
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3 text-indigo-500" />
+                {formatComplexity(question.time_complexity)}
+              </span>
+              <span className="text-white/10">·</span>
+              <span className="flex items-center gap-1">
+                <Cpu className="w-3 h-3 text-indigo-500" />
+                {formatComplexity(question.space_complexity)}
+              </span>
+            </div>
+
+            {/* Status */}
+            <select
+              value={question.status || 'to_learn'}
+              onChange={(e) => onStatusChange(question.id, e.target.value)}
+              className={`nav-pill cursor-pointer ${
+                question.status === 'mastered'    ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
+                question.status === 'in_progress' ? 'text-amber-400   border-amber-500/30  bg-amber-500/10'  : ''
+              }`}
+              style={{ appearance: 'none', backgroundImage: 'none', paddingRight: '0.625rem' }}
+            >
+              <option value="to_learn"    className="bg-[#0d0f18]">To learn</option>
+              <option value="in_progress" className="bg-[#0d0f18]">In progress</option>
+              <option value="mastered"    className="bg-[#0d0f18]">Mastered</option>
+            </select>
+
+            {/* View mode */}
+            <div className="flex items-center bg-white/[0.03] border border-white/[0.06] rounded-md p-0.5">
+              {[['visualizer_only','Viz'],['split','Split'],['code_only','Code']].map(([mode, label]) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={`px-2.5 py-1 rounded text-[11px] font-mono transition ${
+                    viewMode === mode
+                      ? 'bg-indigo-600/30 text-indigo-300 font-semibold'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Upload */}
+            <button
+              onClick={() => setShowUploader(!showUploader)}
+              className={`nav-pill ${
+                showUploader ? 'border-indigo-500/40 bg-indigo-600/15 text-indigo-300' : ''
+              }`}
+              title="Upload or replace visualizer"
+            >
+              <UploadCloud className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Upload</span>
+            </button>
+
+            {/* Spaced Repetition Quick Rater */}
+            <div className="flex items-center gap-1 bg-[#08090e] p-0.5 rounded-lg border border-white/[0.08] text-[10px] font-mono">
+              <button
+                onClick={() => handleReviewConfidence('mastered')}
+                className="px-2 py-0.5 rounded bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition flex items-center gap-1"
+                title="Mark Mastered (Interval extended 2.5x)"
+              >
+                <span>🟢</span> <span className="hidden sm:inline">Mastered</span>
+              </button>
+              <button
+                onClick={() => handleReviewConfidence('practicing')}
+                className="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center gap-1"
+                title="Needs Practice (Review in 3 days)"
+              >
+                <span>🟡</span> <span className="hidden sm:inline">Review 3d</span>
+              </button>
+              <button
+                onClick={() => handleReviewConfidence('struggling')}
+                className="px-2 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition flex items-center gap-1"
+                title="Struggled (Reset to 1 day)"
+              >
+                <span>🔴</span> <span className="hidden sm:inline">Reset</span>
+              </button>
+              {reviewSaved && (
+                <span className="text-emerald-400 px-1 font-bold animate-pulse">✓ Saved</span>
+              )}
+            </div>
+
+            {/* LeetCode */}
+            {question.leetcode_url && (
+              <a
+                href={question.leetcode_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-pill"
+                title="Open on LeetCode"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
+
+            {/* Jumper */}
+            <div className="relative">
+              <button
+                onClick={() => setShowJumper(!showJumper)}
+                className="nav-pill"
+                title="Jump to any problem"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Jump</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${showJumper ? 'rotate-180' : ''}`} />
+              </button>
+
+              {showJumper && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowJumper(false)} />
+                  <div className="absolute top-full mt-1.5 right-0 w-72 sm:w-80 bg-[#0d0f18] border border-white/[0.12] rounded-xl shadow-2xl z-50 overflow-hidden fade-in">
+                    <div className="p-2.5 border-b border-white/[0.06] flex items-center gap-2">
+                      <Search className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <input
+                        type="text"
+                        value={jumperSearch}
+                        onChange={(e) => setJumperSearch(e.target.value)}
+                        placeholder="Q-001, title, category…"
+                        className="bg-transparent text-[12px] text-white placeholder-slate-600 focus:outline-none w-full font-mono"
+                        autoFocus
+                      />
+                      {jumperSearch && (
+                        <button onClick={() => setJumperSearch('')} className="text-slate-600 hover:text-white shrink-0">
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="overflow-y-auto max-h-64 divide-y divide-white/[0.05] font-mono text-[11px]">
+                      {filteredJumperQuestions.length === 0 ? (
+                        <div className="p-4 text-center text-slate-600">No matches</div>
+                      ) : filteredJumperQuestions.map((q) => (
+                        <div
+                          key={q.id}
+                          onClick={() => { if (onNavigateQuestion) onNavigateQuestion(q); setShowJumper(false); }}
+                          className={`px-3 py-2 flex items-center justify-between gap-2 cursor-pointer transition ${
+                            q.id === question.id ? 'bg-indigo-600/15 text-white' : 'hover:bg-white/[0.04] text-slate-400'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="text-indigo-400 shrink-0">#{q.display_id || q.leetcode_id}</span>
+                            <span className="truncate">{q.title}</span>
+                          </div>
+                          <span className={`text-[10px] shrink-0 ${
+                            q.difficulty === 'Easy' ? 'text-emerald-400' :
+                            q.difficulty === 'Medium' ? 'text-amber-400' : 'text-rose-400'
+                          }`}>{q.difficulty}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Complexity, Status, View mode toggles */}
-        <div className="flex items-center gap-2.5 flex-wrap font-mono text-xs">
-          {/* Complexity HUD - Separate lines with ellipsis */}
-          <div className="flex flex-col gap-1 bg-[#08090e] px-3 py-1.5 rounded-lg border border-white/5 text-[11px] font-mono min-w-[140px]">
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-3 h-3 text-indigo-400 shrink-0" />
-              <span className="text-slate-400 shrink-0">Time:</span>
-              <span className="text-indigo-300 font-semibold truncate max-w-[170px] sm:max-w-xs" title={question.time_complexity}>
-                {formatComplexity(question.time_complexity, 32)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5 border-t border-white/5 pt-1">
-              <Cpu className="w-3 h-3 text-indigo-400 shrink-0" />
-              <span className="text-slate-400 shrink-0">Space:</span>
-              <span className="text-indigo-300 font-semibold truncate max-w-[170px] sm:max-w-xs" title={question.space_complexity}>
-                {formatComplexity(question.space_complexity, 32)}
-              </span>
-            </div>
+        {/* Problem statement + approach */}
+        <div className="mt-4 pt-4 border-t border-white/[0.05] space-y-3">
+          <div className="text-[12px] text-slate-400 leading-relaxed whitespace-pre-wrap max-h-32 overflow-y-auto font-sans">
+            {question.description || 'No description available.'}
           </div>
 
-          <select
-            value={question.status || 'to_learn'}
-            onChange={(e) => onStatusChange(question.id, e.target.value)}
-            className="px-2.5 py-1.5 bg-[#08090e] border border-white/10 rounded-lg text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
-          >
-            <option value="to_learn">To Learn</option>
-            <option value="in_progress">In Progress</option>
-            <option value="mastered">Mastered</option>
-          </select>
-
-          {/* Toggle Uploader vs Live Visualizer */}
-          <button
-            onClick={() => setShowUploader(!showUploader)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs transition ${
-              showUploader
-                ? 'bg-indigo-600 text-white border-indigo-500 font-semibold'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
-            }`}
-            title="Upload or replace visualizer code"
-          >
-            <UploadCloud className="w-3.5 h-3.5" />
-            <span>{showUploader ? 'Viewing Uploader' : 'Upload Visualizer'}</span>
-          </button>
-
-          {/* Split / Visualizer / Code Toggle */}
-          <div className="flex items-center bg-[#08090e] p-0.5 rounded-lg border border-white/5">
+          {/* Approach toggle button — always visible */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => setViewMode('split')}
-              className={`px-2.5 py-1 rounded text-xs transition ${
-                viewMode === 'split' ? 'bg-indigo-600/30 text-indigo-300 font-semibold border border-indigo-500/30' : 'text-slate-400 hover:text-slate-200'
+              onClick={() => setShowApproach(!showApproach)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-mono font-medium border transition ${
+                showApproach
+                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+                  : 'bg-white/[0.03] border-white/[0.08] text-slate-500 hover:text-amber-400 hover:border-amber-500/30 hover:bg-amber-500/10'
               }`}
             >
-              Split
-            </button>
-            <button
-              onClick={() => setViewMode('visualizer_only')}
-              className={`px-2.5 py-1 rounded text-xs transition ${
-                viewMode === 'visualizer_only' ? 'bg-indigo-600/30 text-indigo-300 font-semibold border border-indigo-500/30' : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              Visualizer
-            </button>
-            <button
-              onClick={() => setViewMode('code_only')}
-              className={`px-2.5 py-1 rounded text-xs transition ${
-                viewMode === 'code_only' ? 'bg-indigo-600/30 text-indigo-300 font-semibold border border-indigo-500/30' : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              Code
+              <span>{showApproach ? '▾' : '▸'}</span>
+              {showApproach ? 'Hide Approach & Intuition' : 'Show Approach & Intuition'}
             </button>
           </div>
 
-          {question.leetcode_url && (
-            <a
-              href={question.leetcode_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-medium transition"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              <span>LeetCode</span>
-            </a>
+          {showApproach && (
+            <div className="rounded-lg bg-[#0a0b10] border border-amber-500/15 p-3.5 space-y-1">
+              <span className="text-[10px] font-mono text-amber-600/80 uppercase tracking-wider font-semibold">Approach & Intuition</span>
+              <div className="text-[12px] text-slate-400 leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto font-sans pt-1">
+                {question.approach || 'Standard optimal approach.'}
+              </div>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Problem Statement Box with Collapsible Approach & Intuition */}
-      <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl p-4 sm:p-5 space-y-3 shadow-xl">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div className="flex items-center gap-2 text-xs font-mono text-indigo-400 font-bold uppercase tracking-wider">
-            <HelpCircle className="w-4 h-4 text-indigo-400" />
-            <span>Problem Statement & Examples</span>
-          </div>
-
-          {/* Toggle for Intuition & Approach so user is not spoiled straight away */}
+        {/* Prev / Next navigation strip */}
+        <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between gap-2">
           <button
-            onClick={() => setShowApproach(!showApproach)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-mono font-medium transition ${
-              showApproach
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
-            }`}
+            onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
+            disabled={!prevQuestion}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group"
+            title={prevQuestion ? `← ${prevQuestion.display_id} ${prevQuestion.title}` : 'First problem'}
           >
-            <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-            <span>{showApproach ? 'Hide Approach & Intuition' : '💡 Show Approach & Intuition'}</span>
+            <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span className="hidden sm:inline max-w-[180px] truncate">
+              {prevQuestion ? `${prevQuestion.display_id} – ${prevQuestion.title}` : 'First'}
+            </span>
+            <span className="sm:hidden">Prev</span>
+          </button>
+
+          <span className="text-[11px] font-mono text-slate-700">
+            {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
+          </span>
+
+          <button
+            onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
+            disabled={!nextQuestion}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group"
+            title={nextQuestion ? `${nextQuestion.display_id} ${nextQuestion.title} →` : 'Last problem'}
+          >
+            <span className="sm:hidden">Next</span>
+            <span className="hidden sm:inline max-w-[180px] truncate">
+              {nextQuestion ? `${nextQuestion.display_id} – ${nextQuestion.title}` : 'Last'}
+            </span>
+            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
-
-        <div className="text-xs text-slate-300 font-sans leading-relaxed whitespace-pre-wrap max-h-36 overflow-y-auto pr-1">
-          {question.description || 'No question description available.'}
-        </div>
-
-        {/* Collapsible Approach & Intuition */}
-        {showApproach && (
-          <div className="border-t border-white/5 pt-3 mt-2">
-            <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-bold uppercase tracking-wider mb-2">
-              <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-              <span>Algorithm Approach & Intuition</span>
-            </div>
-            <div className="text-xs text-slate-300 font-sans leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto pr-1 bg-[#090b10] p-3 rounded-lg border border-amber-500/20">
-              {question.approach || 'Standard optimal algorithm from Striver A2Z Sheet.'}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Upload Zone (Visible if active or if component is missing) */}
+
+      {/* ── Uploader modal ── */}
       {showUploader ? (
         <VisualizerUploader
           question={question}
           solutions={solutions}
           onUploadSuccess={handleUploadSuccess}
+          onClose={() => {
+            setShowUploader(false);
+            setPreloadedUploadCode('');
+          }}
+          userId={currentUser?.id}
+          initialCode={preloadedUploadCode}
         />
       ) : (
         <>
-          {/* Playback Toolbar (only if visualizer component exists) */}
+          {/* ── Playback bar ── */}
           {Component ? (
-            <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl p-3 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-xs">
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={handleReset}
-                  className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition"
-                  title="Reset (R)"
-                >
-                  <RotateCcw className="w-4 h-4" />
+            <div className="card px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+              {/* Transport controls */}
+              <div className="flex items-center gap-1">
+                <button onClick={handleReset} className="btn-ghost w-8 justify-center px-0" title="Reset (R)">
+                  <RotateCcw className="w-3.5 h-3.5" />
                 </button>
-
-                <button
-                  onClick={handlePrevStep}
-                  disabled={currentStep === 0}
-                  className="p-1.5 rounded text-slate-300 hover:text-white hover:bg-white/5 disabled:opacity-30 transition"
-                  title="Previous Step (Left Arrow)"
-                >
-                  <SkipBack className="w-4 h-4" />
+                <button onClick={handlePrevStep} disabled={currentStep === 0} className="btn-ghost w-8 justify-center px-0" title="Prev (←)">
+                  <SkipBack className="w-3.5 h-3.5" />
                 </button>
-
                 <button
                   onClick={togglePlay}
-                  className={`flex items-center gap-1.5 px-4 py-1.5 rounded text-xs font-bold text-white shadow transition ${
-                    isPlaying ? 'bg-amber-600 hover:bg-amber-500' : 'bg-indigo-600 hover:bg-indigo-500'
-                  }`}
-                  title="Play / Pause (Spacebar)"
+                  className={`btn-primary gap-1.5 ${isPlaying ? 'bg-amber-600 hover:bg-amber-500 border-amber-500/40' : ''}`}
+                  title="Play / Pause (Space)"
                 >
-                  {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                  <span>{isPlaying ? 'Pause' : 'Play'}</span>
+                  {isPlaying
+                    ? <Pause className="w-3.5 h-3.5 fill-current" />
+                    : <Play  className="w-3.5 h-3.5 fill-current" />
+                  }
+                  {isPlaying ? 'Pause' : 'Play'}
                 </button>
-
-                <button
-                  onClick={handleNextStep}
-                  disabled={currentStep >= maxSteps - 1}
-                  className="p-1.5 rounded text-slate-300 hover:text-white hover:bg-white/5 disabled:opacity-30 transition"
-                  title="Next Step (Right Arrow)"
-                >
-                  <SkipForward className="w-4 h-4" />
+                <button onClick={handleNextStep} disabled={currentStep >= maxSteps - 1} className="btn-ghost w-8 justify-center px-0" title="Next (→)">
+                  <SkipForward className="w-3.5 h-3.5" />
                 </button>
-
                 <button
                   onClick={() => setLoop(!loop)}
-                  className={`p-1.5 rounded transition ${
-                    loop ? 'text-indigo-400 bg-indigo-500/15 border border-indigo-500/30' : 'text-slate-500 hover:text-slate-300'
+                  className={`btn-ghost w-8 justify-center px-0 ${
+                    loop ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400' : ''
                   }`}
-                  title={loop ? 'Looping active' : 'Enable loop'}
+                  title={loop ? 'Loop on' : 'Loop off'}
                 >
-                  <Repeat className="w-4 h-4" />
+                  <Repeat className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              {/* Scrubber pills */}
-              <div className="flex items-center gap-1 overflow-x-auto max-w-full py-0.5">
+              {/* Step dots */}
+              <div className="flex items-center gap-1.5 overflow-x-auto py-1">
                 {Array.from({ length: maxSteps }).map((_, idx) => (
                   <button
                     key={idx}
@@ -839,27 +909,28 @@ Rules:
                       sound.playStep(500 + idx * 30);
                       if (idx === maxSteps - 1) triggerCompletionCelebration();
                     }}
-                    className={`w-6 h-6 rounded text-[11px] font-bold transition-all ${
+                    title={`Step ${idx + 1}`}
+                    className={`rounded-full transition-all ${
                       currentStep === idx
-                        ? 'bg-indigo-600 text-white shadow scale-105'
+                        ? 'w-5 h-5 bg-indigo-600 text-white text-[10px] font-bold shadow-sm shadow-indigo-900/60'
                         : idx < currentStep
-                        ? 'bg-white/10 text-slate-300 hover:bg-white/15'
-                        : 'bg-[#08090e] text-slate-600 border border-white/5 hover:text-slate-400'
+                        ? 'w-2 h-2 bg-indigo-600/40 hover:bg-indigo-500/60'
+                        : 'w-2 h-2 bg-white/[0.08] hover:bg-white/[0.15]'
                     }`}
                   >
-                    {idx + 1}
+                    {currentStep === idx ? idx + 1 : ''}
                   </button>
                 ))}
               </div>
 
               {/* Speed */}
-              <div className="flex items-center gap-0.5 bg-[#08090e] p-0.5 rounded-lg border border-white/5">
+              <div className="flex items-center gap-0.5 bg-white/[0.03] border border-white/[0.06] rounded-md p-0.5">
                 {[0.5, 1, 1.5, 2].map((s) => (
                   <button
                     key={s}
                     onClick={() => setSpeed(s)}
-                    className={`px-2 py-0.5 rounded text-xs transition ${
-                      speed === s ? 'bg-indigo-600 text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                    className={`px-2 py-0.5 rounded text-[11px] font-mono transition ${
+                      speed === s ? 'bg-indigo-600 text-white font-bold' : 'text-slate-500 hover:text-slate-300'
                     }`}
                   >
                     {s}x
@@ -868,71 +939,131 @@ Rules:
               </div>
             </div>
           ) : (
-            <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl p-3 sm:px-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs">
+            <div
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsBarDragging(true);
+              }}
+              onDragLeave={(e) => {
+                e.preventDefault();
+                setIsBarDragging(false);
+              }}
+              onDrop={handleDirectFileDrop}
+              className={`card px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] font-mono transition-all duration-200 ${
+                isBarDragging
+                  ? 'border-2 border-dashed border-indigo-400 bg-indigo-950/40 shadow-[0_0_20px_rgba(99,102,241,0.25)] ring-2 ring-indigo-500/30 animate-pulse'
+                  : 'hover:border-white/15'
+              }`}
+            >
+              <input
+                type="file"
+                ref={barFileInputRef}
+                onChange={handleBarFileInput}
+                accept=".jsx,.tsx,.js,.ts"
+                className="hidden"
+              />
+
               <div className="flex items-center gap-2 text-slate-400">
-                <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
-                <span>Code solution view active • Visualizer not uploaded yet</span>
+                <UploadCloud className={`w-4 h-4 ${isBarDragging ? 'text-indigo-400 animate-bounce' : 'text-slate-500'}`} />
+                <span>
+                  {isBarDragging ? (
+                    <strong className="text-indigo-300">Drop your visualizer component (.jsx / .tsx) here!</strong>
+                  ) : (
+                    <>
+                      No visualizer uploaded yet{' '}
+                      <span className="text-slate-600 text-[11px] hidden md:inline">
+                        · Drag & drop .jsx file here or upload
+                      </span>
+                    </>
+                  )}
+                </span>
               </div>
-              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+
+              {/* Action buttons (Isolated to prevent drag/click conflict with Copy prompt) */}
+              <div
+                className="flex items-center gap-2 shrink-0"
+                onDragOver={(e) => e.stopPropagation()}
+                onDrop={(e) => e.stopPropagation()}
+              >
                 <button
+                  type="button"
                   onClick={handleDirectCopyPrompt}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg transition text-xs font-semibold shadow-sm"
-                  title="Copy tailored Gemini prompt with 5-layer UI scaffold directly to clipboard"
+                  className="btn-ghost gap-1.5 cursor-pointer relative z-10"
+                  title="Copy Gemini prompt"
                 >
-                  {copiedDirect ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Sparkles className="w-3.5 h-3.5 text-indigo-400" />}
-                  <span>{copiedDirect ? 'Copied Gemini Prompt!' : '⚡ Copy Gemini Prompt'}</span>
+                  {copiedDirect ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                  )}
+                  <span>{copiedDirect ? 'Copied!' : 'Copy AI prompt'}</span>
                 </button>
 
                 <button
-                  onClick={() => setShowUploader(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition text-xs font-semibold shadow"
+                  type="button"
+                  onClick={() => barFileInputRef.current?.click()}
+                  className="btn-primary gap-1.5 cursor-pointer relative z-10 shadow-lg"
+                  title="Click to select or drag & drop .jsx file directly"
                 >
                   <UploadCloud className="w-3.5 h-3.5" />
-                  <span>Upload Visualizer</span>
+                  <span>Upload visualizer</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Main Visualizer + Code Studio Split Area */}
-          <div className={`grid gap-6 ${viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1'}`}>
-            {/* Visualizer Canvas */}
-            {viewMode !== 'code_only' && (
-              <div className={viewMode === 'split' ? 'lg:col-span-7' : 'w-full'}>
-                {Component ? (
-                  <Component currentStep={currentStep} onStepChange={setCurrentStep} />
-                ) : (
-                  <div className="bg-[#0e111a] border border-white/10 rounded-xl p-10 sm:p-12 text-center space-y-3">
-                    <Layers className="w-8 h-8 text-slate-600 mx-auto" />
-                    <h3 className="text-sm font-bold text-white font-mono">Visualizer Not Uploaded Yet</h3>
-                    <p className="text-xs text-slate-400 max-w-md mx-auto">
-                      1-click copy the tailored prompt for Gemini with our 5-layer UI template, then drop the generated JSX file below!
-                    </p>
-                    <div className="flex items-center justify-center gap-2.5 pt-2 flex-wrap">
-                      <button
-                        onClick={handleDirectCopyPrompt}
-                        className="px-4 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-medium rounded-lg transition flex items-center gap-1.5 shadow-sm"
-                      >
-                        {copiedDirect ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Sparkles className="w-3.5 h-3.5 text-indigo-400" />}
-                        <span>{copiedDirect ? 'Copied Gemini Prompt!' : '⚡ Copy Gemini Prompt'}</span>
-                      </button>
+          {/* Live State & Variable Inspector */}
+          {currentVariables && Object.keys(currentVariables).length > 0 && (
+            <VariableInspector
+              variables={currentVariables}
+              title="Live Execution State & Pointers"
+            />
+          )}
 
-                      <button
-                        onClick={() => setShowUploader(true)}
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-mono font-medium rounded-lg shadow transition flex items-center gap-1.5"
-                      >
-                        <UploadCloud className="w-3.5 h-3.5" />
-                        <span>Upload Visualizer Component</span>
-                      </button>
+          {/* Canvas + Code */}
+          <div className={`grid gap-4 ${viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1'}`}>
+            {viewMode !== 'code_only' && (
+              <div className={viewMode === 'split' ? 'lg:col-span-7' : ''}>
+                {Component ? (
+                  <Component
+                    currentStep={currentStep}
+                    onStepChange={setCurrentStep}
+                    customInput={customInput}
+                    customTarget={customTarget}
+                  />
+                ) : (
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setIsBarDragging(true);
+                    }}
+                    onDragLeave={(e) => {
+                      e.preventDefault();
+                      setIsBarDragging(false);
+                    }}
+                    onDrop={handleDirectFileDrop}
+                    onClick={() => barFileInputRef.current?.click()}
+                    className={`card flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer transition-all duration-200 ${
+                      isBarDragging
+                        ? 'border-2 border-dashed border-indigo-400 bg-indigo-950/30 ring-2 ring-indigo-500/30 shadow-2xl'
+                        : 'hover:border-white/15 hover:bg-white/[0.01]'
+                    }`}
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                      <UploadCloud className={`w-6 h-6 ${isBarDragging ? 'animate-bounce' : ''}`} />
                     </div>
+                    <p className="text-[13px] font-medium text-slate-300">
+                      {isBarDragging ? 'Drop your .jsx file now!' : 'No visualizer yet'}
+                    </p>
+                    <p className="text-[11px] text-slate-500 max-w-sm">
+                      Drag & drop your AI-generated <code className="text-indigo-300">.jsx</code> visualizer file here, or click to browse.
+                    </p>
                   </div>
                 )}
               </div>
             )}
-
-            {/* Code Solution with Synchronized Active Line */}
             {viewMode !== 'visualizer_only' && (
-              <div className={viewMode === 'split' ? 'lg:col-span-5' : 'w-full'}>
+              <div className={viewMode === 'split' ? 'lg:col-span-5' : ''}>
                 <CodeViewer
                   solutions={solutions}
                   initialLanguage="cpp"
@@ -944,59 +1075,23 @@ Rules:
         </>
       )}
 
-      {/* 🧠 Knowledge & Collaboration Hub: Comments, Public Notes & Private Notes */}
-      <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl space-y-0">
-        {/* Hub Tab Navigation */}
-        <div className="flex flex-wrap items-center justify-between border-b border-white/5 bg-[#090b10] px-4 py-1 text-xs font-mono">
-          <div className="flex items-center gap-1">
+      {/* ── Zone 3: Knowledge Hub ── */}
+      <div className="card overflow-hidden">
+        {/* Tab bar */}
+        <div className="flex items-center gap-5 border-b border-white/[0.06] px-4">
+          {[['comments','Discussion', comments.length],['public_notes','Notes', publicNotes.length],['private_notes','Private', null]].map(([id, label, count]) => (
             <button
-              onClick={() => setHubTab('comments')}
-              className={`flex items-center gap-1.5 px-3 py-2.5 border-b-2 font-medium transition ${
-                hubTab === 'comments'
-                  ? 'border-indigo-500 text-white font-bold bg-white/[0.03]'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
+              key={id}
+              onClick={() => setHubTab(id)}
+              className={`tab-btn ${hubTab === id ? 'active' : ''}`}
             >
-              <MessageSquare className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Discussion ({comments.length})</span>
+              {label}{count !== null && <span className="text-slate-600 ml-0.5">({count})</span>}
             </button>
-
-            <button
-              onClick={() => setHubTab('public_notes')}
-              className={`flex items-center gap-1.5 px-3 py-2.5 border-b-2 font-medium transition ${
-                hubTab === 'public_notes'
-                  ? 'border-indigo-500 text-white font-bold bg-white/[0.03]'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Public Notes ({publicNotes.length})</span>
-            </button>
-
-            <button
-              onClick={() => setHubTab('private_notes')}
-              className={`flex items-center gap-1.5 px-3 py-2.5 border-b-2 font-medium transition ${
-                hubTab === 'private_notes'
-                  ? 'border-indigo-500 text-white font-bold bg-white/[0.03]'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <Lock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Private Notes</span>
-            </button>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-2 py-1 text-[11px] text-slate-500 font-mono">
-            {hubTab === 'comments' && <span>Earn +10 XP per discussion post</span>}
-            {hubTab === 'public_notes' && <span>Earn +25 XP per public intuition</span>}
-            {hubTab === 'private_notes' && <span>🔒 Private to your account</span>}
-          </div>
+          ))}
         </div>
 
-        {/* Tab 1: Discussion & Comments */}
         {hubTab === 'comments' && (
-          <div className="p-5 space-y-4 font-mono text-xs">
-            {/* Post comment box */}
+          <div className="p-4 space-y-4">
             <form onSubmit={handlePostComment} className="space-y-2">
               <div className="flex items-center gap-2 text-slate-400 text-[11px]">
                 <span className="w-5 h-5 rounded bg-indigo-600/30 flex items-center justify-center text-xs">
@@ -1024,20 +1119,14 @@ Rules:
               </div>
             </form>
 
-            {/* Comments feed */}
-            <div className="space-y-3 pt-2">
+            <div className="space-y-3">
               {comments.length === 0 ? (
-                <div className="p-8 text-center bg-[#08090e]/40 rounded-lg border border-white/5 space-y-1">
-                  <MessageSquare className="w-6 h-6 text-slate-600 mx-auto" />
-                  <p className="text-slate-400 text-xs">No discussion comments yet.</p>
-                  <p className="text-slate-600 text-[11px]">Be the first to share an observation or question!</p>
+                <div className="py-10 text-center space-y-1">
+                  <p className="text-[12px] text-slate-600">No comments yet — be the first.</p>
                 </div>
               ) : (
                 comments.map((c) => (
-                  <div
-                    key={c.id}
-                    className="p-3 rounded-lg bg-[#08090e]/80 border border-white/5 space-y-2 hover:border-white/10 transition"
-                  >
+                  <div key={c.id} className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.09] transition space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span className="w-6 h-6 rounded bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-xs">
@@ -1068,9 +1157,8 @@ Rules:
           </div>
         )}
 
-        {/* Tab 2: Public Community Notes */}
         {hubTab === 'public_notes' && (
-          <div className="p-5 space-y-4 font-mono text-xs">
+          <div className="p-4 space-y-4">
             <div className="flex items-center justify-between gap-2">
               <span className="text-slate-400 text-xs font-sans">
                 Community-shared intuitions, pattern breakdowns, and common interview mistakes.
@@ -1122,13 +1210,10 @@ Rules:
               </form>
             )}
 
-            {/* Public Notes Feed */}
             <div className="space-y-3">
               {publicNotes.length === 0 ? (
-                <div className="p-8 text-center bg-[#08090e]/40 rounded-lg border border-white/5 space-y-1">
-                  <Globe className="w-6 h-6 text-slate-600 mx-auto" />
-                  <p className="text-slate-400 text-xs">No public study notes shared yet.</p>
-                  <p className="text-slate-600 text-[11px]">Click "Share Public Note" to contribute and earn +25 XP!</p>
+                <div className="py-10 text-center">
+                  <p className="text-[12px] text-slate-600">No public notes yet.</p>
                 </div>
               ) : (
                 publicNotes.map((note) => (
@@ -1167,16 +1252,12 @@ Rules:
           </div>
         )}
 
-        {/* Tab 3: Private Personal Notes */}
         {hubTab === 'private_notes' && (
-          <div className="p-5 space-y-3 font-mono text-xs">
+          <div className="p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 bg-amber-400 rounded-sm"></span>
-                <span className="font-mono text-xs font-bold text-amber-300 uppercase tracking-wider">
-                  Personal Cheatsheet & Pitfalls (@{currentUser?.username || 'You'})
-                </span>
-              </div>
+              <span className="text-[11px] font-mono text-slate-500">
+                Private to @{currentUser?.username || 'you'}
+              </span>
 
               <div className="flex items-center gap-2">
                 <button
@@ -1214,20 +1295,6 @@ Rules:
         )}
       </div>
 
-      {/* Visualizer Uploader Modal */}
-      {showUploader && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto my-auto">
-            <VisualizerUploader
-              question={question}
-              solutions={solutions}
-              onUploadSuccess={handleUploadSuccess}
-              onClose={() => setShowUploader(false)}
-              userId={currentUser?.id}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

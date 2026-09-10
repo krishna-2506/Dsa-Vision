@@ -80,6 +80,27 @@ export function algovisionApiPlugin() {
             return res.end(JSON.stringify({ success: true }));
           }
 
+          // POST /api/questions/bulk-import
+          if (pathname === '/api/questions/bulk-import' && req.method === 'POST') {
+            const body = await readBody();
+            const result = dbService.bulkImportQuestions(body.questions || []);
+            return res.end(JSON.stringify(result));
+          }
+
+          // POST /api/reviews
+          if (pathname === '/api/reviews' && req.method === 'POST') {
+            const body = await readBody();
+            const result = dbService.recordReview(body.userId, body.questionId, body.confidence);
+            return res.end(JSON.stringify(result));
+          }
+
+          // GET /api/reviews/due
+          if (pathname === '/api/reviews/due' && req.method === 'GET') {
+            const userId = url.searchParams.get('userId');
+            const dueList = dbService.getDueReviews(userId);
+            return res.end(JSON.stringify({ success: true, data: dueList }));
+          }
+
           // POST /api/questions (Add question)
           if (pathname === '/api/questions' && req.method === 'POST') {
             const body = await readBody();
@@ -90,7 +111,7 @@ export function algovisionApiPlugin() {
           // POST /api/upload-visualizer
           if (pathname === '/api/upload-visualizer' && req.method === 'POST') {
             const body = await readBody();
-            const { questionId, componentKey, code } = body;
+            const { questionId, componentKey, code, userId, solutions: providedSolutions } = body;
             if (!questionId || !code) {
               res.statusCode = 400;
               return res.end(JSON.stringify({ success: false, error: 'questionId and code are required' }));
@@ -100,8 +121,50 @@ export function algovisionApiPlugin() {
             const path = await import('node:path');
             const filePath = path.resolve(process.cwd(), 'src', 'visualizers', `${key}.jsx`);
             fs.writeFileSync(filePath, code, 'utf8');
-            const updated = dbService.updateVisualizer(questionId, key);
-            return res.end(JSON.stringify({ success: true, componentKey: key, data: updated }));
+
+            // Extract solutions from code
+            const solutions = {};
+            const solBlockMatch = code.match(/export\s+const\s+solutions\s*=\s*({[\s\S]*?});/);
+            if (solBlockMatch) {
+              try {
+                const cppMatch = solBlockMatch[1].match(/cpp\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+                if (cppMatch) solutions.cpp = cppMatch[1].trim();
+
+                const pyMatch = solBlockMatch[1].match(/(?:python|py)\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+                if (pyMatch) solutions.python = pyMatch[1].trim();
+
+                const javaMatch = solBlockMatch[1].match(/java\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+                if (javaMatch) solutions.java = javaMatch[1].trim();
+
+                const jsMatch = solBlockMatch[1].match(/(?:javascript|js|ts|typescript)\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
+                if (jsMatch) solutions.javascript = jsMatch[1].trim();
+              } catch (e) {}
+            }
+
+            const cppVar = code.match(/export\s+const\s+(?:code_cpp|cppCode|cppSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+            if (cppVar && !solutions.cpp) solutions.cpp = cppVar[1].trim();
+
+            const pyVar = code.match(/export\s+const\s+(?:code_python|pythonCode|pySolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+            if (pyVar && !solutions.python) solutions.python = pyVar[1].trim();
+
+            const javaVar = code.match(/export\s+const\s+(?:code_java|javaCode|javaSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+            if (javaVar && !solutions.java) solutions.java = javaVar[1].trim();
+
+            const jsVar = code.match(/export\s+const\s+(?:code_javascript|jsCode|jsSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
+            if (jsVar && !solutions.javascript) solutions.javascript = jsVar[1].trim();
+
+            const finalSolutions = {
+              ...(providedSolutions || {}),
+              ...solutions
+            };
+
+            const updated = dbService.updateVisualizer(questionId, key, finalSolutions);
+            return res.end(JSON.stringify({
+              success: true,
+              componentKey: key,
+              data: updated,
+              updatedSolutionsCount: Object.keys(finalSolutions).length
+            }));
           }
 
           res.statusCode = 404;

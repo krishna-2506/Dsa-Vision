@@ -5,8 +5,155 @@ const LANGUAGE_LABELS = {
   cpp: 'C++',
   python: 'Python 3',
   java: 'Java',
+  javascript: 'JavaScript',
   typescript: 'TypeScript'
 };
+
+const KEYWORDS = new Set([
+  'class', 'public', 'private', 'protected', 'static', 'virtual', 'override',
+  'const', 'constexpr', 'let', 'var', 'function', 'def', 'return', 'if', 'else',
+  'elif', 'while', 'for', 'do', 'switch', 'case', 'default', 'break', 'continue',
+  'new', 'delete', 'try', 'catch', 'throw', 'throws', 'finally', 'import', 'export',
+  'from', 'as', 'in', 'of', 'and', 'or', 'not', 'is', 'pass', 'yield', 'async',
+  'await', 'struct', 'enum', 'typedef', 'typename', 'using', 'namespace', 'auto',
+  'sizeof', 'nullptr', 'null', 'nil', 'true', 'false', 'None', 'True', 'False',
+  'this', 'self', 'super', 'extends', 'implements', 'interface', 'package'
+]);
+
+const TYPES = new Set([
+  'int', 'long', 'double', 'float', 'char', 'bool', 'boolean', 'void', 'size_t',
+  'vector', 'string', 'String', 'list', 'dict', 'set', 'tuple', 'map',
+  'unordered_map', 'unordered_set', 'multiset', 'multimap', 'pair', 'stack', 'queue',
+  'deque', 'priority_queue', 'ListNode', 'TreeNode', 'Node', 'Array', 'Object',
+  'Number', 'Boolean', 'Integer', 'Long', 'Double', 'Character', 'Math', 'Solution'
+]);
+
+function renderHighlightedLine(line, lang = 'cpp') {
+  if (!line) return <span>&nbsp;</span>;
+
+  const tokens = [];
+  let remaining = line;
+  let keyIdx = 0;
+
+  const commentRegex = lang === 'python' ? /(#.*)$/ : /(\/\/.*|\/\*.*\*\/|\/\*.*|\*\/|\*.*)$/;
+  const stringRegex = /^("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`)/;
+  const numberRegex = /^(0x[0-9a-fA-F]+|\d+(\.\d+)?)/;
+  const wordRegex = /^[a-zA-Z_]\w*/;
+  const operatorRegex = /^(->|::|=>|===|!==|==|!=|<=|>=|\+\+|--|\+=|-=|\*=|\/=|&&|\|\||[+\-*/%!=<>&|^~?:])/;
+  const punctuationRegex = /^[{}\[\](),;.]/;
+  const whitespaceRegex = /^\s+/;
+
+  while (remaining.length > 0) {
+    // Check for comment
+    const commentMatch = remaining.match(commentRegex);
+    if (commentMatch && remaining.startsWith(commentMatch[0])) {
+      tokens.push(
+        <span key={keyIdx++} className="text-slate-500 italic font-mono">
+          {commentMatch[0]}
+        </span>
+      );
+      break;
+    }
+
+    // Check for whitespace
+    const wsMatch = remaining.match(whitespaceRegex);
+    if (wsMatch) {
+      tokens.push(<span key={keyIdx++}>{wsMatch[0]}</span>);
+      remaining = remaining.slice(wsMatch[0].length);
+      continue;
+    }
+
+    // Check for strings
+    const strMatch = remaining.match(stringRegex);
+    if (strMatch) {
+      tokens.push(
+        <span key={keyIdx++} className="text-emerald-400 font-mono">
+          {strMatch[0]}
+        </span>
+      );
+      remaining = remaining.slice(strMatch[0].length);
+      continue;
+    }
+
+    // Check for numbers
+    const numMatch = remaining.match(numberRegex);
+    if (numMatch) {
+      tokens.push(
+        <span key={keyIdx++} className="text-amber-400 font-mono">
+          {numMatch[0]}
+        </span>
+      );
+      remaining = remaining.slice(numMatch[0].length);
+      continue;
+    }
+
+    // Check for words (identifiers, keywords, types, functions)
+    const wordMatch = remaining.match(wordRegex);
+    if (wordMatch) {
+      const word = wordMatch[0];
+      const afterWord = remaining.slice(word.length);
+      const isFunction = /^\s*\(/.test(afterWord);
+
+      if (KEYWORDS.has(word)) {
+        tokens.push(
+          <span key={keyIdx++} className="text-purple-400 font-semibold">
+            {word}
+          </span>
+        );
+      } else if (TYPES.has(word)) {
+        tokens.push(
+          <span key={keyIdx++} className="text-cyan-400 font-medium">
+            {word}
+          </span>
+        );
+      } else if (isFunction) {
+        tokens.push(
+          <span key={keyIdx++} className="text-blue-400 font-medium">
+            {word}
+          </span>
+        );
+      } else {
+        tokens.push(
+          <span key={keyIdx++} className="text-slate-200">
+            {word}
+          </span>
+        );
+      }
+      remaining = afterWord;
+      continue;
+    }
+
+    // Check for operators
+    const opMatch = remaining.match(operatorRegex);
+    if (opMatch) {
+      tokens.push(
+        <span key={keyIdx++} className="text-pink-400 font-mono">
+          {opMatch[0]}
+        </span>
+      );
+      remaining = remaining.slice(opMatch[0].length);
+      continue;
+    }
+
+    // Check for punctuation
+    const punctMatch = remaining.match(punctuationRegex);
+    if (punctMatch) {
+      tokens.push(
+        <span key={keyIdx++} className="text-slate-400 font-mono">
+          {punctMatch[0]}
+        </span>
+      );
+      remaining = remaining.slice(punctMatch[0].length);
+      continue;
+    }
+
+    // Fallback single character
+    tokens.push(<span key={keyIdx++}>{remaining[0]}</span>);
+    remaining = remaining.slice(1);
+  }
+
+  return <>{tokens}</>;
+}
 
 export default function CodeViewer({ solutions = {}, initialLanguage = 'cpp', activeLine = null }) {
   const availableLangs = Object.keys(solutions);
@@ -106,8 +253,8 @@ export default function CodeViewer({ solutions = {}, initialLanguage = 'cpp', ac
                       </span>
                     </span>
                   </td>
-                  <td className={`whitespace-pre font-mono py-0.5 ${isActive ? 'text-indigo-100' : 'text-slate-300'}`}>
-                    {line}
+                  <td className="whitespace-pre font-mono py-0.5">
+                    {renderHighlightedLine(line, selectedLang)}
                   </td>
                 </tr>
               );
