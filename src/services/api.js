@@ -189,5 +189,115 @@ export const api = {
       console.warn('Failed to update user progress', e);
       return { success: false, error: e.message };
     }
+  },
+
+  // Comments
+  async getComments(questionId) {
+    try {
+      const res = await fetch(`/api/questions/${encodeURIComponent(questionId)}/comments`);
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch comments', e);
+    }
+    return [];
+  },
+
+  async addComment(questionId, { userId, username, avatar, content }) {
+    try {
+      const res = await fetch(`/api/questions/${encodeURIComponent(questionId)}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, username, avatar, content })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async upvoteComment(commentId) {
+    try {
+      const res = await fetch(`/api/comments/${encodeURIComponent(commentId)}/upvote`, {
+        method: 'POST'
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async deleteComment(commentId, userId) {
+    try {
+      const res = await fetch(`/api/comments/${encodeURIComponent(commentId)}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  // Public Notes
+  async getPublicNotes(questionId) {
+    try {
+      const res = await fetch(`/api/questions/${encodeURIComponent(questionId)}/public-notes`);
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch public notes', e);
+    }
+    return [];
+  },
+
+  async addPublicNote(questionId, { userId, username, avatar, title, content }) {
+    try {
+      const res = await fetch(`/api/questions/${encodeURIComponent(questionId)}/public-notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, username, avatar, title, content })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async upvotePublicNote(noteId) {
+    try {
+      const res = await fetch(`/api/public-notes/${encodeURIComponent(noteId)}/upvote`, {
+        method: 'POST'
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  // Private Notes
+  async getPrivateNote(userId, questionId) {
+    try {
+      const res = await fetch(`/api/users/${encodeURIComponent(userId)}/private-notes/${encodeURIComponent(questionId)}`);
+      const json = await res.json();
+      if (json.success) return json.data.content;
+    } catch (e) {
+      console.warn('Failed to fetch private note', e);
+    }
+    return '';
+  },
+
+  async savePrivateNote(userId, questionId, content) {
+    try {
+      const res = await fetch(`/api/users/${encodeURIComponent(userId)}/private-notes/${encodeURIComponent(questionId)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
   }
 };

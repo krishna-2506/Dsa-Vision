@@ -17,13 +17,22 @@ import {
   Layers,
   Sparkles,
   HelpCircle,
+  Lightbulb,
   UploadCloud,
   FileCode,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   Search,
-  X
+  X,
+  MessageSquare,
+  ThumbsUp,
+  Send,
+  Lock,
+  Globe,
+  Plus,
+  Trash2,
+  User
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../services/audio';
@@ -60,8 +69,6 @@ export default function VisualizerStudio({
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [loop, setLoop] = useState(false);
-  const [notes, setNotes] = useState(question.notes || '');
-  const [notesSaved, setNotesSaved] = useState(false);
   const [solutions, setSolutions] = useState({});
   // Open full visualizer 1st; if no visualizer, have code available 1st; only split if user clicks Split
   const [viewMode, setViewMode] = useState(hasVisualizer ? 'visualizer_only' : 'code_only');
@@ -69,6 +76,20 @@ export default function VisualizerStudio({
   const [showApproach, setShowApproach] = useState(false);
   const [showJumper, setShowJumper] = useState(false);
   const [jumperSearch, setJumperSearch] = useState('');
+  const [copiedDirect, setCopiedDirect] = useState(false);
+
+  // Discussion Comments, Public Notes & Private Notes State
+  const [hubTab, setHubTab] = useState('comments'); // 'comments' | 'public_notes' | 'private_notes'
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [isPostingComment, setIsPostingComment] = useState(false);
+  const [publicNotes, setPublicNotes] = useState([]);
+  const [showAddPublicNote, setShowAddPublicNote] = useState(false);
+  const [newNoteTitle, setNewNoteTitle] = useState('');
+  const [newNoteContent, setNewNoteContent] = useState('');
+  const [isPostingNote, setIsPostingNote] = useState(false);
+  const [privateNotes, setPrivateNotes] = useState('');
+  const [privateNotesSaved, setPrivateNotesSaved] = useState(false);
 
   // Find index and previous / next questions
   const currentIndex = questions ? questions.findIndex((q) => q.id === question.id) : -1;
@@ -91,7 +112,7 @@ export default function VisualizerStudio({
 
   const timerRef = useRef(null);
 
-  // Sync mode when question changes
+  // Sync mode and fetch comments & notes when question or user changes
   useEffect(() => {
     const hasComponent = Boolean(visualizersRegistry[question.component_key || question.componentKey]);
     setViewMode(hasComponent ? 'visualizer_only' : 'code_only');
@@ -99,24 +120,216 @@ export default function VisualizerStudio({
     setShowUploader(false);
     setCurrentStep(0);
     setIsPlaying(false);
-  }, [question.id, question.component_key, question.componentKey]);
+
+    let isMounted = true;
+    api.getCodeSolutions(question.id).then((data) => {
+      if (isMounted && data) setSolutions(data);
+    });
+    api.getComments(question.id).then((data) => {
+      if (isMounted && data) setComments(data);
+    });
+    api.getPublicNotes(question.id).then((data) => {
+      if (isMounted && data) setPublicNotes(data);
+    });
+    if (currentUser?.id) {
+      api.getPrivateNote(currentUser.id, question.id).then((content) => {
+        if (isMounted) setPrivateNotes(content || '');
+      });
+    } else {
+      setPrivateNotes(question.notes || '');
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [question.id, question.component_key, question.componentKey, currentUser?.id]);
 
   // Active step data
   const currentStepData = stepsList ? stepsList[currentStep] : null;
   const activeCodeLine = currentStepData?.codeLine || null;
 
-  // Load solutions from SQLite
-  useEffect(() => {
-    let isMounted = true;
-    api.getCodeSolutions(question.id).then((data) => {
-      if (isMounted && data) {
-        setSolutions(data);
-      }
+  const handleDirectCopyPrompt = () => {
+    const key = question.component_key || toCamelCase(question.title) + 'Visualizer';
+    const promptText = `Act as an expert algorithm educator and React visualization engineer for AlgoVision Studio.
+Create an interactive, animated React visualizer component for this DSA problem from Striver's A2Z Sheet:
+
+Problem ID: ${question.display_id || 'Q-001'}
+Problem: "${question.title}" (${question.category} - ${question.difficulty})
+
+Problem Statement & Examples:
+${question.description}
+
+Approach & Logic:
+${question.approach || 'Standard optimal algorithm'}
+
+C++ Reference Code:
+\`\`\`cpp
+${solutions.cpp || '// C++ solution'}
+\`\`\`
+
+Strict UI Template Requirements (AlgoVision Studio 5-Layer Layout):
+You MUST follow this exact component scaffold:
+
+\`\`\`jsx
+import React, { useState } from 'react';
+import ArrayView from '../components/primitives/ArrayView';
+
+export const meta = {
+  display_id: '${question.display_id || 'Q-001'}',
+  title: "${question.title}",
+  category: "${question.category}",
+  difficulty: "${question.difficulty}",
+  timeComplexity: "${question.time_complexity || 'O(N)'}",
+  spaceComplexity: "${question.space_complexity || 'O(1)'}",
+  description: ${JSON.stringify((question.description || '').slice(0, 140))}
+};
+
+// Realistic sample array for this problem
+const SAMPLE_DATA = [1, 8, 7, 56, 90];
+
+export const steps = [
+  {
+    title: "1. Initialize State",
+    codeLine: 4, // Exact line of C++ code executing
+    code: "// In-line commented executing line...",
+    explanation: "Detailed educational explanation of what happens and why...",
+    pointers: [{ index: 0, label: 'i', color: 'indigo' }],
+    highlightIndices: [0],
+    hudText: "Current state: initialized"
+  }
+  // Add 4-7 thorough steps demonstrating the complete algorithm
+];
+
+export default function ${key}({ currentStep: externalStep, onStepChange }) {
+  const [internalStep, setInternalStep] = useState(0);
+  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
+  const setStep = onStepChange || setInternalStep;
+  const stepData = steps[stepIndex] || steps[0];
+
+  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
+  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
+
+  return (
+    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+      {/* 1. Sub-Header Bar */}
+      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+            Step {stepIndex + 1} / {steps.length}
+          </span>
+          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition">
+            ← Prev
+          </button>
+          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition">
+            Next →
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Visualizer Canvas */}
+      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
+        <ArrayView items={SAMPLE_DATA} pointers={stepData.pointers || []} matchIndices={stepData.highlightIndices || []} />
+        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
+          <span>Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
+        </div>
+      </div>
+
+      {/* 4. Explanation Footer */}
+      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
+        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
+        {stepData.explanation}
+      </div>
+    </div>
+  );
+}
+\`\`\`
+
+Rules:
+- Palette: Deep obsidian (#0b0d14, #0e111a, #08090e), Indigo (#6366f1), Emerald, Amber, Rose.
+- Explain code thoroughly with in-line comments line-by-line.
+- Return ONLY the complete, ready-to-run React JSX code.`;
+
+    navigator.clipboard.writeText(promptText);
+    sound.playStep(640);
+    setCopiedDirect(true);
+    setTimeout(() => setCopiedDirect(false), 2500);
+  };
+
+  const handlePostComment = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    setIsPostingComment(true);
+    const res = await api.addComment(question.id, {
+      userId: currentUser?.id || 'usr_guest',
+      username: currentUser?.username || 'Guest Coder',
+      avatar: currentUser?.avatar || '⚡',
+      content: newComment.trim()
     });
-    return () => {
-      isMounted = false;
-    };
-  }, [question.id]);
+    setIsPostingComment(false);
+    if (res.success && res.data) {
+      setComments((prev) => [res.data, ...prev]);
+      setNewComment('');
+      sound.playStep(720);
+    }
+  };
+
+  const handleUpvoteComment = async (commentId) => {
+    sound.playStep(600);
+    const res = await api.upvoteComment(commentId);
+    if (res.success && res.data) {
+      setComments((prev) =>
+        prev.map((c) => (c.id === commentId ? { ...c, upvotes: res.data.upvotes } : c))
+      );
+    }
+  };
+
+  const handlePostPublicNote = async (e) => {
+    e.preventDefault();
+    if (!newNoteContent.trim()) return;
+    setIsPostingNote(true);
+    const res = await api.addPublicNote(question.id, {
+      userId: currentUser?.id || 'usr_guest',
+      username: currentUser?.username || 'Guest Coder',
+      avatar: currentUser?.avatar || '⚡',
+      title: newNoteTitle.trim() || 'Key Insight',
+      content: newNoteContent.trim()
+    });
+    setIsPostingNote(false);
+    if (res.success && res.data) {
+      setPublicNotes((prev) => {
+        const filtered = prev.filter((n) => n.id !== res.data.id);
+        return [res.data, ...filtered];
+      });
+      setNewNoteTitle('');
+      setNewNoteContent('');
+      setShowAddPublicNote(false);
+      sound.playStep(740);
+    }
+  };
+
+  const handleUpvotePublicNote = async (noteId) => {
+    sound.playStep(600);
+    const res = await api.upvotePublicNote(noteId);
+    if (res.success && res.data) {
+      setPublicNotes((prev) =>
+        prev.map((n) => (n.id === noteId ? { ...n, upvotes: res.data.upvotes } : n))
+      );
+    }
+  };
+
+  const handleSavePrivateNotes = async () => {
+    if (currentUser?.id) {
+      await api.savePrivateNote(currentUser.id, question.id, privateNotes);
+    } else {
+      await api.saveNotes(question.id, privateNotes);
+    }
+    sound.playStep(680);
+    setPrivateNotesSaved(true);
+    setTimeout(() => setPrivateNotesSaved(false), 2000);
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -655,18 +868,29 @@ export default function VisualizerStudio({
               </div>
             </div>
           ) : (
-            <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl p-3 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs">
+            <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl p-3 sm:px-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-xs">
               <div className="flex items-center gap-2 text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
                 <span>Code solution view active • Visualizer not uploaded yet</span>
               </div>
-              <button
-                onClick={() => setShowUploader(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition text-xs font-semibold"
-              >
-                <UploadCloud className="w-3.5 h-3.5" />
-                <span>Upload Visualizer with Gemini</span>
-              </button>
+              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                <button
+                  onClick={handleDirectCopyPrompt}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg transition text-xs font-semibold shadow-sm"
+                  title="Copy tailored Gemini prompt with 5-layer UI scaffold directly to clipboard"
+                >
+                  {copiedDirect ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Sparkles className="w-3.5 h-3.5 text-indigo-400" />}
+                  <span>{copiedDirect ? 'Copied Gemini Prompt!' : '⚡ Copy Gemini Prompt'}</span>
+                </button>
+
+                <button
+                  onClick={() => setShowUploader(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition text-xs font-semibold shadow"
+                >
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>Upload Visualizer</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -678,18 +902,29 @@ export default function VisualizerStudio({
                 {Component ? (
                   <Component currentStep={currentStep} onStepChange={setCurrentStep} />
                 ) : (
-                  <div className="bg-[#0e111a] border border-white/10 rounded-xl p-12 text-center space-y-3">
+                  <div className="bg-[#0e111a] border border-white/10 rounded-xl p-10 sm:p-12 text-center space-y-3">
                     <Layers className="w-8 h-8 text-slate-600 mx-auto" />
-                    <h3 className="text-sm font-bold text-white">Visualizer Not Found</h3>
-                    <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                      Click below to generate with Gemini and upload the visualizer!
+                    <h3 className="text-sm font-bold text-white font-mono">Visualizer Not Uploaded Yet</h3>
+                    <p className="text-xs text-slate-400 max-w-md mx-auto">
+                      1-click copy the tailored prompt for Gemini with our 5-layer UI template, then drop the generated JSX file below!
                     </p>
-                    <button
-                      onClick={() => setShowUploader(true)}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-mono font-medium rounded-lg shadow transition"
-                    >
-                      Upload Visualizer for This Problem
-                    </button>
+                    <div className="flex items-center justify-center gap-2.5 pt-2 flex-wrap">
+                      <button
+                        onClick={handleDirectCopyPrompt}
+                        className="px-4 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-medium rounded-lg transition flex items-center gap-1.5 shadow-sm"
+                      >
+                        {copiedDirect ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Sparkles className="w-3.5 h-3.5 text-indigo-400" />}
+                        <span>{copiedDirect ? 'Copied Gemini Prompt!' : '⚡ Copy Gemini Prompt'}</span>
+                      </button>
+
+                      <button
+                        onClick={() => setShowUploader(true)}
+                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-mono font-medium rounded-lg shadow transition flex items-center gap-1.5"
+                      >
+                        <UploadCloud className="w-3.5 h-3.5" />
+                        <span>Upload Visualizer Component</span>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -709,48 +944,274 @@ export default function VisualizerStudio({
         </>
       )}
 
-      {/* Engineering Lab Notebook (Persistent in SQLite) */}
-      <div className="notebook-grid border border-amber-500/25 rounded-xl p-5 shadow-2xl space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-amber-400 rounded-sm"></span>
-            <span className="font-mono text-xs font-bold text-amber-300 uppercase tracking-wider">
-              Engineering Lab Notes & Key Invariants
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
+      {/* 🧠 Knowledge & Collaboration Hub: Comments, Public Notes & Private Notes */}
+      <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl space-y-0">
+        {/* Hub Tab Navigation */}
+        <div className="flex flex-wrap items-center justify-between border-b border-white/5 bg-[#090b10] px-4 py-1 text-xs font-mono">
+          <div className="flex items-center gap-1">
             <button
-              onClick={handleDownloadStudySheet}
-              className="flex items-center gap-1.5 px-3 py-1 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded text-xs font-mono transition"
-              title="Download Markdown Study Sheet for college exam revision"
+              onClick={() => setHubTab('comments')}
+              className={`flex items-center gap-1.5 px-3 py-2.5 border-b-2 font-medium transition ${
+                hubTab === 'comments'
+                  ? 'border-indigo-500 text-white font-bold bg-white/[0.03]'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
             >
-              <Download className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Export Study Sheet (.md)</span>
+              <MessageSquare className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Discussion ({comments.length})</span>
             </button>
 
             <button
-              onClick={handleSaveNotes}
-              className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-xs font-mono font-medium transition"
+              onClick={() => setHubTab('public_notes')}
+              className={`flex items-center gap-1.5 px-3 py-2.5 border-b-2 font-medium transition ${
+                hubTab === 'public_notes'
+                  ? 'border-indigo-500 text-white font-bold bg-white/[0.03]'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
             >
-              {notesSaved ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{notesSaved ? 'Saved to SQLite' : 'Save Notes'}</span>
+              <Globe className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Public Notes ({publicNotes.length})</span>
             </button>
+
+            <button
+              onClick={() => setHubTab('private_notes')}
+              className={`flex items-center gap-1.5 px-3 py-2.5 border-b-2 font-medium transition ${
+                hubTab === 'private_notes'
+                  ? 'border-indigo-500 text-white font-bold bg-white/[0.03]'
+                  : 'border-transparent text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Private Notes</span>
+            </button>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-2 py-1 text-[11px] text-slate-500 font-mono">
+            {hubTab === 'comments' && <span>Earn +10 XP per discussion post</span>}
+            {hubTab === 'public_notes' && <span>Earn +25 XP per public intuition</span>}
+            {hubTab === 'private_notes' && <span>🔒 Private to your account</span>}
           </div>
         </div>
 
-        <textarea
-          rows={3}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Document the core loop invariants, memory bounds, base case subtleties, or interview tips..."
-          className="w-full p-3.5 bg-[#08090e]/80 border border-white/10 rounded-lg text-xs text-slate-200 font-mono focus:outline-none focus:border-amber-500/50 leading-relaxed transition resize-y"
-        />
+        {/* Tab 1: Discussion & Comments */}
+        {hubTab === 'comments' && (
+          <div className="p-5 space-y-4 font-mono text-xs">
+            {/* Post comment box */}
+            <form onSubmit={handlePostComment} className="space-y-2">
+              <div className="flex items-center gap-2 text-slate-400 text-[11px]">
+                <span className="w-5 h-5 rounded bg-indigo-600/30 flex items-center justify-center text-xs">
+                  {currentUser?.avatar || '⚡'}
+                </span>
+                <span>Posting as <strong>{currentUser?.username || 'Guest'}</strong></span>
+                <span className="text-indigo-400 ml-auto">+10 XP Bonus</span>
+              </div>
+              <textarea
+                rows={2}
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Ask a question, share an observation, or discuss edge cases..."
+                className="w-full p-3 bg-[#08090e] border border-white/10 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition resize-none font-sans"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isPostingComment || !newComment.trim()}
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-semibold shadow transition"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{isPostingComment ? 'Posting...' : 'Post Comment'}</span>
+                </button>
+              </div>
+            </form>
 
-        <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
-          <span>Persistent in local SQLite database (`data/algovision.sqlite`)</span>
-          <span className="text-amber-400/80">Press 'Save Notes' to commit</span>
-        </div>
+            {/* Comments feed */}
+            <div className="space-y-3 pt-2">
+              {comments.length === 0 ? (
+                <div className="p-8 text-center bg-[#08090e]/40 rounded-lg border border-white/5 space-y-1">
+                  <MessageSquare className="w-6 h-6 text-slate-600 mx-auto" />
+                  <p className="text-slate-400 text-xs">No discussion comments yet.</p>
+                  <p className="text-slate-600 text-[11px]">Be the first to share an observation or question!</p>
+                </div>
+              ) : (
+                comments.map((c) => (
+                  <div
+                    key={c.id}
+                    className="p-3 rounded-lg bg-[#08090e]/80 border border-white/5 space-y-2 hover:border-white/10 transition"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-xs">
+                          {c.avatar || '⚡'}
+                        </span>
+                        <span className="font-bold text-slate-200">{c.username}</span>
+                        <span className="text-[10px] text-slate-500">
+                          {c.created_at ? new Date(c.created_at).toLocaleDateString() : ''}
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => handleUpvoteComment(c.id)}
+                        className="flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.03] hover:bg-indigo-600/20 text-slate-400 hover:text-indigo-300 border border-white/5 transition"
+                        title="Upvote comment"
+                      >
+                        <ThumbsUp className="w-3 h-3 text-indigo-400" />
+                        <span className="text-[11px] font-bold">{c.upvotes || 0}</span>
+                      </button>
+                    </div>
+                    <p className="text-xs text-slate-300 font-sans leading-relaxed whitespace-pre-wrap pl-8">
+                      {c.content}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 2: Public Community Notes */}
+        {hubTab === 'public_notes' && (
+          <div className="p-5 space-y-4 font-mono text-xs">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-slate-400 text-xs font-sans">
+                Community-shared intuitions, pattern breakdowns, and common interview mistakes.
+              </span>
+              <button
+                onClick={() => setShowAddPublicNote(!showAddPublicNote)}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold transition"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>{showAddPublicNote ? 'Cancel' : 'Share Public Note (+25 XP)'}</span>
+              </button>
+            </div>
+
+            {/* Form to add public note */}
+            {showAddPublicNote && (
+              <form onSubmit={handlePostPublicNote} className="p-4 rounded-xl bg-[#08090e] border border-emerald-500/30 space-y-3 animate-in fade-in duration-150">
+                <input
+                  type="text"
+                  value={newNoteTitle}
+                  onChange={(e) => setNewNoteTitle(e.target.value)}
+                  placeholder="Note Title: e.g. Invariant: Sliding window boundary condition"
+                  className="w-full p-2.5 bg-[#0e111a] border border-white/10 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                  required
+                />
+                <textarea
+                  rows={3}
+                  value={newNoteContent}
+                  onChange={(e) => setNewNoteContent(e.target.value)}
+                  placeholder="Write the core algorithmic insight, invariant, or trick to remember..."
+                  className="w-full p-2.5 bg-[#0e111a] border border-white/10 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition resize-y font-sans leading-relaxed"
+                  required
+                />
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddPublicNote(false)}
+                    className="px-3 py-1.5 text-slate-400 hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isPostingNote || !newNoteContent.trim()}
+                    className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-30 text-white font-semibold shadow transition"
+                  >
+                    {isPostingNote ? 'Publishing...' : 'Publish to Community'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Public Notes Feed */}
+            <div className="space-y-3">
+              {publicNotes.length === 0 ? (
+                <div className="p-8 text-center bg-[#08090e]/40 rounded-lg border border-white/5 space-y-1">
+                  <Globe className="w-6 h-6 text-slate-600 mx-auto" />
+                  <p className="text-slate-400 text-xs">No public study notes shared yet.</p>
+                  <p className="text-slate-600 text-[11px]">Click "Share Public Note" to contribute and earn +25 XP!</p>
+                </div>
+              ) : (
+                publicNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="p-4 rounded-xl bg-[#08090e]/90 border border-white/5 space-y-2 hover:border-white/15 transition"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-xs">
+                          {note.avatar || '⚡'}
+                        </span>
+                        <div>
+                          <h4 className="font-bold text-white text-xs">{note.title || 'Algorithmic Insight'}</h4>
+                          <span className="text-[10px] text-slate-500">by {note.username}</span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleUpvotePublicNote(note.id)}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/[0.03] hover:bg-emerald-600/20 text-slate-400 hover:text-emerald-300 border border-white/5 transition"
+                        title="Upvote public note"
+                      >
+                        <ThumbsUp className="w-3 h-3 text-emerald-400" />
+                        <span className="text-[11px] font-bold">{note.upvotes || 0}</span>
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-slate-300 font-sans leading-relaxed whitespace-pre-wrap pt-1 pl-8">
+                      {note.content}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Private Personal Notes */}
+        {hubTab === 'private_notes' && (
+          <div className="p-5 space-y-3 font-mono text-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 bg-amber-400 rounded-sm"></span>
+                <span className="font-mono text-xs font-bold text-amber-300 uppercase tracking-wider">
+                  Personal Cheatsheet & Pitfalls (@{currentUser?.username || 'You'})
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDownloadStudySheet}
+                  className="flex items-center gap-1.5 px-3 py-1 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded text-xs font-mono transition"
+                  title="Download Markdown Study Sheet for revision"
+                >
+                  <Download className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Export Study Sheet (.md)</span>
+                </button>
+
+                <button
+                  onClick={handleSavePrivateNotes}
+                  className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-xs font-mono font-medium transition"
+                >
+                  {privateNotesSaved ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Save className="w-3.5 h-3.5" />}
+                  <span>{privateNotesSaved ? 'Saved to SQLite' : 'Save Private Notes'}</span>
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              rows={4}
+              value={privateNotes}
+              onChange={(e) => setPrivateNotes(e.target.value)}
+              placeholder="Write your private notes, loop invariants, base cases, memory nuances, or college exam tips..."
+              className="w-full p-3.5 bg-[#08090e]/80 border border-white/10 rounded-lg text-xs text-slate-200 font-mono focus:outline-none focus:border-amber-500/50 leading-relaxed transition resize-y"
+            />
+
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
+              <span>🔒 Private to your account in local SQLite database</span>
+              <span className="text-amber-400/80">Press 'Save Private Notes' to commit</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Visualizer Uploader Modal */}
@@ -769,4 +1230,13 @@ export default function VisualizerStudio({
       )}
     </div>
   );
+}
+
+function toCamelCase(str) {
+  if (!str) return 'Visualizer';
+  return str
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .split(/\s+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
 }

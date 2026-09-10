@@ -138,11 +138,127 @@ app.get('/api/solutions/:id', (req, res) => {
   }
 });
 
-// POST /api/notes/:id - Save personal engineering notes
+// POST /api/notes/:id - Save personal engineering notes (legacy/default)
 app.post('/api/notes/:id', (req, res) => {
   try {
     dbService.saveNotes(req.params.id, req.body.content || '');
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ----------------------------------------------------
+// DISCUSSION COMMENTS & COLLABORATIVE NOTES
+// ----------------------------------------------------
+// GET /api/questions/:id/comments
+app.get('/api/questions/:id/comments', (req, res) => {
+  try {
+    const comments = dbService.getComments(req.params.id);
+    res.json({ success: true, data: comments });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/questions/:id/comments
+app.post('/api/questions/:id/comments', (req, res) => {
+  try {
+    const { userId, username, avatar, content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ success: false, error: 'Content cannot be empty' });
+    }
+    const comment = dbService.addComment({
+      questionId: req.params.id,
+      userId: userId || 'usr_guest',
+      username: username || 'Anonymous Coder',
+      avatar: avatar || '⚡',
+      content
+    });
+    res.json({ success: true, data: comment });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/comments/:id/upvote
+app.post('/api/comments/:id/upvote', (req, res) => {
+  try {
+    const updated = dbService.upvoteComment(req.params.id);
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// DELETE /api/comments/:id
+app.delete('/api/comments/:id', (req, res) => {
+  try {
+    const { userId } = req.body;
+    const result = dbService.deleteComment(req.params.id, userId);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/questions/:id/public-notes
+app.get('/api/questions/:id/public-notes', (req, res) => {
+  try {
+    const notes = dbService.getPublicNotes(req.params.id);
+    res.json({ success: true, data: notes });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/questions/:id/public-notes
+app.post('/api/questions/:id/public-notes', (req, res) => {
+  try {
+    const { userId, username, avatar, title, content } = req.body;
+    if (!content || !content.trim()) {
+      return res.status(400).json({ success: false, error: 'Note content cannot be empty' });
+    }
+    const note = dbService.addOrUpdatePublicNote({
+      questionId: req.params.id,
+      userId: userId || 'usr_guest',
+      username: username || 'Anonymous Coder',
+      avatar: avatar || '⚡',
+      title: title || 'Key Intuition',
+      content
+    });
+    res.json({ success: true, data: note });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/public-notes/:id/upvote
+app.post('/api/public-notes/:id/upvote', (req, res) => {
+  try {
+    const updated = dbService.upvotePublicNote(req.params.id);
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/users/:userId/private-notes/:questionId
+app.get('/api/users/:userId/private-notes/:questionId', (req, res) => {
+  try {
+    const content = dbService.getPrivateNote(req.params.userId, req.params.questionId);
+    res.json({ success: true, data: { content } });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/users/:userId/private-notes/:questionId
+app.post('/api/users/:userId/private-notes/:questionId', (req, res) => {
+  try {
+    const { content } = req.body;
+    const result = dbService.savePrivateNote(req.params.userId, req.params.questionId, content || '');
+    res.json({ success: true, data: result });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

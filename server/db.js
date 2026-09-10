@@ -79,6 +79,41 @@ sqlite.exec(`
     component_key TEXT NOT NULL,
     created_at TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    username TEXT NOT NULL,
+    avatar TEXT DEFAULT '⚡',
+    content TEXT NOT NULL,
+    upvotes INTEGER DEFAULT 0,
+    created_at TEXT,
+    FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS public_notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question_id TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    username TEXT NOT NULL,
+    avatar TEXT DEFAULT '⚡',
+    title TEXT,
+    content TEXT NOT NULL,
+    upvotes INTEGER DEFAULT 0,
+    created_at TEXT,
+    updated_at TEXT,
+    FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
+  );
+
+  CREATE TABLE IF NOT EXISTS private_notes (
+    user_id TEXT NOT NULL,
+    question_id TEXT NOT NULL,
+    content TEXT,
+    updated_at TEXT,
+    PRIMARY KEY (user_id, question_id),
+    FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
+  );
 `);
 
 try {
@@ -897,6 +932,119 @@ export const dbService = {
       contributionsCount: contributions.length,
       contributions
     };
+  },
+
+  // --- Comments ---
+  getComments(questionId) {
+    return sqlite.prepare(
+      'SELECT * FROM comments WHERE question_id = ? ORDER BY id DESC'
+    ).all(questionId);
+  },
+
+  addComment({ questionId, userId, username, avatar, content }) {
+    const now = new Date().toISOString();
+    const info = sqlite.prepare(`
+      INSERT INTO comments (question_id, user_id, username, avatar, content, upvotes, created_at)
+      VALUES (?, ?, ?, ?, ?, 0, ?)
+    `).run(questionId, userId, username, avatar || '⚡', content, now);
+
+    // Award +10 XP for active discussion
+    if (userId) {
+      this.addXp(userId, 10);
+    }
+
+    return {
+      id: info.lastInsertRowid,
+      question_id: questionId,
+      user_id: userId,
+      username,
+      avatar: avatar || '⚡',
+      content,
+      upvotes: 0,
+      created_at: now
+    };
+  },
+
+  upvoteComment(commentId) {
+    sqlite.prepare('UPDATE comments SET upvotes = upvotes + 1 WHERE id = ?').run(commentId);
+    return sqlite.prepare('SELECT * FROM comments WHERE id = ?').get(commentId);
+  },
+
+  deleteComment(commentId, userId) {
+    sqlite.prepare('DELETE FROM comments WHERE id = ? AND user_id = ?').run(commentId, userId);
+    return { success: true };
+  },
+
+  // --- Public Notes ---
+  getPublicNotes(questionId) {
+    return sqlite.prepare(
+      'SELECT * FROM public_notes WHERE question_id = ? ORDER BY upvotes DESC, id DESC'
+    ).all(questionId);
+  },
+
+  addOrUpdatePublicNote({ questionId, userId, username, avatar, title, content }) {
+    const now = new Date().toISOString();
+    const existing = sqlite.prepare(
+      'SELECT id FROM public_notes WHERE question_id = ? AND user_id = ?'
+    ).get(questionId, userId);
+
+    if (existing) {
+      sqlite.prepare(`
+        UPDATE public_notes
+        SET title = ?, content = ?, updated_at = ?
+        WHERE id = ?
+      `).run(title || 'Insight', content, now, existing.id);
+      return sqlite.prepare('SELECT * FROM public_notes WHERE id = ?').get(existing.id);
+    } else {
+      const info = sqlite.prepare(`
+        INSERT INTO public_notes (question_id, user_id, username, avatar, title, content, upvotes, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)
+      `).run(questionId, userId, username, avatar || '⚡', title || 'Insight', content, now, now);
+
+      // Award +25 XP for contributing study notes
+      if (userId) {
+        this.addXp(userId, 25);
+      }
+
+      return {
+        id: info.lastInsertRowid,
+        question_id: questionId,
+        user_id: userId,
+        username,
+        avatar: avatar || '⚡',
+        title: title || 'Insight',
+        content,
+        upvotes: 0,
+        created_at: now,
+        updated_at: now
+      };
+    }
+  },
+
+  upvotePublicNote(noteId) {
+    sqlite.prepare('UPDATE public_notes SET upvotes = upvotes + 1 WHERE id = ?').run(noteId);
+    return sqlite.prepare('SELECT * FROM public_notes WHERE id = ?').get(noteId);
+  },
+
+  // --- Private Notes ---
+  getPrivateNote(userId, questionId) {
+    const row = sqlite.prepare(
+      'SELECT content, updated_at FROM private_notes WHERE user_id = ? AND question_id = ?'
+    ).get(userId, questionId);
+    return row ? row.content : '';
+  },
+
+  savePrivateNote(userId, questionId, content) {
+    const now = new Date().toISOString();
+    sqlite.prepare(`
+      INSERT INTO private_notes (user_id, question_id, content, updated_at)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(user_id, question_id) DO UPDATE SET
+        content = excluded.content,
+        updated_at = excluded.updated_at
+    `).run(userId, questionId, content, now);
+
+    return { success: true, updated_at: now };
   },
 
   seedDefaultUsers() {
