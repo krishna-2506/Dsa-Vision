@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, Volume2, VolumeX, FileCode, Flame, Trophy, LogIn, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Layers, Volume2, VolumeX, FileCode, Flame, Trophy, LogIn, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
 import { sound } from '../services/audio';
 
 export default function Navbar({
@@ -12,6 +12,7 @@ export default function Navbar({
   userStats,
   onOpenAuthModal,
   onOpenDashboardModal,
+  onOpenAdminModal,
   questions = [],
   onNavigateQuestion
 }) {
@@ -53,10 +54,10 @@ export default function Navbar({
           {activeView === 'studio' && activeQuestion && (
             <div className="hidden md:flex items-center gap-2 min-w-0">
               <span className="text-white/20 text-sm font-light">/</span>
-              <span className="text-[12px] font-mono text-slate-400 truncate max-w-[260px]">
-                {activeQuestion.display_id && (
-                  <span className="text-indigo-400 mr-1.5">
-                    {activeQuestion.display_id}
+              <span className="text-[12px] font-mono text-slate-400 truncate max-w-[280px]">
+                {(activeQuestion.display_id || (activeQuestion.leetcode_id ? `#${activeQuestion.leetcode_id}` : '')) && (
+                  <span className="text-indigo-400 mr-1.5 font-semibold">
+                    {activeQuestion.display_id || `#${activeQuestion.leetcode_id}`}
                   </span>
                 )}
                 {activeQuestion.title}
@@ -68,7 +69,7 @@ export default function Navbar({
                     onClick={() => hasPrev && onNavigateQuestion && onNavigateQuestion(questions[currentIdx - 1])}
                     disabled={!hasPrev}
                     className="p-1 text-slate-500 hover:text-white hover:bg-white/[0.06] disabled:opacity-25 transition"
-                    title={hasPrev ? `← ${questions[currentIdx - 1].display_id}` : 'First problem'}
+                    title={hasPrev ? `← ${questions[currentIdx - 1]?.display_id || questions[currentIdx - 1]?.title}` : 'First problem'}
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
@@ -77,7 +78,7 @@ export default function Navbar({
                     onClick={() => hasNext && onNavigateQuestion && onNavigateQuestion(questions[currentIdx + 1])}
                     disabled={!hasNext}
                     className="p-1 text-slate-500 hover:text-white hover:bg-white/[0.06] disabled:opacity-25 transition"
-                    title={hasNext ? `→ ${questions[currentIdx + 1].display_id}` : 'Last problem'}
+                    title={hasNext ? `→ ${questions[currentIdx + 1]?.display_id || questions[currentIdx + 1]?.title}` : 'Last problem'}
                   >
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
@@ -111,6 +112,16 @@ export default function Navbar({
               <span>Gemini Skill</span>
             </button>
           )}
+
+          {/* Admin Console button */}
+          <button
+            onClick={onOpenAdminModal}
+            className="nav-pill text-indigo-300 border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20"
+            title="Admin Console: Questions, Database, Visualizers & Reports"
+          >
+            <Shield className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="hidden sm:inline">Admin</span>
+          </button>
 
           {/* Sound toggle — icon only */}
           <button

@@ -114,7 +114,27 @@ sqlite.exec(`
     PRIMARY KEY (user_id, question_id),
     FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS solution_reports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    question_id TEXT NOT NULL,
+    user_id TEXT,
+    username TEXT,
+    language TEXT,
+    approach_tier TEXT DEFAULT 'optimal',
+    report_type TEXT NOT NULL,
+    details TEXT NOT NULL,
+    suggested_fix TEXT,
+    status TEXT DEFAULT 'pending',
+    created_at TEXT,
+    resolved_at TEXT,
+    FOREIGN KEY(question_id) REFERENCES questions(id) ON DELETE CASCADE
+  );
 `);
+
+try {
+  sqlite.exec("ALTER TABLE code_solutions ADD COLUMN approach_tier TEXT DEFAULT 'optimal'");
+} catch (e) {}
 
 try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN approach TEXT");
@@ -633,18 +653,257 @@ export const dbService = {
     };
   },
 
-  getCodeSolutions(questionId) {
-    const stmt = sqlite.prepare(`
-      SELECT language, code
-      FROM code_solutions
-      WHERE question_id = ?
-    `);
-    const rows = stmt.all(questionId);
+  getCodeSolutions(questionId, approachTier = null) {
+    let rows;
+    if (approachTier) {
+      const stmt = sqlite.prepare(`
+        SELECT language, code
+        FROM code_solutions
+        WHERE question_id = ? AND (approach_tier = ? OR (approach_tier IS NULL AND ? = 'optimal'))
+      `);
+      rows = stmt.all(questionId, approachTier, approachTier);
+      if (rows.length === 0) {
+        const fallbackStmt = sqlite.prepare(`SELECT language, code FROM code_solutions WHERE question_id = ?`);
+        rows = fallbackStmt.all(questionId);
+      }
+    } else {
+      const stmt = sqlite.prepare(`
+        SELECT language, code
+        FROM code_solutions
+        WHERE question_id = ?
+      `);
+      rows = stmt.all(questionId);
+    }
     const map = {};
     for (const r of rows) {
       map[r.language] = r.code;
     }
     return map;
+  },
+
+  getCodeSolutionsByTier(questionId) {
+    const stmt = sqlite.prepare(`
+      SELECT language, code, COALESCE(approach_tier, 'optimal') as tier
+      FROM code_solutions
+      WHERE question_id = ?
+    `);
+    const rows = stmt.all(questionId);
+    const result = {
+      intuitive: {},
+      better: {},
+      optimal: {}
+    };
+
+    for (const r of rows) {
+      const tierKey = ['intuitive', 'better', 'optimal'].includes(r.tier) ? r.tier : 'optimal';
+      result[tierKey][r.language] = r.code;
+    }
+
+    if (Object.keys(result.optimal).length > 0) {
+      if (Object.keys(result.intuitive).length === 0) result.intuitive = { ...result.optimal };
+      if (Object.keys(result.better).length === 0) result.better = { ...result.optimal };
+    }
+
+    return result;
+  },
+
+  deleteQuestion(id) {
+    if (!id) return { success: false, error: 'Question id required' };
+    const q = this.getQuestion(id);
+    if (!q) return { success: false, error: 'Question not found' };
+
+    sqlite.prepare('DELETE FROM code_solutions WHERE question_id = ?').run(id);
+    sqlite.prepare('DELETE FROM notes WHERE question_id = ?').run(id);
+    sqlite.prepare('DELETE FROM comments WHERE question_id = ?').run(id);
+    sqlite.prepare('DELETE FROM public_notes WHERE question_id = ?').run(id);
+    sqlite.prepare('DELETE FROM private_notes WHERE question_id = ?').run(id);
+    sqlite.prepare('DELETE FROM user_progress WHERE question_id = ?').run(id);
+    sqlite.prepare('DELETE FROM solution_reports WHERE question_id = ?').run(id);
+    sqlite.prepare('DELETE FROM questions WHERE id = ?').run(id);
+
+    return { success: true, deletedId: id };
+  },
+
+  saveCodeSolutions(questionId, solutions = {}, approachTier = 'optimal') {
+    if (!questionId || !solutions || typeof solutions !== 'object') return;
+    const tier = ['intuitive', 'better', 'optimal'].includes(approachTier) ? approachTier : 'optimal';
+
+    const delStmt = sqlite.prepare(`
+      DELETE FROM code_solutions
+      WHERE question_id = ? AND (approach_tier = ? OR (approach_tier IS NULL AND ? = 'optimal'))
+    `);
+    delStmt.run(questionId, tier, tier);
+
+    const insStmt = sqlite.prepare(`
+      INSERT INTO code_solutions (question_id, language, code, approach_tier) VALUES (?, ?, ?, ?)
+    `);
+    for (const [lang, code] of Object.entries(solutions)) {
+      if (code && typeof code === 'string' && code.trim()) {
+        insStmt.run(questionId, lang, code.trim(), tier);
+      }
+    }
+  },
+
+  createReport(report) {
+    const stmt = sqlite.prepare(`
+      INSERT INTO solution_reports (
+        question_id, user_id, username, language, approach_tier,
+        report_type, details, suggested_fix, status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))
+    `);
+    const info = stmt.run(
+      report.question_id,
+      report.user_id || 'usr_guest',
+      report.username || 'Anonymous Learner',
+      report.language || 'cpp',
+      report.approach_tier || 'optimal',
+      report.report_type || 'incorrect_code',
+      report.details || '',
+      report.suggested_fix || null
+    );
+    return { success: true, reportId: Number(info.lastInsertRowid) };
+  },
+
+  getReports(status = null) {
+    let sql = `
+      SELECT r.*, q.title as question_title, q.display_id as question_display_id, q.category, q.difficulty
+      FROM solution_reports r
+      LEFT JOIN questions q ON r.question_id = q.id
+    `;
+    const params = [];
+    if (status && status !== 'all') {
+      sql += ' WHERE r.status = ?';
+      params.push(status);
+    }
+    sql += ' ORDER BY r.created_at DESC';
+    return sqlite.prepare(sql).all(...params);
+  },
+
+  updateReportStatus(id, status) {
+    const stmt = sqlite.prepare(`
+      UPDATE solution_reports
+      SET status = ?, resolved_at = datetime('now')
+      WHERE id = ?
+    `);
+    stmt.run(status, id);
+    return { success: true, id, status };
+  },
+
+  deleteReport(id) {
+    sqlite.prepare('DELETE FROM solution_reports WHERE id = ?').run(id);
+    return { success: true };
+  },
+
+  getAdminStats() {
+    const totalQuestions = sqlite.prepare('SELECT COUNT(*) as count FROM questions').get().count;
+    const totalSolutions = sqlite.prepare('SELECT COUNT(*) as count FROM code_solutions').get().count;
+    const totalUsers = sqlite.prepare('SELECT COUNT(*) as count FROM users').get().count;
+    const pendingReports = sqlite.prepare("SELECT COUNT(*) as count FROM solution_reports WHERE status = 'pending'").get().count;
+    const resolvedReports = sqlite.prepare("SELECT COUNT(*) as count FROM solution_reports WHERE status = 'resolved'").get().count;
+    const masteredCount = sqlite.prepare("SELECT COUNT(*) as count FROM questions WHERE status = 'mastered'").get().count;
+
+    let diskVisualizersCount = 0;
+    try {
+      const visDir = path.resolve(process.cwd(), 'src', 'visualizers');
+      if (fs.existsSync(visDir)) {
+        diskVisualizersCount = fs.readdirSync(visDir).filter(f => f.endsWith('.jsx') || f.endsWith('.js')).length;
+      }
+    } catch (e) {}
+
+    return {
+      totalQuestions,
+      totalSolutions,
+      totalUsers,
+      pendingReports,
+      resolvedReports,
+      masteredCount,
+      diskVisualizersCount
+    };
+  },
+
+  exportDatabaseDump() {
+    const questions = sqlite.prepare('SELECT * FROM questions ORDER BY id').all();
+    const solutions = sqlite.prepare('SELECT * FROM code_solutions').all();
+    const reports = sqlite.prepare('SELECT * FROM solution_reports ORDER BY id DESC').all();
+    const comments = sqlite.prepare('SELECT * FROM comments').all();
+    const publicNotes = sqlite.prepare('SELECT * FROM public_notes').all();
+
+    return {
+      version: '2.0.0',
+      exportedAt: new Date().toISOString(),
+      counts: {
+        questions: questions.length,
+        solutions: solutions.length,
+        reports: reports.length
+      },
+      questions,
+      code_solutions: solutions,
+      solution_reports: reports,
+      comments,
+      public_notes: publicNotes
+    };
+  },
+
+  importDatabaseDump(dump) {
+    if (!dump || (!dump.questions && !Array.isArray(dump))) {
+      return { success: false, error: 'Invalid database dump format' };
+    }
+
+    const questionList = Array.isArray(dump) ? dump : dump.questions || [];
+    let importedQuestions = 0;
+    let importedSolutions = 0;
+
+    const insQ = sqlite.prepare(`
+      INSERT OR REPLACE INTO questions (
+        id, display_id, leetcode_id, title, slug, category, difficulty,
+        time_complexity, space_complexity, leetcode_url, description,
+        approach, tags, status, is_favorite, component_key, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+    `);
+
+    for (const q of questionList) {
+      if (!q.id || !q.title) continue;
+      const tagsStr = Array.isArray(q.tags) ? JSON.stringify(q.tags) : (q.tags || '[]');
+      insQ.run(
+        q.id,
+        q.display_id || null,
+        q.leetcode_id || null,
+        q.title,
+        q.slug || q.id,
+        q.category || 'General',
+        q.difficulty || 'Medium',
+        q.time_complexity || 'O(N)',
+        q.space_complexity || 'O(1)',
+        q.leetcode_url || '',
+        q.description || '',
+        q.approach || '',
+        tagsStr,
+        q.status || 'to_learn',
+        q.is_favorite ? 1 : 0,
+        q.component_key || q.id
+      );
+      importedQuestions++;
+    }
+
+    if (dump.code_solutions && Array.isArray(dump.code_solutions)) {
+      const insSol = sqlite.prepare(`
+        INSERT INTO code_solutions (question_id, language, code, approach_tier)
+        VALUES (?, ?, ?, ?)
+      `);
+      for (const sol of dump.code_solutions) {
+        if (!sol.question_id || !sol.language || !sol.code) continue;
+        try {
+          insSol.run(sol.question_id, sol.language, sol.code, sol.approach_tier || 'optimal');
+          importedSolutions++;
+        } catch (e) {}
+      }
+    }
+
+    return {
+      success: true,
+      importedQuestions,
+      importedSolutions
+    };
   },
 
   updateQuestion(id, fields) {
@@ -727,20 +986,7 @@ export const dbService = {
     return this.getQuestion(id);
   },
 
-  saveCodeSolutions(questionId, solutions = {}) {
-    if (!questionId || !solutions || typeof solutions !== 'object') return;
-    const delStmt = sqlite.prepare('DELETE FROM code_solutions WHERE question_id = ?');
-    delStmt.run(questionId);
 
-    const insStmt = sqlite.prepare(`
-      INSERT INTO code_solutions (question_id, language, code) VALUES (?, ?, ?)
-    `);
-    for (const [lang, code] of Object.entries(solutions)) {
-      if (code && typeof code === 'string' && code.trim()) {
-        insStmt.run(questionId, lang, code.trim());
-      }
-    }
-  },
 
   updateVisualizer(questionId, componentKey, solutions = null) {
     const stmt = sqlite.prepare(`

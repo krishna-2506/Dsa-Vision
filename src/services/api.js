@@ -23,15 +23,53 @@ export const api = {
     return null;
   },
 
-  async getCodeSolutions(questionId) {
+  async getCodeSolutions(questionId, tier = null) {
     try {
-      const res = await fetch(`/api/solutions/${encodeURIComponent(questionId)}`);
+      const url = tier
+        ? `/api/solutions/${encodeURIComponent(questionId)}?tier=${encodeURIComponent(tier)}`
+        : `/api/solutions/${encodeURIComponent(questionId)}`;
+      const res = await fetch(url);
       const json = await res.json();
       if (json.success) return json.data;
     } catch (e) {
       console.warn('Failed to fetch code solutions from SQLite API', e);
     }
     return {};
+  },
+
+  async getCodeSolutionsAllTiers(questionId) {
+    try {
+      const res = await fetch(`/api/solutions/${encodeURIComponent(questionId)}/all-tiers`);
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch all tiers solutions', e);
+    }
+    return { intuitive: {}, better: {}, optimal: {} };
+  },
+
+  async saveCodeSolutions(questionId, solutions, approachTier = 'optimal') {
+    try {
+      const res = await fetch(`/api/solutions/${encodeURIComponent(questionId)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ solutions, approachTier })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async deleteQuestion(id) {
+    try {
+      const res = await fetch(`/api/questions/${encodeURIComponent(id)}`, {
+        method: 'DELETE'
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
   },
 
   async updateQuestion(id, updates) {
@@ -334,6 +372,114 @@ export const api = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  // Solution Reports
+  async submitReport(reportData) {
+    try {
+      const res = await fetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reportData)
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async getReports(status = null) {
+    try {
+      const url = status ? `/api/reports?status=${encodeURIComponent(status)}` : '/api/reports';
+      const res = await fetch(url);
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch reports', e);
+    }
+    return [];
+  },
+
+  async updateReportStatus(reportId, status) {
+    try {
+      const res = await fetch(`/api/reports/${encodeURIComponent(reportId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async deleteReport(reportId) {
+    try {
+      const res = await fetch(`/api/reports/${encodeURIComponent(reportId)}`, {
+        method: 'DELETE'
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  // Admin & Database System
+  async getAdminStats() {
+    try {
+      const res = await fetch('/api/admin/stats');
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch admin stats', e);
+    }
+    return null;
+  },
+
+  async exportDatabaseDump() {
+    try {
+      const res = await fetch('/api/admin/export');
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to export DB dump', e);
+    }
+    return null;
+  },
+
+  async importDatabaseDump(dump) {
+    try {
+      const res = await fetch('/api/admin/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dump })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async getAdminVisualizers() {
+    try {
+      const res = await fetch('/api/admin/visualizers');
+      const json = await res.json();
+      if (json.success) return json.files;
+    } catch (e) {
+      console.warn('Failed to fetch visualizers list', e);
+    }
+    return [];
+  },
+
+  async autolinkVisualizers() {
+    try {
+      const res = await fetch('/api/admin/autolink', {
+        method: 'POST'
       });
       return await res.json();
     } catch (e) {

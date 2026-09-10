@@ -6,6 +6,7 @@ import SkillExportModal from './components/SkillExportModal';
 import AuthModal from './components/AuthModal';
 import UserDashboardModal from './components/UserDashboardModal';
 import ImportQuestionModal from './components/ImportQuestionModal';
+import AdminPanelModal from './components/AdminPanelModal';
 import { api } from './services/api';
 import { db } from './services/db';
 import { authService } from './services/auth';
@@ -17,6 +18,7 @@ export default function App() {
   const [activeQuestion, setActiveQuestion] = useState(null);
   const [skillModalOpen, setSkillModalOpen] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
+  const [adminModalOpen, setAdminModalOpen] = useState(false);
 
   // User auth & profile state
   const [currentUser, setCurrentUser] = useState(() => authService.getCurrentUser());
@@ -63,9 +65,11 @@ export default function App() {
     setQuestions(list);
     setStats(st);
 
-    // Direct URL hash sync: #studio/{id}
+    // Direct URL hash sync: #studio/{id} or #admin
     const hash = window.location.hash;
-    if (hash.startsWith('#studio/')) {
+    if (hash === '#admin') {
+      setAdminModalOpen(true);
+    } else if (hash.startsWith('#studio/')) {
       const qId = hash.replace('#studio/', '');
       const matched = list.find((q) => q.id === qId);
       if (matched) {
@@ -80,7 +84,9 @@ export default function App() {
 
     const handleHashChange = () => {
       const hash = window.location.hash;
-      if (hash.startsWith('#studio/')) {
+      if (hash === '#admin') {
+        setAdminModalOpen(true);
+      } else if (hash.startsWith('#studio/')) {
         const qId = hash.replace('#studio/', '');
         const matched = questions.find((q) => q.id === qId);
         if (matched) {
@@ -178,6 +184,7 @@ export default function App() {
         userStats={userStats}
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenDashboardModal={() => setDashboardModalOpen(true)}
+        onOpenAdminModal={() => setAdminModalOpen(true)}
         questions={questions}
         onNavigateQuestion={handleOpenQuestion}
       />
@@ -240,6 +247,18 @@ export default function App() {
         }}
       />
 
+      {/* Admin Panel & Database Operations Modal */}
+      <AdminPanelModal
+        isOpen={adminModalOpen}
+        onClose={() => {
+          setAdminModalOpen(false);
+          if (window.location.hash === '#admin') {
+            window.location.hash = '';
+          }
+        }}
+        onQuestionsUpdated={() => loadData()}
+        currentUser={currentUser}
+      />
 
       {/* Footer */}
       <footer className="border-t border-white/5 bg-[#07080c] py-5 text-center text-xs font-mono text-slate-500">

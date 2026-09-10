@@ -25,7 +25,9 @@ for (const path in visualizerModules) {
         title: componentKey.replace(/([A-Z])/g, ' $1').trim(),
         category: 'General'
       },
-      steps: module.steps || null
+      steps: module.steps || null,
+      approaches: module.approaches || null,
+      solutions: module.solutions || null
     };
   }
 }

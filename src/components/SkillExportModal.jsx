@@ -23,10 +23,21 @@ Every React visualizer component generated for AlgoVision Studio MUST adhere to 
 - Semantic Scale: Emerald (#10b981) for match/success, Amber (#f59e0b) for active evaluation, Rose (#f43f5e) for eliminated bounds
 - Shape Language: Rectangular micro-badges with rounded-[4px] and font-mono text-[10px]
 
-## 2. Mandatory Component Exports
-1. export const meta = { display_id, title, category, difficulty, timeComplexity, spaceComplexity, leetcodeUrl, description };
-2. export const steps = [ { title, codeLine, code, explanation, ...stateVars } ];
-3. export default function ComponentNameVisualizer({ currentStep, onStepChange }) { ... }
+## 2. Platform Architecture Context
+The AlgoVision Studio already provides a synchronized syntax-highlighted code execution viewer (C++, Python, Java, JavaScript) beside the visualizer in Split Screen mode.
+DO NOT replicate a full code editor on the visualizer canvas.
+INSTEAD, focus completely on crafting the richest visual diagrams (dynamic heap memory nodes, address tags, pointers, SVGs, trees, graphs, sliding windows, DP grids).
+
+## 3. Mandatory Multi-Tier Exports
+1. export const approaches = {
+     intuitive: { title, badge, complexity, steps, solutions },
+     better:    { title, badge, complexity, steps, solutions },
+     optimal:   { title, badge, complexity, steps, solutions }
+   };
+2. export const solutions = approaches.optimal.solutions;
+3. export const steps = approaches.optimal.steps;
+4. export const meta = { display_id, title, category, difficulty, timeComplexity, spaceComplexity, description };
+5. export default function ComponentVisualizer({ currentStep, onStepChange, customInput, customTarget, approachTier = 'optimal' }) { ... }
 `;
 
 const TEMPLATE_CODE = `import React, { useState } from 'react';

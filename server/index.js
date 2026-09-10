@@ -128,11 +128,111 @@ app.patch('/api/questions/:id', (req, res) => {
   }
 });
 
+// DELETE /api/questions/:id - Delete question
+app.delete('/api/questions/:id', (req, res) => {
+  try {
+    const result = dbService.deleteQuestion(req.params.id);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/solutions/:id/all-tiers - Get all solution tiers
+app.get('/api/solutions/:id/all-tiers', (req, res) => {
+  try {
+    const tiers = dbService.getCodeSolutionsByTier(req.params.id);
+    res.json({ success: true, data: tiers });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // GET /api/solutions/:id - Get multi-language solution code
 app.get('/api/solutions/:id', (req, res) => {
   try {
-    const solutions = dbService.getCodeSolutions(req.params.id);
+    const tier = req.query.tier || null;
+    const solutions = dbService.getCodeSolutions(req.params.id, tier);
     res.json({ success: true, data: solutions });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/solutions/:id - Save solution code for tier
+app.post('/api/solutions/:id', (req, res) => {
+  try {
+    dbService.saveCodeSolutions(req.params.id, req.body.solutions || req.body, req.body.approachTier || 'optimal');
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ----------------------------------------------------
+// SOLUTION REPORTING ROUTES
+// ----------------------------------------------------
+app.post('/api/reports', (req, res) => {
+  try {
+    const result = dbService.createReport(req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/reports', (req, res) => {
+  try {
+    const reports = dbService.getReports(req.query.status || null);
+    res.json({ success: true, data: reports });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.patch('/api/reports/:id', (req, res) => {
+  try {
+    const result = dbService.updateReportStatus(parseInt(req.params.id, 10), req.body.status);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete('/api/reports/:id', (req, res) => {
+  try {
+    const result = dbService.deleteReport(parseInt(req.params.id, 10));
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ----------------------------------------------------
+// ADMIN & DATABASE MANAGEMENT ROUTES
+// ----------------------------------------------------
+app.get('/api/admin/stats', (req, res) => {
+  try {
+    const stats = dbService.getAdminStats();
+    res.json({ success: true, data: stats });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/admin/export', (req, res) => {
+  try {
+    const dump = dbService.exportDatabaseDump();
+    res.json({ success: true, data: dump });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/import', (req, res) => {
+  try {
+    const result = dbService.importDatabaseDump(req.body.dump || req.body);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

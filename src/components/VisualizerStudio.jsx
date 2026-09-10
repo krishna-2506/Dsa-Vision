@@ -32,7 +32,8 @@ import {
   Globe,
   Plus,
   Trash2,
-  User
+  User,
+  Flag
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../services/audio';
@@ -41,6 +42,7 @@ import { api } from '../services/api';
 import CodeViewer from './CodeViewer';
 import VisualizerUploader from './VisualizerUploader';
 import VariableInspector from './primitives/VariableInspector';
+import ReportSolutionModal from './ReportSolutionModal';
 
 function formatComplexity(text) {
   if (!text) return '—';
@@ -69,7 +71,9 @@ export default function VisualizerStudio({
   const currentKey = question.component_key || question.componentKey;
   const visualizerEntry = visualizersRegistry[currentKey] || null;
   const Component = visualizerEntry?.Component || null;
-  const stepsList = visualizerEntry?.steps || null;
+  const [activeTier, setActiveTier] = useState('optimal'); // 'intuitive' | 'better' | 'optimal'
+  const [showReportModal, setShowReportModal] = useState(false);
+  const stepsList = visualizerEntry?.approaches?.[activeTier]?.steps || visualizerEntry?.steps || null;
   const maxSteps = stepsList?.length || 6;
   const hasVisualizer = Boolean(Component);
 
@@ -78,8 +82,8 @@ export default function VisualizerStudio({
   const [speed, setSpeed] = useState(1);
   const [loop, setLoop] = useState(false);
   const [solutions, setSolutions] = useState({});
-  // Open full visualizer 1st; if no visualizer, have code available 1st; only split if user clicks Split
-  const [viewMode, setViewMode] = useState(hasVisualizer ? 'visualizer_only' : 'code_only');
+  // Open split screen by default when visualizer exists so user sees both animation & synced code
+  const [viewMode, setViewMode] = useState(hasVisualizer ? 'split' : 'code_only');
   const [showUploader, setShowUploader] = useState(false);
   const [showApproach, setShowApproach] = useState(false);
   const [showJumper, setShowJumper] = useState(false);
@@ -129,16 +133,13 @@ export default function VisualizerStudio({
   // Sync mode and fetch comments & notes when question or user changes
   useEffect(() => {
     const hasComponent = Boolean(visualizersRegistry[question.component_key || question.componentKey]);
-    setViewMode(hasComponent ? 'visualizer_only' : 'code_only');
+    setViewMode(hasComponent ? 'split' : 'code_only');
     setShowApproach(false);
     setShowUploader(false);
     setCurrentStep(0);
     setIsPlaying(false);
 
     let isMounted = true;
-    api.getCodeSolutions(question.id).then((data) => {
-      if (isMounted && data) setSolutions(data);
-    });
     api.getComments(question.id).then((data) => {
       if (isMounted && data) setComments(data);
     });
@@ -158,55 +159,135 @@ export default function VisualizerStudio({
     };
   }, [question.id, question.component_key, question.componentKey, currentUser?.id]);
 
+  // Fetch solutions dynamically whenever question or active approach tier changes
+  useEffect(() => {
+    let isMounted = true;
+    api.getCodeSolutions(question.id, activeTier).then((data) => {
+      if (!isMounted) return;
+      if (data && Object.keys(data).length > 0) {
+        setSolutions(data);
+      } else if (visualizerEntry?.approaches?.[activeTier]?.solutions) {
+        setSolutions(visualizerEntry.approaches[activeTier].solutions);
+      } else if (activeTier !== 'optimal') {
+        api.getCodeSolutions(question.id, 'optimal').then((fallbackData) => {
+          if (isMounted && fallbackData && Object.keys(fallbackData).length > 0) {
+            setSolutions(fallbackData);
+          } else if (isMounted && visualizerEntry?.solutions) {
+            setSolutions(visualizerEntry.solutions);
+          }
+        });
+      } else if (visualizerEntry?.solutions) {
+        setSolutions(visualizerEntry.solutions);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [question.id, activeTier, currentKey]);
+
+  const handleSelectTier = (tier) => {
+    if (tier === activeTier) return;
+    setActiveTier(tier);
+    setCurrentStep(0);
+    setIsPlaying(false);
+    sound.playStep(640);
+  };
+
 
   const handleDirectCopyPrompt = () => {
     const key = question.component_key || toCamelCase(question.title) + 'Visualizer';
     const promptText = `Act as an expert algorithm educator and React visualization engineer for AlgoVision Studio.
 Create an interactive, animated React visualizer component for this DSA problem from Striver's A2Z Sheet:
 
-Problem ID: ${question.display_id || 'Q-001'}
+Problem ID: ${question.display_id || (question.leetcode_id ? '#' + question.leetcode_id : 'Q-001')}
 Problem: "${question.title}" (${question.category} - ${question.difficulty})
 
 Problem Statement & Examples:
 ${question.description}
 
 Approach & Logic:
-${question.approach || 'Standard optimal algorithm'}
+${question.approach || 'Provide intuitive brute force, optimized intermediate, and optimal algorithm.'}
 
 C++ Reference Code:
 \`\`\`cpp
 ${solutions.cpp || '// C++ solution'}
 \`\`\`
 
-Strict UI Template Requirements (AlgoVision Studio 5-Layer Layout):
-You MUST follow this exact component scaffold:
+IMPORTANT ARCHITECTURAL DIRECTIVE:
+The AlgoVision Studio already hosts a dedicated, syntax-highlighted code execution viewer (C++, Python, Java, JavaScript) beside this visualizer in Split Screen mode with synchronized step line tracking.
+DO NOT waste the visualizer canvas space rendering a duplicate code editor!
+INSTEAD, focus 100% on crafting the MOST BEAUTIFUL, INTUITIVE, AND DYNAMIC GRAPHICAL VISUALIZATION POSSIBLE!
+
+Strict Requirements:
+1. Multi-Tier Approaches: Provide 3 approach tiers whenever applicable:
+   - "intuitive" (Brute Force / Direct baseline, e.g. O(N²) nested loops)
+   - "better" (Optimized intermediate, e.g. O(N) Hash Map / Stack / Sorting)
+   - "optimal" (Optimal Gold Standard, e.g. O(N) Two Pointers / Sliding Window / In-place DP)
+2. Component must accept props:
+   ({ currentStep: externalStep, onStepChange, customInput = '', customTarget = '', approachTier = 'optimal' })
+   and dynamically switch its internal trace, animated state, HUD, and pointers when approachTier changes!
+3. Visual Styling & Uniformity:
+   - Container: #0b0d14 background, border border-white/10 rounded-xl overflow-hidden shadow-2xl
+   - Header Bar: #0e111a border-b border-white/5, showing Step X/Y, approach badge, step title, and Prev/Next buttons
+   - Canvas: #08090e/60 background, min-h-[260px], centered graphical layout:
+     * Memory / Pointers (Linked Lists): Render dynamic heap node boxes with address hex badges (e.g. 0xC3), PREV/VAL/NEXT slots, SVG bidirectional arrows, and pointer labels (HEAD, TEMP, CURR).
+     * Arrays / Sequences: Fluid ArrayView or boxes with index numbers, value pills, glow highlights, sliding pointer tags (L, R, mid, i, j).
+     * Trees / Graphs: Node circles with gradients, level ranks, connection lines, visited states.
+     * Sliding Window: Highlighted bounding box around active window, running sum meter, max length tracker.
+     * Hash Map: Key-value badge collection (val ➔ index), complement lookup HUD.
+   - Real-time HUD: Comparison/invariant status (e.g. nums[L] + nums[R] == Target) with color-coded status badges.
+   - Explanation Footer: #0c0e16 border-t border-white/5, clear educational breakdown of the step.
+4. Export format:
+   - export const approaches = { intuitive: { ... }, better: { ... }, optimal: { ... } };
+   - export const solutions = approaches.optimal.solutions; // multi-language solutions with thorough comments
+   - export const steps = approaches.optimal.steps;
+   - export const meta = { display_id, title, category, difficulty, timeComplexity, spaceComplexity, description };
+   - export default function ${key}(...) { ... }
 
 \`\`\`jsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import ArrayView from '../components/primitives/ArrayView';
 // (Or import other primitives if needed: LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector)
 
-// 0. Multi-language production solution code with detailed educational comments
-export const solutions = {
-  cpp: \`// C++ Optimal Solution with line-by-line syntax & complexity comments
-class Solution {
-public:
-    // Detailed step comments explaining approach...
-};\n\`,
-  python: \`# Python 3 Solution with thorough syntax & data structure comments
-class Solution:
-    # Detailed step comments explaining approach...
-    pass\n\`,
-  java: \`// Java Solution with step-by-step logic breakdown
-class Solution {
-    // Detailed step comments explaining approach...
-}\n\`,
-  javascript: \`// JavaScript Solution with in-line explanation
-var solve = function(...) {
-    // Detailed step comments explaining approach...
-};\n\`,
+export const approaches = {
+  intuitive: {
+    title: 'Intuitive: Brute Force',
+    badge: 'Brute Force',
+    complexity: { time: 'O(N²)', space: 'O(1)' },
+    steps: [
+      {
+        title: '1. Begin Brute Force Scan',
+        codeLine: 4,
+        variables: { i: 0, j: 1 },
+        explanation: 'Check all pairs sequentially...',
+        // topic specific state...
+      }
+    ],
+    solutions: {
+      cpp: \`// C++ Intuitive Solution with comments\\n\`,
+      python: \`# Python Intuitive Solution with comments\\n\`,
+      java: \`// Java Intuitive Solution with comments\\n\`,
+      javascript: \`// JavaScript Intuitive Solution with comments\\n\`
+    }
+  },
+  better: {
+    title: 'Better: Optimized Intermediate',
+    badge: 'Sub-Optimal',
+    complexity: { time: 'O(N)', space: 'O(N)' },
+    steps: [ /* intermediate steps */ ],
+    solutions: { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }
+  },
+  optimal: {
+    title: 'Best: Optimal Gold Standard',
+    badge: 'Optimal',
+    complexity: { time: '${question.time_complexity || 'O(N)'}', space: '${question.space_complexity || 'O(1)'}' },
+    steps: [ /* optimal steps */ ],
+    solutions: { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }
+  }
 };
 
+export const solutions = approaches.optimal.solutions;
+export const steps = approaches.optimal.steps;
 export const meta = {
   display_id: '${question.display_id || 'Q-001'}',
   title: "${question.title}",
@@ -217,58 +298,53 @@ export const meta = {
   description: ${JSON.stringify((question.description || '').slice(0, 140))}
 };
 
-// Realistic sample array/data extracted directly from the problem statement & examples
-const SAMPLE_DATA = [/* realistic data from problem example */];
-
-export const steps = [
-  // IMPORTANT: Provide 6 to 12 thorough, sequential execution steps tracing the algorithm on SAMPLE_DATA
-  {
-    title: "1. Initialize State",
-    codeLine: 4, // Exact line of C++ code executing
-    code: "// In-line commented executing line...",
-    explanation: "Detailed educational explanation of what happens in this step and why...",
-    pointers: [{ index: 0, label: 'i', color: 'indigo' }],
-    highlightIndices: [0],
-    hudText: "Current state: initialized"
-  }
-];
-
-export default function ${key}({ currentStep: externalStep, onStepChange }) {
+export default function ${key}({
+  currentStep: externalStep,
+  onStepChange,
+  customInput = '',
+  customTarget = '',
+  approachTier = 'optimal'
+}) {
   const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
+  const activeApproach = approaches[approachTier] || approaches.optimal;
+  const activeSteps = activeApproach.steps;
+  const stepIndex = externalStep !== undefined ? Math.min(externalStep, activeSteps.length - 1) : internalStep;
   const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
+  const stepData = activeSteps[stepIndex] || activeSteps[0];
 
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
+  const handleNext = () => { if (stepIndex < activeSteps.length - 1) setStep(stepIndex + 1); };
   const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
 
   return (
     <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
+      {/* 1. Header Bar */}
       <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
+            Step {stepIndex + 1} / {activeSteps.length}
           </span>
-          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold bg-white/5 text-slate-300 border border-white/10">
+            {activeApproach.badge}
+          </span>
+          <h3 className="text-sm font-bold text-white font-mono truncate max-w-md">{stepData.title}</h3>
         </div>
         <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition">
+          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition cursor-pointer">
             ← Prev
           </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition">
+          <button onClick={handleNext} disabled={stepIndex === activeSteps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition cursor-pointer">
             Next →
           </button>
         </div>
       </div>
 
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[240px]">
-        <ArrayView items={SAMPLE_DATA} pointers={stepData.pointers || []} matchIndices={stepData.highlightIndices || []} />
+      {/* 2. Visualizer Graphical Canvas */}
+      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[260px]">
+        {/* Topic-specific creative visual representation */}
         
-        {/* Real-time HUD Status & Variables */}
+        {/* Real-time Comparison HUD */}
         <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
-          <span className="text-zinc-400">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
+          <span className="text-slate-400">Status: <strong className="text-emerald-400">{stepData.hudText || 'Active Execution'}</strong></span>
         </div>
       </div>
 
@@ -282,14 +358,7 @@ export default function ${key}({ currentStep: externalStep, onStepChange }) {
 }
 \`\`\`
 
-Rules:
-- Include \`export const solutions = { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }\` with fully commented solutions explaining syntax, line-by-line logic, and edge cases. These will automatically replace the old code in the database.
-- IMPORTANT: Ensure the visualizer has RICH ANIMATED VISUALS: accurately trace the problem's sample example across 6-12 step-by-step frames with moving pointers (e.g., start, end, left, right), highlighted active subarrays, and live HUD variables.
-- Use primitive components from \`../components/primitives/\` (ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector) or custom SVG/HTML visualizations.
-- Palette: Deep obsidian (#0b0d14, #0e111a, #08090e), Indigo (#6366f1), Emerald, Amber, Rose.
-- Explain code thoroughly with in-line comments line-by-line.
-- Return ONLY the complete, ready-to-run React JSX code.`;
-
+Return ONLY the complete, ready-to-run React JSX code.`;
 
     navigator.clipboard.writeText(promptText);
     sound.playStep(640);
@@ -464,6 +533,7 @@ Rules:
   const handleUploadSuccess = async (newKey, updatedQuestion) => {
     setShowUploader(false);
     setPreloadedUploadCode('');
+    setViewMode('split'); // Default to split screen with dominant visualizer canvas upon upload
     // Automatically reload solutions from DB so new commented code replaces old code immediately in CodeViewer
     const refreshedSolutions = await api.getCodeSolutions(question.id);
     if (refreshedSolutions && Object.keys(refreshedSolutions).length > 0) {
@@ -815,35 +885,45 @@ Rules:
 
         {/* Prev / Next navigation strip */}
         <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between gap-2">
-          <button
-            onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
-            disabled={!prevQuestion}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group"
-            title={prevQuestion ? `← ${prevQuestion.display_id} ${prevQuestion.title}` : 'First problem'}
-          >
-            <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span className="hidden sm:inline max-w-[180px] truncate">
-              {prevQuestion ? `${prevQuestion.display_id} – ${prevQuestion.title}` : 'First'}
-            </span>
-            <span className="sm:hidden">Prev</span>
-          </button>
+          {(() => {
+            const prevLabel = prevQuestion ? (prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')) : '';
+            return (
+              <button
+                onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
+                disabled={!prevQuestion}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group cursor-pointer"
+                title={prevQuestion ? `← ${prevLabel ? `${prevLabel} ` : ''}${prevQuestion.title}` : 'First problem'}
+              >
+                <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+                <span className="hidden sm:inline max-w-[200px] truncate">
+                  {prevQuestion ? (prevLabel ? `${prevLabel} · ${prevQuestion.title}` : prevQuestion.title) : 'First'}
+                </span>
+                <span className="sm:hidden">Prev</span>
+              </button>
+            );
+          })()}
 
-          <span className="text-[11px] font-mono text-slate-700">
+          <span className="text-[11px] font-mono text-slate-600">
             {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
           </span>
 
-          <button
-            onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
-            disabled={!nextQuestion}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group"
-            title={nextQuestion ? `${nextQuestion.display_id} ${nextQuestion.title} →` : 'Last problem'}
-          >
-            <span className="sm:hidden">Next</span>
-            <span className="hidden sm:inline max-w-[180px] truncate">
-              {nextQuestion ? `${nextQuestion.display_id} – ${nextQuestion.title}` : 'Last'}
-            </span>
-            <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </button>
+          {(() => {
+            const nextLabel = nextQuestion ? (nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')) : '';
+            return (
+              <button
+                onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
+                disabled={!nextQuestion}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group cursor-pointer"
+                title={nextQuestion ? `${nextLabel ? `${nextLabel} ` : ''}${nextQuestion.title} →` : 'Last problem'}
+              >
+                <span className="sm:hidden">Next</span>
+                <span className="hidden sm:inline max-w-[200px] truncate">
+                  {nextQuestion ? (nextLabel ? `${nextLabel} · ${nextQuestion.title}` : nextQuestion.title) : 'Last'}
+                </span>
+                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            );
+          })()}
         </div>
       </div>
 
@@ -863,6 +943,71 @@ Rules:
         />
       ) : (
         <>
+          {/* ── Approach Tier Switcher & Report Action Bar ── */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-semibold">
+                <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
+                Approach Tier:
+              </span>
+              <div className="inline-flex p-1 rounded-xl bg-[#0d0f18] border border-white/[0.08] shadow-inner">
+                {[
+                  { id: 'intuitive', label: 'Intuitive', sub: 'Brute Force', icon: '🥉' },
+                  { id: 'better',    label: 'Better',    sub: 'Sub-Optimal', icon: '🥈' },
+                  { id: 'optimal',   label: 'Best',      sub: 'Optimal',     icon: '🥇' },
+                ].map((tier) => {
+                  const isActive = activeTier === tier.id;
+                  const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
+                  return (
+                    <button
+                      key={tier.id}
+                      onClick={() => handleSelectTier(tier.id)}
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
+                        isActive
+                          ? tier.id === 'optimal'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.25)] font-semibold'
+                            : tier.id === 'better'
+                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-[0_0_12px_rgba(245,158,11,0.25)] font-semibold'
+                            : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 shadow-[0_0_12px_rgba(99,102,241,0.25)] font-semibold'
+                          : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                      }`}
+                      title={`${tier.label} Approach (${tier.sub})${hasCustomAnimation ? ' • Dedicated animation ready' : ''}`}
+                    >
+                      <span className="text-sm">{tier.icon}</span>
+                      <span className="font-semibold">{tier.label}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-medium ${
+                        isActive
+                          ? tier.id === 'optimal'
+                            ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-500/40'
+                            : tier.id === 'better'
+                            ? 'bg-amber-500/30 text-amber-200 border border-amber-500/40'
+                            : 'bg-indigo-500/30 text-indigo-200 border border-indigo-500/40'
+                          : 'text-slate-500 bg-white/[0.03]'
+                      }`}>
+                        {tier.sub}
+                      </span>
+                      {hasCustomAnimation && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" title="Dedicated animated steps ready" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Action: Report Solution / Bug */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowReportModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-rose-300 bg-white/[0.03] hover:bg-rose-500/10 border border-white/[0.08] hover:border-rose-500/30 transition cursor-pointer"
+                title="Report an issue with this question's animation, solution, or complexity"
+              >
+                <Flag className="w-3.5 h-3.5 text-rose-400" />
+                <span>Report Issue</span>
+              </button>
+            </div>
+          </div>
+
           {/* ── Playback bar ── */}
           {Component ? (
             <div className="card px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -1023,13 +1168,14 @@ Rules:
           {/* Canvas + Code */}
           <div className={`grid gap-4 ${viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1'}`}>
             {viewMode !== 'code_only' && (
-              <div className={viewMode === 'split' ? 'lg:col-span-7' : ''}>
+              <div className={viewMode === 'split' ? 'lg:col-span-8' : ''}>
                 {Component ? (
                   <Component
                     currentStep={currentStep}
                     onStepChange={setCurrentStep}
                     customInput={customInput}
                     customTarget={customTarget}
+                    approachTier={activeTier}
                   />
                 ) : (
                   <div
@@ -1063,7 +1209,7 @@ Rules:
               </div>
             )}
             {viewMode !== 'visualizer_only' && (
-              <div className={viewMode === 'split' ? 'lg:col-span-5' : ''}>
+              <div className={viewMode === 'split' ? 'lg:col-span-4' : ''}>
                 <CodeViewer
                   solutions={solutions}
                   initialLanguage="cpp"
@@ -1295,6 +1441,15 @@ Rules:
         )}
       </div>
 
+      {/* Report Solution Modal */}
+      <ReportSolutionModal
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        question={question}
+        currentTier={activeTier}
+        activeLanguage="cpp"
+        currentUser={currentUser}
+      />
     </div>
   );
 }

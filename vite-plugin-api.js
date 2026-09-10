@@ -42,15 +42,119 @@ export function algovisionApiPlugin() {
             return res.end(JSON.stringify({ success: true, data: stats }));
           }
 
-          // GET /api/solutions/:id
-          const solMatch = pathname.match(/^\/api\/solutions\/([^/]+)$/);
-          if (solMatch && req.method === 'GET') {
-            const qId = decodeURIComponent(solMatch[1]);
-            const solutions = dbService.getCodeSolutions(qId);
-            return res.end(JSON.stringify({ success: true, data: solutions }));
+          // GET /api/admin/stats
+          if (pathname === '/api/admin/stats' && req.method === 'GET') {
+            const stats = dbService.getAdminStats();
+            return res.end(JSON.stringify({ success: true, data: stats }));
           }
 
-          // GET /api/questions/:id
+          // GET /api/admin/export (JSON Database Backup)
+          if (pathname === '/api/admin/export' && req.method === 'GET') {
+            const dump = dbService.exportDatabaseDump();
+            return res.end(JSON.stringify({ success: true, data: dump }));
+          }
+
+          // POST /api/admin/import (Restore Database Backup)
+          if (pathname === '/api/admin/import' && req.method === 'POST') {
+            const body = await readBody();
+            const result = dbService.importDatabaseDump(body.dump || body);
+            return res.end(JSON.stringify(result));
+          }
+
+          // GET /api/admin/visualizers (List files on disk and bindings)
+          if (pathname === '/api/admin/visualizers' && req.method === 'GET') {
+            const fs = await import('node:fs');
+            const path = await import('node:path');
+            const visDir = path.resolve(process.cwd(), 'src', 'visualizers');
+            const files = fs.existsSync(visDir)
+              ? fs.readdirSync(visDir).filter((f) => (f.endsWith('.jsx') || f.endsWith('.js')) && f !== 'index.js')
+              : [];
+            return res.end(JSON.stringify({ success: true, files }));
+          }
+
+          // POST /api/admin/autolink (Auto-match visualizer files to questions)
+          if (pathname === '/api/admin/autolink' && req.method === 'POST') {
+            const fs = await import('node:fs');
+            const path = await import('node:path');
+            const visDir = path.resolve(process.cwd(), 'src', 'visualizers');
+            const files = fs.existsSync(visDir)
+              ? fs.readdirSync(visDir).filter((f) => (f.endsWith('.jsx') || f.endsWith('.js')) && f !== 'index.js')
+              : [];
+            const questions = dbService.getAllQuestions();
+            let linkedCount = 0;
+
+            for (const f of files) {
+              const key = f.replace(/\.(jsx|js)$/, '');
+              // Try exact match with question.component_key or matching title/slug
+              const match = questions.find((q) => {
+                const slugMatch = q.slug.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const titleMatch = q.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const keyLower = key.toLowerCase();
+                return keyLower.includes(slugMatch) || keyLower.includes(titleMatch) || q.component_key === key;
+              });
+              if (match && match.component_key !== key) {
+                dbService.updateQuestion(match.id, { component_key: key });
+                linkedCount++;
+              }
+            }
+            return res.end(JSON.stringify({ success: true, linkedCount }));
+          }
+
+          // SOLUTION REPORTS API
+          // POST /api/reports - Create report
+          if (pathname === '/api/reports' && req.method === 'POST') {
+            const body = await readBody();
+            const result = dbService.createReport(body);
+            return res.end(JSON.stringify(result));
+          }
+
+          // GET /api/reports - List reports
+          if (pathname === '/api/reports' && req.method === 'GET') {
+            const status = url.searchParams.get('status') || null;
+            const reports = dbService.getReports(status);
+            return res.end(JSON.stringify({ success: true, data: reports }));
+          }
+
+          // PATCH or DELETE /api/reports/:id
+          const repMatch = pathname.match(/^\/api\/reports\/(\d+)$/);
+          if (repMatch) {
+            const repId = parseInt(repMatch[1], 10);
+            if (req.method === 'PATCH') {
+              const body = await readBody();
+              const result = dbService.updateReportStatus(repId, body.status);
+              return res.end(JSON.stringify(result));
+            }
+            if (req.method === 'DELETE') {
+              const result = dbService.deleteReport(repId);
+              return res.end(JSON.stringify(result));
+            }
+          }
+
+          // GET /api/solutions/:id/all-tiers
+          const allTiersMatch = pathname.match(/^\/api\/solutions\/([^/]+)\/all-tiers$/);
+          if (allTiersMatch && req.method === 'GET') {
+            const qId = decodeURIComponent(allTiersMatch[1]);
+            const tiersMap = dbService.getCodeSolutionsByTier(qId);
+            return res.end(JSON.stringify({ success: true, data: tiersMap }));
+          }
+
+          // GET /api/solutions/:id?tier=optimal
+          const solMatch = pathname.match(/^\/api\/solutions\/([^/]+)$/);
+          if (solMatch) {
+            const qId = decodeURIComponent(solMatch[1]);
+            if (req.method === 'GET') {
+              const tier = url.searchParams.get('tier') || null;
+              const solutions = dbService.getCodeSolutions(qId, tier);
+              return res.end(JSON.stringify({ success: true, data: solutions }));
+            }
+            if (req.method === 'POST' || req.method === 'PUT') {
+              const body = await readBody();
+              dbService.saveCodeSolutions(qId, body.solutions || body, body.approachTier || 'optimal');
+              return res.end(JSON.stringify({ success: true }));
+            }
+          }
+
+          // GET/PATCH/DELETE /api/questions/:id
           const qMatch = pathname.match(/^\/api\/questions\/([^/]+)$/);
           if (qMatch) {
             const qId = decodeURIComponent(qMatch[1]);
@@ -68,6 +172,11 @@ export function algovisionApiPlugin() {
               const body = await readBody();
               const updated = dbService.updateQuestion(qId, body);
               return res.end(JSON.stringify({ success: true, data: updated }));
+            }
+
+            if (req.method === 'DELETE') {
+              const result = dbService.deleteQuestion(qId);
+              return res.end(JSON.stringify(result));
             }
           }
 
