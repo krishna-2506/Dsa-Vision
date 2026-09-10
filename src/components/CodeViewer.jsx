@@ -48,7 +48,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
     const commentMatch = remaining.match(commentRegex);
     if (commentMatch && remaining.startsWith(commentMatch[0])) {
       tokens.push(
-        <span key={keyIdx++} className="text-slate-500 italic font-mono">
+        <span key={keyIdx++} className="cm">
           {commentMatch[0]}
         </span>
       );
@@ -67,7 +67,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
     const strMatch = remaining.match(stringRegex);
     if (strMatch) {
       tokens.push(
-        <span key={keyIdx++} className="text-emerald-400 font-mono">
+        <span key={keyIdx++} className="str">
           {strMatch[0]}
         </span>
       );
@@ -79,7 +79,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
     const numMatch = remaining.match(numberRegex);
     if (numMatch) {
       tokens.push(
-        <span key={keyIdx++} className="text-amber-400 font-mono">
+        <span key={keyIdx++} className="num-tok">
           {numMatch[0]}
         </span>
       );
@@ -96,25 +96,25 @@ function renderHighlightedLine(line, lang = 'cpp') {
 
       if (KEYWORDS.has(word)) {
         tokens.push(
-          <span key={keyIdx++} className="text-purple-400 font-semibold">
+          <span key={keyIdx++} className="kw">
             {word}
           </span>
         );
       } else if (TYPES.has(word)) {
         tokens.push(
-          <span key={keyIdx++} className="text-cyan-400 font-medium">
+          <span key={keyIdx++} className="tp">
             {word}
           </span>
         );
       } else if (isFunction) {
         tokens.push(
-          <span key={keyIdx++} className="text-blue-400 font-medium">
+          <span key={keyIdx++} className="fn">
             {word}
           </span>
         );
       } else {
         tokens.push(
-          <span key={keyIdx++} className="text-slate-200">
+          <span key={keyIdx++} className="text-[#eef1ea]">
             {word}
           </span>
         );
@@ -127,7 +127,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
     const opMatch = remaining.match(operatorRegex);
     if (opMatch) {
       tokens.push(
-        <span key={keyIdx++} className="text-pink-400 font-mono">
+        <span key={keyIdx++} className="op">
           {opMatch[0]}
         </span>
       );
@@ -139,7 +139,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
     const punctMatch = remaining.match(punctuationRegex);
     if (punctMatch) {
       tokens.push(
-        <span key={keyIdx++} className="text-slate-400 font-mono">
+        <span key={keyIdx++} className="text-[#8fa09a]">
           {punctMatch[0]}
         </span>
       );
@@ -184,84 +184,61 @@ export default function CodeViewer({ solutions = {}, initialLanguage = 'cpp', ac
   }, [activeLine]);
 
   return (
-    <div className="flex flex-col bg-[#0b0d13] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+    <div className="code-col h-full rounded-[3px] border border-[var(--line)] overflow-hidden">
       {/* Code Header Bar */}
-      <div className="px-4 py-2 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-1">
+      <div className="code-head">
+        <div className="flex items-center gap-4">
           {availableLangs.length > 0 ? (
             availableLangs.map((lang) => (
               <button
                 key={lang}
                 onClick={() => setSelectedLang(lang)}
-                className={`px-2.5 py-1 rounded text-xs font-mono transition ${
-                  selectedLang === lang
-                    ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
-                }`}
+                className={`lang-tab ${selectedLang === lang ? 'active' : ''}`}
               >
                 {LANGUAGE_LABELS[lang] || lang.toUpperCase()}
               </button>
             ))
           ) : (
-            <span className="text-xs font-mono text-slate-500 flex items-center gap-1.5">
-              <Code2 className="w-3.5 h-3.5" /> Solution Code
+            <span className="text-[12px] font-mono text-[var(--chalk-dim)] flex items-center gap-1.5">
+              <Code2 className="w-3.5 h-3.5 text-[var(--amber)]" /> C++
             </span>
           )}
         </div>
 
         <div className="flex items-center gap-3">
           {activeLine && (
-            <div className="flex items-center gap-1 text-[11px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-              <span>Line {activeLine}</span>
-            </div>
+            <span className="text-[11px] font-mono text-[var(--amber)] opacity-90">
+              L{activeLine}
+            </span>
           )}
-
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-mono border border-white/10 transition"
+            className="copy-btn"
             title="Copy full solution code"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? 'Copied' : 'Copy'}</span>
+            {copied ? <Check className="w-3 h-3 text-[var(--easy)]" /> : <Copy className="w-3 h-3" />}
+            <span>{copied ? 'copied' : 'copy'}</span>
           </button>
         </div>
       </div>
 
-      {/* Code Block with Synchronized Line Highlighting */}
-      <div className="p-3 font-mono text-xs overflow-x-auto max-h-[500px] leading-relaxed">
-        <table ref={tableRef} className="w-full border-collapse">
-          <tbody>
-            {lines.map((line, idx) => {
-              const lineNum = idx + 1;
-              const isActive = activeLine === lineNum;
-
-              return (
-                <tr
-                  key={idx}
-                  data-line={lineNum}
-                  className={`transition-colors duration-150 ${
-                    isActive
-                      ? 'active-code-line bg-indigo-950/40 text-white font-medium'
-                      : 'hover:bg-white/[0.02]'
-                  }`}
-                >
-                  <td className="w-10 pr-3 text-right select-none text-[11px] align-top py-0.5">
-                    <span className="flex items-center justify-end gap-1">
-                      {isActive && <span className="text-indigo-400 text-[9px]">►</span>}
-                      <span className={isActive ? 'text-indigo-400 font-bold' : 'text-slate-600'}>
-                        {lineNum}
-                      </span>
-                    </span>
-                  </td>
-                  <td className="whitespace-pre font-mono py-0.5">
-                    {renderHighlightedLine(line, selectedLang)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {/* Code Block with Synchronized Chalkboard Line Highlighting */}
+      <pre className="code max-h-[540px]" ref={tableRef}>
+        {lines.map((line, idx) => {
+          const lineNum = idx + 1;
+          const isCur = activeLine === lineNum;
+          return (
+            <div
+              key={idx}
+              data-line={lineNum}
+              className={`ln${isCur ? ' current' : ''}`}
+            >
+              <span className="num">{lineNum}</span>
+              <span className="src">{renderHighlightedLine(line, selectedLang)}</span>
+            </div>
+          );
+        })}
+      </pre>
     </div>
   );
 }

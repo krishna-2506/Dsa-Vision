@@ -33,7 +33,8 @@ import {
   Plus,
   Trash2,
   User,
-  Flag
+  Flag,
+  Code2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../services/audio';
@@ -43,6 +44,7 @@ import CodeViewer from './CodeViewer';
 import VisualizerUploader from './VisualizerUploader';
 import VariableInspector from './primitives/VariableInspector';
 import ReportSolutionModal from './ReportSolutionModal';
+import AiQuestionEnhancerModal from './AiQuestionEnhancerModal';
 
 function formatComplexity(text) {
   if (!text) return '—';
@@ -73,6 +75,7 @@ export default function VisualizerStudio({
   const Component = visualizerEntry?.Component || null;
   const [activeTier, setActiveTier] = useState('optimal'); // 'intuitive' | 'better' | 'optimal'
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showEnhanceModal, setShowEnhanceModal] = useState(false);
   const stepsList = visualizerEntry?.approaches?.[activeTier]?.steps || visualizerEntry?.steps || null;
   const maxSteps = stepsList?.length || 6;
   const hasVisualizer = Boolean(Component);
@@ -196,8 +199,13 @@ export default function VisualizerStudio({
 
   const handleDirectCopyPrompt = () => {
     const key = question.component_key || toCamelCase(question.title) + 'Visualizer';
+    const cppCode = solutions.cpp || '// Provide full C++ solution here';
+    const timeC = question.time_complexity || 'O(N)';
+    const spaceC = question.space_complexity || 'O(1)';
+    const desc = JSON.stringify((question.description || '').slice(0, 160));
+
     const promptText = `Act as an expert algorithm educator and React visualization engineer for AlgoVision Studio.
-Create an interactive, animated React visualizer component for this DSA problem from Striver's A2Z Sheet:
+Create an interactive, animated React visualizer component for this DSA problem:
 
 Problem ID: ${question.display_id || (question.leetcode_id ? '#' + question.leetcode_id : 'Q-001')}
 Problem: "${question.title}" (${question.category} - ${question.difficulty})
@@ -206,48 +214,108 @@ Problem Statement & Examples:
 ${question.description}
 
 Approach & Logic:
-${question.approach || 'Provide intuitive brute force, optimized intermediate, and optimal algorithm.'}
+${question.approach || 'Provide intuitive brute force, optimized intermediate, and optimal algorithm approaches.'}
 
-C++ Reference Code:
+C++ Reference (basis for all solution code):
 \`\`\`cpp
-${solutions.cpp || '// C++ solution'}
+${cppCode}
 \`\`\`
 
-IMPORTANT ARCHITECTURAL DIRECTIVE:
-The AlgoVision Studio already hosts a dedicated, syntax-highlighted code execution viewer (C++, Python, Java, JavaScript) beside this visualizer in Split Screen mode with synchronized step line tracking.
-DO NOT waste the visualizer canvas space rendering a duplicate code editor!
-INSTEAD, focus 100% on crafting the MOST BEAUTIFUL, INTUITIVE, AND DYNAMIC GRAPHICAL VISUALIZATION POSSIBLE!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ALGOVISION STUDIO ARCHITECTURE — READ CAREFULLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Strict Requirements:
-1. Multi-Tier Approaches: Provide 3 approach tiers whenever applicable:
-   - "intuitive" (Brute Force / Direct baseline, e.g. O(N²) nested loops)
-   - "better" (Optimized intermediate, e.g. O(N) Hash Map / Stack / Sorting)
-   - "optimal" (Optimal Gold Standard, e.g. O(N) Two Pointers / Sliding Window / In-place DP)
-2. Component must accept props:
-   ({ currentStep: externalStep, onStepChange, customInput = '', customTarget = '', approachTier = 'optimal' })
-   and dynamically switch its internal trace, animated state, HUD, and pointers when approachTier changes!
-3. Visual Styling & Uniformity:
-   - Container: #0b0d14 background, border border-white/10 rounded-xl overflow-hidden shadow-2xl
-   - Header Bar: #0e111a border-b border-white/5, showing Step X/Y, approach badge, step title, and Prev/Next buttons
-   - Canvas: #08090e/60 background, min-h-[260px], centered graphical layout:
-     * Memory / Pointers (Linked Lists): Render dynamic heap node boxes with address hex badges (e.g. 0xC3), PREV/VAL/NEXT slots, SVG bidirectional arrows, and pointer labels (HEAD, TEMP, CURR).
-     * Arrays / Sequences: Fluid ArrayView or boxes with index numbers, value pills, glow highlights, sliding pointer tags (L, R, mid, i, j).
-     * Trees / Graphs: Node circles with gradients, level ranks, connection lines, visited states.
-     * Sliding Window: Highlighted bounding box around active window, running sum meter, max length tracker.
-     * Hash Map: Key-value badge collection (val ➔ index), complement lookup HUD.
-   - Real-time HUD: Comparison/invariant status (e.g. nums[L] + nums[R] == Target) with color-coded status badges.
-   - Explanation Footer: #0c0e16 border-t border-white/5, clear educational breakdown of the step.
-4. Export format:
-   - export const approaches = { intuitive: { ... }, better: { ... }, optimal: { ... } };
-   - export const solutions = approaches.optimal.solutions; // multi-language solutions with thorough comments
-   - export const steps = approaches.optimal.steps;
-   - export const meta = { display_id, title, category, difficulty, timeComplexity, spaceComplexity, description };
-   - export default function ${key}(...) { ... }
+The Studio already provides:
+  • Approach tier tabs (Intuitive / Better / Optimal) above the stage
+  • Split-screen: your canvas LEFT, syntax-highlighted code viewer RIGHT
+  • Transport controls: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x
+  • Step title ("1. Initialize pointers") displayed above your canvas
+  • Prev/Next step buttons and Prev/Next problem navigation
+
+DO NOT render any of: outer card frames, "Step X of Y" counters, prev/next buttons,
+language tabs, or copy-code buttons. The Studio already wraps you. Just render canvas content.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VISUAL STYLE — CHALKBOARD / WHITEBOARD AESTHETIC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Match this exact design system. All colours are enforced by the app's CSS variables:
+
+PALETTE (use these exact hex values):
+  Stage background:     #12181a
+  Card / node fill:     #1c2529
+  Divider lines:        rgba(238,241,234,0.09)
+  Primary text:         #eef1ea
+  Secondary (dim) text: #8fa09a
+  Faint index text:     #5f6f6a
+  Amber / curr-active:  #e8a33d
+  Teal  / prev-second:  #5fb3a6
+  Easy green: #7cb473 | Hard red: #e06c75
+
+SVG DRAWING RULES (all visualizers are SVG-based):
+  Array/node boxes:
+    fill="#1c2529"  stroke="#5f6f6a"  strokeWidth=1.4  rx=3
+    filter="url(#rough)"  ← gives hand-drawn chalk-edge look
+    (The SVG filter id="rough" is already in the page's root HTML — just reference it)
+
+  Active element (curr / selected):
+    Amber glow ring: stroke="#e8a33d" strokeWidth=2.2 rx=6 (box padded +5px each side)
+
+  Previous / secondary element:
+    Teal dashed ring: stroke="#5fb3a6" strokeWidth=1.6 strokeDasharray="3 4"
+
+  Value inside box:
+    font-family="IBM Plex Mono, monospace" fontSize=16 fontWeight=500 fill="#eef1ea"
+
+  Index label below box:
+    font-family="IBM Plex Mono, monospace" fontSize=10.5 fill="#5f6f6a"
+
+  Pointer labels (curr, prev, L, R, head, slow, fast, i, j):
+    font-family="Kalam, cursive" fontSize=14 fill=#e8a33d (active) or #5fb3a6 (secondary)
+    Place ABOVE the box for curr/active, BELOW for prev/secondary
+
+  SVG arrows: stroke="#5f6f6a" strokeWidth=1.2 with arrowhead marker
+  Linked-List nodes: 3-compartment boxes (PREV | VAL | NEXT) with hex address tags above
+  Tree nodes: circles fill="#1c2529" stroke="#5f6f6a"
+  Hash Map: key→value badge grid in amber/teal
+
+STATUS HUD — always render directly below canvas:
+  <div className="status-line"><span className="prev-b">prev = 12</span>, <b>curr = 35</b></div>
+  CSS already defined: .status-line (mono, dim), .status-line b (amber), .status-line .prev-b (teal)
+
+EXPLANATION — render below status HUD:
+  <p className="explain">35 beats curr, so <span className="note">prev</span> inherits old value.</p>
+  CSS already defined: .explain (13.5px, dim), .explain .note (Kalam cursive, amber)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MULTI-LANGUAGE CODE — 3 LANGUAGES × 3 TIERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For EACH approach tier, provide COMPLETE, fully written solutions in:
+  • C++    (always required, full function)
+  • Java   (required — full "class Solution { public ... }" wrapper)
+  • Python (required — def with type hints, "# type: ignore" if needed)
+
+Add educational line-by-line comments in each language explaining WHAT happens and WHY.
+Do NOT write "..." or placeholder stubs — the code viewer shows the full source.
+
+CRITICAL — codeLine sync with animation:
+  Each step object needs codeLine: N where N = the EXACT line number in the C++ solution.
+  The code viewer highlights that line live as the animation plays.
+  Count lines carefully starting from line 1.
+  (Java/Python have different line counts — only C++ line is used for sync.)
+
+  If a tier doesn't meaningfully differ, you may reuse the same steps array and
+  write "// Same approach as optimal" in the other tier's solutions.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXPORT FORMAT (scaffold — complete all sections)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 \`\`\`jsx
-import React, { useState, useMemo } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
-// (Or import other primitives if needed: LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector)
+import React, { useMemo } from 'react';
+// Available primitives: ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView
+// import ArrayView from '../components/primitives/ArrayView';
 
 export const approaches = {
   intuitive: {
@@ -256,109 +324,112 @@ export const approaches = {
     complexity: { time: 'O(N²)', space: 'O(1)' },
     steps: [
       {
-        title: '1. Begin Brute Force Scan',
-        codeLine: 4,
-        variables: { i: 0, j: 1 },
-        explanation: 'Check all pairs sequentially...',
-        // topic specific state...
-      }
+        title: '1. Initialize pointers',   // shown as step title above canvas
+        codeLine: 3,                        // ← exact C++ line number, count carefully
+        variables: { i: 0, j: 1 },         // shown in variable inspector
+        status: '<span class="prev-b">i = 0</span>, <b>j = 1</b>',
+        explain: 'Start at index 0 and scan every element...',
+        // add problem-specific visual state here:
+        activeIndex: 0,
+        compareIndex: 1,
+      },
+      // ... every meaningful algorithm step
     ],
     solutions: {
-      cpp: \`// C++ Intuitive Solution with comments\\n\`,
-      python: \`# Python Intuitive Solution with comments\\n\`,
-      java: \`// Java Intuitive Solution with comments\\n\`,
-      javascript: \`// JavaScript Intuitive Solution with comments\\n\`
+      cpp: \`// C++ Brute Force — O(N²)
+// Scan all pairs to find the second largest
+int solution(int arr[], int n) {   // line 3
+  int first = -1, second = -1;     // line 4  ← codeLine 4 for steps that touch this
+  for (int i = 0; i < n; i++) {   // line 5
+    // ...
+  }
+  return second;                   // line N
+}\`,
+      java: \`// Java Brute Force — O(N²)
+class Solution {
+  public int solution(int[] arr) {
+    int first = Integer.MIN_VALUE, second = Integer.MIN_VALUE;
+    // ...
+    return second;
+  }
+}\`,
+      python: \`# Python Brute Force — O(N²)
+def solution(arr: list[int]) -> int:
+    first = second = float('-inf')
+    # ...
+    return second
+\`
     }
   },
   better: {
-    title: 'Better: Optimized Intermediate',
+    title: 'Better: Sort + Scan',
     badge: 'Sub-Optimal',
-    complexity: { time: 'O(N)', space: 'O(N)' },
-    steps: [ /* intermediate steps */ ],
-    solutions: { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }
+    complexity: { time: 'O(N log N)', space: 'O(1)' },
+    steps: [ /* all steps with codeLine */ ],
+    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   },
   optimal: {
-    title: 'Best: Optimal Gold Standard',
+    title: 'Optimal: Single Pass',
     badge: 'Optimal',
-    complexity: { time: '${question.time_complexity || 'O(N)'}', space: '${question.space_complexity || 'O(1)'}' },
-    steps: [ /* optimal steps */ ],
-    solutions: { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }
+    complexity: { time: '${timeC}', space: '${spaceC}' },
+    steps: [ /* all steps with codeLine */ ],
+    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   }
 };
 
 export const solutions = approaches.optimal.solutions;
-export const steps = approaches.optimal.steps;
+export const steps     = approaches.optimal.steps;
 export const meta = {
-  display_id: '${question.display_id || 'Q-001'}',
-  title: "${question.title}",
-  category: "${question.category}",
-  difficulty: "${question.difficulty}",
-  timeComplexity: "${question.time_complexity || 'O(N)'}",
-  spaceComplexity: "${question.space_complexity || 'O(1)'}",
-  description: ${JSON.stringify((question.description || '').slice(0, 140))}
+  display_id:      '${question.display_id || 'Q-001'}',
+  title:           "${question.title}",
+  category:        "${question.category}",
+  difficulty:      "${question.difficulty}",
+  timeComplexity:  "${timeC}",
+  spaceComplexity: "${spaceC}",
+  description:     ${desc}
 };
 
 export default function ${key}({
-  currentStep: externalStep,
+  currentStep  = 0,
   onStepChange,
-  customInput = '',
+  customInput  = '',
   customTarget = '',
   approachTier = 'optimal'
 }) {
-  const [internalStep, setInternalStep] = useState(0);
   const activeApproach = approaches[approachTier] || approaches.optimal;
-  const activeSteps = activeApproach.steps;
-  const stepIndex = externalStep !== undefined ? Math.min(externalStep, activeSteps.length - 1) : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = activeSteps[stepIndex] || activeSteps[0];
-
-  const handleNext = () => { if (stepIndex < activeSteps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
+  const activeSteps    = activeApproach.steps;
+  const stepIndex      = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
+  const stepData       = activeSteps[stepIndex] || activeSteps[0];
 
   return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {activeSteps.length}
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold bg-white/5 text-slate-300 border border-white/10">
-            {activeApproach.badge}
-          </span>
-          <h3 className="text-sm font-bold text-white font-mono truncate max-w-md">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition cursor-pointer">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === activeSteps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition cursor-pointer">
-            Next →
-          </button>
-        </div>
+    <div className="w-full flex flex-col">
+      {/* ── Chalkboard Canvas ── */}
+      <div className="w-full py-6 flex items-center justify-center">
+        <svg viewBox="0 0 620 180" width="100%" height="180">
+          <defs>
+            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#5f6f6a"/>
+            </marker>
+          </defs>
+          {/* Render boxes / arrows / pointers based on stepData */}
+        </svg>
       </div>
 
-      {/* 2. Visualizer Graphical Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[260px]">
-        {/* Topic-specific creative visual representation */}
-        
-        {/* Real-time Comparison HUD */}
-        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
-          <span className="text-slate-400">Status: <strong className="text-emerald-400">{stepData.hudText || 'Active Execution'}</strong></span>
-        </div>
-      </div>
+      {/* ── Status HUD ── */}
+      {stepData.status && (
+        <div className="status-line" dangerouslySetInnerHTML={{ __html: stepData.status }} />
+      )}
 
-      {/* 3. Explanation Footer */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
-        {stepData.explanation}
-      </div>
+      {/* ── Explanation ── */}
+      {stepData.explain && (
+        <p className="explain" dangerouslySetInnerHTML={{ __html: stepData.explain }} />
+      )}
     </div>
   );
 }
 \`\`\`
 
-Return ONLY the complete, ready-to-run React JSX code.`;
+Return ONLY the complete, ready-to-run React JSX code. No markdown outside the code block.`;
 
     navigator.clipboard.writeText(promptText);
     sound.playStep(640);
@@ -545,7 +616,6 @@ Return ONLY the complete, ready-to-run React JSX code.`;
     sound?.playSuccess?.();
   };
 
-
   // Playback timer
   useEffect(() => {
     if (isPlaying) {
@@ -628,109 +698,93 @@ Return ONLY the complete, ready-to-run React JSX code.`;
   };
 
 
-  const diffDot =
-    question.difficulty === 'Easy'   ? 'bg-emerald-400' :
-    question.difficulty === 'Medium' ? 'bg-amber-400'   :
-    question.difficulty === 'Hard'   ? 'bg-rose-400'    : 'bg-slate-500';
-
-  const diffText =
-    question.difficulty === 'Easy'   ? 'text-emerald-400' :
-    question.difficulty === 'Medium' ? 'text-amber-400'   :
-    question.difficulty === 'Hard'   ? 'text-rose-400'    : 'text-slate-500';
+  const diffDotClass =
+    question.difficulty === 'Easy' ? 'dot-easy' :
+    question.difficulty === 'Medium' ? 'dot-medium' :
+    question.difficulty === 'Hard' ? 'dot-hard' : 'dot-easy';
 
   return (
-    <div className="max-w-[1280px] mx-auto px-6 py-6 space-y-4">
-      {/* ── Zone 1: Problem header ── */}
-      <div className="card p-4 sm:p-5">
-        {/* Title + meta row */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div className="flex items-start gap-3 min-w-0">
-            {/* Back */}
+    <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-6 space-y-6">
+      {/* Caption line */}
+      <div className="caption flex items-center justify-between">
+        <span>AlgoVision Whiteboard Studio · Interactive DSA Step-by-Step Visualization</span>
+        {question.category && (
+          <span className="font-mono text-[11px] opacity-75 hidden sm:inline">
+            {question.category.replace(/^\d+\.\s*/, '')}
+          </span>
+        )}
+      </div>
+
+      {/* ── ZONE 1: Problem Overview & Question Tab (Card on TOP) ── */}
+      <div className="card shadow-xl p-4 sm:p-5 space-y-4">
+        {/* Top Header Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={onBack}
-              className="mt-0.5 p-1.5 rounded-md text-slate-500 hover:text-white hover:bg-white/[0.06] transition shrink-0"
+              className="p-1.5 rounded text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--line)] transition shrink-0"
               title="Back to library (Esc)"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
 
             <div className="min-w-0">
-              {/* ID + difficulty */}
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className={`w-2 h-2 rounded-full shrink-0 ${diffDot}`} title={question.difficulty} />
-                <span className={`text-[11px] font-mono font-semibold ${diffText}`}>{question.difficulty}</span>
-                {question.display_id && (
-                  <span className="text-[11px] font-mono text-slate-500">{question.display_id}</span>
-                )}
-                {question.leetcode_id && question.leetcode_id !== question.display_id && (
-                  <span className="text-[11px] font-mono text-slate-600">LC {question.leetcode_id}</span>
-                )}
-                <span className="text-[11px] font-mono text-slate-600">
-                  {(question.category || '').replace(/^\d+\.\s*/, '')}
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="diff !ml-0">
+                  <span className={`dot ${diffDotClass}`}></span>
+                  {question.difficulty}
                 </span>
+                <span className="text-[11.5px] font-mono text-[var(--amber)]">
+                  {question.display_id || (question.leetcode_id ? `#${question.leetcode_id}` : '')}
+                </span>
+                {question.category && (
+                  <span className="text-[11px] font-mono text-[var(--chalk-faint)]">
+                    {question.category.replace(/^\d+\.\s*/, '')}
+                  </span>
+                )}
               </div>
-
-              {/* Title */}
-              <h1 className="font-sans font-bold text-[15px] sm:text-[16px] text-white leading-snug tracking-tight max-w-lg">
+              <h1 className="text-[16px] sm:text-[18px] font-bold font-sans text-[var(--chalk)] truncate">
                 {question.title}
               </h1>
-
-              {/* Tags */}
-              {question.tags && question.tags.length > 0 && (
-                <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                  {question.tags.slice(0, 4).map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-mono text-slate-600 hover:text-slate-400 transition cursor-default"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
-            {/* Complexity */}
-            <div className="flex items-center gap-2 text-[11px] font-mono text-slate-500 bg-white/[0.03] border border-white/[0.06] rounded-md px-3 py-1.5 shrink-0">
-              <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3 text-indigo-500" />
+          {/* Right Action Tools */}
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+            {/* Complexity Badges */}
+            <div className="hidden lg:flex items-center gap-2 text-[11px] font-mono text-[var(--chalk-dim)] px-2.5 py-1 rounded bg-[var(--board-raised-2)] border border-[var(--line)]">
+              <span className="flex items-center gap-1" title="Time Complexity">
+                <Clock className="w-3 h-3 text-[var(--amber)]" />
                 {formatComplexity(question.time_complexity)}
               </span>
-              <span className="text-white/10">·</span>
-              <span className="flex items-center gap-1">
-                <Cpu className="w-3 h-3 text-indigo-500" />
+              <span className="opacity-30">·</span>
+              <span className="flex items-center gap-1" title="Space Complexity">
+                <Cpu className="w-3 h-3 text-[var(--teal)]" />
                 {formatComplexity(question.space_complexity)}
               </span>
             </div>
 
-            {/* Status */}
+            {/* Status Dropdown */}
             <select
               value={question.status || 'to_learn'}
               onChange={(e) => onStatusChange(question.id, e.target.value)}
-              className={`nav-pill cursor-pointer ${
-                question.status === 'mastered'    ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' :
-                question.status === 'in_progress' ? 'text-amber-400   border-amber-500/30  bg-amber-500/10'  : ''
-              }`}
-              style={{ appearance: 'none', backgroundImage: 'none', paddingRight: '0.625rem' }}
+              className="nav-pill cursor-pointer"
             >
-              <option value="to_learn"    className="bg-[#0d0f18]">To learn</option>
-              <option value="in_progress" className="bg-[#0d0f18]">In progress</option>
-              <option value="mastered"    className="bg-[#0d0f18]">Mastered</option>
+              <option value="to_learn" className="bg-[#171f22]">To learn</option>
+              <option value="in_progress" className="bg-[#171f22]">In progress</option>
+              <option value="mastered" className="bg-[#171f22]">Mastered</option>
             </select>
 
-            {/* View mode */}
-            <div className="flex items-center bg-white/[0.03] border border-white/[0.06] rounded-md p-0.5">
-              {[['visualizer_only','Viz'],['split','Split'],['code_only','Code']].map(([mode, label]) => (
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded p-0.5">
+              {[['visualizer_only', 'Viz'], ['split', 'Split'], ['code_only', 'Code']].map(([mode, label]) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
                   className={`px-2.5 py-1 rounded text-[11px] font-mono transition ${
                     viewMode === mode
-                      ? 'bg-indigo-600/30 text-indigo-300 font-semibold'
-                      : 'text-slate-500 hover:text-slate-300'
+                      ? 'bg-[var(--amber-dim)] text-[var(--amber)] font-semibold'
+                      : 'text-[var(--chalk-faint)] hover:text-[var(--chalk)]'
                   }`}
                 >
                   {label}
@@ -738,109 +792,75 @@ Return ONLY the complete, ready-to-run React JSX code.`;
               ))}
             </div>
 
-            {/* Upload */}
+            {/* Upload Button */}
             <button
               onClick={() => setShowUploader(!showUploader)}
-              className={`nav-pill ${
-                showUploader ? 'border-indigo-500/40 bg-indigo-600/15 text-indigo-300' : ''
-              }`}
-              title="Upload or replace visualizer"
+              className={`chalk-btn ${showUploader ? 'chalk-btn-amber' : ''}`}
+              title="Upload custom .jsx visualizer component"
             >
               <UploadCloud className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Upload</span>
             </button>
 
-            {/* Spaced Repetition Quick Rater */}
-            <div className="flex items-center gap-1 bg-[#08090e] p-0.5 rounded-lg border border-white/[0.08] text-[10px] font-mono">
-              <button
-                onClick={() => handleReviewConfidence('mastered')}
-                className="px-2 py-0.5 rounded bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition flex items-center gap-1"
-                title="Mark Mastered (Interval extended 2.5x)"
-              >
-                <span>🟢</span> <span className="hidden sm:inline">Mastered</span>
-              </button>
-              <button
-                onClick={() => handleReviewConfidence('practicing')}
-                className="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition flex items-center gap-1"
-                title="Needs Practice (Review in 3 days)"
-              >
-                <span>🟡</span> <span className="hidden sm:inline">Review 3d</span>
-              </button>
-              <button
-                onClick={() => handleReviewConfidence('struggling')}
-                className="px-2 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition flex items-center gap-1"
-                title="Struggled (Reset to 1 day)"
-              >
-                <span>🔴</span> <span className="hidden sm:inline">Reset</span>
-              </button>
-              {reviewSaved && (
-                <span className="text-emerald-400 px-1 font-bold animate-pulse">✓ Saved</span>
-              )}
-            </div>
+            {/* AI Enhance / Edit Question */}
+            <button
+              onClick={() => setShowEnhanceModal(true)}
+              className="chalk-btn"
+              title="Enhance or edit problem statement & examples with AI"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[var(--amber)]" />
+              <span className="hidden lg:inline">AI Enhance</span>
+            </button>
 
-            {/* LeetCode */}
-            {question.leetcode_url && (
-              <a
-                href={question.leetcode_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="nav-pill"
-                title="Open on LeetCode"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            )}
-
-            {/* Jumper */}
+            {/* Quick Problem Jumper */}
             <div className="relative">
               <button
                 onClick={() => setShowJumper(!showJumper)}
-                className="nav-pill"
+                className="chalk-btn"
                 title="Jump to any problem"
               >
                 <Layers className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Jump</span>
-                <ChevronDown className={`w-3 h-3 transition-transform ${showJumper ? 'rotate-180' : ''}`} />
               </button>
 
               {showJumper && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowJumper(false)} />
-                  <div className="absolute top-full mt-1.5 right-0 w-72 sm:w-80 bg-[#0d0f18] border border-white/[0.12] rounded-xl shadow-2xl z-50 overflow-hidden fade-in">
-                    <div className="p-2.5 border-b border-white/[0.06] flex items-center gap-2">
-                      <Search className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <div className="absolute top-full mt-1.5 right-0 w-72 sm:w-80 bg-[var(--board-raised)] border border-[var(--line)] rounded shadow-2xl z-50 overflow-hidden fade-in">
+                    <div className="p-2.5 border-b border-[var(--line)] flex items-center gap-2">
+                      <Search className="w-3.5 h-3.5 text-[var(--chalk-faint)] shrink-0" />
                       <input
                         type="text"
                         value={jumperSearch}
                         onChange={(e) => setJumperSearch(e.target.value)}
                         placeholder="Q-001, title, category…"
-                        className="bg-transparent text-[12px] text-white placeholder-slate-600 focus:outline-none w-full font-mono"
+                        className="bg-transparent text-[12px] text-[var(--chalk)] placeholder-[var(--chalk-faint)] focus:outline-none w-full font-mono"
                         autoFocus
                       />
                       {jumperSearch && (
-                        <button onClick={() => setJumperSearch('')} className="text-slate-600 hover:text-white shrink-0">
+                        <button onClick={() => setJumperSearch('')} className="text-[var(--chalk-faint)] hover:text-[var(--chalk)] shrink-0">
                           <X className="w-3 h-3" />
                         </button>
                       )}
                     </div>
-                    <div className="overflow-y-auto max-h-64 divide-y divide-white/[0.05] font-mono text-[11px]">
+                    <div className="overflow-y-auto max-h-64 divide-y divide-[var(--line)] font-mono text-[11px]">
                       {filteredJumperQuestions.length === 0 ? (
-                        <div className="p-4 text-center text-slate-600">No matches</div>
+                        <div className="p-4 text-center text-[var(--chalk-faint)]">No matches</div>
                       ) : filteredJumperQuestions.map((q) => (
                         <div
                           key={q.id}
                           onClick={() => { if (onNavigateQuestion) onNavigateQuestion(q); setShowJumper(false); }}
                           className={`px-3 py-2 flex items-center justify-between gap-2 cursor-pointer transition ${
-                            q.id === question.id ? 'bg-indigo-600/15 text-white' : 'hover:bg-white/[0.04] text-slate-400'
+                            q.id === question.id ? 'bg-[var(--amber-dim)] text-[var(--amber)]' : 'hover:bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-indigo-400 shrink-0">#{q.display_id || q.leetcode_id}</span>
+                            <span className="text-[var(--amber)] shrink-0">#{q.display_id || q.leetcode_id}</span>
                             <span className="truncate">{q.title}</span>
                           </div>
                           <span className={`text-[10px] shrink-0 ${
-                            q.difficulty === 'Easy' ? 'text-emerald-400' :
-                            q.difficulty === 'Medium' ? 'text-amber-400' : 'text-rose-400'
+                            q.difficulty === 'Easy' ? 'text-[var(--easy)]' :
+                            q.difficulty === 'Medium' ? 'text-[var(--amber)]' : 'text-[var(--hard)]'
                           }`}>{q.difficulty}</span>
                         </div>
                       ))}
@@ -849,87 +869,365 @@ Return ONLY the complete, ready-to-run React JSX code.`;
                 </>
               )}
             </div>
+
+            {/* Report Button */}
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="chalk-btn"
+              title="Report an issue with this question or solution"
+            >
+              <Flag className="w-3.5 h-3.5 text-[#e06c75]" />
+            </button>
+
+            {/* LeetCode link */}
+            {question.leetcode_url && (
+              <a
+                href={question.leetcode_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="chalk-btn"
+                title="Open on LeetCode"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
           </div>
         </div>
 
-        {/* Problem statement + approach */}
-        <div className="mt-4 pt-4 border-t border-white/[0.05] space-y-3">
-          <div className="text-[12px] text-slate-400 leading-relaxed whitespace-pre-wrap max-h-32 overflow-y-auto font-sans">
-            {question.description || 'No description available.'}
-          </div>
-
-          {/* Approach toggle button — always visible */}
-          <div className="flex items-center gap-2">
+        {/* Navigation & Spaced Repetition Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11.5px] font-mono">
+          {/* Spaced Repetition Rater */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-[var(--chalk-faint)] mr-1">Spaced Rep:</span>
             <button
-              onClick={() => setShowApproach(!showApproach)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-mono font-medium border transition ${
-                showApproach
-                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
-                  : 'bg-white/[0.03] border-white/[0.08] text-slate-500 hover:text-amber-400 hover:border-amber-500/30 hover:bg-amber-500/10'
-              }`}
+              onClick={() => handleReviewConfidence('mastered')}
+              className="px-2 py-0.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] text-[var(--easy)] border border-[var(--line)] transition flex items-center gap-1"
+              title="Mark Mastered (Interval extended)"
             >
-              <span>{showApproach ? '▾' : '▸'}</span>
-              {showApproach ? 'Hide Approach & Intuition' : 'Show Approach & Intuition'}
+              <span>🟢</span> <span>Mastered</span>
             </button>
+            <button
+              onClick={() => handleReviewConfidence('practicing')}
+              className="px-2 py-0.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] text-[var(--amber)] border border-[var(--line)] transition flex items-center gap-1"
+              title="Review in 3 days"
+            >
+              <span>🟡</span> <span>Review 3d</span>
+            </button>
+            <button
+              onClick={() => handleReviewConfidence('struggling')}
+              className="px-2 py-0.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] text-[#e06c75] border border-[var(--line)] transition flex items-center gap-1"
+              title="Reset to 1 day"
+            >
+              <span>🔴</span> <span>Reset</span>
+            </button>
+            {reviewSaved && (
+              <span className="text-[var(--easy)] px-1 font-bold animate-pulse">✓ Saved</span>
+            )}
           </div>
 
+          {/* Prev / Next Problem Navigation */}
+          <div className="flex items-center gap-2">
+            {(() => {
+              const prevLabel = prevQuestion ? (prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')) : '';
+              return (
+                <button
+                  onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
+                  disabled={!prevQuestion}
+                  className="chalk-btn disabled:opacity-30 disabled:pointer-events-none"
+                  title={prevQuestion ? `← ${prevLabel} ${prevQuestion.title}` : 'First problem'}
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{prevLabel || 'Prev'}</span>
+                </button>
+              );
+            })()}
+
+            <span className="text-[var(--chalk-faint)] px-1.5">
+              {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
+            </span>
+
+            {(() => {
+              const nextLabel = nextQuestion ? (nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')) : '';
+              return (
+                <button
+                  onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
+                  disabled={!nextQuestion}
+                  className="chalk-btn disabled:opacity-30 disabled:pointer-events-none"
+                  title={nextQuestion ? `${nextLabel} ${nextQuestion.title} →` : 'Last problem'}
+                >
+                  <span className="hidden sm:inline">{nextLabel || 'Next'}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              );
+            })()}
+          </div>
+        </div>
+
+        {/* Problem Statement text */}
+        <div className="text-[12.5px] text-[var(--chalk-dim)] leading-relaxed whitespace-pre-wrap max-h-36 overflow-y-auto font-sans bg-[var(--board)] p-3.5 rounded border border-[var(--line)]">
+          {question.description || 'No description available.'}
+        </div>
+
+        {/* Approach toggle */}
+        <div>
+          <button
+            onClick={() => setShowApproach(!showApproach)}
+            className="text-[11.5px] font-mono text-[var(--amber)] hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <span>{showApproach ? '▾' : '▸'}</span>
+            <span>{showApproach ? 'Hide Approach & Invariants' : 'Show Approach & Invariants'}</span>
+          </button>
           {showApproach && (
-            <div className="rounded-lg bg-[#0a0b10] border border-amber-500/15 p-3.5 space-y-1">
-              <span className="text-[10px] font-mono text-amber-600/80 uppercase tracking-wider font-semibold">Approach & Intuition</span>
-              <div className="text-[12px] text-slate-400 leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto font-sans pt-1">
-                {question.approach || 'Standard optimal approach.'}
-              </div>
+            <div className="mt-2 p-3 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[12.5px] text-[var(--chalk-dim)] leading-relaxed whitespace-pre-wrap font-sans">
+              {question.approach || 'Standard optimal approach.'}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── ZONE 2: Chalkboard Interactive Stage (Workbench Card) ── */}
+      <div className="card shadow-2xl overflow-hidden">
+        {/* Tiers Row (with organic wavy SVG underline) */}
+        <div className="tiers">
+          {[
+            { id: 'intuitive', label: 'Intuitive', sub: 'brute force' },
+            { id: 'better',    label: 'Better',    sub: 'sub-optimal' },
+            { id: 'optimal',   label: 'Optimal',   sub: 'single pass / optimal' },
+          ].map((tier) => {
+            const isActive = activeTier === tier.id;
+            const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
+            return (
+              <button
+                key={tier.id}
+                className={`tier ${isActive ? 'active' : ''}`}
+                data-tier={tier.id}
+                onClick={() => handleSelectTier(tier.id)}
+              >
+                {tier.label} <span className="sub">{tier.sub}</span>
+                {hasCustomAnimation && (
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--teal)] ml-1" title="Dedicated animation ready" />
+                )}
+                <svg className="underline" viewBox="0 0 100 8" preserveAspectRatio="none">
+                  <path d="M2,5 Q25,2 50,5 T98,4" stroke="#e8a33d" strokeWidth="2" fill="none" strokeLinecap="round" />
+                </svg>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Main Stage Grid */}
+        <div
+          className="stage"
+          style={{
+            gridTemplateColumns:
+              viewMode === 'split' ? '1.15fr 0.95fr' : '1fr'
+          }}
+        >
+          {/* Canvas Column */}
+          {viewMode !== 'code_only' && (
+            <div className="canvas-col">
+              <p id="stepTitle">
+                {currentStepData?.title || `${currentStep + 1}. Step Execution`}
+              </p>
+
+              {Component ? (
+                <Component
+                  currentStep={currentStep}
+                  onStepChange={setCurrentStep}
+                  customInput={customInput}
+                  customTarget={customTarget}
+                  approachTier={activeTier}
+                />
+              ) : (
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsBarDragging(true);
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    setIsBarDragging(false);
+                  }}
+                  onDrop={handleDirectFileDrop}
+                  onClick={() => barFileInputRef.current?.click()}
+                  className={`flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer border border-dashed rounded-[3px] transition-all duration-200 ${
+                    isBarDragging
+                      ? 'border-[var(--amber)] bg-[var(--amber-dim)]'
+                      : 'border-[var(--line-strong)] hover:border-[var(--amber)]'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    ref={barFileInputRef}
+                    onChange={handleBarFileInput}
+                    accept=".jsx,.tsx,.js,.ts"
+                    className="hidden"
+                  />
+                  <UploadCloud className="w-8 h-8 text-[var(--amber)]" />
+                  <p className="text-[13px] font-medium text-[var(--chalk)]">
+                    {isBarDragging ? 'Drop your .jsx file now!' : 'No visualizer for this question yet'}
+                  </p>
+                  <p className="text-[12px] text-[var(--chalk-dim)] max-w-sm">
+                    Drag &amp; drop your React visualizer <code className="text-[var(--amber)]">.jsx</code> file here, or click to browse.
+                  </p>
+                  <div className="pt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDirectCopyPrompt();
+                      }}
+                      className="chalk-btn chalk-btn-amber"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>{copiedDirect ? 'Copied Prompt!' : 'Copy AI Prompt'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowUploader(true);
+                      }}
+                      className="chalk-btn"
+                    >
+                      <UploadCloud className="w-3.5 h-3.5" />
+                      <span>Upload Code</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Code Column */}
+          {viewMode !== 'visualizer_only' && (
+            <div className="code-col">
+              {!Component && viewMode === 'code_only' && (
+                <div className="p-3 bg-[var(--board-raised-2)] border-b border-[var(--line)] flex items-center justify-between gap-3 text-[11.5px] font-mono flex-wrap">
+                  <span className="text-[var(--chalk-dim)] flex items-center gap-1.5">
+                    <Code2 className="w-3.5 h-3.5 text-[var(--amber)]" />
+                    Code Execution View · No visualizer uploaded yet for this question.
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleDirectCopyPrompt}
+                      className="chalk-btn chalk-btn-amber py-1"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>{copiedDirect ? 'Copied!' : 'Copy AI Prompt'}</span>
+                    </button>
+                    <button
+                      onClick={() => setShowUploader(true)}
+                      className="chalk-btn py-1"
+                    >
+                      <UploadCloud className="w-3 h-3" />
+                      <span>Upload .jsx</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+              <CodeViewer
+                solutions={solutions}
+                initialLanguage="cpp"
+                activeLine={activeCodeLine}
+              />
             </div>
           )}
         </div>
 
-        {/* Prev / Next navigation strip */}
-        <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between gap-2">
-          {(() => {
-            const prevLabel = prevQuestion ? (prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')) : '';
-            return (
-              <button
-                onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
-                disabled={!prevQuestion}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group cursor-pointer"
-                title={prevQuestion ? `← ${prevLabel ? `${prevLabel} ` : ''}${prevQuestion.title}` : 'First problem'}
-              >
-                <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-                <span className="hidden sm:inline max-w-[200px] truncate">
-                  {prevQuestion ? (prevLabel ? `${prevLabel} · ${prevQuestion.title}` : prevQuestion.title) : 'First'}
-                </span>
-                <span className="sm:hidden">Prev</span>
-              </button>
-            );
-          })()}
+        {/* ── Navrow Footer (Ticks + Transport Controls + Nav Buttons) ── */}
+        <div className="navrow">
+          {/* Ticks */}
+          <div className="ticks" id="ticks">
+            {Array.from({ length: maxSteps }).map((_, idx) => {
+              const cls = idx === currentStep ? 'now' : idx < currentStep ? 'done' : '';
+              return (
+                <span
+                  key={idx}
+                  onClick={() => {
+                    setCurrentStep(idx);
+                    sound.playStep(500 + idx * 30);
+                    if (idx === maxSteps - 1) triggerCompletionCelebration();
+                  }}
+                  className={`tick ${cls}`}
+                  title={`Step ${idx + 1}`}
+                />
+              );
+            })}
+          </div>
 
-          <span className="text-[11px] font-mono text-slate-600">
-            {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
-          </span>
+          {/* Transport Controls */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={handleReset}
+              className="navbtn"
+              title="Reset (R)"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
 
-          {(() => {
-            const nextLabel = nextQuestion ? (nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')) : '';
-            return (
-              <button
-                onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
-                disabled={!nextQuestion}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-mono border border-white/[0.07] bg-white/[0.02] hover:bg-white/[0.07] disabled:opacity-30 disabled:pointer-events-none text-slate-400 hover:text-white transition group cursor-pointer"
-                title={nextQuestion ? `${nextLabel ? `${nextLabel} ` : ''}${nextQuestion.title} →` : 'Last problem'}
-              >
-                <span className="sm:hidden">Next</span>
-                <span className="hidden sm:inline max-w-[200px] truncate">
-                  {nextQuestion ? (nextLabel ? `${nextLabel} · ${nextQuestion.title}` : nextQuestion.title) : 'Last'}
-                </span>
-                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-              </button>
-            );
-          })()}
+            <button
+              onClick={togglePlay}
+              className="navbtn font-medium"
+              style={{ color: isPlaying ? 'var(--amber)' : undefined }}
+              title="Play / Pause (Space)"
+            >
+              {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+              <span>{isPlaying ? 'pause' : 'play'}</span>
+            </button>
+
+            <button
+              onClick={() => setLoop(!loop)}
+              className={`navbtn ${loop ? 'text-[var(--amber)]' : ''}`}
+              title={loop ? 'Loop enabled' : 'Loop disabled'}
+            >
+              <Repeat className="w-3.5 h-3.5" />
+            </button>
+
+            <div className="flex items-center gap-1 border-l border-[var(--line)] pl-3 text-[12px] font-mono text-[var(--chalk-faint)]">
+              {[0.5, 1, 1.5, 2].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setSpeed(s)}
+                  className={`px-1.5 py-0.5 rounded transition ${
+                    speed === s ? 'text-[var(--amber)] font-bold' : 'hover:text-[var(--chalk)]'
+                  }`}
+                >
+                  {s}x
+                </button>
+              ))}
+            </div>
+
+            <span className="stepcount ml-2" id="stepCount">
+              Step {currentStep + 1} of {maxSteps}
+            </span>
+          </div>
+
+          {/* Nav Buttons */}
+          <div className="navbtns">
+            <button
+              className="navbtn"
+              id="prevBtn"
+              onClick={handlePrevStep}
+              disabled={currentStep === 0}
+            >
+              ← prev
+            </button>
+            <button
+              className="navbtn"
+              id="nextBtn"
+              onClick={handleNextStep}
+              disabled={currentStep === maxSteps - 1}
+            >
+              next →
+            </button>
+          </div>
         </div>
       </div>
 
 
-      {/* ── Uploader modal ── */}
-      {showUploader ? (
+      {/* ── Uploader Modal Overlay ── */}
+      {showUploader && (
         <VisualizerUploader
           question={question}
           solutions={solutions}
@@ -941,284 +1239,6 @@ Return ONLY the complete, ready-to-run React JSX code.`;
           userId={currentUser?.id}
           initialCode={preloadedUploadCode}
         />
-      ) : (
-        <>
-          {/* ── Approach Tier Switcher & Report Action Bar ── */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5 font-semibold">
-                <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                Approach Tier:
-              </span>
-              <div className="inline-flex p-1 rounded-xl bg-[#0d0f18] border border-white/[0.08] shadow-inner">
-                {[
-                  { id: 'intuitive', label: 'Intuitive', sub: 'Brute Force', icon: '🥉' },
-                  { id: 'better',    label: 'Better',    sub: 'Sub-Optimal', icon: '🥈' },
-                  { id: 'optimal',   label: 'Best',      sub: 'Optimal',     icon: '🥇' },
-                ].map((tier) => {
-                  const isActive = activeTier === tier.id;
-                  const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
-                  return (
-                    <button
-                      key={tier.id}
-                      onClick={() => handleSelectTier(tier.id)}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-                        isActive
-                          ? tier.id === 'optimal'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-[0_0_12px_rgba(16,185,129,0.25)] font-semibold'
-                            : tier.id === 'better'
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-[0_0_12px_rgba(245,158,11,0.25)] font-semibold'
-                            : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 shadow-[0_0_12px_rgba(99,102,241,0.25)] font-semibold'
-                          : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-                      }`}
-                      title={`${tier.label} Approach (${tier.sub})${hasCustomAnimation ? ' • Dedicated animation ready' : ''}`}
-                    >
-                      <span className="text-sm">{tier.icon}</span>
-                      <span className="font-semibold">{tier.label}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-medium ${
-                        isActive
-                          ? tier.id === 'optimal'
-                            ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-500/40'
-                            : tier.id === 'better'
-                            ? 'bg-amber-500/30 text-amber-200 border border-amber-500/40'
-                            : 'bg-indigo-500/30 text-indigo-200 border border-indigo-500/40'
-                          : 'text-slate-500 bg-white/[0.03]'
-                      }`}>
-                        {tier.sub}
-                      </span>
-                      {hasCustomAnimation && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_6px_#22d3ee]" title="Dedicated animated steps ready" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Quick Action: Report Solution / Bug */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowReportModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono text-slate-400 hover:text-rose-300 bg-white/[0.03] hover:bg-rose-500/10 border border-white/[0.08] hover:border-rose-500/30 transition cursor-pointer"
-                title="Report an issue with this question's animation, solution, or complexity"
-              >
-                <Flag className="w-3.5 h-3.5 text-rose-400" />
-                <span>Report Issue</span>
-              </button>
-            </div>
-          </div>
-
-          {/* ── Playback bar ── */}
-          {Component ? (
-            <div className="card px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
-              {/* Transport controls */}
-              <div className="flex items-center gap-1">
-                <button onClick={handleReset} className="btn-ghost w-8 justify-center px-0" title="Reset (R)">
-                  <RotateCcw className="w-3.5 h-3.5" />
-                </button>
-                <button onClick={handlePrevStep} disabled={currentStep === 0} className="btn-ghost w-8 justify-center px-0" title="Prev (←)">
-                  <SkipBack className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={togglePlay}
-                  className={`btn-primary gap-1.5 ${isPlaying ? 'bg-amber-600 hover:bg-amber-500 border-amber-500/40' : ''}`}
-                  title="Play / Pause (Space)"
-                >
-                  {isPlaying
-                    ? <Pause className="w-3.5 h-3.5 fill-current" />
-                    : <Play  className="w-3.5 h-3.5 fill-current" />
-                  }
-                  {isPlaying ? 'Pause' : 'Play'}
-                </button>
-                <button onClick={handleNextStep} disabled={currentStep >= maxSteps - 1} className="btn-ghost w-8 justify-center px-0" title="Next (→)">
-                  <SkipForward className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={() => setLoop(!loop)}
-                  className={`btn-ghost w-8 justify-center px-0 ${
-                    loop ? 'border-indigo-500/40 bg-indigo-500/10 text-indigo-400' : ''
-                  }`}
-                  title={loop ? 'Loop on' : 'Loop off'}
-                >
-                  <Repeat className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Step dots */}
-              <div className="flex items-center gap-1.5 overflow-x-auto py-1">
-                {Array.from({ length: maxSteps }).map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setCurrentStep(idx);
-                      sound.playStep(500 + idx * 30);
-                      if (idx === maxSteps - 1) triggerCompletionCelebration();
-                    }}
-                    title={`Step ${idx + 1}`}
-                    className={`rounded-full transition-all ${
-                      currentStep === idx
-                        ? 'w-5 h-5 bg-indigo-600 text-white text-[10px] font-bold shadow-sm shadow-indigo-900/60'
-                        : idx < currentStep
-                        ? 'w-2 h-2 bg-indigo-600/40 hover:bg-indigo-500/60'
-                        : 'w-2 h-2 bg-white/[0.08] hover:bg-white/[0.15]'
-                    }`}
-                  >
-                    {currentStep === idx ? idx + 1 : ''}
-                  </button>
-                ))}
-              </div>
-
-              {/* Speed */}
-              <div className="flex items-center gap-0.5 bg-white/[0.03] border border-white/[0.06] rounded-md p-0.5">
-                {[0.5, 1, 1.5, 2].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSpeed(s)}
-                    className={`px-2 py-0.5 rounded text-[11px] font-mono transition ${
-                      speed === s ? 'bg-indigo-600 text-white font-bold' : 'text-slate-500 hover:text-slate-300'
-                    }`}
-                  >
-                    {s}x
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsBarDragging(true);
-              }}
-              onDragLeave={(e) => {
-                e.preventDefault();
-                setIsBarDragging(false);
-              }}
-              onDrop={handleDirectFileDrop}
-              className={`card px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] font-mono transition-all duration-200 ${
-                isBarDragging
-                  ? 'border-2 border-dashed border-indigo-400 bg-indigo-950/40 shadow-[0_0_20px_rgba(99,102,241,0.25)] ring-2 ring-indigo-500/30 animate-pulse'
-                  : 'hover:border-white/15'
-              }`}
-            >
-              <input
-                type="file"
-                ref={barFileInputRef}
-                onChange={handleBarFileInput}
-                accept=".jsx,.tsx,.js,.ts"
-                className="hidden"
-              />
-
-              <div className="flex items-center gap-2 text-slate-400">
-                <UploadCloud className={`w-4 h-4 ${isBarDragging ? 'text-indigo-400 animate-bounce' : 'text-slate-500'}`} />
-                <span>
-                  {isBarDragging ? (
-                    <strong className="text-indigo-300">Drop your visualizer component (.jsx / .tsx) here!</strong>
-                  ) : (
-                    <>
-                      No visualizer uploaded yet{' '}
-                      <span className="text-slate-600 text-[11px] hidden md:inline">
-                        · Drag & drop .jsx file here or upload
-                      </span>
-                    </>
-                  )}
-                </span>
-              </div>
-
-              {/* Action buttons (Isolated to prevent drag/click conflict with Copy prompt) */}
-              <div
-                className="flex items-center gap-2 shrink-0"
-                onDragOver={(e) => e.stopPropagation()}
-                onDrop={(e) => e.stopPropagation()}
-              >
-                <button
-                  type="button"
-                  onClick={handleDirectCopyPrompt}
-                  className="btn-ghost gap-1.5 cursor-pointer relative z-10"
-                  title="Copy Gemini prompt"
-                >
-                  {copiedDirect ? (
-                    <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  ) : (
-                    <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-                  )}
-                  <span>{copiedDirect ? 'Copied!' : 'Copy AI prompt'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => barFileInputRef.current?.click()}
-                  className="btn-primary gap-1.5 cursor-pointer relative z-10 shadow-lg"
-                  title="Click to select or drag & drop .jsx file directly"
-                >
-                  <UploadCloud className="w-3.5 h-3.5" />
-                  <span>Upload visualizer</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Live State & Variable Inspector */}
-          {currentVariables && Object.keys(currentVariables).length > 0 && (
-            <VariableInspector
-              variables={currentVariables}
-              title="Live Execution State & Pointers"
-            />
-          )}
-
-          {/* Canvas + Code */}
-          <div className={`grid gap-4 ${viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-12' : 'grid-cols-1'}`}>
-            {viewMode !== 'code_only' && (
-              <div className={viewMode === 'split' ? 'lg:col-span-8' : ''}>
-                {Component ? (
-                  <Component
-                    currentStep={currentStep}
-                    onStepChange={setCurrentStep}
-                    customInput={customInput}
-                    customTarget={customTarget}
-                    approachTier={activeTier}
-                  />
-                ) : (
-                  <div
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setIsBarDragging(true);
-                    }}
-                    onDragLeave={(e) => {
-                      e.preventDefault();
-                      setIsBarDragging(false);
-                    }}
-                    onDrop={handleDirectFileDrop}
-                    onClick={() => barFileInputRef.current?.click()}
-                    className={`card flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer transition-all duration-200 ${
-                      isBarDragging
-                        ? 'border-2 border-dashed border-indigo-400 bg-indigo-950/30 ring-2 ring-indigo-500/30 shadow-2xl'
-                        : 'hover:border-white/15 hover:bg-white/[0.01]'
-                    }`}
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-                      <UploadCloud className={`w-6 h-6 ${isBarDragging ? 'animate-bounce' : ''}`} />
-                    </div>
-                    <p className="text-[13px] font-medium text-slate-300">
-                      {isBarDragging ? 'Drop your .jsx file now!' : 'No visualizer yet'}
-                    </p>
-                    <p className="text-[11px] text-slate-500 max-w-sm">
-                      Drag & drop your AI-generated <code className="text-indigo-300">.jsx</code> visualizer file here, or click to browse.
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-            {viewMode !== 'visualizer_only' && (
-              <div className={viewMode === 'split' ? 'lg:col-span-4' : ''}>
-                <CodeViewer
-                  solutions={solutions}
-                  initialLanguage="cpp"
-                  activeLine={activeCodeLine}
-                />
-              </div>
-            )}
-          </div>
-        </>
       )}
 
       {/* ── Zone 3: Knowledge Hub ── */}
@@ -1449,6 +1469,17 @@ Return ONLY the complete, ready-to-run React JSX code.`;
         currentTier={activeTier}
         activeLanguage="cpp"
         currentUser={currentUser}
+      />
+
+      {/* AI Question Enhancer & Specification Editor Modal */}
+      <AiQuestionEnhancerModal
+        isOpen={showEnhanceModal}
+        onClose={() => setShowEnhanceModal(false)}
+        question={question}
+        solutions={solutions}
+        onQuestionUpdated={(updated) => {
+          if (onUpdateQuestion) onUpdateQuestion(updated);
+        }}
       />
     </div>
   );

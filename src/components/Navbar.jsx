@@ -31,21 +31,21 @@ export default function Navbar({
   const hasNext = currentIdx >= 0 && currentIdx < questions.length - 1;
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.06] bg-[#08090d]/90 backdrop-blur-xl">
-      <div className="max-w-[1280px] mx-auto px-6 h-12 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-40 w-full border-b border-[var(--line)] bg-[#12181a]/95 backdrop-blur-md">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-4">
 
         {/* ── Left: Logo + studio breadcrumb ── */}
         <div className="flex items-center gap-4 min-w-0">
           {/* Logo */}
           <button
             onClick={onNavigateHome}
-            className="flex items-center gap-2 shrink-0 group"
+            className="flex items-center gap-2 shrink-0 group cursor-pointer"
             aria-label="Go to library"
           >
-            <div className="w-6 h-6 rounded-md bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center group-hover:bg-indigo-500/25 transition">
-              <Layers className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="w-6 h-6 rounded-[3px] bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center group-hover:border-[var(--amber)] transition">
+              <Layers className="w-3.5 h-3.5 text-[var(--amber)]" />
             </div>
-            <span className="font-mono font-bold text-[13px] text-white tracking-tight">
+            <span className="font-sans font-semibold text-[14px] text-[var(--chalk)] tracking-tight">
               AlgoVision
             </span>
           </button>
@@ -53,10 +53,10 @@ export default function Navbar({
           {/* Studio breadcrumb — only in studio view */}
           {activeView === 'studio' && activeQuestion && (
             <div className="hidden md:flex items-center gap-2 min-w-0">
-              <span className="text-white/20 text-sm font-light">/</span>
-              <span className="text-[12px] font-mono text-slate-400 truncate max-w-[280px]">
+              <span className="text-[var(--chalk-faint)] text-sm">/</span>
+              <span className="text-[12px] font-mono text-[var(--chalk-dim)] truncate max-w-[280px]">
                 {(activeQuestion.display_id || (activeQuestion.leetcode_id ? `#${activeQuestion.leetcode_id}` : '')) && (
-                  <span className="text-indigo-400 mr-1.5 font-semibold">
+                  <span className="text-[var(--amber)] mr-1.5 font-medium">
                     {activeQuestion.display_id || `#${activeQuestion.leetcode_id}`}
                   </span>
                 )}
@@ -64,20 +64,20 @@ export default function Navbar({
               </span>
               {/* Inline prev/next in breadcrumb */}
               {questions.length > 0 && (
-                <div className="flex items-center border border-white/[0.08] rounded-md overflow-hidden shrink-0">
+                <div className="flex items-center border border-[var(--line)] rounded-[3px] overflow-hidden shrink-0">
                   <button
                     onClick={() => hasPrev && onNavigateQuestion && onNavigateQuestion(questions[currentIdx - 1])}
                     disabled={!hasPrev}
-                    className="p-1 text-slate-500 hover:text-white hover:bg-white/[0.06] disabled:opacity-25 transition"
+                    className="p-1 text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-raised-2)] disabled:opacity-25 transition cursor-pointer"
                     title={hasPrev ? `← ${questions[currentIdx - 1]?.display_id || questions[currentIdx - 1]?.title}` : 'First problem'}
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
-                  <div className="w-px h-4 bg-white/[0.08]" />
+                  <div className="w-px h-4 bg-[var(--line)]" />
                   <button
                     onClick={() => hasNext && onNavigateQuestion && onNavigateQuestion(questions[currentIdx + 1])}
                     disabled={!hasNext}
-                    className="p-1 text-slate-500 hover:text-white hover:bg-white/[0.06] disabled:opacity-25 transition"
+                    className="p-1 text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-raised-2)] disabled:opacity-25 transition cursor-pointer"
                     title={hasNext ? `→ ${questions[currentIdx + 1]?.display_id || questions[currentIdx + 1]?.title}` : 'Last problem'}
                   >
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -89,26 +89,26 @@ export default function Navbar({
 
           {/* Library: problem count */}
           {activeView === 'library' && stats && (
-            <span className="hidden sm:block text-[11px] font-mono text-slate-600">
+            <span className="hidden sm:block text-[11px] font-mono text-[var(--chalk-faint)]">
               {stats.total || 369} problems
               {stats.mastered > 0 && (
-                <span className="text-emerald-600 ml-2">· {stats.mastered} mastered</span>
+                <span className="text-[var(--easy)] ml-2">· {stats.mastered} mastered</span>
               )}
             </span>
           )}
         </div>
 
         {/* ── Right: utility actions ── */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
 
           {/* Gemini Skill — only in library */}
           {activeView === 'library' && (
             <button
               onClick={onOpenSkillModal}
-              className="nav-pill hidden sm:inline-flex"
+              className="chalk-btn hidden sm:inline-flex"
               title="Export Gemini skill for generating visualizers"
             >
-              <FileCode className="w-3 h-3 text-indigo-400" />
+              <FileCode className="w-3 h-3 text-[var(--amber)]" />
               <span>Gemini Skill</span>
             </button>
           )}
@@ -116,45 +116,45 @@ export default function Navbar({
           {/* Admin Console button */}
           <button
             onClick={onOpenAdminModal}
-            className="nav-pill text-indigo-300 border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20"
+            className="chalk-btn chalk-btn-amber"
             title="Admin Console: Questions, Database, Visualizers & Reports"
           >
-            <Shield className="w-3.5 h-3.5 text-indigo-400" />
+            <Shield className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Admin</span>
           </button>
 
           {/* Sound toggle — icon only */}
           <button
             onClick={handleToggleSound}
-            className="nav-pill w-8 justify-center px-0"
+            className="chalk-btn w-8 justify-center px-0"
             title={isMuted ? 'Unmute' : 'Mute'}
           >
             {isMuted
-              ? <VolumeX className="w-3.5 h-3.5 text-slate-600" />
-              : <Volume2 className="w-3.5 h-3.5 text-slate-400" />
+              ? <VolumeX className="w-3.5 h-3.5 text-[var(--chalk-faint)]" />
+              : <Volume2 className="w-3.5 h-3.5 text-[var(--chalk-dim)]" />
             }
           </button>
 
           {/* Divider */}
-          <div className="w-px h-5 bg-white/[0.07] mx-1" />
+          <div className="w-px h-5 bg-[var(--line)] mx-0.5" />
 
           {/* User section */}
           {currentUser ? (
             <button
               onClick={onOpenDashboardModal}
-              className="flex items-center gap-2 h-8 pl-2 pr-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] transition"
+              className="flex items-center gap-2 h-8 pl-2 pr-3 rounded-[3px] bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] transition cursor-pointer"
               title="Your dashboard"
             >
-              <span className="w-5 h-5 rounded bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-[11px] leading-none">
+              <span className="w-5 h-5 rounded-[2px] bg-[var(--amber-dim)] border border-[rgba(232,163,61,0.3)] flex items-center justify-center text-[11px] leading-none text-[var(--amber)]">
                 {currentUser.avatar || '⚡'}
               </span>
-              <span className="text-[12px] font-medium text-slate-300 max-w-[90px] truncate">
+              <span className="text-[12px] font-sans font-medium text-[var(--chalk)] max-w-[90px] truncate">
                 {currentUser.username}
               </span>
               {/* XP / streak inline */}
               {userStats && (
-                <span className="hidden lg:flex items-center gap-1 text-[11px] font-mono text-slate-500">
-                  <Flame className="w-3 h-3 text-orange-500" />
+                <span className="hidden lg:flex items-center gap-1 text-[11px] font-mono text-[var(--chalk-faint)]">
+                  <Flame className="w-3 h-3 text-[var(--amber)]" />
                   {userStats.streak_days || 0}d
                 </span>
               )}

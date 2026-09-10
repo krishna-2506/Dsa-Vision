@@ -907,12 +907,27 @@ export const dbService = {
   },
 
   updateQuestion(id, fields) {
-    const allowed = ['status', 'is_favorite', 'difficulty', 'category', 'time_complexity', 'space_complexity', 'leetcode_url', 'description', 'tags'];
+    const allowed = [
+      'title',
+      'display_id',
+      'slug',
+      'status',
+      'is_favorite',
+      'difficulty',
+      'category',
+      'time_complexity',
+      'space_complexity',
+      'leetcode_url',
+      'description',
+      'approach',
+      'tags',
+      'component_key'
+    ];
     const sets = [];
     const values = [];
 
     for (const [k, v] of Object.entries(fields)) {
-      if (allowed.includes(k)) {
+      if (allowed.includes(k) && v !== undefined) {
         sets.push(`${k} = ?`);
         let val = v;
         if (k === 'is_favorite') val = v ? 1 : 0;
@@ -926,6 +941,10 @@ export const dbService = {
       values.push(id);
       const sql = `UPDATE questions SET ${sets.join(', ')} WHERE id = ?`;
       sqlite.prepare(sql).run(...values);
+    }
+
+    if (fields.solutions && typeof fields.solutions === 'object') {
+      this.saveCodeSolutions(id, fields.solutions, fields.approachTier || 'optimal');
     }
 
     return this.getQuestion(id);

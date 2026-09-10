@@ -51,17 +51,16 @@ Strict Requirements:
 2. Component must accept props:
    ({ currentStep: externalStep, onStepChange, customInput = '', customTarget = '', approachTier = 'optimal' })
    and dynamically switch its internal trace, animated state, HUD, and pointers when approachTier changes!
-3. Visual Styling & Uniformity:
-   - Container: #0b0d14 background, border border-white/10 rounded-xl overflow-hidden shadow-2xl
-   - Header Bar: #0e111a border-b border-white/5, showing Step X/Y, approach badge, step title, and Prev/Next buttons
-   - Canvas: #08090e/60 background, min-h-[260px], centered graphical layout:
-     * Memory / Pointers (Linked Lists): Render dynamic heap node boxes with address hex badges (e.g. 0xC3), PREV/VAL/NEXT slots, SVG bidirectional arrows, and pointer labels (HEAD, TEMP, CURR).
-     * Arrays / Sequences: Fluid ArrayView or boxes with index numbers, value pills, glow highlights, sliding pointer tags (L, R, mid, i, j).
-     * Trees / Graphs: Node circles with gradients, level ranks, connection lines, visited states.
-     * Sliding Window: Highlighted bounding box around active window, running sum meter, max length tracker.
-     * Hash Map: Key-value badge collection (val ➔ index), complement lookup HUD.
-   - Real-time HUD: Comparison/invariant status (e.g. nums[L] + nums[R] == Target) with color-coded status badges.
-   - Explanation Footer: #0c0e16 border-t border-white/5, clear educational breakdown of the step.
+3. Visual Styling & Chalkboard Whiteboard Uniformity:
+   - Container: bg-[var(--board-raised)] rounded-[3px] overflow-hidden (or cleanly nested inside Studio stage)
+   - Canvas: centered graphical layout with rough chalk filters or clean SVG diagrams:
+     * Memory / Pointers (Linked Lists): Heap node boxes with address badges, PREV/VAL/NEXT slots, SVG bidirectional arrows, and handwritten pointer labels (HEAD, TEMP, CURR).
+     * Arrays / Sequences: ArrayView component or SVG boxes with rough filter (url(#rough)), index numbers, and handwritten Kalam cursive pointers.
+     * Trees / Graphs: Node circles, connection lines, visited states.
+     * Sliding Window: Bounding box around active window, running sum meter, max length tracker.
+     * Hash Map: Key-value badge collection (val ➔ index).
+   - Real-time HUD: status-line format with monospace text (e.g. <b>curr = 12</b>, <span class="prev-b">prev = -1</span>).
+   - Explanation: explain class with <span class="note"> cursive annotations.
 4. Export format:
    - export const approaches = { intuitive: { ... }, better: { ... }, optimal: { ... } };
    - export const solutions = approaches.optimal.solutions; // multi-language solutions with thorough comments
@@ -124,60 +123,33 @@ export const meta = {
 };
 
 export default function ${componentKey}({
-  currentStep: externalStep,
+  currentStep = 0,
   onStepChange,
   customInput = '',
   customTarget = '',
   approachTier = 'optimal'
 }) {
-  const [internalStep, setInternalStep] = useState(0);
   const activeApproach = approaches[approachTier] || approaches.optimal;
   const activeSteps = activeApproach.steps;
-  const stepIndex = externalStep !== undefined ? Math.min(externalStep, activeSteps.length - 1) : internalStep;
-  const setStep = onStepChange || setInternalStep;
+  const stepIndex = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
   const stepData = activeSteps[stepIndex] || activeSteps[0];
 
-  const handleNext = () => { if (stepIndex < activeSteps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
   return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {activeSteps.length}
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold bg-white/5 text-slate-300 border border-white/10">
-            {activeApproach.badge}
-          </span>
-          <h3 className="text-sm font-bold text-white font-mono truncate max-w-md">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition cursor-pointer">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === activeSteps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition cursor-pointer">
-            Next →
-          </button>
-        </div>
+    <div className="w-full flex flex-col space-y-4">
+      {/* 1. Creative Graphical Visualization Canvas (SVG or Interactive Primitive) */}
+      <div className="w-full py-4 flex items-center justify-center">
+        {/* Render dynamic arrays / linked list / tree / pointers with filter="url(#rough)" */}
       </div>
 
-      {/* 2. Visualizer Graphical Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[260px]">
-        {/* Topic-specific creative visual representation */}
-        
-        {/* Real-time Comparison HUD */}
-        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
-          <span className="text-slate-400">Status: <strong className="text-emerald-400">{stepData.hudText || 'Active Execution'}</strong></span>
-        </div>
-      </div>
+      {/* 2. Real-time Status HUD */}
+      {stepData.status && (
+        <div className="status-line" dangerouslySetInnerHTML={{ __html: stepData.status }} />
+      )}
 
-      {/* 3. Explanation Footer */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
-        {stepData.explanation}
-      </div>
+      {/* 3. Chalkboard Explanation with Handwritten Callouts */}
+      {stepData.explain && (
+        <p className="explain" dangerouslySetInnerHTML={{ __html: stepData.explain }} />
+      )}
     </div>
   );
 }
@@ -247,22 +219,22 @@ Return ONLY the complete, ready-to-run React JSX code.`;
   };
 
   return (
-    <div className="bg-[#0e111a] border border-white/[0.08] rounded-xl p-6 space-y-6 shadow-2xl relative">
+    <div className="bg-[var(--board-raised)] border border-[var(--line)] rounded-[3px] p-6 space-y-6 shadow-2xl relative">
       {/* Header & Prompt Generator */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--line)]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-400">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--amber)]">
               Interactive Animation Studio
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+            <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-[var(--amber-dim)] text-[var(--amber)] border border-[rgba(232,163,61,0.3)]">
               +150 XP Contributor Reward
             </span>
           </div>
-          <h3 className="text-base font-mono font-bold text-white mt-0.5">
+          <h3 className="text-base font-mono font-bold text-[var(--chalk)] mt-0.5">
             Add or Update Visualizer for This Problem
           </h3>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">
+          <p className="text-xs text-[var(--chalk-dim)] font-sans mt-0.5">
             Ask Gemini for this visualizer with 1-click prompt, then drop the generated code below.
           </p>
         </div>
@@ -270,16 +242,16 @@ Return ONLY the complete, ready-to-run React JSX code.`;
         <div className="flex items-center gap-2">
           <button
             onClick={handleCopyPrompt}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-medium transition self-start sm:self-auto"
+            className="chalk-btn chalk-btn-amber"
           >
-            {copiedPrompt ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Sparkles className="w-3.5 h-3.5 text-indigo-400" />}
+            {copiedPrompt ? <Check className="w-3.5 h-3.5 text-[var(--easy)]" /> : <Sparkles className="w-3.5 h-3.5 text-[var(--amber)]" />}
             <span>{copiedPrompt ? 'Copied Prompt for Gemini!' : 'Copy Gemini Prompt'}</span>
           </button>
 
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 border border-white/5 transition"
+              className="p-2 rounded text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-raised-2)] transition cursor-pointer"
               title="Close Uploader"
             >
               <X className="w-4 h-4" />
@@ -290,10 +262,10 @@ Return ONLY the complete, ready-to-run React JSX code.`;
 
       {statusMsg && (
         <div
-          className={`p-3 rounded-lg text-xs font-mono flex items-center gap-2 ${
+          className={`p-3 rounded text-xs font-mono flex items-center gap-2 ${
             statusMsg.type === 'success'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-              : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+              ? 'bg-[rgba(124,180,115,0.15)] text-[var(--easy)] border border-[rgba(124,180,115,0.3)]'
+              : 'bg-[rgba(224,108,117,0.15)] text-[#e06c75] border border-[rgba(224,108,117,0.3)]'
           }`}
         >
           {statusMsg.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
@@ -324,17 +296,17 @@ Return ONLY the complete, ready-to-run React JSX code.`;
           const file = e.dataTransfer?.files?.[0];
           if (file) readFile(file);
         }}
-        className={`relative border-2 border-dashed rounded-xl p-8 text-center transition flex flex-col items-center justify-center space-y-2 cursor-pointer select-none ${
+        className={`relative border border-dashed rounded-[3px] p-8 text-center transition flex flex-col items-center justify-center space-y-2 cursor-pointer select-none ${
           isDragging
-            ? 'border-indigo-500 bg-indigo-500/10'
-            : 'border-white/10 hover:border-indigo-500/40 bg-[#090b10]'
+            ? 'border-[var(--amber)] bg-[var(--amber-dim)]'
+            : 'border-[var(--line-strong)] hover:border-[var(--amber)] bg-[var(--board-raised-2)]'
         }`}
       >
-        <Upload className="w-8 h-8 text-indigo-400 pointer-events-none" />
-        <p className="text-xs font-mono text-slate-300 pointer-events-none">
-          Drag & drop Gemini's <code className="text-indigo-300 font-bold">.jsx</code> visualizer file here
+        <Upload className="w-8 h-8 text-[var(--amber)] pointer-events-none" />
+        <p className="text-xs font-mono text-[var(--chalk)] pointer-events-none">
+          Drag & drop Gemini's <code className="text-[var(--amber)] font-bold">.jsx</code> visualizer file here
         </p>
-        <p className="text-[11px] text-slate-500 font-mono pointer-events-none">
+        <p className="text-[11px] text-[var(--chalk-faint)] font-mono pointer-events-none">
           or click inside this box to browse files
         </p>
         <input
@@ -351,42 +323,44 @@ Return ONLY the complete, ready-to-run React JSX code.`;
       {/* Code Paste Area */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-mono font-medium text-slate-300">
+          <label className="text-xs font-mono font-medium text-[var(--chalk)]">
             Or Paste Visualizer JSX Code
           </label>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono text-slate-500">Component Key:</span>
+            <span className="text-[11px] font-mono text-[var(--chalk-faint)]">Component Key:</span>
             <input
               type="text"
               value={componentKey}
               onChange={(e) => setComponentKey(e.target.value)}
-              className="px-2 py-0.5 bg-[#08090e] border border-white/10 rounded text-xs font-mono text-indigo-300 focus:outline-none focus:border-indigo-500 w-48"
+              placeholder="e.g. TwoSumVisualizer"
+              className="px-2.5 py-1 bg-[var(--board-raised-2)] border border-[var(--line)] rounded-[3px] text-xs font-mono text-[var(--chalk)] focus:outline-none focus:border-[var(--amber)]"
             />
           </div>
         </div>
 
         <textarea
-          rows={7}
+          rows={10}
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder={`import React, { useState } from 'react';\n\nexport const meta = { ... };\nexport const steps = [ ... ];\n\nexport default function ${componentKey}(...) { ... }`}
-          className="w-full p-3.5 bg-[#08090e] border border-white/10 rounded-lg text-xs font-mono text-slate-300 focus:outline-none focus:border-indigo-500 leading-relaxed resize-y"
+          placeholder="// Paste React visualizer component code here...
+import React from 'react';
+export default function MyVisualizer() { ... }"
+          className="w-full p-3 bg-[var(--board)] border border-[var(--line)] rounded-[3px] text-xs font-mono text-[var(--chalk)] focus:outline-none focus:border-[var(--amber)] leading-relaxed resize-y"
         />
       </div>
 
-      {/* Action Footer */}
-      <div className="flex items-center justify-between pt-2 border-t border-white/5">
-        <span className="text-[11px] font-mono text-slate-500">
-          Saved to <code className="text-slate-400">src/visualizers/{componentKey}.jsx</code> and bound to SQLite.
+      {/* Actions */}
+      <div className="flex items-center justify-between pt-2">
+        <span className="text-[11px] font-mono text-[var(--chalk-faint)]">
+          Saved components compile instantly into the AlgoVision registry
         </span>
 
         <button
           onClick={handleSave}
           disabled={isUploading || !code.trim()}
-          className="flex items-center gap-2 px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-mono font-bold shadow-sm transition"
+          className="chalk-btn chalk-btn-amber disabled:opacity-30 disabled:pointer-events-none"
         >
-          <FileCode className="w-4 h-4" />
-          <span>{isUploading ? 'Saving...' : 'Save & Mount Visualizer'}</span>
+          {isUploading ? 'Compiling & Saving...' : 'Save & Mount Visualizer'}
         </button>
       </div>
     </div>

@@ -612,119 +612,53 @@ export default function TwoSumVisualizer({
   }, [approachTier, stepData]);
 
   return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* Visualizer Top Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {activeSteps.length}
-          </span>
-          <span className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold ${
-            approachTier === 'optimal'
-              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-              : approachTier === 'better'
-              ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-              : 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
-          }`}>
-            {approachTier}
-          </span>
-          <h3 className="text-sm font-bold text-white font-mono truncate max-w-md">{stepData.title}</h3>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={handlePrev}
-            disabled={stepIndex === 0}
-            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition cursor-pointer"
-          >
-            ← Prev
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={stepIndex === activeSteps.length - 1}
-            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition cursor-pointer"
-          >
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* Array Animation Canvas with Fluid Sliding Pointers */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
+    <div className="w-full flex flex-col bg-[var(--board-raised)] rounded-[3px] overflow-hidden">
+      {/* Visualizer Canvas */}
+      <div className="p-4 sm:p-6 flex flex-col items-center justify-center min-h-[220px]">
         <ArrayView
           items={activeArray}
           pointers={pointers}
           matchIndices={matchIndices}
         />
 
-        {/* Real-time Comparison HUD */}
+        {/* Real-time Comparison HUD in chalkboard status-line style */}
         {approachTier === 'better' ? (
-          <div className="mt-4 flex flex-col items-center gap-2 w-full max-w-xl">
-            {/* Hash Table Visual */}
-            <div className="w-full flex items-center justify-between px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-slate-500">Hash Map (val ➔ idx):</span>
-                {stepData.hashMap && Object.keys(stepData.hashMap).length > 0 ? (
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {Object.entries(stepData.hashMap).map(([val, idx]) => (
-                      <span key={val} className="px-1.5 py-0.5 rounded bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-[11px]">
-                        <strong>{val}</strong>: #{idx}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-slate-600 italic">Empty</span>
-                )}
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-slate-500">Target: <strong className="text-white">{activeTarget}</strong></span>
-              </div>
-            </div>
+          <div className="status-line w-full text-center">
+            {stepData.hashMap && Object.keys(stepData.hashMap).length > 0 ? (
+              <span>
+                map = &#123;{' '}
+                {Object.entries(stepData.hashMap).map(([val, idx], i) => (
+                  <span key={val}>
+                    {i > 0 ? ', ' : ''}<b>{val}</b>: <span className="prev-b">[{idx}]</span>
+                  </span>
+                ))}{' '}
+                &#125; · target = <b>{activeTarget}</b>
+              </span>
+            ) : (
+              <span>map = &#123;&#125; (empty) · target = <b>{activeTarget}</b></span>
+            )}
           </div>
         ) : (
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-            <div className="flex items-center gap-1.5">
-              {approachTier === 'intuitive' ? (
-                <>
-                  <span className="text-indigo-400 font-bold">nums[{stepData.i}] ({activeArray[stepData.i] ?? '—'})</span>
-                  <span className="text-slate-600">+</span>
-                  <span className="text-amber-400 font-bold">nums[{stepData.j}] ({activeArray[stepData.j] ?? '—'})</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-indigo-400 font-bold">nums[{stepData.left}] ({activeArray[stepData.left] ?? '—'})</span>
-                  <span className="text-slate-600">+</span>
-                  <span className="text-amber-400 font-bold">nums[{stepData.right}] ({activeArray[stepData.right] ?? '—'})</span>
-                </>
-              )}
-              <span className="text-slate-600">=</span>
-              <span className={`font-bold ${stepData.status === 'found' ? 'text-emerald-400 text-sm' : 'text-slate-200'}`}>
-                {stepData.currentSum}
+          <div className="status-line w-full text-center">
+            {approachTier === 'intuitive' ? (
+              <span>
+                <b>nums[{stepData.i}] ({activeArray[stepData.i] ?? '—'})</b> + <span className="prev-b">nums[{stepData.j}] ({activeArray[stepData.j] ?? '—'})</span> = <b>{stepData.currentSum}</b> · target = {activeTarget}
+                {stepData.status === 'found' ? ' · <span style="color:var(--easy);font-weight:600">MATCH ✓</span>' : ''}
               </span>
-            </div>
-
-            <span className="text-slate-700">|</span>
-
-            <div className="flex items-center gap-2">
-              <span className="text-slate-500">Target: <strong className="text-white">{activeTarget}</strong></span>
-              <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${
-                stepData.status === 'found'
-                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                  : stepData.status === 'less'
-                  ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
-                  : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-              }`}>
-                {stepData.status === 'found' ? 'MATCH ✓' : stepData.status === 'less' ? 'SUM < TARGET' : 'SUM > TARGET'}
+            ) : (
+              <span>
+                <span className="prev-b">L[{stepData.left}] ({activeArray[stepData.left] ?? '—'})</span>, <b>R[{stepData.right}] ({activeArray[stepData.right] ?? '—'})</b> · sum = <b>{stepData.currentSum}</b>
+                {stepData.status === 'found' ? ' == target (26) · <span style="color:var(--easy);font-weight:600">MATCH ✓</span>' : stepData.status === 'less' ? ' < target (26)' : ' > target (26)'}
               </span>
-            </div>
+            )}
           </div>
         )}
-      </div>
 
-      {/* Step Explanation Footer */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
-        {stepData.explanation}
+        {/* Handwritten / Chalkboard Explanation */}
+        <p className="explain text-center mt-3">
+          <span className="note">Note: </span>
+          {stepData.explanation}
+        </p>
       </div>
     </div>
   );
