@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Upload, Sparkles, Copy, Check, FileCode, CheckCircle2, AlertCircle, ArrowUpRight, X } from 'lucide-react';
+import { Upload, Sparkles, Check, CheckCircle2, AlertCircle, X } from 'lucide-react';
 import { api } from '../services/api';
 
 export default function VisualizerUploader({
@@ -20,9 +20,9 @@ export default function VisualizerUploader({
   const [statusMsg, setStatusMsg] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Generate question-specific prompt for Gemini with exact AlgoVision Studio UI template
+  // AI Prompt — Chalkboard theme + multi-language (C++/Java/Python) per tier
   const geminiPrompt = `Act as an expert algorithm educator and React visualization engineer for AlgoVision Studio.
-Create an interactive, animated React visualizer component for this DSA problem from Striver's A2Z Sheet:
+Create an interactive, animated React visualizer component for this DSA problem:
 
 Problem ID: ${question.display_id || (question.leetcode_id ? '#' + question.leetcode_id : 'Q-001')}
 Problem: "${question.title}" (${question.category} - ${question.difficulty})
@@ -31,47 +31,92 @@ Problem Statement & Examples:
 ${question.description}
 
 Approach & Logic:
-${question.approach || 'Provide intuitive brute force, optimized intermediate, and optimal algorithm.'}
+${question.approach || 'Provide intuitive brute force, optimized intermediate, and optimal algorithm approaches.'}
 
-C++ Reference Code:
+C++ Reference (basis for all solution code):
 \`\`\`cpp
-${solutions.cpp || '// C++ solution'}
+${solutions.cpp || '// Provide full C++ solution here'}
 \`\`\`
 
-IMPORTANT ARCHITECTURAL DIRECTIVE:
-The AlgoVision Studio already hosts a dedicated, syntax-highlighted code execution viewer (C++, Python, Java, JavaScript) beside this visualizer in Split Screen mode with synchronized step line tracking.
-DO NOT waste the visualizer canvas space rendering a duplicate code editor!
-INSTEAD, focus 100% on crafting the MOST BEAUTIFUL, INTUITIVE, AND DYNAMIC GRAPHICAL VISUALIZATION POSSIBLE!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ALGOVISION STUDIO ARCHITECTURE — READ CAREFULLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Strict Requirements:
-1. Multi-Tier Approaches: Provide 3 approach tiers whenever applicable:
-   - "intuitive" (Brute Force / Direct baseline, e.g. O(N²) nested loops)
-   - "better" (Optimized intermediate, e.g. O(N) Hash Map / Stack / Sorting)
-   - "optimal" (Optimal Gold Standard, e.g. O(N) Two Pointers / Sliding Window / In-place DP)
-2. Component must accept props:
-   ({ currentStep: externalStep, onStepChange, customInput = '', customTarget = '', approachTier = 'optimal' })
-   and dynamically switch its internal trace, animated state, HUD, and pointers when approachTier changes!
-3. Visual Styling & Chalkboard Whiteboard Uniformity:
-   - Container: bg-[var(--board-raised)] rounded-[3px] overflow-hidden (or cleanly nested inside Studio stage)
-   - Canvas: centered graphical layout with rough chalk filters or clean SVG diagrams:
-     * Memory / Pointers (Linked Lists): Heap node boxes with address badges, PREV/VAL/NEXT slots, SVG bidirectional arrows, and handwritten pointer labels (HEAD, TEMP, CURR).
-     * Arrays / Sequences: ArrayView component or SVG boxes with rough filter (url(#rough)), index numbers, and handwritten Kalam cursive pointers.
-     * Trees / Graphs: Node circles, connection lines, visited states.
-     * Sliding Window: Bounding box around active window, running sum meter, max length tracker.
-     * Hash Map: Key-value badge collection (val ➔ index).
-   - Real-time HUD: status-line format with monospace text (e.g. <b>curr = 12</b>, <span class="prev-b">prev = -1</span>).
-   - Explanation: explain class with <span class="note"> cursive annotations.
-4. Export format:
-   - export const approaches = { intuitive: { ... }, better: { ... }, optimal: { ... } };
-   - export const solutions = approaches.optimal.solutions; // multi-language solutions with thorough comments
-   - export const steps = approaches.optimal.steps;
-   - export const meta = { display_id, title, category, difficulty, timeComplexity, spaceComplexity, description };
-   - export default function ${componentKey}(...) { ... }
+The Studio already provides:
+  • Approach tier tabs (Intuitive / Better / Optimal) above the stage
+  • Split-screen: your canvas LEFT, syntax-highlighted code viewer RIGHT
+  • Transport controls: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x
+  • Step title above your canvas and Prev/Next navigation
+
+DO NOT render any of: card wrappers, "Step X of Y" counters, prev/next buttons,
+language tabs, or copy-code buttons. Just render the visualization canvas content.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VISUAL STYLE — CHALKBOARD / WHITEBOARD AESTHETIC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PALETTE (use exact hex values):
+  Stage background:     #12181a
+  Node/box fill:        #1c2529
+  Divider lines:        rgba(238,241,234,0.09)
+  Primary text:         #eef1ea
+  Dim text:             #8fa09a
+  Faint index labels:   #5f6f6a
+  Amber / active:       #e8a33d
+  Teal  / secondary:    #5fb3a6
+  Easy green: #7cb473 | Hard red: #e06c75
+
+SVG DRAWING RULES:
+  Array/node boxes:
+    fill="#1c2529" stroke="#5f6f6a" strokeWidth=1.4 rx=3
+    filter="url(#rough)"  ← already defined in the page's HTML root
+
+  Active element (curr/selected):
+    Amber glow ring: stroke="#e8a33d" strokeWidth=2.2 rx=6 (+5px each side)
+
+  Previous/secondary element:
+    Teal dashed ring: stroke="#5fb3a6" strokeWidth=1.6 strokeDasharray="3 4"
+
+  Value inside box:
+    font-family="IBM Plex Mono, monospace" fontSize=16 fontWeight=500 fill="#eef1ea"
+
+  Index label below:
+    font-family="IBM Plex Mono, monospace" fontSize=10.5 fill="#5f6f6a"
+
+  Pointer labels (curr, prev, L, R, head, slow, fast):
+    font-family="Kalam, cursive" fontSize=14
+    fill=#e8a33d (active/curr — place ABOVE) or #5fb3a6 (secondary/prev — place BELOW)
+
+  Arrows: stroke="#5f6f6a" strokeWidth=1.2 with arrowhead marker
+  Linked-List nodes: 3-compartment (PREV | VAL | NEXT) + hex address tags above
+  Tree: circles fill="#1c2529" stroke="#5f6f6a"
+
+STATUS HUD — render below canvas:
+  <div className="status-line"><span className="prev-b">prev = 12</span>, <b>curr = 35</b></div>
+
+EXPLANATION — render below status:
+  <p className="explain">35 beats curr, so <span className="note">prev</span> inherits old value.</p>
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MULTI-LANGUAGE CODE — 3 LANGUAGES × 3 TIERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For EACH approach tier, provide COMPLETE solutions in:
+  • C++    (always required, full function)
+  • Java   (required — full class Solution { public ... } wrapper)
+  • Python (required — def with type hints)
+
+Add educational line-by-line comments explaining WHAT and WHY.
+Do NOT write "..." or stubs — write full working code.
+
+CRITICAL — codeLine sync:
+  Each step needs codeLine: N = the EXACT line number in C++ (count from line 1).
+  The code viewer highlights that line live as the animation plays.
 
 \`\`\`jsx
-import React, { useState, useMemo } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
-// (Or import other primitives if needed: LinkedListView, TreeGraphView, MatrixView, StackQueueView, CallStackView, VariableInspector)
+import React, { useMemo } from 'react';
+// Primitives: ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView
+// import ArrayView from '../components/primitives/ArrayView';
 
 export const approaches = {
   intuitive: {
@@ -80,73 +125,87 @@ export const approaches = {
     complexity: { time: 'O(N²)', space: 'O(1)' },
     steps: [
       {
-        title: '1. Begin Brute Force Scan',
-        codeLine: 4,
+        title: '1. Initialize pointers',
+        codeLine: 3,          // exact C++ line number
         variables: { i: 0, j: 1 },
-        explanation: 'Check all pairs sequentially...',
-        // topic specific state...
+        status: '<span class="prev-b">i = 0</span>, <b>j = 1</b>',
+        explain: 'Start at index 0...',
+        activeIndex: 0,
       }
     ],
     solutions: {
-      cpp: \`// C++ Intuitive Solution with comments\\n\`,
-      python: \`# Python Intuitive Solution with comments\\n\`,
-      java: \`// Java Intuitive Solution with comments\\n\`,
-      javascript: \`// JavaScript Intuitive Solution with comments\\n\`
+      cpp: \`// C++ Brute Force — O(N²)
+int solution(int arr[], int n) {   // line 1
+  // ...
+}\`,
+      java: \`// Java Brute Force — O(N²)
+class Solution {
+  public int solution(int[] arr) {
+    // ...
+  }
+}\`,
+      python: \`# Python Brute Force — O(N²)
+def solution(arr: list[int]) -> int:
+    # ...
+\`
     }
   },
   better: {
-    title: 'Better: Optimized Intermediate',
+    title: 'Better: Intermediate',
     badge: 'Sub-Optimal',
-    complexity: { time: 'O(N)', space: 'O(N)' },
-    steps: [ /* intermediate steps */ ],
-    solutions: { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }
+    complexity: { time: 'O(N log N)', space: 'O(N)' },
+    steps: [ /* all steps with codeLine */ ],
+    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   },
   optimal: {
-    title: 'Best: Optimal Gold Standard',
+    title: 'Optimal: Single Pass',
     badge: 'Optimal',
     complexity: { time: '${question.time_complexity || 'O(N)'}', space: '${question.space_complexity || 'O(1)'}' },
-    steps: [ /* optimal steps */ ],
-    solutions: { cpp: \`...\`, python: \`...\`, java: \`...\`, javascript: \`...\` }
+    steps: [ /* all steps with codeLine */ ],
+    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   }
 };
 
 export const solutions = approaches.optimal.solutions;
-export const steps = approaches.optimal.steps;
+export const steps     = approaches.optimal.steps;
 export const meta = {
-  display_id: '${question.display_id || 'Q-001'}',
-  title: "${question.title}",
-  category: "${question.category}",
-  difficulty: "${question.difficulty}",
-  timeComplexity: "${question.time_complexity || 'O(N)'}",
+  display_id:      '${question.display_id || 'Q-001'}',
+  title:           "${question.title}",
+  category:        "${question.category}",
+  difficulty:      "${question.difficulty}",
+  timeComplexity:  "${question.time_complexity || 'O(N)'}",
   spaceComplexity: "${question.space_complexity || 'O(1)'}",
-  description: ${JSON.stringify((question.description || '').slice(0, 140))}
+  description:     ${JSON.stringify((question.description || '').slice(0, 140))}
 };
 
 export default function ${componentKey}({
-  currentStep = 0,
+  currentStep  = 0,
   onStepChange,
-  customInput = '',
+  customInput  = '',
   customTarget = '',
   approachTier = 'optimal'
 }) {
   const activeApproach = approaches[approachTier] || approaches.optimal;
-  const activeSteps = activeApproach.steps;
-  const stepIndex = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
-  const stepData = activeSteps[stepIndex] || activeSteps[0];
+  const activeSteps    = activeApproach.steps;
+  const stepIndex      = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
+  const stepData       = activeSteps[stepIndex] || activeSteps[0];
 
   return (
-    <div className="w-full flex flex-col space-y-4">
-      {/* 1. Creative Graphical Visualization Canvas (SVG or Interactive Primitive) */}
-      <div className="w-full py-4 flex items-center justify-center">
-        {/* Render dynamic arrays / linked list / tree / pointers with filter="url(#rough)" */}
+    <div className="w-full flex flex-col">
+      {/* ── Chalkboard Canvas ── */}
+      <div className="w-full py-6 flex items-center justify-center">
+        <svg viewBox="0 0 620 180" width="100%" height="180">
+          <defs>
+            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#5f6f6a"/>
+            </marker>
+          </defs>
+          {/* render based on stepData */}
+        </svg>
       </div>
-
-      {/* 2. Real-time Status HUD */}
       {stepData.status && (
         <div className="status-line" dangerouslySetInnerHTML={{ __html: stepData.status }} />
       )}
-
-      {/* 3. Chalkboard Explanation with Handwritten Callouts */}
       {stepData.explain && (
         <p className="explain" dangerouslySetInnerHTML={{ __html: stepData.explain }} />
       )}
@@ -155,7 +214,7 @@ export default function ${componentKey}({
 }
 \`\`\`
 
-Return ONLY the complete, ready-to-run React JSX code.`;
+Return ONLY the complete, ready-to-run React JSX code. No markdown outside the code block.`;
 
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(geminiPrompt);
@@ -165,6 +224,7 @@ Return ONLY the complete, ready-to-run React JSX code.`;
 
   const handleFileDrop = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(false);
     const file = e.dataTransfer?.files?.[0];
     if (file) readFile(file);
@@ -289,13 +349,7 @@ Return ONLY the complete, ready-to-run React JSX code.`;
           e.stopPropagation();
           setIsDragging(false);
         }}
-        onDrop={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsDragging(false);
-          const file = e.dataTransfer?.files?.[0];
-          if (file) readFile(file);
-        }}
+        onDrop={handleFileDrop}
         className={`relative border border-dashed rounded-[3px] p-8 text-center transition flex flex-col items-center justify-center space-y-2 cursor-pointer select-none ${
           isDragging
             ? 'border-[var(--amber)] bg-[var(--amber-dim)]'

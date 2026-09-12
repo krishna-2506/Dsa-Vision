@@ -9,37 +9,53 @@ export default function PromptHelperModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const generatedPrompt = `Act as an expert frontend engineer and algorithm educator.
-I need an interactive, step-by-step React visualizer for the algorithm: "${topic}" (${category}).
+  const generatedPrompt = `Act as an expert senior algorithm visualization engineer and educator.
+Build a production-grade, interactive React step-by-step visualizer for: "${topic}" (${category}).
 
-Please write a single React component (using Tailwind CSS classes) that:
-1. Exports:
+Please write a single, self-contained React component (.jsx) that satisfies these senior design standards:
+
+1. Mandatory Exports:
    - export const meta = {
        title: "${topic}",
        category: "${category}",
-       difficulty: "Easy/Medium/Hard",
+       difficulty: "Easy" | "Medium" | "Hard",
        timeComplexity: "O(...)",
        spaceComplexity: "O(...)",
-       description: "Brief summary"
+       description: "Concise summary of problem and core algorithmic invariants."
      };
-   - export const steps = [
-       {
-         title: "Step 1: ...",
-         code: "${language} snippet...",
-         explanation: "What happens in memory/variables",
-         ... // step state variables
-       },
-       ...
-     ];
-   - export default function ${topic.replace(/[^a-zA-Z0-9]/g, '')}Visualizer({ currentStep, onStepChange }) { ... }
+   - export const approaches = {
+       intuitive: { title: "Intuitive: Brute Force", badge: "Brute Force", complexity: { time: "O(N²)", space: "O(1)" }, steps: [...], solutions: { cpp: "...", java: "...", python: "..." } },
+       better:    { title: "Better: Optimized", badge: "Sub-Optimal", complexity: { time: "O(N log N)", space: "O(1)" }, steps: [...], solutions: { cpp: "...", java: "...", python: "..." } },
+       optimal:   { title: "Optimal: Linear / Direct", badge: "Optimal", complexity: { time: "O(N)", space: "O(1)" }, steps: [...], solutions: { cpp: "...", java: "...", python: "..." } }
+     };
+   - export const steps = approaches.optimal.steps;
+   - export const solutions = approaches.optimal.solutions;
+   - export default function ${topic.replace(/[^a-zA-Z0-9]/g, '')}Visualizer({ currentStep, onStepChange, approachTier = 'optimal' }) { ... }
 
-2. UI & Design:
-   - Dark theme using modern Tailwind classes (e.g. bg-slate-900, border-slate-700/80, text-white, text-emerald-400 for code).
-   - Left side: Displays executing code snippet, variable states/stack frame, and clear explanation.
-   - Right side: Dynamic graphical representation (nodes, arrays, pointers, trees, or bars).
-   - Support controlled stepping via the \`currentStep\` and \`onStepChange\` props, as well as standalone Prev/Next buttons.
+2. Step Data & Exact Code Line Synchronization:
+   - Each step in the steps array MUST include:
+     {
+       title: "Step 1: Initialize Boundaries",
+       codeLine: 4, // EXACT line number in the C++ solution to highlight live!
+       variables: { left: 0, right: 5, sum: 25 },
+       status: '<span class="prev-b">L = 0</span>, <b>R = 5</b>',
+       explain: "Detailed educational rationale for why pointers shifted or loop invariant was checked."
+     }
 
-Only return valid React JSX code ready to save directly as a file.`;
+3. Visual Design System (Dual-Theme Light & Dark):
+   - Use CSS variables so it looks stunning in both Light & Dark modes:
+     - Stage background: var(--board)
+     - Card / Node boxes: var(--board-raised) with border var(--line) and rx="6"
+     - Active element highlight: stroke="var(--indigo)" strokeWidth="2.4"
+     - Secondary pointer highlight: stroke="var(--teal)" strokeWidth="1.8" strokeDasharray="4 4"
+     - Typography: fill="var(--chalk)" for values, font-family="'JetBrains Mono', monospace"
+   - Fluid spring animations on moving pointers and sliding windows (CSS transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1)).
+   - Do NOT render generic empty static HTML tables. Craft dynamic SVG nodes, arrays, arrows, or trees with glowing pointer badges.
+
+4. Multi-Language Code Quality:
+   - Provide complete, compilable, real production code in C++, Java, and Python with line-by-line educational comments.
+
+Return ONLY the complete React JSX code block ready to save.`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedPrompt);

@@ -26,9 +26,6 @@ export default function MatrixView({
     );
   }
 
-  const numRows = grid.length;
-  const numCols = grid[0].length;
-
   return (
     <div className={`w-full overflow-x-auto py-4 px-2 flex flex-col items-center custom-scrollbar ${className}`}>
       {title && (

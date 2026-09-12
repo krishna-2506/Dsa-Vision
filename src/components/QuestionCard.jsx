@@ -1,35 +1,55 @@
-import React from 'react';
-import { Star, ExternalLink, Play, Clock, Cpu } from 'lucide-react';
+import React, { useState } from 'react';
+import { Star, ExternalLink, ArrowRight, Clock, Cpu, Layers, CheckCircle2, ChevronDown } from 'lucide-react';
 import { sound } from '../services/audio';
 import { visualizersRegistry } from '../visualizers';
 
-function formatComplexity(text, max = 22) {
-  if (!text) return 'O(1)';
+function cleanComplexity(text, fallback = 'O(1)') {
+  if (!text) return fallback;
   let s = String(text)
     .replace(/^[-:=*#\s]+/, '')
-    .replace(/[*\/#\s]+$/, '')
+    .replace(/[*#/\s]+$/, '')
     .trim()
     .replace(/^(?:time|space)\s*complexity\s*[:=-]\s*/i, '')
     .replace(/^(?:time|space)\s*[:=-]\s*/i, '')
     .trim();
-  return s.length <= max ? s : s.slice(0, max - 1) + '…';
+  if (s === 'O(0)' || s === '0' || s.toLowerCase() === 'o(0)') return 'O(1)';
+  return s.length <= 18 ? s : s.slice(0, 17) + '…';
 }
 
-const DIFF_DOT = {
-  easy:   'dot-easy',
-  medium: 'dot-medium',
-  hard:   'dot-hard',
-};
-const DIFF_TEXT = {
-  easy:   'text-[var(--easy)]',
-  medium: 'text-[var(--amber)]',
-  hard:   'text-[#e06c75]',
+const STATUS_CONFIG = {
+  mastered: {
+    label: 'Mastered',
+    badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/25',
+    dotClass: 'bg-emerald-500'
+  },
+  in_progress: {
+    label: 'In Progress',
+    badgeClass: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/25',
+    dotClass: 'bg-amber-500'
+  },
+  to_learn: {
+    label: 'To Learn',
+    badgeClass: 'text-[var(--chalk-dim)] bg-[var(--board-raised-2)] border-[var(--line)]',
+    dotClass: 'bg-slate-400 dark:bg-slate-500'
+  }
 };
 
-const STATUS_BORDER = {
-  mastered:    'border-[rgba(124,180,115,0.4)] bg-[rgba(124,180,115,0.04)]',
-  in_progress: 'border-[rgba(232,163,61,0.4)] bg-[rgba(232,163,61,0.04)]',
-  to_learn:    'border-[var(--line)] bg-[var(--board-raised)]',
+const DIFF_CONFIG = {
+  easy: {
+    label: 'Easy',
+    dotClass: 'bg-emerald-500',
+    textClass: 'text-emerald-600 dark:text-emerald-400'
+  },
+  medium: {
+    label: 'Medium',
+    dotClass: 'bg-amber-500',
+    textClass: 'text-amber-600 dark:text-amber-400'
+  },
+  hard: {
+    label: 'Hard',
+    dotClass: 'bg-rose-500',
+    textClass: 'text-rose-600 dark:text-rose-400'
+  }
 };
 
 export default function QuestionCard({
@@ -40,135 +60,205 @@ export default function QuestionCard({
   activeTag = null,
   onSelectTag
 }) {
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const hasVisualizer = Boolean(
     visualizersRegistry[question.component_key || question.componentKey]
   );
-  const diff = (question.difficulty || '').toLowerCase();
+  const diffKey = (question.difficulty || 'easy').toLowerCase();
+  const diffCfg = DIFF_CONFIG[diffKey] || DIFF_CONFIG.easy;
   const tags = Array.isArray(question.tags) ? question.tags : [];
+  const currentStatus = question.status || 'to_learn';
+  const statusCfg = STATUS_CONFIG[currentStatus] || STATUS_CONFIG.to_learn;
+
+  const displayId = question.display_id || (question.leetcode_id ? `LC-${question.leetcode_id}` : 'DSA');
+  const cleanCategory = (question.category || '').replace(/^\d+\.\s*/, '');
 
   return (
     <div
-      className={`card group flex flex-col justify-between p-4 hover:border-[var(--line-strong)] transition-all duration-150 ${STATUS_BORDER[question.status] || STATUS_BORDER.to_learn}`}
+      onClick={() => {
+        sound.playStep(520);
+        onOpen(question);
+      }}
+      className="card card-lift group flex flex-col justify-between p-4.5 cursor-pointer bg-[var(--board-raised)] hover:bg-[var(--board-raised)] border border-[var(--line)] hover:border-indigo-500/40 rounded-xl relative select-none transition-all duration-200"
     >
-      {/* Top row */}
+      {/* ── Top Header Row: Difficulty, ID, Category & Interactive Indicator ── */}
       <div>
-        <div className="flex items-start justify-between gap-2 mb-2.5">
-          <div className="flex items-center gap-2 min-w-0">
-            {/* Difficulty dot */}
-            <span
-              className={`w-2 h-2 rounded-full shrink-0 ${DIFF_DOT[diff] || 'dot-easy'}`}
-              title={question.difficulty}
-            />
-            {/* ID */}
-            <span className="font-mono text-[11px] text-[var(--chalk-faint)] shrink-0">
-              {question.display_id || (question.leetcode_id ? `LC-${question.leetcode_id}` : '—')}
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <div className="flex items-center gap-2 min-w-0 flex-wrap">
+            {/* Minimalist Difficulty Indicator */}
+            <div className={`flex items-center gap-1.5 text-xs font-semibold ${diffCfg.textClass}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${diffCfg.dotClass}`} />
+              <span>{diffCfg.label}</span>
+            </div>
+
+            <span className="text-[var(--line-strong)] text-xs">·</span>
+
+            {/* Problem Display ID */}
+            <span className="text-[11px] font-mono text-[var(--chalk-faint)] font-medium">
+              {displayId}
             </span>
-            {/* Category */}
-            <span className="font-mono text-[11px] text-[var(--chalk-dim)] truncate">
-              {(question.category || '').replace(/^\d+\.\s*/, '')}
-            </span>
+
+            {cleanCategory && (
+              <>
+                <span className="text-[var(--line-strong)] text-xs hidden sm:inline">·</span>
+                <span className="text-[11px] font-sans text-[var(--chalk-faint)] truncate max-w-[120px] hidden sm:inline">
+                  {cleanCategory}
+                </span>
+              </>
+            )}
           </div>
 
-          {/* Favorite + visualizer dot */}
+          {/* Quick Actions (Interactive Badge + Bookmark) */}
           <div className="flex items-center gap-1.5 shrink-0">
             {hasVisualizer && (
               <span
-                className="w-1.5 h-1.5 rounded-full bg-[var(--teal)]"
-                title="Has animated visualizer"
-              />
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-cyan-500/10 border border-cyan-500/25 text-cyan-600 dark:text-cyan-300"
+                title="Interactive algorithm visualizer available"
+              >
+                <Layers className="w-2.5 h-2.5 text-cyan-500 dark:text-cyan-400" />
+                <span>Interactive</span>
+              </span>
             )}
+
             <button
-              onClick={(e) => { e.stopPropagation(); sound.playStep(700); onToggleFavorite(question.id); }}
-              className={`transition cursor-pointer ${question.is_favorite ? 'text-[var(--amber)]' : 'text-[var(--chalk-faint)] hover:text-[var(--chalk-dim)]'}`}
-              title={question.is_favorite ? 'Saved' : 'Save'}
+              onClick={(e) => {
+                e.stopPropagation();
+                sound.playStep(720);
+                onToggleFavorite(question.id);
+              }}
+              className={`p-1.5 rounded-md transition-all cursor-pointer ${
+                question.is_favorite
+                  ? 'bg-amber-500/15 text-amber-500'
+                  : 'text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
+              }`}
+              title={question.is_favorite ? 'Saved in bookmarks' : 'Bookmark problem'}
             >
-              <Star className={`w-3.5 h-3.5 ${question.is_favorite ? 'fill-[var(--amber)]' : ''}`} />
+              <Star
+                className={`w-3.5 h-3.5 ${
+                  question.is_favorite ? 'fill-amber-400 text-amber-500' : ''
+                }`}
+              />
             </button>
           </div>
         </div>
 
-        {/* Title */}
-        <h3
-          onClick={() => onOpen(question)}
-          className="font-sans font-medium text-[14.5px] text-[var(--chalk)] group-hover:text-[var(--amber)] transition-colors cursor-pointer leading-snug mb-2 line-clamp-2"
-        >
+        {/* ── Problem Title ── */}
+        <h3 className="font-sans font-semibold text-[14.5px] text-[var(--chalk)] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-snug mb-2 line-clamp-2">
           {question.title}
         </h3>
 
-        {/* Tags */}
+        {/* ── Topics / Tags ── */}
         {tags.length > 0 && (
-          <div className="flex items-center gap-1.5 flex-wrap mb-3">
-            {tags.slice(0, 2).map((tag) => (
+          <div className="flex items-center gap-1.5 flex-wrap mb-3.5">
+            {tags.slice(0, 3).map((tag) => (
               <button
                 key={tag}
-                onClick={(e) => { e.stopPropagation(); onSelectTag && onSelectTag(tag); }}
-                className={`text-[10.5px] font-mono px-1.5 py-0.5 rounded-[2px] transition cursor-pointer ${
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onSelectTag) onSelectTag(tag);
+                }}
+                className={`text-[10.5px] font-mono px-1.5 py-0.5 rounded border transition-all cursor-pointer ${
                   activeTag === tag
-                    ? 'bg-[var(--amber-dim)] text-[var(--amber)] border border-[var(--amber)]'
-                    : 'text-[var(--chalk-faint)] hover:text-[var(--chalk)] border border-[var(--line)] hover:border-[var(--line-strong)]'
+                    ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 border-indigo-500/30 font-medium'
+                    : 'text-[var(--chalk-faint)] hover:text-[var(--chalk)] bg-[var(--board-raised-2)] border-[var(--line)] hover:border-[var(--line-strong)]'
                 }`}
               >
                 #{tag}
               </button>
             ))}
-            {tags.length > 2 && (
-              <span className="text-[10px] font-mono text-[var(--chalk-faint)]">+{tags.length - 2}</span>
+            {tags.length > 3 && (
+              <span className="text-[10px] font-mono text-[var(--chalk-faint)]">
+                +{tags.length - 3}
+              </span>
             )}
           </div>
         )}
       </div>
 
-      {/* Bottom */}
-      <div>
-        {/* Complexity */}
-        <div className="flex items-center gap-3 py-2 mb-3 border-t border-b border-[var(--line)] text-[11px] font-mono text-[var(--chalk-faint)]">
-          <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3 text-[var(--amber)]" />
-            {formatComplexity(question.time_complexity)}
-          </span>
-          <span className="opacity-30">·</span>
-          <span className="flex items-center gap-1">
-            <Cpu className="w-3 h-3 text-[var(--teal)]" />
-            {formatComplexity(question.space_complexity)}
-          </span>
+      {/* ── Card Footer: Complexity & Actions ── */}
+      <div className="pt-2.5 border-t border-[var(--line)]">
+        {/* Complexity Metadata Row */}
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <div className="flex items-center gap-2.5 text-[11px] font-mono text-[var(--chalk-dim)]">
+            <span className="flex items-center gap-1" title="Time Complexity">
+              <Clock className="w-3 h-3 text-amber-500" />
+              <span>{cleanComplexity(question.time_complexity, 'O(N)')}</span>
+            </span>
+            <span className="text-[var(--line-strong)]">·</span>
+            <span className="flex items-center gap-1" title="Auxiliary Space Complexity">
+              <Cpu className="w-3 h-3 text-cyan-500" />
+              <span>{cleanComplexity(question.space_complexity, 'O(1)')}</span>
+            </span>
+          </div>
+
+          {question.leetcode_url && (
+            <a
+              href={question.leetcode_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="text-[var(--chalk-faint)] hover:text-[var(--chalk)] p-1 rounded hover:bg-[var(--board-hover)] transition-colors"
+              title="Open problem on LeetCode"
+            >
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
         </div>
 
-        {/* Status + actions */}
+        {/* Status Dropdown & Launch Action */}
         <div className="flex items-center justify-between gap-2">
-          <select
-            value={question.status || 'to_learn'}
-            onChange={(e) => { e.stopPropagation(); onStatusChange(question.id, e.target.value); }}
-            className={`text-[11px] font-mono bg-transparent focus:outline-none cursor-pointer transition ${
-              question.status === 'mastered'    ? 'text-[var(--easy)]' :
-              question.status === 'in_progress' ? 'text-[var(--amber)]' : 'text-[var(--chalk-faint)]'
-            }`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <option value="to_learn"    className="bg-[#171f22] text-[var(--chalk-dim)]">To learn</option>
-            <option value="in_progress" className="bg-[#171f22] text-[var(--amber)]">In progress</option>
-            <option value="mastered"    className="bg-[#171f22] text-[var(--easy)]">Mastered</option>
-          </select>
-
-          <div className="flex items-center gap-1.5">
-            {question.leetcode_url && (
-              <a
-                href={question.leetcode_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="p-1.5 text-[var(--chalk-faint)] hover:text-[var(--chalk)] transition"
-                title="Open on LeetCode"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            )}
+          {/* Status Trigger */}
+          <div className="relative">
             <button
-              onClick={() => { sound.playStep(520); onOpen(question); }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-[3px] bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] text-[var(--chalk)] text-[11px] font-mono border border-[var(--line)] hover:border-[var(--amber)] transition cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setStatusMenuOpen(!statusMenuOpen);
+              }}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-mono font-medium border transition-all cursor-pointer ${statusCfg.badgeClass}`}
             >
-              <Play className="w-3 h-3 text-[var(--amber)] fill-current" />
-              Open
+              <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dotClass}`} />
+              <span>{statusCfg.label}</span>
+              <ChevronDown className="w-2.5 h-2.5 opacity-60 ml-0.5" />
             </button>
+
+            {/* Status Dropdown Menu */}
+            {statusMenuOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute bottom-full left-0 mb-1.5 w-36 rounded-xl bg-[var(--board-raised)] border border-[var(--line-strong)] shadow-xl p-1 z-30 fade-in"
+              >
+                {['to_learn', 'in_progress', 'mastered'].map((stKey) => {
+                  const itemCfg = STATUS_CONFIG[stKey];
+                  const isCur = currentStatus === stKey;
+                  return (
+                    <button
+                      key={stKey}
+                      onClick={() => {
+                        onStatusChange(question.id, stKey);
+                        setStatusMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono text-left transition-colors cursor-pointer ${
+                        isCur
+                          ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 font-semibold'
+                          : 'text-[var(--chalk-dim)] hover:bg-[var(--board-hover)] hover:text-[var(--chalk)]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`w-1.5 h-1.5 rounded-full ${itemCfg.dotClass}`} />
+                        <span>{itemCfg.label}</span>
+                      </div>
+                      {isCur && <CheckCircle2 className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Launch Studio Action */}
+          <div className="flex items-center gap-1 text-[11.5px] font-mono font-medium text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500 group-hover:translate-x-0.5 transition-all">
+            <span>Studio</span>
+            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
           </div>
         </div>
       </div>

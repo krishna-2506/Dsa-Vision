@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Flag, X, AlertCircle, CheckCircle2, Send, Sparkles, Code2, Layers } from 'lucide-react';
+import { Flag, X, AlertCircle, CheckCircle2, Send, Code2, Layers } from 'lucide-react';
 import { api } from '../services/api';
 import { sound } from '../services/audio';
 

@@ -411,40 +411,114 @@ app.post('/api/questions', (req, res) => {
 });
 
 // Helper to extract new multi-language solution code with educational comments
-function extractSolutionsFromCode(code) {
-  const solutions = {};
-  if (!code || typeof code !== 'string') return solutions;
+function extractSolutionsFromCode(rawCode) {
+  const allTiers = extractApproachesSolutions(rawCode);
+  if (allTiers.optimal && Object.keys(allTiers.optimal).length > 0) return allTiers.optimal;
+  if (allTiers.intuitive && Object.keys(allTiers.intuitive).length > 0) return allTiers.intuitive;
+  if (allTiers.better && Object.keys(allTiers.better).length > 0) return allTiers.better;
+  return {};
+}
 
-  const solBlockMatch = code.match(/export\s+const\s+solutions\s*=\s*({[\s\S]*?});/);
-  if (solBlockMatch) {
-    try {
-      const cppMatch = solBlockMatch[1].match(/cpp\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
-      if (cppMatch) solutions.cpp = cppMatch[1].trim();
+// Extract per-tier solutions from approaches block or const variables
+function extractApproachesSolutions(rawCode) {
+  if (!rawCode || typeof rawCode !== 'string') return {};
+  const code = rawCode.replace(/\r\n/g, '\n');
 
-      const pyMatch = solBlockMatch[1].match(/(?:python|py)\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
-      if (pyMatch) solutions.python = pyMatch[1].trim();
+  const result = {
+    intuitive: {},
+    better: {},
+    optimal: {}
+  };
 
-      const javaMatch = solBlockMatch[1].match(/java\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
-      if (javaMatch) solutions.java = javaMatch[1].trim();
-
-      const jsMatch = solBlockMatch[1].match(/(?:javascript|js|ts|typescript)\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
-      if (jsMatch) solutions.javascript = jsMatch[1].trim();
-    } catch (e) {}
+  // ── 1. Extract all const/let/var `xxx = \`...\`` template literal variables ──
+  const vars = {};
+  const varRe = /(?:export\s+)?(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*`([\s\S]*?)`;?/g;
+  let vm;
+  while ((vm = varRe.exec(code)) !== null) {
+    vars[vm[1]] = vm[2].trim();
   }
 
-  const cppVar = code.match(/export\s+const\s+(?:code_cpp|cppCode|cppSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
-  if (cppVar && !solutions.cpp) solutions.cpp = cppVar[1].trim();
+  // ── 2. Find any tier blocks by scanning for `tier:` ──
+  const tierNames = ['intuitive', 'better', 'optimal'];
 
-  const pyVar = code.match(/export\s+const\s+(?:code_python|pythonCode|pySolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
-  if (pyVar && !solutions.python) solutions.python = pyVar[1].trim();
+  const langKeyPatterns = [
+    { key: 'cpp', regexes: [/cpp\s*:\s*`([\s\S]*?)`/, /cpp\s*:\s*([a-zA-Z0-9_$]+)/] },
+    { key: 'java', regexes: [/java\s*:\s*`([\s\S]*?)`/, /java\s*:\s*([a-zA-Z0-9_$]+)/] },
+    { key: 'python', regexes: [/(?:python|python3|py)\s*:\s*`([\s\S]*?)`/, /(?:python|python3|py)\s*:\s*([a-zA-Z0-9_$]+)/] }
+  ];
 
-  const javaVar = code.match(/export\s+const\s+(?:code_java|javaCode|javaSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
-  if (javaVar && !solutions.java) solutions.java = javaVar[1].trim();
+  function parseSolutionsBlock(subStr) {
+    const sols = {};
+    for (const { key, regexes } of langKeyPatterns) {
+      const litMatch = subStr.match(regexes[0]);
+      if (litMatch && litMatch[1].trim()) {
+        sols[key] = litMatch[1].trim();
+        continue;
+      }
+      const varMatch = subStr.match(regexes[1]);
+      if (varMatch && vars[varMatch[1]]) {
+        sols[key] = vars[varMatch[1]];
+        continue;
+      }
+    }
+    return sols;
+  }
 
-  const jsVar = code.match(/export\s+const\s+(?:code_javascript|jsCode|jsSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);
-  if (jsVar && !solutions.javascript) solutions.javascript = jsVar[1].trim();
+  for (const tier of tierNames) {
+    const tierIdx = code.indexOf(`${tier}:`);
+    if (tierIdx !== -1) {
+      const chunk = code.slice(tierIdx, tierIdx + 6000);
+      const solIdx = chunk.indexOf('solutions');
+      if (solIdx !== -1) {
+        const solChunk = chunk.slice(solIdx, solIdx + 4500);
+        const parsed = parseSolutionsBlock(solChunk);
+        if (Object.keys(parsed).length > 0) {
+          result[tier] = parsed;
+        }
+      }
+    }
+  }
 
-  return solutions;
+  // ── 3. Handle tier aliasing ──
+  // e.g. approaches.better.solutions = approaches.intuitive.solutions;
+  for (const targetTier of tierNames) {
+    for (const srcTier of tierNames) {
+      if (targetTier === srcTier) continue;
+      const aliasPattern = new RegExp(`approaches\\.${targetTier}\\.solutions\\s*=\\s*approaches\\.${srcTier}\\.solutions`);
+      if (aliasPattern.test(code) && Object.keys(result[srcTier]).length > 0) {
+        if (!result[targetTier] || Object.keys(result[targetTier]).length === 0) {
+          result[targetTier] = { ...result[srcTier] };
+        }
+      }
+    }
+  }
+
+  // ── 4. Fallback from top-level variables if any tier is empty ──
+  const topSols = {};
+  for (const [varName, varVal] of Object.entries(vars)) {
+    const lower = varName.toLowerCase();
+    if (lower.includes('cpp')) topSols.cpp = varVal;
+    else if (lower.includes('java')) topSols.java = varVal;
+    else if (lower.includes('python') || lower.includes('py')) topSols.python = varVal;
+  }
+
+  const nonEmptyTiers = tierNames.filter(t => Object.keys(result[t]).length > 0);
+  if (nonEmptyTiers.length > 0) {
+    const fallbackTier = result.optimal && Object.keys(result.optimal).length > 0
+      ? result.optimal
+      : result[nonEmptyTiers[0]];
+    for (const tier of tierNames) {
+      if (Object.keys(result[tier]).length === 0) {
+        result[tier] = { ...fallbackTier };
+      }
+    }
+  } else if (Object.keys(topSols).length > 0) {
+    for (const tier of tierNames) {
+      result[tier] = { ...topSols };
+    }
+  }
+
+  return result;
 }
 
 // POST /api/upload-visualizer - Save visualizer .jsx file and bind to question in SQLite
@@ -469,8 +543,30 @@ app.post('/api/upload-visualizer', async (req, res) => {
       ...extractedSolutions
     };
 
-    // Update question and replace old code solutions in SQLite
-    const updated = dbService.updateVisualizer(questionId, key, finalSolutions);
+    // Also try to extract per-tier solutions from approaches block
+    const tierSolutions = extractApproachesSolutions(code);
+
+    // Update question's component_key in DB
+    const stmt = sqlite.prepare(`UPDATE questions SET component_key = ?, updated_at = datetime('now') WHERE id = ?`);
+    stmt.run(key, questionId);
+
+    // Save per-tier solutions if we found them
+    let savedTiers = 0;
+    if (Object.keys(tierSolutions).length > 0) {
+      for (const [tier, tierSols] of Object.entries(tierSolutions)) {
+        if (Object.keys(tierSols).length > 0) {
+          dbService.saveCodeSolutions(questionId, tierSols, tier);
+          savedTiers++;
+        }
+      }
+    }
+
+    // Fall back: if no per-tier data, save flat solutions as optimal
+    if (savedTiers === 0 && Object.keys(finalSolutions).length > 0) {
+      dbService.saveCodeSolutions(questionId, finalSolutions, 'optimal');
+    }
+
+    const updated = dbService.getQuestion(questionId);
 
     // Record user contribution if user provided
     if (userId) {
@@ -485,7 +581,8 @@ app.post('/api/upload-visualizer', async (req, res) => {
       success: true,
       componentKey: key,
       data: updated,
-      updatedSolutionsCount: Object.keys(finalSolutions).length
+      updatedSolutionsCount: Object.keys(finalSolutions).length,
+      tiersFound: Object.keys(tierSolutions)
     });
   } catch (err) {
     console.error('Error saving visualizer file:', err);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Shield,
   X,
@@ -14,13 +14,9 @@ import {
   Upload,
   RefreshCw,
   ExternalLink,
-  Layers,
   Flag,
   Database,
-  Sliders,
-  Code2,
   BookOpen,
-  Filter,
   Sparkles
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -66,26 +62,29 @@ export default function AdminPanelModal({
   const [loading, setLoading] = useState(false);
 
   // Load Admin Data
-  const loadAdminData = async () => {
+  const loadAdminData = useCallback(async () => {
     setLoading(true);
-    const [qList, stats, files, repList] = await Promise.all([
-      api.getQuestions(),
-      api.getAdminStats(),
-      api.getAdminVisualizers(),
-      api.getReports(reportFilter === 'all' ? null : reportFilter)
-    ]);
-    if (qList) setQuestions(qList);
-    if (stats) setAdminStats(stats);
-    if (files) setDiskFiles(files);
-    if (repList) setReports(repList);
-    setLoading(false);
-  };
+    try {
+      const [qList, stats, files, repList] = await Promise.all([
+        api.getQuestions(),
+        api.getAdminStats(),
+        api.getAdminVisualizers(),
+        api.getReports(reportFilter === 'all' ? null : reportFilter)
+      ]);
+      if (qList) setQuestions(qList);
+      if (stats) setAdminStats(stats);
+      if (files) setDiskFiles(files);
+      if (repList) setReports(repList);
+    } finally {
+      setLoading(false);
+    }
+  }, [reportFilter]);
 
   useEffect(() => {
     if (isOpen) {
       loadAdminData();
     }
-  }, [isOpen, reportFilter]);
+  }, [isOpen, loadAdminData]);
 
   if (!isOpen) return null;
 
@@ -210,7 +209,7 @@ export default function AdminPanelModal({
         } else {
           setStatusMsg({ type: 'error', text: res.error || 'Failed to restore dump.' });
         }
-      } catch (err) {
+      } catch {
         setStatusMsg({ type: 'error', text: 'Invalid JSON file.' });
       }
     };

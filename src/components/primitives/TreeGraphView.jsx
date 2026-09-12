@@ -74,7 +74,7 @@ export default function TreeGraphView({
     }
 
     return { nodes: computedNodes, edges: computedEdges };
-  }, [root, rawNodes, width, height]);
+  }, [root, rawNodes, width]);
 
   if (nodes.length === 0) {
     return (

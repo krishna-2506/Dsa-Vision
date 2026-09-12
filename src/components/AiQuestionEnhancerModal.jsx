@@ -4,12 +4,9 @@ import {
   Copy,
   Check,
   X,
-  FileText,
   Save,
   RefreshCw,
-  AlertCircle,
-  HelpCircle,
-  Code2
+  AlertCircle
 } from 'lucide-react';
 import { api } from '../services/api';
 import { sound } from '../services/audio';
@@ -21,8 +18,6 @@ export default function AiQuestionEnhancerModal({
   solutions = {},
   onQuestionUpdated
 }) {
-  if (!isOpen || !question) return null;
-
   const [activeTab, setActiveTab] = useState('ai_enhance'); // 'ai_enhance' | 'manual_edit'
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [pasteInput, setPasteInput] = useState('');
@@ -32,15 +27,15 @@ export default function AiQuestionEnhancerModal({
 
   // Manual edit form fields
   const [formData, setFormData] = useState({
-    title: question.title || '',
-    display_id: question.display_id || '',
-    category: question.category || '',
-    difficulty: question.difficulty || 'Easy',
-    time_complexity: question.time_complexity || 'O(N)',
-    space_complexity: question.space_complexity || 'O(1)',
-    description: question.description || '',
-    approach: question.approach || '',
-    tags: Array.isArray(question.tags) ? question.tags.join(', ') : (question.tags || '')
+    title: question?.title || '',
+    display_id: question?.display_id || '',
+    category: question?.category || '',
+    difficulty: question?.difficulty || 'Easy',
+    time_complexity: question?.time_complexity || 'O(N)',
+    space_complexity: question?.space_complexity || 'O(1)',
+    description: question?.description || '',
+    approach: question?.approach || '',
+    tags: Array.isArray(question?.tags) ? question.tags.join(', ') : (question?.tags || '')
   });
 
   useEffect(() => {
@@ -199,6 +194,8 @@ CRITICAL: Return your response strictly as a JSON object matching this schema so
       setIsSaving(false);
     }
   };
+
+  if (!isOpen || !question) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-sm animate-fade-in">

@@ -1,142 +1,188 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-// AlgoVision Studio - Largest Element In Array Visualizer
-// Tech Stack: React, Tailwind CSS (Vite compatible)
-export default function LargestElementVisualizer() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+export const meta = {
+  display_id: 'Q-001',
+  title: 'Largest Element In Array',
+  category: 'Arrays',
+  difficulty: 'Easy',
+  timeComplexity: 'O(N)',
+  spaceComplexity: 'O(1)',
+  description: 'Find the maximum value present in an unsorted array of integers.'
+};
 
-  // Algorithm state progression matching the provided C++ solution structure
-  const steps = [
-    { i: null, ans: 0, codeLine: 4, msg: "Initialize 'ans' with the first element (arr[0] = 1)." },
-    { i: 1, ans: 0, codeLine: 5, msg: "Start iteration with pointer 'i' at index 1." },
-    { i: 1, ans: 0, codeLine: 7, msg: "Compare: Is arr[1] (8) > current 'ans' (1)?" },
-    { i: 1, ans: 1, codeLine: 8, msg: "8 > 1 is True. Update 'ans' to track the element at index 1." },
-    { i: 2, ans: 1, codeLine: 5, msg: "Increment 'i' to index 2." },
-    { i: 2, ans: 1, codeLine: 7, msg: "Compare: Is arr[2] (7) > current 'ans' (8)?" },
-    { i: 3, ans: 1, codeLine: 5, msg: "7 > 8 is False. 'ans' remains 8. Increment 'i' to index 3." },
-    { i: 3, ans: 1, codeLine: 7, msg: "Compare: Is arr[3] (56) > current 'ans' (8)?" },
-    { i: 3, ans: 3, codeLine: 8, msg: "56 > 8 is True. Update 'ans' to track the element at index 3." },
-    { i: 4, ans: 3, codeLine: 5, msg: "Increment 'i' to index 4." },
-    { i: 4, ans: 3, codeLine: 7, msg: "Compare: Is arr[4] (90) > current 'ans' (56)?" },
-    { i: 4, ans: 4, codeLine: 8, msg: "90 > 56 is True. Update 'ans' to track the element at index 4." },
-    { i: null, ans: 4, codeLine: 10, msg: "Array traversal complete. Return 'ans' (90) as the largest element." }
-  ];
+export const solutions = {
+  cpp: `// C++ Optimal Solution: Single Pass Traversal
+// Time Complexity: O(N) — each element inspected exactly once
+// Space Complexity: O(1) — constant auxiliary space
+#include <vector>
+using namespace std;
 
-  const array = [1, 8, 7, 56, 90];
-  const stepData = steps[currentStep];
+class Solution {
+public:
+    int largest(vector<int>& arr) {
+        if (arr.empty()) return -1;
 
-  useEffect(() => {
-    let timer;
-    if (isPlaying && currentStep < steps.length - 1) {
-      timer = setTimeout(() => setCurrentStep(prev => prev + 1), 1500);
-    } else if (currentStep >= steps.length - 1) {
-      setIsPlaying(false);
+        // Line 12: Initialize max tracker with first element
+        int maxVal = arr[0];
+
+        // Line 15: Iterate through remaining elements
+        for (int i = 1; i < (int)arr.size(); ++i) {
+            // Line 17: Compare current element against recorded max
+            if (arr[i] > maxVal) {
+                // Line 19: Update global maximum
+                maxVal = arr[i];
+            }
+        }
+
+        // Line 24: Return largest element found
+        return maxVal;
     }
-    return () => clearTimeout(timer);
-  }, [isPlaying, currentStep, steps.length]);
+};`,
+  python: `# Python 3 Optimal Solution: Single Pass Traversal
+# Time Complexity: O(N) | Space Complexity: O(1)
+
+class Solution:
+    def largest(self, arr: list[int]) -> int:
+        if not arr:
+            return -1
+
+        # Line 9: Initialize max with first element
+        max_val = arr[0]
+
+        # Line 12: Iterate through remaining elements
+        for i in range(1, len(arr)):
+            # Line 14: Compare and update max if current is larger
+            if arr[i] > max_val:
+                max_val = arr[i]
+
+        # Line 18: Return final maximum
+        return max_val
+`,
+  java: `// Java Optimal Solution: Single Pass Traversal
+// Time Complexity: O(N) | Space Complexity: O(1)
+
+class Solution {
+    public int largest(int[] arr) {
+        if (arr == null || arr.length == 0) return -1;
+
+        // Line 9: Track current largest element
+        int maxVal = arr[0];
+
+        // Line 12: Single pass inspection
+        for (int i = 1; i < arr.length; i++) {
+            // Line 14: Update max when larger item found
+            if (arr[i] > maxVal) {
+                maxVal = arr[i];
+            }
+        }
+
+        // Line 20: Return maximum
+        return maxVal;
+    }
+}
+`,
+  typescript: `// TypeScript Optimal Solution
+// Time Complexity: O(N) | Space Complexity: O(1)
+
+function largest(arr: number[]): number {
+  if (arr.length === 0) return -1;
+
+  let maxVal = arr[0];
+
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > maxVal) {
+      maxVal = arr[i];
+    }
+  }
+
+  return maxVal;
+}
+`
+};
+
+export const steps = [
+  { i: null, ans: 0, codeLine: 12, title: "Initialize 'maxVal' = arr[0] (1)", msg: "Initialize 'maxVal' with the first element (arr[0] = 1)." },
+  { i: 1, ans: 0, codeLine: 15, title: "Start Loop at Index 1", msg: "Start iteration with pointer 'i' at index 1 (val = 8)." },
+  { i: 1, ans: 0, codeLine: 17, title: "Compare: arr[1] (8) > maxVal (1)", msg: "Compare: Is arr[1] (8) > current 'maxVal' (1)? True." },
+  { i: 1, ans: 1, codeLine: 19, title: "Update maxVal = 8", msg: "Update 'maxVal' to 8 at index 1." },
+  { i: 2, ans: 1, codeLine: 15, title: "Advance to Index 2", msg: "Increment 'i' to index 2 (val = 7)." },
+  { i: 2, ans: 1, codeLine: 17, title: "Compare: arr[2] (7) > maxVal (8)", msg: "7 > 8 is False. 'maxVal' remains 8." },
+  { i: 3, ans: 1, codeLine: 15, title: "Advance to Index 3", msg: "Increment 'i' to index 3 (val = 56)." },
+  { i: 3, ans: 1, codeLine: 17, title: "Compare: arr[3] (56) > maxVal (8)", msg: "56 > 8 is True. Update 'maxVal'." },
+  { i: 3, ans: 3, codeLine: 19, title: "Update maxVal = 56", msg: "Update 'maxVal' to 56 at index 3." },
+  { i: 4, ans: 3, codeLine: 15, title: "Advance to Index 4", msg: "Increment 'i' to index 4 (val = 90)." },
+  { i: 4, ans: 3, codeLine: 17, title: "Compare: arr[4] (90) > maxVal (56)", msg: "90 > 56 is True. Update 'maxVal'." },
+  { i: 4, ans: 4, codeLine: 19, title: "Update maxVal = 90", msg: "Update 'maxVal' to 90 at index 4." },
+  { i: null, ans: 4, codeLine: 24, title: "Traversal Complete", msg: "Array traversal complete. Return maxVal = 90." }
+];
+
+export default function LargestElementVisualizer({ currentStep = 0 }) {
+  const array = [1, 8, 7, 56, 90];
+  const stepIdx = Math.min(Math.max(0, currentStep), steps.length - 1);
+  const stepData = steps[stepIdx] || steps[0];
 
   return (
-    <div className="w-full max-w-4xl p-6 bg-slate-900 border border-slate-800 shadow-xl text-slate-200 font-sans">
-      <div className="mb-6 flex justify-between items-center">
-        <h2 className="text-xl font-bold text-indigo-400 tracking-wide">Visualizer: Largest Element</h2>
-        <div className="flex gap-3">
-          <button 
-            onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition-colors"
-            disabled={currentStep === 0}
-          >
-            Prev Step
-          </button>
-          <button 
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition-colors"
-          >
-            {isPlaying ? 'Pause' : 'Play Auto'}
-          </button>
-          <button 
-            onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition-colors"
-            disabled={currentStep === steps.length - 1}
-          >
-            Next Step
-          </button>
-        </div>
-      </div>
-
-      <div className="mb-4 p-4 bg-slate-800 border-l-4 border-indigo-500 min-h-[80px] flex items-center">
-        <p className="text-lg text-slate-200">
-          <span className="text-indigo-400 font-semibold mr-2">Step {currentStep + 1}:</span> 
+    <div className="w-full flex flex-col items-center justify-center p-4">
+      {/* Visualizer Step Explanation Callout */}
+      <div className="w-full max-w-2xl mb-6 p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center gap-3">
+        <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
+        <p className="text-xs sm:text-sm text-[var(--chalk)] font-sans leading-relaxed">
+          <span className="font-semibold text-indigo-600 dark:text-indigo-400 mr-1.5">
+            Step {stepIdx + 1}:
+          </span>
           {stepData.msg}
         </p>
       </div>
 
-      {/* Array Visualization Area */}
-      <div className="relative h-64 flex flex-col justify-center items-center bg-slate-950 border border-slate-800 overflow-hidden mt-8 mb-6">
-        
-        {/* SVG Connector Arrow between pointers */}
-        {stepData.i !== null && stepData.ans !== stepData.i && (
-          <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-10">
-            <defs>
-              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b" />
-              </marker>
-            </defs>
-            <path
-              d={`M ${50 + (stepData.i * 80)} 80 Q ${(50 + (stepData.i * 80) + 50 + (stepData.ans * 80)) / 2} 40 ${50 + (stepData.ans * 80)} 80`}
-              fill="none"
-              stroke="#f59e0b"
-              strokeWidth="2"
-              strokeDasharray="4 4"
-              markerEnd="url(#arrowhead)"
-              className="transition-all duration-500 ease-in-out"
-              style={{ transform: 'translateX(calc(50% - 200px))' }} // Centering offset adjustment
-            />
-          </svg>
-        )}
-
-        <div className="relative flex gap-4 z-20">
+      {/* Array Canvas */}
+      <div className="relative w-full max-w-2xl min-h-[220px] flex flex-col justify-center items-center bg-[var(--board)] rounded-xl border border-[var(--line)] p-6 overflow-hidden">
+        <div className="relative flex gap-3 sm:gap-4.5 z-20">
           {array.map((val, idx) => {
             const isAns = stepData.ans === idx;
             const isI = stepData.i === idx;
-            
+
             return (
               <div key={idx} className="flex flex-col items-center">
-                
                 {/* Fixed Top Indicator for 'i' iterator */}
-                <div className="h-8 mb-2">
-                  {isI && (
-                    <div className="text-amber-500 font-mono text-sm font-bold transition-all duration-300 transform translate-y-0 opacity-100 flex flex-col items-center">
+                <div className="h-7 mb-1.5 flex items-center justify-center">
+                  {isI ? (
+                    <div className="text-amber-500 font-mono text-xs font-bold flex flex-col items-center animate-bounce">
                       <span>i</span>
-                      <span>↓</span>
+                      <span className="text-[10px] -mt-1">↓</span>
                     </div>
+                  ) : (
+                    <span className="opacity-0 text-xs">·</span>
                   )}
                 </div>
 
-                {/* Main Array Element Box */}
-                <div 
+                {/* Main Array Element Tile */}
+                <div
                   className={`
-                    w-16 h-16 flex items-center justify-center text-2xl font-bold border-2 transition-all duration-300
-                    ${isAns ? 'bg-emerald-900/40 border-emerald-500 text-emerald-400' : 
-                      isI ? 'bg-amber-900/20 border-amber-500 text-amber-400' : 
-                      'bg-slate-800 border-slate-600 text-slate-300'}
+                    w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-lg sm:text-xl font-mono font-bold border transition-all duration-300
+                    ${isAns
+                      ? 'bg-emerald-500/15 border-emerald-500 text-emerald-600 dark:text-emerald-400 shadow-[0_0_16px_rgba(16,185,129,0.25)] scale-105'
+                      : isI
+                      ? 'bg-amber-500/15 border-amber-500 text-amber-600 dark:text-amber-400 scale-102'
+                      : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk)]'
+                    }
                   `}
                 >
                   {val}
                 </div>
-                <div className="mt-2 text-xs text-slate-500 font-mono">[{idx}]</div>
 
-                {/* Sliding Bottom Indicator for 'ans' variable */}
-                <div className="h-8 mt-2 relative w-full">
-                  <div 
-                    className={`
-                      absolute w-full flex flex-col items-center text-emerald-500 font-mono text-sm font-bold transition-all duration-500
-                      ${isAns ? 'opacity-100 scale-100' : 'opacity-0 scale-50 pointer-events-none'}
-                    `}
-                  >
-                    <span>↑</span>
-                    <span>ans</span>
-                  </div>
+                {/* Index Sub-label */}
+                <div className="mt-1.5 text-[11px] text-[var(--chalk-faint)] font-mono">[{idx}]</div>
+
+                {/* Bottom Indicator for 'maxVal' variable */}
+                <div className="h-7 mt-1.5 flex items-center justify-center">
+                  {isAns ? (
+                    <div className="text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold flex flex-col items-center">
+                      <span className="text-[10px] -mb-1">↑</span>
+                      <span>maxVal</span>
+                    </div>
+                  ) : (
+                    <span className="opacity-0 text-xs">·</span>
+                  )}
                 </div>
               </div>
             );
@@ -144,12 +190,24 @@ export default function LargestElementVisualizer() {
         </div>
       </div>
 
-      <div className="flex justify-between items-center text-sm font-mono text-slate-400 bg-slate-950 p-3 border border-slate-800">
-        <div>Active Code Line: <span className="text-indigo-400 font-bold ml-1">{stepData.codeLine}</span></div>
-        <div className="flex gap-4">
-          <span className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500"></div> ans</span>
-          <span className="flex items-center gap-2"><div className="w-3 h-3 bg-amber-500"></div> i</span>
-          <span className="flex items-center gap-2"><div className="w-3 h-3 bg-slate-600"></div> Unvisited</span>
+      {/* Execution Diagnostics Bar */}
+      <div className="w-full max-w-2xl mt-4 flex items-center justify-between text-xs font-mono text-[var(--chalk-dim)] p-2.5 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)]">
+        <div>
+          Active Code Line:{' '}
+          <span className="text-indigo-600 dark:text-indigo-400 font-bold ml-1">
+            L{stepData.codeLine}
+          </span>
+        </div>
+        <div className="flex items-center gap-3 text-[11px]">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" /> maxVal
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-amber-500" /> i
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-sm bg-[var(--board-hover)] border border-[var(--line)]" /> Unvisited
+          </span>
         </div>
       </div>
     </div>

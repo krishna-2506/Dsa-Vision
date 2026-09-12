@@ -359,7 +359,7 @@ export const api = {
     try {
       const res = await fetch(`/api/users/${encodeURIComponent(userId)}/private-notes/${encodeURIComponent(questionId)}`);
       const json = await res.json();
-      if (json.success) return json.data.content;
+      if (json && json.success && json.data) return json.data.content || '';
     } catch (e) {
       console.warn('Failed to fetch private note', e);
     }

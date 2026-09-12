@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   ArrowLeft,
   Play,
   Pause,
-  SkipBack,
-  SkipForward,
   RotateCcw,
   Repeat,
   ExternalLink,
@@ -16,25 +14,19 @@ import {
   Download,
   Layers,
   Sparkles,
-  HelpCircle,
-  Lightbulb,
   UploadCloud,
-  FileCode,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Search,
   X,
   MessageSquare,
   ThumbsUp,
   Send,
   Lock,
-  Globe,
   Plus,
-  Trash2,
-  User,
   Flag,
-  Code2
+  Code2,
+  Keyboard
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../services/audio';
@@ -45,6 +37,8 @@ import VisualizerUploader from './VisualizerUploader';
 import VariableInspector from './primitives/VariableInspector';
 import ReportSolutionModal from './ReportSolutionModal';
 import AiQuestionEnhancerModal from './AiQuestionEnhancerModal';
+import VisualizerErrorBoundary from './VisualizerErrorBoundary';
+import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 
 function formatComplexity(text) {
   if (!text) return '—';
@@ -90,6 +84,7 @@ export default function VisualizerStudio({
   const [showUploader, setShowUploader] = useState(false);
   const [showApproach, setShowApproach] = useState(false);
   const [showJumper, setShowJumper] = useState(false);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [jumperSearch, setJumperSearch] = useState('');
   const [copiedDirect, setCopiedDirect] = useState(false);
 
@@ -103,12 +98,14 @@ export default function VisualizerStudio({
   const [newNoteTitle, setNewNoteTitle] = useState('');
   const [newNoteContent, setNewNoteContent] = useState('');
   const [isPostingNote, setIsPostingNote] = useState(false);
+  const [privateNotes, setPrivateNotes] = useState('');
+  const [privateNotesSaved, setPrivateNotesSaved] = useState(false);
   // Custom Input Sandbox & Preset State
-  const [customInput, setCustomInput] = useState('');
-  const [customTarget, setCustomTarget] = useState('');
-  const [showCustomSandbox, setShowCustomSandbox] = useState(false);
+  const [customInput, _setCustomInput] = useState('');
+  const [customTarget, _setCustomTarget] = useState('');
   const [reviewSaved, setReviewSaved] = useState(false);
   const [isBarDragging, setIsBarDragging] = useState(false);
+  const [isCodeColDragging, setIsCodeColDragging] = useState(false);
   const [preloadedUploadCode, setPreloadedUploadCode] = useState('');
   const barFileInputRef = useRef(null);
 
@@ -160,17 +157,22 @@ export default function VisualizerStudio({
     return () => {
       isMounted = false;
     };
-  }, [question.id, question.component_key, question.componentKey, currentUser?.id]);
+  }, [question.id, question.component_key, question.componentKey, question.notes, currentUser?.id]);
 
   // Fetch solutions dynamically whenever question or active approach tier changes
   useEffect(() => {
     let isMounted = true;
     api.getCodeSolutions(question.id, activeTier).then((data) => {
       if (!isMounted) return;
-      if (data && Object.keys(data).length > 0) {
+      const hasSubstantialData = data && Object.keys(data).length > 0 && Object.values(data).some((c) => c && c.length > 70);
+      if (hasSubstantialData) {
         setSolutions(data);
       } else if (visualizerEntry?.approaches?.[activeTier]?.solutions) {
         setSolutions(visualizerEntry.approaches[activeTier].solutions);
+      } else if (visualizerEntry?.solutions) {
+        setSolutions(visualizerEntry.solutions);
+      } else if (data && Object.keys(data).length > 0) {
+        setSolutions(data);
       } else if (activeTier !== 'optimal') {
         api.getCodeSolutions(question.id, 'optimal').then((fallbackData) => {
           if (isMounted && fallbackData && Object.keys(fallbackData).length > 0) {
@@ -179,22 +181,22 @@ export default function VisualizerStudio({
             setSolutions(visualizerEntry.solutions);
           }
         });
-      } else if (visualizerEntry?.solutions) {
-        setSolutions(visualizerEntry.solutions);
       }
     });
     return () => {
       isMounted = false;
     };
-  }, [question.id, activeTier, currentKey]);
+  }, [question.id, activeTier, currentKey, visualizerEntry]);
 
-  const handleSelectTier = (tier) => {
-    if (tier === activeTier) return;
-    setActiveTier(tier);
-    setCurrentStep(0);
-    setIsPlaying(false);
-    sound.playStep(640);
-  };
+  const handleSelectTier = useCallback((tier) => {
+    setActiveTier((curr) => {
+      if (curr === tier) return curr;
+      setCurrentStep(0);
+      setIsPlaying(false);
+      sound.playStep(640);
+      return tier;
+    });
+  }, []);
 
 
   const handleDirectCopyPrompt = () => {
@@ -236,56 +238,43 @@ DO NOT render any of: outer card frames, "Step X of Y" counters, prev/next butto
 language tabs, or copy-code buttons. The Studio already wraps you. Just render canvas content.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-VISUAL STYLE — CHALKBOARD / WHITEBOARD AESTHETIC
+VISUAL STYLE & DUAL THEME SPECIFICATION (LIGHT & DARK MODE)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Match this exact design system. All colours are enforced by the app's CSS variables:
+AlgoVision supports both LIGHT and DARK themes.
+You MUST use the app's CSS variables so your visualizer renders cleanly in BOTH themes:
 
-PALETTE (use these exact hex values):
-  Stage background:     #12181a
-  Card / node fill:     #1c2529
-  Divider lines:        rgba(238,241,234,0.09)
-  Primary text:         #eef1ea
-  Secondary (dim) text: #8fa09a
-  Faint index text:     #5f6f6a
-  Amber / curr-active:  #e8a33d
-  Teal  / prev-second:  #5fb3a6
-  Easy green: #7cb473 | Hard red: #e06c75
+COLOR TOKENS (use these CSS variables directly in SVG and styles):
+  Canvas / Stage bg:   var(--board)
+  Card / node fill:    var(--board-raised)
+  Node border / line:  var(--line)
+  Primary text:        var(--chalk)
+  Secondary / dim text: var(--chalk-dim)
+  Faint index text:    var(--chalk-faint)
+  Active / curr glow:  var(--indigo) (#6366f1) or var(--amber) (#f59e0b)
+  Secondary pointer:   var(--teal) (#06b6d4)
+  Success / Done:      var(--easy) (#10b981)
+  Error / Collision:   var(--hard) (#f43f5e)
 
-SVG DRAWING RULES (all visualizers are SVG-based):
-  Array/node boxes:
-    fill="#1c2529"  stroke="#5f6f6a"  strokeWidth=1.4  rx=3
-    filter="url(#rough)"  ← gives hand-drawn chalk-edge look
-    (The SVG filter id="rough" is already in the page's root HTML — just reference it)
-
+SVG DRAWING RULES:
+  Array / node boxes:
+    fill="var(--board-raised)" stroke="var(--line)" strokeWidth=1.5 rx=6
   Active element (curr / selected):
-    Amber glow ring: stroke="#e8a33d" strokeWidth=2.2 rx=6 (box padded +5px each side)
-
+    stroke="var(--indigo)" strokeWidth=2.4 rx=8 (or amber glow)
   Previous / secondary element:
-    Teal dashed ring: stroke="#5fb3a6" strokeWidth=1.6 strokeDasharray="3 4"
-
+    stroke="var(--teal)" strokeWidth=1.8 strokeDasharray="4 4"
   Value inside box:
-    font-family="IBM Plex Mono, monospace" fontSize=16 fontWeight=500 fill="#eef1ea"
-
+    font-family="'JetBrains Mono', monospace" fontSize=15 fontWeight=600 fill="var(--chalk)"
   Index label below box:
-    font-family="IBM Plex Mono, monospace" fontSize=10.5 fill="#5f6f6a"
+    font-family="'JetBrains Mono', monospace" fontSize=11 fill="var(--chalk-faint)"
+  Pointer labels (curr, prev, L, R, slow, fast, i, j):
+    font-family="'Plus Jakarta Sans', sans-serif" fontSize=13 fontWeight=700 fill="var(--indigo)" (active) or "var(--teal)" (secondary)
 
-  Pointer labels (curr, prev, L, R, head, slow, fast, i, j):
-    font-family="Kalam, cursive" fontSize=14 fill=#e8a33d (active) or #5fb3a6 (secondary)
-    Place ABOVE the box for curr/active, BELOW for prev/secondary
-
-  SVG arrows: stroke="#5f6f6a" strokeWidth=1.2 with arrowhead marker
-  Linked-List nodes: 3-compartment boxes (PREV | VAL | NEXT) with hex address tags above
-  Tree nodes: circles fill="#1c2529" stroke="#5f6f6a"
-  Hash Map: key→value badge grid in amber/teal
-
-STATUS HUD — always render directly below canvas:
+STATUS HUD — render below canvas:
   <div className="status-line"><span className="prev-b">prev = 12</span>, <b>curr = 35</b></div>
-  CSS already defined: .status-line (mono, dim), .status-line b (amber), .status-line .prev-b (teal)
 
 EXPLANATION — render below status HUD:
-  <p className="explain">35 beats curr, so <span className="note">prev</span> inherits old value.</p>
-  CSS already defined: .explain (13.5px, dim), .explain .note (Kalam cursive, amber)
+  <p className="explain">35 beats curr, so prev inherits the old value.</p>
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 MULTI-LANGUAGE CODE — 3 LANGUAGES × 3 TIERS
@@ -510,22 +499,70 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
     setTimeout(() => setPrivateNotesSaved(false), 2000);
   };
 
-  // Keyboard navigation
+  const triggerCompletionCelebration = useCallback(() => {
+    sound?.playSuccess?.();
+    confetti({
+      particleCount: 70,
+      spread: 60,
+      origin: { y: 0.6 }
+    });
+  }, []);
+
+  const handleNextStep = useCallback(() => {
+    setCurrentStep((curr) => {
+      if (curr < maxSteps - 1) {
+        const next = curr + 1;
+        sound.playStep(520 + next * 30);
+        if (next === maxSteps - 1) {
+          triggerCompletionCelebration();
+        }
+        return next;
+      }
+      return curr;
+    });
+  }, [maxSteps, triggerCompletionCelebration]);
+
+  const handlePrevStep = useCallback(() => {
+    setCurrentStep((curr) => {
+      if (curr > 0) {
+        sound.playPrev();
+        return curr - 1;
+      }
+      return curr;
+    });
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setCurrentStep(0);
+    setIsPlaying(false);
+    sound.playReset();
+  }, []);
+
+  const togglePlay = useCallback(() => {
+    setCurrentStep((curr) => {
+      if (curr >= maxSteps - 1) {
+        return 0;
+      }
+      return curr;
+    });
+    setIsPlaying((prev) => !prev);
+  }, [maxSteps]);
+
+  // Unified Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
 
       if (e.code === 'Space') {
         e.preventDefault();
         togglePlay();
       } else if ((e.altKey && e.code === 'ArrowRight') || e.key === ']') {
-        // Next problem shortcut
         if (nextQuestion && onNavigateQuestion) {
           e.preventDefault();
           onNavigateQuestion(nextQuestion);
         }
       } else if ((e.altKey && e.code === 'ArrowLeft') || e.key === '[') {
-        // Previous problem shortcut
         if (prevQuestion && onNavigateQuestion) {
           e.preventDefault();
           onNavigateQuestion(prevQuestion);
@@ -539,16 +576,49 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault();
         handleReset();
+      } else if (e.key === '1') {
+        e.preventDefault();
+        handleSelectTier('intuitive');
+      } else if (e.key === '2') {
+        e.preventDefault();
+        handleSelectTier('better');
+      } else if (e.key === '3') {
+        e.preventDefault();
+        handleSelectTier('optimal');
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setShowJumper((j) => !j);
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        handleSavePrivateNotes();
+      } else if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcutsModal(true);
+      } else if (e.key === 'Escape') {
+        setShowJumper(false);
+        setShowShortcutsModal(false);
+        setShowUploader(false);
+        setShowReportModal(false);
+        setShowEnhanceModal(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentStep, maxSteps, isPlaying, prevQuestion, nextQuestion, onNavigateQuestion]);
+  }, [
+    togglePlay,
+    handleNextStep,
+    handlePrevStep,
+    handleReset,
+    handleSelectTier,
+    prevQuestion,
+    nextQuestion,
+    onNavigateQuestion
+  ]);
 
   // Compute active line and variables for real-time inspection & code sync
   const currentStepData = stepsList ? stepsList[currentStep] : null;
-  const activeCodeLine = currentStepData?.codeLine || currentStepData?.line || null;
+  const activeCodeLine = currentStepData?.codeLines || currentStepData?.codeLine || currentStepData?.highlightLines || currentStepData?.line || null;
   const currentVariables = currentStepData?.variables || {
     ...(currentStepData?.low !== undefined ? { low: currentStepData.low } : {}),
     ...(currentStepData?.high !== undefined ? { high: currentStepData.high } : {}),
@@ -604,8 +674,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
   const handleUploadSuccess = async (newKey, updatedQuestion) => {
     setShowUploader(false);
     setPreloadedUploadCode('');
-    setViewMode('split'); // Default to split screen with dominant visualizer canvas upon upload
-    // Automatically reload solutions from DB so new commented code replaces old code immediately in CodeViewer
+    setViewMode('split');
     const refreshedSolutions = await api.getCodeSolutions(question.id);
     if (refreshedSolutions && Object.keys(refreshedSolutions).length > 0) {
       setSolutions(refreshedSolutions);
@@ -644,54 +713,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isPlaying, speed, loop, maxSteps]);
-
-  const triggerCompletionCelebration = () => {
-    sound.playComplete();
-    confetti({
-      particleCount: 70,
-      spread: 60,
-      origin: { y: 0.6 }
-    });
-  };
-
-  const handleNextStep = () => {
-    if (currentStep < maxSteps - 1) {
-      const next = currentStep + 1;
-      setCurrentStep(next);
-      sound.playStep(520 + next * 30);
-      if (next === maxSteps - 1) {
-        triggerCompletionCelebration();
-      }
-    }
-  };
-
-  const handlePrevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-      sound.playPrev();
-    }
-  };
-
-  const handleReset = () => {
-    setCurrentStep(0);
-    setIsPlaying(false);
-    sound.playReset();
-  };
-
-  const togglePlay = () => {
-    if (currentStep >= maxSteps - 1) {
-      setCurrentStep(0);
-    }
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleSaveNotes = async () => {
-    await api.saveNotes(question.id, notes);
-    onUpdateQuestion({ ...question, notes });
-    setNotesSaved(true);
-    setTimeout(() => setNotesSaved(false), 2000);
-  };
+  }, [isPlaying, speed, loop, maxSteps, triggerCompletionCelebration]);
 
   const handleDownloadStudySheet = () => {
     window.open(`/api/export/${encodeURIComponent(question.id)}`, '_blank');
@@ -704,131 +726,135 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
     question.difficulty === 'Hard' ? 'dot-hard' : 'dot-easy';
 
   return (
-    <div className="max-w-[1240px] mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* Caption line */}
-      <div className="caption flex items-center justify-between">
-        <span>AlgoVision Whiteboard Studio · Interactive DSA Step-by-Step Visualization</span>
-        {question.category && (
-          <span className="font-mono text-[11px] opacity-75 hidden sm:inline">
-            {question.category.replace(/^\d+\.\s*/, '')}
-          </span>
-        )}
-      </div>
-
-      {/* ── ZONE 1: Problem Overview & Question Tab (Card on TOP) ── */}
-      <div className="card shadow-xl p-4 sm:p-5 space-y-4">
+    <div className="max-w-[1360px] mx-auto px-4 sm:px-6 py-6 space-y-6">
+      {/* ── ZONE 1: Problem Overview & Command Toolbar (Senior Workbench Card) ── */}
+      <div className="card specular-card shadow-sm p-5 sm:p-6 space-y-4 bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl">
         {/* Top Header Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
+          <div className="flex items-center gap-3.5 min-w-0">
             <button
               onClick={onBack}
-              className="p-1.5 rounded text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--line)] transition shrink-0"
-              title="Back to library (Esc)"
+              className="p-2 rounded-xl bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all shrink-0 cursor-pointer group"
+              title="Back to problem library (Esc)"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             </button>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className="diff !ml-0">
-                  <span className={`dot ${diffDotClass}`}></span>
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                {/* Difficulty Badge */}
+                <span className={`diff-badge ${
+                  question.difficulty === 'Hard' ? 'diff-badge-hard' :
+                  question.difficulty === 'Medium' ? 'diff-badge-medium' : 'diff-badge-easy'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${diffDotClass}`} />
                   {question.difficulty}
                 </span>
-                <span className="text-[11.5px] font-mono text-[var(--amber)]">
-                  {question.display_id || (question.leetcode_id ? `#${question.leetcode_id}` : '')}
+
+                {/* Display ID */}
+                <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/25 text-indigo-600 dark:text-indigo-300">
+                  {question.display_id || (question.leetcode_id ? `#${question.leetcode_id}` : 'DSA')}
                 </span>
+
+                {/* Category */}
                 {question.category && (
-                  <span className="text-[11px] font-mono text-[var(--chalk-faint)]">
+                  <span className="text-xs font-sans font-medium text-[var(--chalk-dim)]">
                     {question.category.replace(/^\d+\.\s*/, '')}
                   </span>
                 )}
               </div>
-              <h1 className="text-[16px] sm:text-[18px] font-bold font-sans text-[var(--chalk)] truncate">
+
+              <h1 className="text-lg sm:text-xl font-bold font-sans text-[var(--chalk)] tracking-tight truncate">
                 {question.title}
               </h1>
             </div>
           </div>
 
-          {/* Right Action Tools */}
+          {/* Right Action Tools Toolbar */}
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
             {/* Complexity Badges */}
-            <div className="hidden lg:flex items-center gap-2 text-[11px] font-mono text-[var(--chalk-dim)] px-2.5 py-1 rounded bg-[var(--board-raised-2)] border border-[var(--line)]">
-              <span className="flex items-center gap-1" title="Time Complexity">
-                <Clock className="w-3 h-3 text-[var(--amber)]" />
-                {formatComplexity(question.time_complexity)}
+            <div className="hidden xl:flex items-center gap-2.5 text-xs font-mono text-[var(--chalk-dim)] px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
+              <span className="flex items-center gap-1.5" title="Time Complexity">
+                <Clock className="w-3.5 h-3.5 text-amber-500" />
+                <span>{formatComplexity(question.time_complexity)}</span>
               </span>
-              <span className="opacity-30">·</span>
-              <span className="flex items-center gap-1" title="Space Complexity">
-                <Cpu className="w-3 h-3 text-[var(--teal)]" />
-                {formatComplexity(question.space_complexity)}
+              <span className="text-[var(--line-strong)]">·</span>
+              <span className="flex items-center gap-1.5" title="Space Complexity">
+                <Cpu className="w-3.5 h-3.5 text-cyan-500" />
+                <span>{formatComplexity(question.space_complexity)}</span>
               </span>
             </div>
 
-            {/* Status Dropdown */}
-            <select
-              value={question.status || 'to_learn'}
-              onChange={(e) => onStatusChange(question.id, e.target.value)}
-              className="nav-pill cursor-pointer"
-            >
-              <option value="to_learn" className="bg-[#171f22]">To learn</option>
-              <option value="in_progress" className="bg-[#171f22]">In progress</option>
-              <option value="mastered" className="bg-[#171f22]">Mastered</option>
-            </select>
-
-            {/* View Mode Toggle */}
-            <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded p-0.5">
-              {[['visualizer_only', 'Viz'], ['split', 'Split'], ['code_only', 'Code']].map(([mode, label]) => (
+            {/* View Mode Segmented Control */}
+            <div className="segmented-control">
+              {[
+                ['visualizer_only', 'Visualizer'],
+                ['split', 'Split View'],
+                ['code_only', 'Code & Logic']
+              ].map(([mode, label]) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
-                  className={`px-2.5 py-1 rounded text-[11px] font-mono transition ${
-                    viewMode === mode
-                      ? 'bg-[var(--amber-dim)] text-[var(--amber)] font-semibold'
-                      : 'text-[var(--chalk-faint)] hover:text-[var(--chalk)]'
-                  }`}
+                  className={`segmented-item ${viewMode === mode ? 'active' : ''}`}
                 >
                   {label}
                 </button>
               ))}
             </div>
 
+            {/* Status Dropdown */}
+            <div className="relative">
+              <select
+                value={question.status || 'to_learn'}
+                onChange={(e) => onStatusChange(question.id, e.target.value)}
+                className="h-8 px-2.5 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono font-medium text-[var(--chalk)] cursor-pointer focus:outline-none focus:border-indigo-500"
+              >
+                <option value="to_learn" className="bg-[var(--board-raised)] text-[var(--chalk)]">To learn</option>
+                <option value="in_progress" className="bg-[var(--board-raised)] text-amber-500">In progress</option>
+                <option value="mastered" className="bg-[var(--board-raised)] text-emerald-500">Mastered</option>
+              </select>
+            </div>
+
             {/* Upload Button */}
             <button
               onClick={() => setShowUploader(!showUploader)}
-              className={`chalk-btn ${showUploader ? 'chalk-btn-amber' : ''}`}
+              className={`btn-secondary h-8 px-2.5 text-xs ${
+                showUploader ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 font-semibold' : ''
+              }`}
               title="Upload custom .jsx visualizer component"
             >
-              <UploadCloud className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Upload</span>
+              <UploadCloud className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+              <span className="hidden sm:inline">Upload Viz</span>
             </button>
 
-            {/* AI Enhance / Edit Question */}
+            {/* AI Enhance */}
             <button
               onClick={() => setShowEnhanceModal(true)}
-              className="chalk-btn"
-              title="Enhance or edit problem statement & examples with AI"
+              className="btn-secondary h-8 px-2.5 text-xs text-amber-600 dark:text-amber-300 hover:text-amber-500"
+              title="Enhance problem statement with AI"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[var(--amber)]" />
-              <span className="hidden lg:inline">AI Enhance</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden md:inline">AI Enhance</span>
             </button>
 
             {/* Quick Problem Jumper */}
             <div className="relative">
               <button
                 onClick={() => setShowJumper(!showJumper)}
-                className="chalk-btn"
-                title="Jump to any problem"
+                className="btn-secondary h-8 px-2.5 text-xs"
+                title="Jump to problem (Ctrl+K)"
               >
-                <Layers className="w-3.5 h-3.5" />
+                <Layers className="w-3.5 h-3.5 text-[var(--chalk-dim)]" />
                 <span className="hidden sm:inline">Jump</span>
+                <kbd className="hidden lg:inline-flex ml-1">K</kbd>
               </button>
 
               {showJumper && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowJumper(false)} />
-                  <div className="absolute top-full mt-1.5 right-0 w-72 sm:w-80 bg-[var(--board-raised)] border border-[var(--line)] rounded shadow-2xl z-50 overflow-hidden fade-in">
-                    <div className="p-2.5 border-b border-[var(--line)] flex items-center gap-2">
-                      <Search className="w-3.5 h-3.5 text-[var(--chalk-faint)] shrink-0" />
+                  <div className="absolute top-full mt-2 right-0 w-80 bg-[var(--board-raised)] border border-[var(--line-strong)] rounded-2xl shadow-2xl z-50 overflow-hidden fade-in">
+                    <div className="p-3 border-b border-[var(--line)] flex items-center gap-2">
+                      <Search className="w-3.5 h-3.5 text-[var(--chalk-dim)] shrink-0" />
                       <input
                         type="text"
                         value={jumperSearch}
@@ -873,68 +899,79 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
             {/* Report Button */}
             <button
               onClick={() => setShowReportModal(true)}
-              className="chalk-btn"
-              title="Report an issue with this question or solution"
+              className="btn-secondary h-8 w-8 justify-center px-0 text-slate-400 hover:text-rose-400"
+              title="Report an issue"
             >
-              <Flag className="w-3.5 h-3.5 text-[#e06c75]" />
+              <Flag className="w-3.5 h-3.5" />
             </button>
 
-            {/* LeetCode link */}
+            {/* LeetCode Link */}
             {question.leetcode_url && (
               <a
                 href={question.leetcode_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="chalk-btn"
+                className="btn-secondary h-8 px-2.5 text-xs text-indigo-300 hover:text-white"
                 title="Open on LeetCode"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">LeetCode</span>
               </a>
             )}
           </div>
         </div>
 
-        {/* Navigation & Spaced Repetition Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[11.5px] font-mono">
+        {/* Navigation & Gamified Spaced Repetition Card */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
           {/* Spaced Repetition Rater */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[var(--chalk-faint)] mr-1">Spaced Rep:</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-mono text-slate-400 font-medium">Recall Confidence:</span>
             <button
               onClick={() => handleReviewConfidence('mastered')}
-              className="px-2 py-0.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] text-[var(--easy)] border border-[var(--line)] transition flex items-center gap-1"
-              title="Mark Mastered (Interval extended)"
+              className="conf-btn mastered"
+              title="I remembered it instantly — interval extended (+4 days)"
             >
-              <span>🟢</span> <span>Mastered</span>
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Mastered</span>
+              <span className="text-[10px] opacity-70">+4d</span>
             </button>
             <button
               onClick={() => handleReviewConfidence('practicing')}
-              className="px-2 py-0.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] text-[var(--amber)] border border-[var(--line)] transition flex items-center gap-1"
-              title="Review in 3 days"
+              className="conf-btn practicing"
+              title="I needed slight hints — review again in 2 days"
             >
-              <span>🟡</span> <span>Review 3d</span>
+              <span className="text-amber-400 font-bold">~</span>
+              <span>Shaky</span>
+              <span className="text-[10px] opacity-70">+2d</span>
             </button>
             <button
               onClick={() => handleReviewConfidence('struggling')}
-              className="px-2 py-0.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] text-[#e06c75] border border-[var(--line)] transition flex items-center gap-1"
-              title="Reset to 1 day"
+              className="conf-btn struggling"
+              title="I forgot the pattern — reset to tomorrow"
             >
-              <span>🔴</span> <span>Reset</span>
+              <span className="text-rose-400 font-bold">✗</span>
+              <span>Forgot</span>
+              <span className="text-[10px] opacity-70">1d</span>
             </button>
             {reviewSaved && (
-              <span className="text-[var(--easy)] px-1 font-bold animate-pulse">✓ Saved</span>
+              <span className="text-emerald-400 text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 fade-in">
+                ✓ Recorded (+15 XP)
+              </span>
             )}
           </div>
 
-          {/* Prev / Next Problem Navigation */}
+          {/* Prev / Next Problem Switcher */}
           <div className="flex items-center gap-2">
             {(() => {
-              const prevLabel = prevQuestion ? (prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')) : '';
+              const prevLabel = prevQuestion
+                ? prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')
+                : '';
               return (
                 <button
                   onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
                   disabled={!prevQuestion}
-                  className="chalk-btn disabled:opacity-30 disabled:pointer-events-none"
-                  title={prevQuestion ? `← ${prevLabel} ${prevQuestion.title}` : 'First problem'}
+                  className="btn-secondary h-8 px-2.5 text-xs disabled:opacity-30 disabled:pointer-events-none"
+                  title={prevQuestion ? `Previous: ${prevLabel} ${prevQuestion.title}` : 'First problem'}
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">{prevLabel || 'Prev'}</span>
@@ -942,18 +979,20 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               );
             })()}
 
-            <span className="text-[var(--chalk-faint)] px-1.5">
+            <span className="text-xs font-mono text-slate-400 px-2">
               {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
             </span>
 
             {(() => {
-              const nextLabel = nextQuestion ? (nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')) : '';
+              const nextLabel = nextQuestion
+                ? nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')
+                : '';
               return (
                 <button
                   onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
                   disabled={!nextQuestion}
-                  className="chalk-btn disabled:opacity-30 disabled:pointer-events-none"
-                  title={nextQuestion ? `${nextLabel} ${nextQuestion.title} →` : 'Last problem'}
+                  className="btn-secondary h-8 px-2.5 text-xs disabled:opacity-30 disabled:pointer-events-none"
+                  title={nextQuestion ? `Next: ${nextLabel} ${nextQuestion.title}` : 'Last problem'}
                 >
                   <span className="hidden sm:inline">{nextLabel || 'Next'}</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -964,52 +1003,58 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         </div>
 
         {/* Problem Statement text */}
-        <div className="text-[12.5px] text-[var(--chalk-dim)] leading-relaxed whitespace-pre-wrap max-h-36 overflow-y-auto font-sans bg-[var(--board)] p-3.5 rounded border border-[var(--line)]">
-          {question.description || 'No description available.'}
+        <div className="text-[13px] text-[var(--chalk)] leading-relaxed whitespace-pre-wrap font-sans bg-[var(--board)] p-4 rounded-xl border border-[var(--line)] max-h-52 overflow-y-auto">
+          {question.description || 'No description available for this problem.'}
         </div>
 
-        {/* Approach toggle */}
+        {/* Collapsible Approach & Hints Accordion */}
         <div>
           <button
             onClick={() => setShowApproach(!showApproach)}
-            className="text-[11.5px] font-mono text-[var(--amber)] hover:underline flex items-center gap-1 cursor-pointer"
+            className="flex items-center gap-2 text-xs font-mono text-indigo-500 dark:text-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-200 transition-colors cursor-pointer group"
           >
-            <span>{showApproach ? '▾' : '▸'}</span>
-            <span>{showApproach ? 'Hide Approach & Invariants' : 'Show Approach & Invariants'}</span>
+            <span className="text-[11px] group-hover:translate-x-0.5 transition-transform">
+              {showApproach ? '▾' : '▸'}
+            </span>
+            <span className="font-semibold underline decoration-indigo-500/40 underline-offset-4">
+              {showApproach ? 'Hide algorithm approach & invariants' : 'Show algorithm approach & invariants'}
+            </span>
           </button>
           {showApproach && (
-            <div className="mt-2 p-3 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[12.5px] text-[var(--chalk-dim)] leading-relaxed whitespace-pre-wrap font-sans">
-              {question.approach || 'Standard optimal approach.'}
+            <div className="approach-panel fade-in">
+              {question.approach || 'Standard optimal algorithm approach.'}
             </div>
           )}
         </div>
       </div>
 
-      {/* ── ZONE 2: Chalkboard Interactive Stage (Workbench Card) ── */}
-      <div className="card shadow-2xl overflow-hidden">
-        {/* Tiers Row (with organic wavy SVG underline) */}
-        <div className="tiers">
+      {/* ── ZONE 2: Interactive Visualizer Stage (IDE Workbench Card) ── */}
+      <div className="card specular-card shadow-2xl overflow-hidden rounded-2xl bg-[var(--board-raised)] border border-[var(--line)]">
+        {/* Modern Tier Switcher Bar */}
+        <div className="flex items-center gap-2 p-3 border-b border-[var(--line)] bg-[var(--board-raised-2)] overflow-x-auto scrollbar-none">
+          <span className="text-xs font-mono text-[var(--chalk-dim)] mr-2 font-medium">Approach Tier:</span>
           {[
-            { id: 'intuitive', label: 'Intuitive', sub: 'brute force' },
-            { id: 'better',    label: 'Better',    sub: 'sub-optimal' },
-            { id: 'optimal',   label: 'Optimal',   sub: 'single pass / optimal' },
+            { id: 'intuitive', label: '1. Intuitive', sub: 'Brute Force' },
+            { id: 'better', label: '2. Better', sub: 'Sub-Optimal' },
+            { id: 'optimal', label: '3. Optimal', sub: 'Single Pass / Optimal' }
           ].map((tier) => {
             const isActive = activeTier === tier.id;
             const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
             return (
               <button
                 key={tier.id}
-                className={`tier ${isActive ? 'active' : ''}`}
-                data-tier={tier.id}
                 onClick={() => handleSelectTier(tier.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-200 border border-indigo-500/40 shadow-[0_0_12px_rgba(99,102,241,0.25)] font-semibold'
+                    : 'text-[var(--chalk-muted)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent'
+                }`}
               >
-                {tier.label} <span className="sub">{tier.sub}</span>
+                <span>{tier.label}</span>
+                <span className="text-[10.5px] opacity-70 font-normal">({tier.sub})</span>
                 {hasCustomAnimation && (
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--teal)] ml-1" title="Dedicated animation ready" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 ml-0.5 shadow-[0_0_6px_rgba(6,182,212,0.8)]" title="Dedicated interactive visualizer available" />
                 )}
-                <svg className="underline" viewBox="0 0 100 8" preserveAspectRatio="none">
-                  <path d="M2,5 Q25,2 50,5 T98,4" stroke="#e8a33d" strokeWidth="2" fill="none" strokeLinecap="round" />
-                </svg>
               </button>
             );
           })}
@@ -1026,18 +1071,32 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
           {/* Canvas Column */}
           {viewMode !== 'code_only' && (
             <div className="canvas-col">
-              <p id="stepTitle">
-                {currentStepData?.title || `${currentStep + 1}. Step Execution`}
-              </p>
+              <div className="flex items-center justify-between gap-3 mb-5 pb-3 border-b border-[var(--line)]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.8)] shrink-0" />
+                  <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-300 uppercase tracking-wider shrink-0">
+                    Step {currentStep + 1} of {maxSteps}
+                  </span>
+                  <span className="text-[var(--chalk-faint)] shrink-0">·</span>
+                  <h2 className="text-sm font-semibold font-sans text-[var(--chalk)] truncate" id="stepTitle">
+                    {currentStepData?.title || `Step ${currentStep + 1} Execution`}
+                  </h2>
+                </div>
+              </div>
 
               {Component ? (
-                <Component
-                  currentStep={currentStep}
-                  onStepChange={setCurrentStep}
-                  customInput={customInput}
-                  customTarget={customTarget}
-                  approachTier={activeTier}
-                />
+                <VisualizerErrorBoundary
+                  onReset={() => setCurrentStep(0)}
+                  onSwitchToCode={() => setViewMode('code_only')}
+                >
+                  <Component
+                    currentStep={currentStep}
+                    onStepChange={setCurrentStep}
+                    customInput={customInput}
+                    customTarget={customTarget}
+                    approachTier={activeTier}
+                  />
+                </VisualizerErrorBoundary>
               ) : (
                 <div
                   onDragOver={(e) => {
@@ -1096,6 +1155,13 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                   </div>
                 </div>
               )}
+
+              {/* Live Variable Inspector HUD */}
+              {currentVariables && Object.keys(currentVariables).length > 0 && (
+                <div className="px-5 pb-3">
+                  <VariableInspector variables={currentVariables} />
+                </div>
+              )}
             </div>
           )}
 
@@ -1103,94 +1169,188 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
           {viewMode !== 'visualizer_only' && (
             <div className="code-col">
               {!Component && viewMode === 'code_only' && (
-                <div className="p-3 bg-[var(--board-raised-2)] border-b border-[var(--line)] flex items-center justify-between gap-3 text-[11.5px] font-mono flex-wrap">
-                  <span className="text-[var(--chalk-dim)] flex items-center gap-1.5">
-                    <Code2 className="w-3.5 h-3.5 text-[var(--amber)]" />
-                    Code Execution View · No visualizer uploaded yet for this question.
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleDirectCopyPrompt}
-                      className="chalk-btn chalk-btn-amber py-1"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>{copiedDirect ? 'Copied!' : 'Copy AI Prompt'}</span>
-                    </button>
-                    <button
-                      onClick={() => setShowUploader(true)}
-                      className="chalk-btn py-1"
-                    >
-                      <UploadCloud className="w-3 h-3" />
-                      <span>Upload .jsx</span>
-                    </button>
+                <>
+                  {/* ── Header bar with action buttons ── */}
+                  <div className="p-3 bg-[var(--board-raised-2)] border-b border-[var(--line)] flex items-center justify-between gap-3 text-[11.5px] font-mono flex-wrap">
+                    <span className="text-[var(--chalk-dim)] flex items-center gap-1.5">
+                      <Code2 className="w-3.5 h-3.5 text-[var(--amber)]" />
+                      Code Execution View · No visualizer uploaded yet.
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleDirectCopyPrompt}
+                        className="chalk-btn chalk-btn-amber py-1"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        <span>{copiedDirect ? 'Copied!' : 'Copy AI Prompt'}</span>
+                      </button>
+                      <button
+                        onClick={() => setShowUploader(true)}
+                        className="chalk-btn py-1"
+                      >
+                        <UploadCloud className="w-3 h-3" />
+                        <span>Upload .jsx</span>
+                      </button>
+                    </div>
                   </div>
-                </div>
+
+                  {/* ── Drag-and-drop zone in code column ── */}
+                  <div
+                    onDragOver={(e) => { e.preventDefault(); setIsCodeColDragging(true); }}
+                    onDragEnter={(e) => { e.preventDefault(); setIsCodeColDragging(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); setIsCodeColDragging(false); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsCodeColDragging(false);
+                      handleDirectFileDrop(e);
+                    }}
+                    onClick={() => barFileInputRef.current?.click()}
+                    className={`flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200 ${
+                      isCodeColDragging
+                        ? 'bg-[var(--amber-dim)] border-[var(--amber)]'
+                        : 'border-[var(--line-strong)] hover:border-[var(--amber)] hover:bg-[rgba(232,163,61,0.04)]'
+                    }`}
+                    style={{
+                      minHeight: '160px',
+                      borderWidth: '1px',
+                      borderStyle: 'dashed',
+                      borderRadius: '3px',
+                      margin: '16px',
+                    }}
+                  >
+                    <input
+                      type="file"
+                      ref={barFileInputRef}
+                      onChange={handleBarFileInput}
+                      accept=".jsx,.tsx,.js,.ts"
+                      className="hidden"
+                    />
+                    <UploadCloud
+                      className={`w-7 h-7 transition-colors duration-200 ${
+                        isCodeColDragging ? 'text-[var(--amber)]' : 'text-[var(--chalk-faint)]'
+                      }`}
+                    />
+                    <div className="text-center px-4">
+                      <p className="text-[12.5px] font-medium text-[var(--chalk-dim)] mb-0.5">
+                        {isCodeColDragging ? 'Drop .jsx to upload' : 'Drop visualizer here'}
+                      </p>
+                      <p className="text-[11px] text-[var(--chalk-faint)]">
+                        or use{' '}
+                        <span
+                          className="text-[var(--amber)] cursor-pointer hover:underline"
+                          onClick={(e) => { e.stopPropagation(); setShowUploader(true); }}
+                        >
+                          Upload .jsx
+                        </span>
+                        {' '}above
+                      </p>
+                    </div>
+                  </div>
+                </>
               )}
               <CodeViewer
                 solutions={solutions}
                 initialLanguage="cpp"
                 activeLine={activeCodeLine}
+                leetcodeUrl={question.leetcode_url}
               />
             </div>
           )}
         </div>
 
-        {/* ── Navrow Footer (Ticks + Transport Controls + Nav Buttons) ── */}
-        <div className="navrow">
-          {/* Ticks */}
-          <div className="ticks" id="ticks">
+        {/* ── Step progress bar ── */}
+        <div className="step-progress-track" style={{ margin: '0' }}>
+          <div
+            className="step-progress-fill"
+            style={{ width: `${maxSteps > 1 ? (currentStep / (maxSteps - 1)) * 100 : 100}%` }}
+          />
+        </div>
+
+        {/* ── Docked Transport HUD (Senior Media Player HUD) ── */}
+        <div className="transport-hud px-5 py-3 border-t border-[var(--line)] bg-[var(--board-raised)] flex items-center justify-between gap-4 flex-wrap">
+          {/* Scrubber Ticks */}
+          <div className="flex items-center gap-1.5" id="ticks">
             {Array.from({ length: maxSteps }).map((_, idx) => {
-              const cls = idx === currentStep ? 'now' : idx < currentStep ? 'done' : '';
+              const isCurrent = idx === currentStep;
+              const isDone = idx < currentStep;
               return (
-                <span
+                <button
                   key={idx}
                   onClick={() => {
                     setCurrentStep(idx);
                     sound.playStep(500 + idx * 30);
                     if (idx === maxSteps - 1) triggerCompletionCelebration();
                   }}
-                  className={`tick ${cls}`}
-                  title={`Step ${idx + 1}`}
+                  className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
+                    isCurrent
+                      ? 'w-7 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]'
+                      : isDone
+                      ? 'w-3.5 bg-indigo-500/40 hover:bg-indigo-500/60'
+                      : 'w-3.5 bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)]'
+                  }`}
+                  title={`Step ${idx + 1} of ${maxSteps}`}
                 />
               );
             })}
           </div>
 
-          {/* Transport Controls */}
-          <div className="flex items-center gap-3 flex-wrap">
+          {/* Center Transport Controls HUD */}
+          <div className="flex items-center gap-3">
+            {/* Reset */}
             <button
               onClick={handleReset}
-              className="navbtn"
-              title="Reset (R)"
+              className="p-2 rounded-xl text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] transition-all cursor-pointer"
+              title="Reset to step 1 (R)"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
 
+            {/* Prominent Play / Pause Button with Glow */}
             <button
               onClick={togglePlay}
-              className="navbtn font-medium"
-              style={{ color: isPlaying ? 'var(--amber)' : undefined }}
+              className={`h-9 px-4 rounded-xl flex items-center gap-2 text-xs font-mono font-semibold transition-all cursor-pointer ${
+                isPlaying
+                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 shadow-[0_0_16px_rgba(245,158,11,0.3)]'
+                  : 'btn-primary'
+              }`}
               title="Play / Pause (Space)"
             >
-              {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-              <span>{isPlaying ? 'pause' : 'play'}</span>
+              {isPlaying ? (
+                <>
+                  <Pause className="w-3.5 h-3.5 fill-current" />
+                  <span>PAUSE</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                  <span>AUTO PLAY</span>
+                </>
+              )}
             </button>
 
+            {/* Loop Toggle */}
             <button
               onClick={() => setLoop(!loop)}
-              className={`navbtn ${loop ? 'text-[var(--amber)]' : ''}`}
-              title={loop ? 'Loop enabled' : 'Loop disabled'}
+              className={`p-2 rounded-xl transition-all cursor-pointer ${
+                loop
+                  ? 'text-cyan-600 dark:text-cyan-300 bg-cyan-500/15 border border-cyan-500/30'
+                  : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
+              }`}
+              title={loop ? 'Looping enabled' : 'Looping disabled'}
             >
-              <Repeat className="w-3.5 h-3.5" />
+              <Repeat className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-1 border-l border-[var(--line)] pl-3 text-[12px] font-mono text-[var(--chalk-faint)]">
+            {/* Speed Selector Segmented Control */}
+            <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-0.5 text-xs font-mono">
               {[0.5, 1, 1.5, 2].map((s) => (
                 <button
                   key={s}
                   onClick={() => setSpeed(s)}
-                  className={`px-1.5 py-0.5 rounded transition ${
-                    speed === s ? 'text-[var(--amber)] font-bold' : 'hover:text-[var(--chalk)]'
+                  className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                    speed === s
+                      ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold shadow-sm'
+                      : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
                   }`}
                 >
                   {s}x
@@ -1198,28 +1358,45 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               ))}
             </div>
 
-            <span className="stepcount ml-2" id="stepCount">
-              Step {currentStep + 1} of {maxSteps}
+            {/* Step Counter Badge */}
+            <span className="text-xs font-mono text-[var(--chalk-dim)] ml-1 px-2 py-1 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)]">
+              {currentStep + 1} / {maxSteps}
             </span>
+
+            {/* Keyboard Shortcuts Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowShortcutsModal(true)}
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all cursor-pointer"
+              title="View keyboard shortcuts (?)"
+            >
+              <Keyboard className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+              <span>Keys</span>
+              <kbd className="text-[10px]">?</kbd>
+            </button>
           </div>
 
-          {/* Nav Buttons */}
-          <div className="navbtns">
+          {/* Step Back / Step Forward Navigation */}
+          <div className="flex items-center gap-2">
             <button
-              className="navbtn"
+              className="btn-secondary h-8 px-3 text-xs disabled:opacity-30 disabled:pointer-events-none"
               id="prevBtn"
               onClick={handlePrevStep}
               disabled={currentStep === 0}
+              title="Previous step (←)"
             >
-              ← prev
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>Step</span>
             </button>
             <button
-              className="navbtn"
+              className="btn-primary h-8 px-3.5 text-xs disabled:opacity-30 disabled:pointer-events-none"
               id="nextBtn"
               onClick={handleNextStep}
               disabled={currentStep === maxSteps - 1}
+              title="Next step (→)"
             >
-              next →
+              <span>Step</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -1244,14 +1421,14 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
       {/* ── Zone 3: Knowledge Hub ── */}
       <div className="card overflow-hidden">
         {/* Tab bar */}
-        <div className="flex items-center gap-5 border-b border-white/[0.06] px-4">
+        <div className="flex items-center gap-5 border-b border-[var(--line)] px-4">
           {[['comments','Discussion', comments.length],['public_notes','Notes', publicNotes.length],['private_notes','Private', null]].map(([id, label, count]) => (
             <button
               key={id}
               onClick={() => setHubTab(id)}
               className={`tab-btn ${hubTab === id ? 'active' : ''}`}
             >
-              {label}{count !== null && <span className="text-slate-600 ml-0.5">({count})</span>}
+              {label}{count !== null && <span className="text-[var(--chalk-faint)] ml-0.5 font-normal">({count})</span>}
             </button>
           ))}
         </div>
@@ -1259,61 +1436,58 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         {hubTab === 'comments' && (
           <div className="p-4 space-y-4">
             <form onSubmit={handlePostComment} className="space-y-2">
-              <div className="flex items-center gap-2 text-slate-400 text-[11px]">
-                <span className="w-5 h-5 rounded bg-indigo-600/30 flex items-center justify-center text-xs">
-                  {currentUser?.avatar || '⚡'}
-                </span>
-                <span>Posting as <strong>{currentUser?.username || 'Guest'}</strong></span>
-                <span className="text-indigo-400 ml-auto">+10 XP Bonus</span>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--chalk-faint)]">
+                <span className="hub-avatar">{currentUser?.avatar || '⚡'}</span>
+                <span>Posting as <span className="text-[var(--chalk)] font-medium">{currentUser?.username || 'Guest'}</span></span>
+                <span className="text-[var(--teal)] ml-auto">+10 XP on post</span>
               </div>
               <textarea
                 rows={2}
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Ask a question, share an observation, or discuss edge cases..."
-                className="w-full p-3 bg-[#08090e] border border-white/10 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition resize-none font-sans"
+                placeholder="Ask a question, share an insight, or discuss edge cases…"
+                className="hub-textarea"
+                style={{ resize: 'none' }}
               />
               <div className="flex justify-end">
                 <button
                   type="submit"
                   disabled={isPostingComment || !newComment.trim()}
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-semibold shadow transition"
+                  className="chalk-btn chalk-btn-amber disabled:opacity-30"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>{isPostingComment ? 'Posting...' : 'Post Comment'}</span>
+                  <Send className="w-3 h-3" />
+                  <span>{isPostingComment ? 'Posting…' : 'Post'}</span>
                 </button>
               </div>
             </form>
 
             <div className="space-y-3">
               {comments.length === 0 ? (
-                <div className="py-10 text-center space-y-1">
-                  <p className="text-[12px] text-slate-600">No comments yet — be the first.</p>
+                <div className="py-12 text-center">
+                  <MessageSquare className="w-7 h-7 text-[var(--chalk-faint)] mx-auto mb-2 opacity-50" />
+                  <p className="text-[12px] text-[var(--chalk-faint)]">No comments yet — be the first.</p>
                 </div>
               ) : (
                 comments.map((c) => (
-                  <div key={c.id} className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.09] transition space-y-2">
+                  <div key={c.id} className="hub-comment space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-xs">
-                          {c.avatar || '⚡'}
-                        </span>
-                        <span className="font-bold text-slate-200">{c.username}</span>
-                        <span className="text-[10px] text-slate-500">
+                        <span className="hub-avatar">{c.avatar || '⚡'}</span>
+                        <span className="text-[12px] font-medium text-[var(--chalk)]">{c.username}</span>
+                        <span className="text-[10.5px] font-mono text-[var(--chalk-faint)]">
                           {c.created_at ? new Date(c.created_at).toLocaleDateString() : ''}
                         </span>
                       </div>
-
                       <button
                         onClick={() => handleUpvoteComment(c.id)}
-                        className="flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.03] hover:bg-indigo-600/20 text-slate-400 hover:text-indigo-300 border border-white/5 transition"
-                        title="Upvote comment"
+                        className="hub-upvote"
+                        title="Upvote"
                       >
-                        <ThumbsUp className="w-3 h-3 text-indigo-400" />
-                        <span className="text-[11px] font-bold">{c.upvotes || 0}</span>
+                        <ThumbsUp className="w-3 h-3" />
+                        <span className="font-bold">{c.upvotes || 0}</span>
                       </button>
                     </div>
-                    <p className="text-xs text-slate-300 font-sans leading-relaxed whitespace-pre-wrap pl-8">
+                    <p className="text-[12.5px] text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-8">
                       {c.content}
                     </p>
                   </div>
@@ -1326,27 +1500,27 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         {hubTab === 'public_notes' && (
           <div className="p-4 space-y-4">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-slate-400 text-xs font-sans">
-                Community-shared intuitions, pattern breakdowns, and common interview mistakes.
+              <span className="text-[11.5px] text-[var(--chalk-faint)] font-sans">
+                Community intuitions, pattern breakdowns, interview tricks
               </span>
               <button
                 onClick={() => setShowAddPublicNote(!showAddPublicNote)}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold transition"
+                className="chalk-btn"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>{showAddPublicNote ? 'Cancel' : 'Share Public Note (+25 XP)'}</span>
+                <span>{showAddPublicNote ? 'Cancel' : 'Share Note'}</span>
               </button>
             </div>
 
             {/* Form to add public note */}
             {showAddPublicNote && (
-              <form onSubmit={handlePostPublicNote} className="p-4 rounded-xl bg-[#08090e] border border-emerald-500/30 space-y-3 animate-in fade-in duration-150">
+              <form onSubmit={handlePostPublicNote} className="p-4 rounded-[4px] bg-[var(--board-raised-2)] border border-[var(--teal)]/30 space-y-3 fade-in">
                 <input
                   type="text"
                   value={newNoteTitle}
                   onChange={(e) => setNewNoteTitle(e.target.value)}
                   placeholder="Note Title: e.g. Invariant: Sliding window boundary condition"
-                  className="w-full p-2.5 bg-[#0e111a] border border-white/10 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition"
+                  className="hub-input"
                   required
                 />
                 <textarea
@@ -1354,21 +1528,21 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                   value={newNoteContent}
                   onChange={(e) => setNewNoteContent(e.target.value)}
                   placeholder="Write the core algorithmic insight, invariant, or trick to remember..."
-                  className="w-full p-2.5 bg-[#0e111a] border border-white/10 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition resize-y font-sans leading-relaxed"
+                  className="hub-textarea"
                   required
                 />
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowAddPublicNote(false)}
-                    className="px-3 py-1.5 text-slate-400 hover:text-white"
+                    className="chalk-btn"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isPostingNote || !newNoteContent.trim()}
-                    className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-30 text-white font-semibold shadow transition"
+                    className="chalk-btn chalk-btn-amber disabled:opacity-30"
                   >
                     {isPostingNote ? 'Publishing...' : 'Publish to Community'}
                   </button>
@@ -1378,37 +1552,31 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
 
             <div className="space-y-3">
               {publicNotes.length === 0 ? (
-                <div className="py-10 text-center">
-                  <p className="text-[12px] text-slate-600">No public notes yet.</p>
+                <div className="py-12 text-center">
+                  <BookOpen className="w-7 h-7 text-[var(--chalk-faint)] mx-auto mb-2 opacity-50" />
+                  <p className="text-[12px] text-[var(--chalk-faint)]">No notes yet — share the first insight.</p>
                 </div>
               ) : (
                 publicNotes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="p-4 rounded-xl bg-[#08090e]/90 border border-white/5 space-y-2 hover:border-white/15 transition"
-                  >
+                  <div key={note.id} className="note-card space-y-2">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-xs">
-                          {note.avatar || '⚡'}
-                        </span>
+                        <span className="hub-avatar teal">{note.avatar || '⚡'}</span>
                         <div>
-                          <h4 className="font-bold text-white text-xs">{note.title || 'Algorithmic Insight'}</h4>
-                          <span className="text-[10px] text-slate-500">by {note.username}</span>
+                          <h4 className="text-[12.5px] font-medium text-[var(--chalk)]">{note.title || 'Algorithmic Insight'}</h4>
+                          <span className="text-[10.5px] font-mono text-[var(--chalk-faint)]">by {note.username}</span>
                         </div>
                       </div>
-
                       <button
                         onClick={() => handleUpvotePublicNote(note.id)}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/[0.03] hover:bg-emerald-600/20 text-slate-400 hover:text-emerald-300 border border-white/5 transition"
-                        title="Upvote public note"
+                        className="hub-upvote"
+                        title="Helpful"
                       >
-                        <ThumbsUp className="w-3 h-3 text-emerald-400" />
-                        <span className="text-[11px] font-bold">{note.upvotes || 0}</span>
+                        <ThumbsUp className="w-3 h-3" />
+                        <span className="font-bold">{note.upvotes || 0}</span>
                       </button>
                     </div>
-
-                    <p className="text-xs text-slate-300 font-sans leading-relaxed whitespace-pre-wrap pt-1 pl-8">
+                    <p className="text-[12.5px] text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-8">
                       {note.content}
                     </p>
                   </div>
@@ -1421,14 +1589,14 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         {hubTab === 'private_notes' && (
           <div className="p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-slate-500">
-                Private to @{currentUser?.username || 'you'}
+              <span className="text-[11px] font-mono text-[var(--chalk-faint)]">
+                Private to @{currentUser?.username || 'you'} · stored locally
               </span>
 
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleDownloadStudySheet}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 rounded text-xs font-mono transition"
+                  className="chalk-btn"
                   title="Download Markdown Study Sheet for revision"
                 >
                   <Download className="w-3.5 h-3.5 text-indigo-400" />
@@ -1437,7 +1605,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
 
                 <button
                   onClick={handleSavePrivateNotes}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded text-xs font-mono font-medium transition"
+                  className="chalk-btn chalk-btn-amber"
                 >
                   {privateNotesSaved ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Save className="w-3.5 h-3.5" />}
                   <span>{privateNotesSaved ? 'Saved to SQLite' : 'Save Private Notes'}</span>
@@ -1450,12 +1618,12 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               value={privateNotes}
               onChange={(e) => setPrivateNotes(e.target.value)}
               placeholder="Write your private notes, loop invariants, base cases, memory nuances, or college exam tips..."
-              className="w-full p-3.5 bg-[#08090e]/80 border border-white/10 rounded-lg text-xs text-slate-200 font-mono focus:outline-none focus:border-amber-500/50 leading-relaxed transition resize-y"
+              className="hub-textarea font-mono"
             />
 
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
-              <span>🔒 Private to your account in local SQLite database</span>
-              <span className="text-amber-400/80">Press 'Save Private Notes' to commit</span>
+            <div className="flex items-center justify-between text-[11px] font-mono text-[var(--chalk-faint)]">
+              <span className="flex items-center gap-1"><Lock className="w-3 h-3" /> Stored locally in SQLite, never sent anywhere</span>
+              <span className="text-[var(--amber)] opacity-75">Ctrl+S to save</span>
             </div>
           </div>
         )}
@@ -1480,6 +1648,12 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         onQuestionUpdated={(updated) => {
           if (onUpdateQuestion) onUpdateQuestion(updated);
         }}
+      />
+
+      {/* Keyboard Shortcuts Modal */}
+      <KeyboardShortcutsModal
+        isOpen={showShortcutsModal}
+        onClose={() => setShowShortcutsModal(false)}
       />
     </div>
   );

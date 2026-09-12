@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, Download, Sparkles, Terminal, FileCode, Code2, BookOpen, Layers } from 'lucide-react';
+import { X, Copy, Check, Download, FileCode, Code2, BookOpen, Layers } from 'lucide-react';
 
 const SKILL_MD = `---
 name: dsa-visualizer
@@ -13,15 +13,18 @@ Use this skill whenever asked to visualize any Data Structures & Algorithms prob
 ## 1. Unified Visualizer UI Architecture
 Every React visualizer component generated for AlgoVision Studio MUST adhere to the standard 5-layer layout:
 - Sub-Header Bar: Step Counter (Step 1/6) | Title | Prev / Next buttons
-- Canvas Zone: Dark Obsidian (#08090e) Canvas with animated items, sliding pointers (L, R, mid), and SVG connector arrows
+- Canvas Zone: Dynamic canvas area (using var(--board) / var(--board-raised)) with animated items, sliding pointers (L, R, mid), and SVG connector arrows
 - Real-Time HUD: Active Variables & Comparison Inspector (e.g. nums[L] + nums[R] == Target)
 - Explanation Footer: Educational breakdown of why pointers shifted & loop invariants
 
-### Color Palette & Tokens:
-- Dark Backgrounds: #0b0d14 (card), #0e111a (sub-header/HUD), #08090e (canvas), #0c0e16 (footer)
+### Dual-Theme Color Palette & Tokens (Light & Dark Compatible):
+- Backgrounds: var(--board) for base canvas, var(--board-raised) for containers & cards, var(--board-hover) for hovered elements
+- Borders: var(--line) for structural outlines and dividers
+- Typography: var(--chalk) for primary headers/values, var(--chalk-muted) for descriptions, var(--chalk-dim) for secondary labels
 - Primary Accent: Indigo (#6366f1)
 - Semantic Scale: Emerald (#10b981) for match/success, Amber (#f59e0b) for active evaluation, Rose (#f43f5e) for eliminated bounds
-- Shape Language: Rectangular micro-badges with rounded-[4px] and font-mono text-[10px]
+- Shape Language: Rectangular micro-badges with rounded-[6px] and font-mono text-[10px]
+- IMPORTANT: Never hardcode pure dark backgrounds like bg-black or #0b0d14 without light-mode variants. AlgoVision will dynamically manipulate and switch visualizer colors according to the user's active theme.
 
 ## 2. Platform Architecture Context
 The AlgoVision Studio already provides a synchronized syntax-highlighted code execution viewer (C++, Python, Java, JavaScript) beside the visualizer in Split Screen mode.

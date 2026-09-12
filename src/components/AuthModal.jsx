@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, User, Lock, Sparkles, Check, AlertCircle, LogIn, UserPlus } from 'lucide-react';
+import { X, User, Lock, AlertCircle, LogIn, UserPlus } from 'lucide-react';
 import { api } from '../services/api';
 import { sound } from '../services/audio';
 

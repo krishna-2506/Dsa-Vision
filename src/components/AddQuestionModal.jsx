@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus, Download, Upload, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Download, Upload, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 import { db, CATEGORIES } from '../services/db';
 import { getAllVisualizerKeys } from '../visualizers';
 

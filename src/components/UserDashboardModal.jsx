@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   X,
   Flame,
-  Trophy,
-  Award,
   Sparkles,
   Layers,
   Users,
@@ -11,9 +9,6 @@ import {
   Clock,
   LogOut,
   ChevronRight,
-  UserCheck,
-  TrendingUp,
-  Share2,
   BarChart3
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -33,38 +28,24 @@ export default function UserDashboardModal({
   const [allUsers, setAllUsers] = useState([]);
   const [comparisonUser, setComparisonUser] = useState(null);
   const [comparisonStats, setComparisonStats] = useState(null);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && currentUser) {
-      loadStats();
-      loadAllUsers();
-      loadDueReviews();
-    }
-  }, [isOpen, currentUser]);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     if (!currentUser?.id) return;
-    setLoading(true);
-    const data = await api.getUserStats(currentUser.id);
-    setStats(data);
-    setLoading(false);
-  };
+    try {
+      const data = await api.getUserStats(currentUser.id);
+      setStats(data);
+    } catch (e) {
+      console.error('Failed to load user stats:', e);
+    }
+  }, [currentUser]);
 
-  const loadDueReviews = async () => {
+  const loadDueReviews = useCallback(async () => {
     if (!currentUser?.id) return;
     const due = await api.getDueReviews(currentUser.id);
     setDueReviews(due || []);
-  };
+  }, [currentUser]);
 
-  const handleQuickReview = async (questionId, confidence) => {
-    await api.recordReview(currentUser?.id, questionId, confidence);
-    sound?.playSuccess?.();
-    loadDueReviews();
-    loadStats();
-  };
-
-  const loadAllUsers = async () => {
+  const loadAllUsers = useCallback(async () => {
     const list = await api.getAllUsers();
     setAllUsers(list || []);
     // Pre-select another user if available for comparison
@@ -73,6 +54,21 @@ export default function UserDashboardModal({
       setComparisonUser(other);
       api.getUserStats(other.id).then(setComparisonStats);
     }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (isOpen && currentUser) {
+      loadStats();
+      loadAllUsers();
+      loadDueReviews();
+    }
+  }, [isOpen, currentUser, loadStats, loadAllUsers, loadDueReviews]);
+
+  const handleQuickReview = async (questionId, confidence) => {
+    await api.recordReview(currentUser?.id, questionId, confidence);
+    sound?.playSuccess?.();
+    loadDueReviews();
+    loadStats();
   };
 
   const handleSelectComparison = async (userId) => {
@@ -404,7 +400,9 @@ export default function UserDashboardModal({
                     <button
                       onClick={() => {
                         onClose();
-                        onOpenQuestion && onOpenQuestion({ id: c.question_id, title: c.question_title });
+                        if (onOpenQuestion) {
+                          onOpenQuestion({ id: c.question_id, title: c.question_title });
+                        }
                       }}
                       className="flex items-center gap-1 px-2.5 py-1 rounded bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 text-xs font-mono border border-indigo-500/30 transition cursor-pointer"
                     >
@@ -519,7 +517,9 @@ export default function UserDashboardModal({
           <button
             onClick={() => {
               onClose();
-              onOpenAuth && onOpenAuth();
+              if (onOpenAuth) {
+                onOpenAuth();
+              }
             }}
             className="text-slate-400 hover:text-indigo-300 text-[11px] underline cursor-pointer"
           >

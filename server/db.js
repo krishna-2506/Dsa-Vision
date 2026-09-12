@@ -164,21 +164,30 @@ try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN last_reviewed_at TEXT");
 } catch (e) {}
 
+// Performance Indexes for high-speed queries
+sqlite.exec(`
+  CREATE INDEX IF NOT EXISTS idx_code_solutions_qid_tier ON code_solutions(question_id, approach_tier);
+  CREATE INDEX IF NOT EXISTS idx_comments_qid ON comments(question_id);
+  CREATE INDEX IF NOT EXISTS idx_user_progress_uid ON user_progress(user_id);
+  CREATE INDEX IF NOT EXISTS idx_public_notes_qid ON public_notes(question_id);
+  CREATE INDEX IF NOT EXISTS idx_private_notes_uid_qid ON private_notes(user_id, question_id);
+`);
+
 try {
   sqlite.exec("ALTER TABLE user_progress ADD COLUMN next_review_date TEXT");
-} catch (e) {}
+} catch {}
 
 try {
   sqlite.exec("ALTER TABLE user_progress ADD COLUMN confidence_level TEXT DEFAULT 'unrated'");
-} catch (e) {}
+} catch {}
 
 try {
   sqlite.exec("ALTER TABLE user_progress ADD COLUMN review_interval_days INTEGER DEFAULT 1");
-} catch (e) {}
+} catch {}
 
 try {
   sqlite.exec("ALTER TABLE user_progress ADD COLUMN last_reviewed_at TEXT");
-} catch (e) {}
+} catch {}
 
 
 // Seed default high-quality LeetCode problems if empty
@@ -808,7 +817,7 @@ export const dbService = {
       if (fs.existsSync(visDir)) {
         diskVisualizersCount = fs.readdirSync(visDir).filter(f => f.endsWith('.jsx') || f.endsWith('.js')).length;
       }
-    } catch (e) {}
+    } catch {}
 
     return {
       totalQuestions,
@@ -895,7 +904,7 @@ export const dbService = {
         try {
           insSol.run(sol.question_id, sol.language, sol.code, sol.approach_tier || 'optimal');
           importedSolutions++;
-        } catch (e) {}
+        } catch {}
       }
     }
 
@@ -1531,6 +1540,6 @@ function calculateLevel(xp) {
 // Ensure default users are seeded
 try {
   dbService.seedDefaultUsers();
-} catch (e) {
+} catch {
   // Ignored
 }

@@ -26,6 +26,29 @@ export default function App() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
 
+  // Dual Theme State (Light & Dark Mode)
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('algovision_theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  });
+
+  const handleToggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('algovision_theme', nextTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   // Fetch stats for active user
   const refreshUserStats = async (user) => {
     if (!user) {
@@ -172,7 +195,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08090d] text-slate-100 flex flex-col font-sans bg-dots">
+    <div className="min-h-screen bg-[var(--board)] text-[var(--chalk)] flex flex-col font-sans transition-colors duration-200">
       {/* Top Navbar */}
       <Navbar
         activeView={activeView}
@@ -187,6 +210,8 @@ export default function App() {
         onOpenAdminModal={() => setAdminModalOpen(true)}
         questions={questions}
         onNavigateQuestion={handleOpenQuestion}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Main Container */}
@@ -261,7 +286,7 @@ export default function App() {
       />
 
       {/* Footer */}
-      <footer className="border-t border-white/5 bg-[#07080c] py-5 text-center text-xs font-mono text-slate-500">
+      <footer className="border-t border-[var(--line)] bg-[var(--board-raised)] py-5 text-center text-xs font-mono text-slate-500 transition-colors">
         <span>AlgoVision Studio Pro • Powered by Native SQLite & React</span>
       </footer>
     </div>

@@ -217,10 +217,219 @@ export function algovisionApiPlugin() {
             return res.end(JSON.stringify({ success: true, data: created }));
           }
 
+          // GET /api/health
+          if (pathname === '/api/health' && req.method === 'GET') {
+            return res.end(JSON.stringify({ status: 'ok', engine: 'node:sqlite', timestamp: new Date().toISOString() }));
+          }
+
+          // AUTH & USER ROUTES
+          if (pathname === '/api/auth/register' && req.method === 'POST') {
+            const body = await readBody();
+            try {
+              const user = dbService.registerUser(body.username, body.password, body.displayName, body.avatar);
+              return res.end(JSON.stringify({ success: true, user }));
+            } catch (err) {
+              res.statusCode = 400;
+              return res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+          }
+
+          if (pathname === '/api/auth/login' && req.method === 'POST') {
+            const body = await readBody();
+            try {
+              const user = dbService.loginUser(body.username, body.password);
+              return res.end(JSON.stringify({ success: true, user }));
+            } catch (err) {
+              res.statusCode = 401;
+              return res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+          }
+
+          const authMeMatch = pathname.match(/^\/api\/auth\/me\/([^/]+)$/);
+          if (authMeMatch && req.method === 'GET') {
+            const userId = decodeURIComponent(authMeMatch[1]);
+            const user = dbService.getUser(userId);
+            if (!user) {
+              res.statusCode = 404;
+              return res.end(JSON.stringify({ success: false, error: 'User not found' }));
+            }
+            return res.end(JSON.stringify({ success: true, user }));
+          }
+
+          if (pathname === '/api/users' && req.method === 'GET') {
+            const users = dbService.getAllUsers();
+            return res.end(JSON.stringify({ success: true, data: users }));
+          }
+
+          const userStatsMatch = pathname.match(/^\/api\/users\/([^/]+)\/stats$/);
+          if (userStatsMatch && req.method === 'GET') {
+            const userId = decodeURIComponent(userStatsMatch[1]);
+            const stats = dbService.getUserStats(userId);
+            return res.end(JSON.stringify({ success: true, data: stats }));
+          }
+
+          const userProgressMatch = pathname.match(/^\/api\/users\/([^/]+)\/progress$/);
+          if (userProgressMatch && req.method === 'GET') {
+            const userId = decodeURIComponent(userProgressMatch[1]);
+            const progress = dbService.getUserProgress(userId);
+            return res.end(JSON.stringify({ success: true, data: progress }));
+          }
+
+          const userProgressPatchMatch = pathname.match(/^\/api\/users\/([^/]+)\/progress\/([^/]+)$/);
+          if (userProgressPatchMatch && (req.method === 'PATCH' || req.method === 'POST' || req.method === 'PUT')) {
+            const userId = decodeURIComponent(userProgressPatchMatch[1]);
+            const questionId = decodeURIComponent(userProgressPatchMatch[2]);
+            const body = await readBody();
+            const result = dbService.updateUserProgress(userId, questionId, body);
+            return res.end(JSON.stringify({ success: true, data: result }));
+          }
+
+          // PRIVATE NOTES API (Both /api/users/:uid/private-notes/:qid and /api/users/:uid/notes/:qid)
+          const privateNoteMatch = pathname.match(/^\/api\/users\/([^/]+)\/(?:private-notes|notes)\/([^/]+)$/);
+          if (privateNoteMatch) {
+            const userId = decodeURIComponent(privateNoteMatch[1]);
+            const questionId = decodeURIComponent(privateNoteMatch[2]);
+
+            if (req.method === 'GET') {
+              const content = dbService.getPrivateNote(userId, questionId);
+              return res.end(JSON.stringify({ success: true, data: { content } }));
+            }
+
+            if (req.method === 'POST' || req.method === 'PUT') {
+              const body = await readBody();
+              const result = dbService.savePrivateNote(userId, questionId, body.content || '');
+              return res.end(JSON.stringify({ success: true, data: result }));
+            }
+          }
+
+          // COMMENTS API
+          const commentsMatch = pathname.match(/^\/api\/questions\/([^/]+)\/comments$/);
+          if (commentsMatch) {
+            const questionId = decodeURIComponent(commentsMatch[1]);
+            if (req.method === 'GET') {
+              const comments = dbService.getComments(questionId);
+              return res.end(JSON.stringify({ success: true, data: comments }));
+            }
+            if (req.method === 'POST') {
+              const body = await readBody();
+              const comment = dbService.addComment({
+                questionId,
+                userId: body.userId || 'usr_guest',
+                username: body.username || 'Anonymous Coder',
+                avatar: body.avatar || '⚡',
+                content: body.content || ''
+              });
+              return res.end(JSON.stringify({ success: true, data: comment }));
+            }
+          }
+
+          const commentUpvoteMatch = pathname.match(/^\/api\/comments\/([^/]+)\/upvote$/);
+          if (commentUpvoteMatch && req.method === 'POST') {
+            const commentId = parseInt(commentUpvoteMatch[1], 10);
+            const updated = dbService.upvoteComment(commentId);
+            return res.end(JSON.stringify({ success: true, data: updated }));
+          }
+
+          const commentDeleteMatch = pathname.match(/^\/api\/comments\/([^/]+)$/);
+          if (commentDeleteMatch && req.method === 'DELETE') {
+            const commentId = parseInt(commentDeleteMatch[1], 10);
+            const body = await readBody();
+            const result = dbService.deleteComment(commentId, body.userId);
+            return res.end(JSON.stringify({ success: true, data: result }));
+          }
+
+          // PUBLIC NOTES API
+          const publicNotesMatch = pathname.match(/^\/api\/questions\/([^/]+)\/public-notes$/);
+          if (publicNotesMatch) {
+            const questionId = decodeURIComponent(publicNotesMatch[1]);
+            if (req.method === 'GET') {
+              const notes = dbService.getPublicNotes(questionId);
+              return res.end(JSON.stringify({ success: true, data: notes }));
+            }
+            if (req.method === 'POST') {
+              const body = await readBody();
+              const note = dbService.addOrUpdatePublicNote({
+                questionId,
+                userId: body.userId || 'usr_guest',
+                username: body.username || 'Anonymous Coder',
+                avatar: body.avatar || '⚡',
+                title: body.title || 'Key Intuition',
+                content: body.content || ''
+              });
+              return res.end(JSON.stringify({ success: true, data: note }));
+            }
+          }
+
+          const publicNoteUpvoteMatch = pathname.match(/^\/api\/public-notes\/([^/]+)\/upvote$/);
+          if (publicNoteUpvoteMatch && req.method === 'POST') {
+            const noteId = parseInt(publicNoteUpvoteMatch[1], 10);
+            const updated = dbService.upvotePublicNote(noteId);
+            return res.end(JSON.stringify({ success: true, data: updated }));
+          }
+
+          // EXPORT STUDY SHEET API: GET /api/export/:id
+          const exportMatch = pathname.match(/^\/api\/export\/([^/]+)$/);
+          if (exportMatch && req.method === 'GET') {
+            const qId = decodeURIComponent(exportMatch[1]);
+            const q = dbService.getQuestion(qId);
+            if (!q) {
+              res.statusCode = 404;
+              return res.end(JSON.stringify({ error: 'Question not found' }));
+            }
+            const solutions = dbService.getCodeSolutions(qId);
+            const markdown = `# LeetCode #${q.leetcode_id || 'DSA'}: ${q.title}
+**Category:** ${q.category}  
+**Difficulty:** ${q.difficulty}  
+**Time Complexity:** ${q.time_complexity}  
+**Space Complexity:** ${q.space_complexity}  
+**Official Link:** ${q.leetcode_url || 'N/A'}  
+
+---
+
+## Problem Summary & Invariants
+${q.description}
+
+---
+
+## Student Engineering Notes
+${q.notes || '*No notes recorded yet.*'}
+
+---
+
+## Complete Solution Code
+
+### C++
+\`\`\`cpp
+${solutions.cpp || '// No C++ solution'}
+\`\`\`
+
+### Python 3
+\`\`\`python
+${solutions.python || '# No Python solution'}
+\`\`\`
+
+### Java
+\`\`\`java
+${solutions.java || '// No Java solution'}
+\`\`\`
+
+### TypeScript
+\`\`\`typescript
+${solutions.typescript || solutions.javascript || '// No TypeScript solution'}
+\`\`\`
+
+---
+*Generated by AlgoVision Studio Open-Source Platform*
+`;
+            res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+            res.setHeader('Content-Disposition', `attachment; filename="${q.slug || q.id}_study_sheet.md"`);
+            return res.end(markdown);
+          }
+
           // POST /api/upload-visualizer
           if (pathname === '/api/upload-visualizer' && req.method === 'POST') {
             const body = await readBody();
-            const { questionId, componentKey, code, userId, solutions: providedSolutions } = body;
+            const { questionId, componentKey, code, userId: _userId, solutions: providedSolutions } = body;
             if (!questionId || !code) {
               res.statusCode = 400;
               return res.end(JSON.stringify({ success: false, error: 'questionId and code are required' }));
@@ -247,7 +456,7 @@ export function algovisionApiPlugin() {
 
                 const jsMatch = solBlockMatch[1].match(/(?:javascript|js|ts|typescript)\s*:\s*[`"']([\s\S]*?)[`"'](?:\s*,|\s*})/);
                 if (jsMatch) solutions.javascript = jsMatch[1].trim();
-              } catch (e) {}
+              } catch {}
             }
 
             const cppVar = code.match(/export\s+const\s+(?:code_cpp|cppCode|cppSolution)\s*=\s*[`"']([\s\S]*?)[`"'];/);

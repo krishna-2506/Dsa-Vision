@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Copy, Check, Terminal, Code2 } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Copy, Check, Code2, ExternalLink } from 'lucide-react';
 
 const LANGUAGE_LABELS = {
   cpp: 'C++',
@@ -40,7 +40,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
   const numberRegex = /^(0x[0-9a-fA-F]+|\d+(\.\d+)?)/;
   const wordRegex = /^[a-zA-Z_]\w*/;
   const operatorRegex = /^(->|::|=>|===|!==|==|!=|<=|>=|\+\+|--|\+=|-=|\*=|\/=|&&|\|\||[+\-*/%!=<>&|^~?:])/;
-  const punctuationRegex = /^[{}\[\](),;.]/;
+  const punctuationRegex = /^[{}[\](),;.]/;
   const whitespaceRegex = /^\s+/;
 
   while (remaining.length > 0) {
@@ -114,7 +114,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
         );
       } else {
         tokens.push(
-          <span key={keyIdx++} className="text-[#eef1ea]">
+          <span key={keyIdx++} className="text-[var(--chalk)]">
             {word}
           </span>
         );
@@ -139,7 +139,7 @@ function renderHighlightedLine(line, lang = 'cpp') {
     const punctMatch = remaining.match(punctuationRegex);
     if (punctMatch) {
       tokens.push(
-        <span key={keyIdx++} className="text-[#8fa09a]">
+        <span key={keyIdx++} className="text-[var(--chalk-dim)]">
           {punctMatch[0]}
         </span>
       );
@@ -148,22 +148,73 @@ function renderHighlightedLine(line, lang = 'cpp') {
     }
 
     // Fallback single character
-    tokens.push(<span key={keyIdx++}>{remaining[0]}</span>);
+    tokens.push(<span key={keyIdx++} className="text-[var(--chalk)]">{remaining[0]}</span>);
     remaining = remaining.slice(1);
   }
 
   return <>{tokens}</>;
 }
 
-export default function CodeViewer({ solutions = {}, initialLanguage = 'cpp', activeLine = null }) {
-  const availableLangs = Object.keys(solutions);
+function isLineActive(activeLine, lineNum) {
+  if (!activeLine) return false;
+  if (typeof activeLine === 'number') return activeLine === lineNum;
+  if (Array.isArray(activeLine)) return activeLine.includes(lineNum);
+  if (typeof activeLine === 'string') {
+    if (activeLine.includes('-')) {
+      const [s, e] = activeLine.split('-').map((n) => parseInt(n.trim(), 10));
+      if (!isNaN(s) && !isNaN(e)) return lineNum >= s && lineNum <= e;
+    }
+    if (activeLine.includes(',')) {
+      const nums = activeLine.split(',').map((n) => parseInt(n.trim(), 10));
+      return nums.includes(lineNum);
+    }
+    const single = parseInt(activeLine, 10);
+    return single === lineNum;
+  }
+  if (typeof activeLine === 'object' && activeLine.start && activeLine.end) {
+    return lineNum >= activeLine.start && lineNum <= activeLine.end;
+  }
+  return false;
+}
+
+function formatActiveLines(activeLine) {
+  if (!activeLine) return null;
+  if (typeof activeLine === 'number') return `L${activeLine}`;
+  if (Array.isArray(activeLine)) {
+    if (activeLine.length === 0) return null;
+    if (activeLine.length === 1) return `L${activeLine[0]}`;
+    const sorted = [...activeLine].sort((a, b) => a - b);
+    const isSeq = sorted.every((val, idx) => idx === 0 || val === sorted[idx - 1] + 1);
+    if (isSeq) return `L${sorted[0]}-${sorted[sorted.length - 1]}`;
+    return `L${sorted.join(', ')}`;
+  }
+  if (typeof activeLine === 'string') return `L${activeLine}`;
+  if (typeof activeLine === 'object' && activeLine.start && activeLine.end) {
+    return `L${activeLine.start}-${activeLine.end}`;
+  }
+  return null;
+}
+
+export default function CodeViewer({
+  solutions = {},
+  initialLanguage = 'cpp',
+  activeLine = null,
+  leetcodeUrl = null
+}) {
+  const availableLangs = useMemo(() => Object.keys(solutions), [solutions]);
   const [selectedLang, setSelectedLang] = useState(
     availableLangs.includes(initialLanguage) ? initialLanguage : availableLangs[0] || 'cpp'
   );
   const [copied, setCopied] = useState(false);
   const tableRef = useRef(null);
 
-  const activeCode = solutions[selectedLang] || '// Solution code not available for this language.';
+  const currentLang = availableLangs.includes(selectedLang)
+    ? selectedLang
+    : availableLangs.includes('cpp')
+    ? 'cpp'
+    : availableLangs[0] || 'cpp';
+
+  const activeCode = solutions[currentLang] || '// Solution code not available for this language.';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(activeCode);
@@ -172,64 +223,94 @@ export default function CodeViewer({ solutions = {}, initialLanguage = 'cpp', ac
   };
 
   const lines = activeCode.split('\n');
+  const formattedLineBadge = formatActiveLines(activeLine);
 
   // Auto-scroll active line into view smoothly
   useEffect(() => {
     if (activeLine && tableRef.current) {
-      const activeRow = tableRef.current.querySelector(`[data-line="${activeLine}"]`);
-      if (activeRow) {
-        activeRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      const activeRows = tableRef.current.querySelectorAll('.ln.current');
+      if (activeRows && activeRows.length > 0) {
+        activeRows[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
   }, [activeLine]);
 
   return (
-    <div className="code-col h-full rounded-[3px] border border-[var(--line)] overflow-hidden">
+    <div className="code-col h-full rounded-xl border border-[var(--line)] overflow-hidden bg-[var(--code-bg)] flex flex-col shadow-sm">
       {/* Code Header Bar */}
-      <div className="code-head">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-[var(--line)] bg-[var(--board-raised-2)]">
+        {/* Language Tabs */}
+        <div className="flex items-center gap-1.5">
           {availableLangs.length > 0 ? (
             availableLangs.map((lang) => (
               <button
                 key={lang}
                 onClick={() => setSelectedLang(lang)}
-                className={`lang-tab ${selectedLang === lang ? 'active' : ''}`}
+                className={`px-2.5 py-1 rounded-md text-xs font-mono font-medium transition-all cursor-pointer ${
+                  currentLang === lang
+                    ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 font-semibold'
+                    : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
+                }`}
               >
                 {LANGUAGE_LABELS[lang] || lang.toUpperCase()}
               </button>
             ))
           ) : (
-            <span className="text-[12px] font-mono text-[var(--chalk-dim)] flex items-center gap-1.5">
-              <Code2 className="w-3.5 h-3.5 text-[var(--amber)]" /> C++
+            <span className="text-xs font-mono text-[var(--chalk-dim)] flex items-center gap-1.5 px-2 py-0.5 rounded bg-[var(--board-raised)] border border-[var(--line)]">
+              <Code2 className="w-3.5 h-3.5 text-indigo-500" /> C++
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-3">
-          {activeLine && (
-            <span className="text-[11px] font-mono text-[var(--amber)] opacity-90">
-              L{activeLine}
+        {/* Right Info & Actions */}
+        <div className="flex items-center gap-2">
+          {formattedLineBadge && (
+            <span className="text-[11px] font-mono font-semibold text-cyan-600 dark:text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/25">
+              Line {formattedLineBadge}
             </span>
           )}
+
+          {leetcodeUrl && (
+            <a
+              href={leetcodeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] transition-all"
+              title="Open problem on LeetCode"
+            >
+              <ExternalLink className="w-3 h-3 text-indigo-500" />
+              <span className="hidden sm:inline">LeetCode</span>
+            </a>
+          )}
+
           <button
             onClick={handleCopy}
-            className="copy-btn"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-[var(--line)] transition-all cursor-pointer"
             title="Copy full solution code"
           >
-            {copied ? <Check className="w-3 h-3 text-[var(--easy)]" /> : <Copy className="w-3 h-3" />}
-            <span>{copied ? 'copied' : 'copy'}</span>
+            {copied ? (
+              <>
+                <Check className="w-3 h-3 text-emerald-500" />
+                <span className="text-emerald-600 dark:text-emerald-400 font-medium">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3" />
+                <span>Copy</span>
+              </>
+            )}
           </button>
         </div>
       </div>
 
-      {/* Code Block with Synchronized Chalkboard Line Highlighting */}
-      <pre className="code max-h-[540px]" ref={tableRef}>
+      {/* Code Block with Synchronized Line Highlighting */}
+      <pre className="code max-h-[560px] flex-1 overflow-y-auto" ref={tableRef}>
         {lines.map((line, idx) => {
           const lineNum = idx + 1;
-          const isCur = activeLine === lineNum;
+          const isCur = isLineActive(activeLine, lineNum);
           return (
             <div
-              key={idx}
+              key={isCur ? `${lineNum}-${String(activeLine)}` : lineNum}
               data-line={lineNum}
               className={`ln${isCur ? ' current' : ''}`}
             >
