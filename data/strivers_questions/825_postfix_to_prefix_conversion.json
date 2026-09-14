@@ -1,0 +1,35 @@
+{
+  "problem_id": "825",
+  "problem_name": "Postfix to Prefix Conversion",
+  "step_no": 9,
+  "step_name": "Stack and Queues [Learning, Pre-In-Post-fix, Monotonic Stack, Implementation]",
+  "substep_no": 2,
+  "substep_name": "Prefix, Infix, PostFix Conversion Problems",
+  "difficulty": "Medium",
+  "youtube_url": "https://youtu.be/4pIc9UBHJtk?si=0pWtyDC1GhbiYP3P",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/postfix-to-prefix-conversion",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/postfix-to-prefix-conversion",
+  "problem_statement": "You are given a valid postfix expression as a string, where:\nOperands are single lowercase English letters ('a' to 'z')\nOperators are binary: '+', '-', '*', '/'\nThe expression contains no spaces and is guaranteed to be valid.\n\nWrite a function to convert the postfix expression into a prefix expression, also as a string without spaces.",
+  "examples": [
+    "Example 1:\nInput: expression = \"ab+\"\nOutput: \"+ab\"\nExplanation: Postfix → Prefix\n\nExample 2:\nInput: expression = \"abc*+d-\"\nOutput: \"-+a*bcd\""
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Traverse the postfix expression from left to right.\nUse a stack to store operands.\nFor each operator, pop two operands, combine them with the operator in prefix order, and push the result back.\nThe final item in the stack will be the prefix expression.",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity: O(n), as we traverse the expression only once.\nSpace Complexity: O(n) for the stack to store operands and intermediate results.",
+      "space_complexity_details": "Time Complexity: O(n), as we traverse the expression only once.\nSpace Complexity: O(n) for the stack to store operands and intermediate results.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to convert postfix to prefix\nstring postfixToPrefix(string postfix) {\n    stack<string> s;\n    int n = postfix.size();\n\n    // Traverse the postfix expression from left to right\n    for (int i = 0; i < n; i++) {\n        char c = postfix[i];\n\n        // If the character is an operand, push it to the stack\n        if (isalnum(c)) {\n            s.push(string(1, c));\n        } else {\n            // Pop two operands from the stack\n            string op2 = s.top(); s.pop();\n            string op1 = s.top(); s.pop();\n\n            // Form the new prefix expression and push back to stack\n            s.push(c + op1 + op2);\n        }\n    }\n\n    // The final element in the stack is the result\n    return s.top();\n}\n\nint main() {\n    string postfix = \"ABC/-AK/L-*\";\n    cout << \"Prefix Expression: \" << postfixToPrefix(postfix) << endl;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass PostfixToPrefix {\n    // Function to convert postfix to prefix\n    public String postfixToPrefix(String postfix) {\n        Stack<String> s = new Stack<>();\n        int n = postfix.length();\n\n        // Traverse the postfix expression from left to right\n        for (int i = 0; i < n; i++) {\n            char c = postfix.charAt(i);\n\n            // If the character is an operand, push it to the stack\n            if (Character.isLetterOrDigit(c)) {\n                s.push(String.valueOf(c));\n            } else {\n                // Pop two operands from the stack\n                String op2 = s.pop();\n                String op1 = s.pop();\n\n                // Form the new prefix expression and push back to stack\n                s.push(c + op1 + op2);\n            }\n        }\n\n        // The final element in the stack is the result\n        return s.peek();\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        PostfixToPrefix converter = new PostfixToPrefix();\n        String postfix = \"ABC/-AK/L-*\";\n        System.out.println(\"Prefix Expression: \" + converter.postfixToPrefix(postfix));\n    }\n}",
+        "python": "# Function to convert postfix to prefix\ndef postfix_to_prefix(postfix):\n    stack = []\n    \n    # Traverse the postfix expression from left to right\n    for c in postfix:\n        # If the character is an operand, push it to the stack\n        if c.isalnum():\n            stack.append(c)\n        else:\n            # Pop two operands from the stack\n            op2 = stack.pop()\n            op1 = stack.pop()\n\n            # Form the new prefix expression and push back to stack\n            stack.append(c + op1 + op2)\n    \n    # The final element in the stack is the result\n    return stack[-1]\n\n# Main function for testing\ndef main():\n    postfix = \"ABC/-AK/L-*\"\n    print(\"Prefix Expression:\", postfix_to_prefix(postfix))\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "// Function to convert postfix to prefix\nfunction postfixToPrefix(postfix) {\n    let stack = [];\n\n    // Traverse the postfix expression from left to right\n    for (let i = 0; i < postfix.length; i++) {\n        let c = postfix[i];\n\n        // If the character is an operand, push it to the stack\n        if (/[a-zA-Z0-9]/.test(c)) {\n            stack.push(c);\n        } else {\n            // Pop two operands from the stack\n            let op2 = stack.pop();\n            let op1 = stack.pop();\n\n            // Form the new prefix expression and push back to stack\n            stack.push(c + op1 + op2);\n        }\n    }\n\n    // The final element in the stack is the result\n    return stack[0];\n}\n\n// Main function for testing\nfunction main() {\n    let postfix = \"ABC/-AK/L-*\";\n    console.log(\"Prefix Expression:\", postfixToPrefix(postfix));\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:08Z"
+}

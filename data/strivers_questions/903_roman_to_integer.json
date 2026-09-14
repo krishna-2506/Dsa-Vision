@@ -1,0 +1,35 @@
+{
+  "problem_id": "903",
+  "problem_name": "Roman to Integer",
+  "step_no": 5,
+  "step_name": "Strings [Basic and Medium]",
+  "substep_no": 2,
+  "substep_name": "Medium String Problems",
+  "difficulty": "Medium",
+  "youtube_url": null,
+  "leetcode_url": "https://leetcode.com/problems/roman-to-integer/",
+  "article_url": "https://takeuforward.org/data-structure/roman-numerals-to-integer",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/roman-to-integer",
+  "problem_statement": "Time Complexity: O(n), where n is the length of the input string since we traverse the string once.\nSpace Complexity: O(1), since we use a fixed-size map for Roman numerals.",
+  "examples": [
+    "Example 1:\nInput: s = \"LVIII\"\nOutput: 58\nExplanation: L = 50, V= 5, III = 3.\n\nExample 2:\nInput: s = \"MCMXCIV\"\nOutput: 1994\nExplanation: M = 1000, CM = 900, XC = 90 and IV = 4."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Understand that Roman numerals are generally written in descending order of value, and their values are added.\nHowever, when a smaller value appears before a larger one, it indicates subtraction instead of addition.\nTo handle this, scan the string from left to right and compare each character with the one after it.\nIf the current symbol is smaller than the next, treat it as a subtractive pair.\nOtherwise, treat the symbol as a standalone value and add it normally.\nThe final character is always added since there's nothing after it to compare.",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity: O(n), where n is the length of the input string since we traverse the string once.\nSpace Complexity: O(1), since we use a fixed-size map for Roman numerals.",
+      "space_complexity_details": "Time Complexity: O(n), where n is the length of the input string since we traverse the string once.\nSpace Complexity: O(1), since we use a fixed-size map for Roman numerals.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    int romanToInt(string s) {\n        int res = 0;\n\n        // Map of Roman numerals to their integer values\n        unordered_map<char, int> roman = {\n            {'I', 1}, {'V', 5}, {'X', 10},\n            {'L', 50}, {'C', 100}, {'D', 500}, {'M', 1000}\n        };\n\n        // Iterate through the string, except the last character\n        for (int i = 0; i < s.size() - 1; i++) {\n            // Subtract if current numeral is less than the next\n            if (roman[s[i]] < roman[s[i + 1]]) {\n                res -= roman[s[i]];\n            } else {\n                // Otherwise, add the current value\n                res += roman[s[i]];\n            }\n        }\n\n        // Add the value of the last character\n        return res + roman[s.back()];\n    }\n};\n\nint main() {\n    Solution sol;\n    string s = \"MCMXCIV\"; \n    int result = sol.romanToInt(s);\n    \n    // Print the result\n    cout << \"Integer value: \" << result << endl;\n\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    public int romanToInt(String s) {\n        int res = 0;\n        \n        // Create a map of Roman numerals to integers\n        Map<Character, Integer> roman = new HashMap<>();\n        roman.put('I', 1);\n        roman.put('V', 5);\n        roman.put('X', 10);\n        roman.put('L', 50);\n        roman.put('C', 100);\n        roman.put('D', 500);\n        roman.put('M', 1000);\n\n        // Loop through the string, except the last character\n        for (int i = 0; i < s.length() - 1; i++) {\n            // Subtract if current value is less than next value\n            if (roman.get(s.charAt(i)) < roman.get(s.charAt(i + 1))) {\n                res -= roman.get(s.charAt(i));\n            } else {\n                // Otherwise, add the value\n                res += roman.get(s.charAt(i));\n            }\n        }\n\n        // Add the value of the last character\n        return res + roman.get(s.charAt(s.length() - 1));\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        String s = \"MCMXCIV\"; \n        int result = sol.romanToInt(s);\n        System.out.println(\"Integer value: \" + result);\n    }\n}",
+        "python": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        # Create a mapping of Roman numerals to integers\n        roman = {\n            'I': 1, 'V': 5, 'X': 10,\n            'L': 50, 'C': 100, 'D': 500, 'M': 1000\n        }\n        \n        res = 0\n        \n        # Loop through the string, except the last character\n        for i in range(len(s) - 1):\n            # Subtract if current value is less than next\n            if roman[s[i]] < roman[s[i + 1]]:\n                res -= roman[s[i]]\n            else:\n                # Otherwise, add the value\n                res += roman[s[i]]\n        \n        # Add the value of the last character\n        return res + roman[s[-1]]\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    s = \"MCMXCIV\"  \n    result = sol.romanToInt(s)\n    print(\"Integer value:\", result)",
+        "javascript": "class Solution {\n    romanToInt(s) {\n        // Create a map of Roman numerals to integers\n        const roman = {\n            'I': 1, 'V': 5, 'X': 10,\n            'L': 50, 'C': 100, 'D': 500, 'M': 1000\n        };\n\n        let res = 0;\n\n        // Loop through the string, except the last character\n        for (let i = 0; i < s.length - 1; i++) {\n            // Subtract if current value is less than next\n            if (roman[s[i]] < roman[s[i + 1]]) {\n                res -= roman[s[i]];\n            } else {\n                // Otherwise, add the value\n                res += roman[s[i]];\n            }\n        }\n\n        // Add the value of the last character\n        return res + roman[s[s.length - 1]];\n    }\n}\n\nconst sol = new Solution();\nconst s = \"MCMXCIV\";\nconst result = sol.romanToInt(s);\nconsole.log(\"Integer value:\", result);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}

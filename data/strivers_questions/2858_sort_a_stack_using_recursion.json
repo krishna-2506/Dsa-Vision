@@ -1,0 +1,35 @@
+{
+  "problem_id": "2858",
+  "problem_name": "Sort a stack using recursion",
+  "step_no": 7,
+  "step_name": "Recursion [PatternWise]",
+  "substep_no": 1,
+  "substep_name": "Get a Strong Hold",
+  "difficulty": "Medium",
+  "youtube_url": null,
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/sort-a-stack",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/sort-a-stack",
+  "problem_statement": "You are given a stack of integers. Your task is to sort the stack in descending order using recursion, such that the top of the stack contains the greatest element. You are not allowed to use any loop-based sorting methods (e.g., quicksort, mergesort). You may only use recursive operations and the standard stack operations (push, pop, peek/top, and isEmpty).",
+  "examples": [
+    "Example 1:\nInput: stack = [4, 1, 3, 2]\nOutput: [4, 3, 2, 1]\nExplanation: After sorting, the largest element (4) is at the top, and the smallest (1) is at the bottom.\n\nExample 2:\nInput: stack = [1]\nOutput: [1]\nExplanation: A single-element stack is already sorted."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "If the stack is empty, stop.\nRemove the top element of the stack.\nSort the remaining stack recursively.\nInsert the removed element back into the stack while maintaining descending order.\nUse a helper function to place the element in its correct position.",
+      "time_complexity": "O(n2)",
+      "space_complexity": "O(n2)",
+      "time_complexity_details": "Time Complexity: O(n2), where n is the number of elements in the stack.\nSpace Complexity: O(n), due to the recursion stack.",
+      "space_complexity_details": "Time Complexity: O(n2), where n is the number of elements in the stack.\nSpace Complexity: O(n), due to the recursion stack.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to insert element in sorted order\nvoid insert(stack<int>& s, int temp) {\n    // Base case: if the stack is empty or temp is larger than the top element\n    if (s.empty() || s.top() <= temp) {\n        s.push(temp);\n        return;\n    }\n    \n    // Otherwise, pop the top element and recursively insert\n    int val = s.top();\n    s.pop();\n    insert(s, temp);\n    \n    // Push the popped element back\n    s.push(val);\n}\n\n// Function to sort the stack\nvoid sortStack(stack<int>& s) {\n    if (!s.empty()) {\n        int temp = s.top();\n        s.pop();\n        \n        sortStack(s);\n        \n        insert(s, temp);\n    }\n}\n\n// Main function\nint main() {\n    stack<int> s;\n    s.push(4);\n    s.push(1);\n    s.push(3);\n    s.push(2);\n\n    sortStack(s);\n\n    // Print the sorted stack\n    cout << \"Sorted stack (descending order): \";\n    while (!s.empty()) {\n        cout << s.top() << \" \";\n        s.pop();\n    }\n    return 0;\n}",
+        "java": "import java.util.Stack;\n\nclass Solution {\n    // Function to insert element in sorted order\n    public void insert(Stack<Integer> stack, int temp) {\n        if (stack.isEmpty() || stack.peek() <= temp) {\n            stack.push(temp);\n            return;\n        }\n\n        // Pop the top element and recursively insert\n        int val = stack.pop();\n        insert(stack, temp);\n\n        // Push the popped element back\n        stack.push(val);\n    }\n\n    // Function to sort the stack\n    public void sortStack(Stack<Integer> stack) {\n        if (!stack.isEmpty()) {\n            int temp = stack.pop();\n            sortStack(stack);\n            insert(stack, temp);\n        }\n    }\n\n    // Main function\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        Stack<Integer> stack = new Stack<>();\n        stack.push(4);\n        stack.push(1);\n        stack.push(3);\n        stack.push(2);\n\n        sol.sortStack(stack);\n\n        // Print the sorted stack\n        System.out.print(\"Sorted stack (descending order): \");\n        while (!stack.isEmpty()) {\n            System.out.print(stack.pop() + \" \");\n        }\n    }\n}",
+        "python": "def insert(stack, temp):\n    # Base case: if the stack is empty or temp is larger than the top element\n    if not stack or stack[-1] <= temp:\n        stack.append(temp)\n        return\n    \n    # Pop the top element and recursively insert\n    val = stack.pop()\n    insert(stack, temp)\n    \n    # Push the popped element back\n    stack.append(val)\n\ndef sortStack(stack):\n    if stack:\n        temp = stack.pop()\n        sortStack(stack)\n        insert(stack, temp)\n\n# Main function\nif __name__ == \"__main__\":\n    stack = [4, 1, 3, 2]\n    sortStack(stack)\n\n    # Print the sorted stack\n    print(\"Sorted stack (descending order):\", stack)",
+        "javascript": "function insert(stack, temp) {\n    // Base case: if the stack is empty or temp is larger than the top element\n    if (stack.length === 0 || stack[stack.length - 1] <= temp) {\n        stack.push(temp);\n        return;\n    }\n\n    // Pop the top element and recursively insert\n    let val = stack.pop();\n    insert(stack, temp);\n\n    // Push the popped element back\n    stack.push(val);\n}\n\nfunction sortStack(stack) {\n    if (stack.length > 0) {\n        let temp = stack.pop();\n        sortStack(stack);\n        insert(stack, temp);\n    }\n}\n\n// Main function\nlet stack = [4, 1, 3, 2];\nsortStack(stack);\n\n// Print the sorted stack\nconsole.log(\"Sorted stack (descending order):\", stack);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:04Z"
+}

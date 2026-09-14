@@ -1,0 +1,18 @@
+{
+  "problem_id": "2865",
+  "problem_name": "Introduction to Trees",
+  "step_no": 13,
+  "step_name": "Binary Trees [Traversals, Medium and Hard Problems]",
+  "substep_no": 1,
+  "substep_name": "Traversals",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/_ANrF3FJm7I",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/binary-tree/introduction-to-trees/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-",
+  "problem_statement": "In the world of data structures and algorithms, understanding binary trees lays the groundwork for hierarchical organisation and efficient data manipulation.\n\nUp until now, we have studied array, linked list, stack and queues which are the fundamental linear data structures. Binary Trees are a different data structure and allow hierarchical organisation and structure of multi-level sequences. This resembles a tree with branching at each node expanding the tree in a non-linear fashion.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:24:14Z"
+}

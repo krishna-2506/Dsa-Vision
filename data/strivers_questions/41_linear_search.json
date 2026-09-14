@@ -1,0 +1,32 @@
+{
+  "problem_id": "41",
+  "problem_name": "Linear Search",
+  "step_no": 3,
+  "step_name": "Solve Problems on Arrays [Easy -> Medium -> Hard]",
+  "substep_no": 1,
+  "substep_name": "Easy",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/wvcQg43_V8U?t=2465",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/linear-search-in-c/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/linear-search",
+  "problem_statement": "Given an array, and an element num the task is to find if num is present in the given array or not. If present print the index of the element or print -1.",
+  "examples": [
+    "Example 1: \nInput: arr[] = 1 2 3 4 5, num = 3 \nOutput: 2 `\nExplanation: 3 is present at the 2nd index of the array.\n\nExample 2: \nInput: arr[] = 5 4 3 2 1, num = 5 \nOutput: 0 \nExplanation: 5 is present at the 0th index of the array."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Given an array, traverse through the entire array.\nFor each element, check if the element is present in the array.\n\nIf the element is found, print the index of the element.\nIf the element is not found, print -1.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), where N is the number of elements in the array. This is because we traverse the entire array to find the element.\nSpace Complexity: O(1), as we are using a constant",
+      "space_complexity_details": "Time Complexity: O(N), where N is the number of elements in the array. This is because we traverse the entire array to find the element.\nSpace Complexity: O(1), as we are using a constant",
+      "codes": {
+        "cpp": "#include<stdio.h>\n\n// Function to search for a number in the array\nint search(int arr[], int n, int num)\n{\n    int i;\n\n    // Loop through the array to find the number\n    for(i = 0; i < n; i++)\n    {\n        // If the current element matches the number, return its index\n        if(arr[i] == num)\n            return i;\n    }\n\n    // If the number is not found, return -1\n    return -1;\n}\n\nint main()\n{\n    // Declare and initialize the array\n    int arr[] = {1, 2, 3, 4, 5};\n\n    // Number to search for\n    int num = 4;\n\n    // Calculate the number of elements in the array\n    int n = sizeof(arr) / sizeof(arr[0]);\n\n    // Call the search function and store the result\n    int val = search(arr, n, num);\n\n    // Print the index of the found number or -1 if not found\n    printf(\"%d\", val);\n\n    return 0;\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:55Z"
+}

@@ -1,0 +1,49 @@
+{
+  "problem_id": "38",
+  "problem_name": "Largest Element",
+  "step_no": 3,
+  "step_name": "Solve Problems on Arrays [Easy -> Medium -> Hard]",
+  "substep_no": 1,
+  "substep_name": "Easy",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/37E9ckMDdTk?t=526",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/find-the-largest-element-in-an-array/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/largest-element",
+  "problem_statement": "Given an array, we have to find the largest element in the array.",
+  "examples": [
+    "Example 1: \nInput: arr[] = {2, 5, 1, 3, 0} \nOutput: 5 \nExplanation: \n5 is the largest element in the array.\n\nExample 2: \nInput: arr[] = {8, 10, 5, 7, 9} \nOutput: 10 \nExplanation: \n10 is the largest element in the array."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force",
+      "algorithm": "Sort the array in ascending order.\nPrint the element at the (size of the array - 1)th index, which corresponds to the largest element in the array.",
+      "time_complexity": "O(N log N)",
+      "space_complexity": "O(N log N)",
+      "time_complexity_details": "Time Complexity: O(N log N), where N is the size of the array, as we are sorting the array.\nSpace Complexity: O(1), as we are using a constant",
+      "space_complexity_details": "Time Complexity: O(N log N), where N is the size of the array, as we are sorting the array.\nSpace Complexity: O(1), as we are using a constant",
+      "codes": {
+        "cpp": "#include<bits/stdc++.h>\nusing namespace std;\n\n// Function to sort the array and return the largest element\nint sortArr(vector<int>& arr) {\n    // Sort the array in ascending order\n    sort(arr.begin(), arr.end());\n    \n    // Return the last element (largest element) after sorting\n    return arr[arr.size() - 1];\n}\n\nint main() {\n    // Initialize arrays\n    vector<int> arr1 = {2, 5, 1, 3, 0};\n    vector<int> arr2 = {8, 10, 5, 7, 9};\n   \n    // Find and output the largest element in both arrays\n    cout << \"The Largest element in the array is: \" << sortArr(arr1) << endl;\n    cout << \"The Largest element in the array is: \" << sortArr(arr2);\n   \n    return 0;\n}",
+        "java": "import java.util.Arrays;\n\nclass Solution {\n\n    // Function to sort the array and return the largest element\n    public static int sortArr(int[] arr) {\n        // Sort the array in ascending order\n        Arrays.sort(arr);\n        \n        // Return the last element (largest element) after sorting\n        return arr[arr.length - 1];\n    }\n}\n\npublic class Main {\n\n    public static void main(String[] args) {\n        // Initialize arrays\n        int[] arr1 = {2, 5, 1, 3, 0};\n        int[] arr2 = {8, 10, 5, 7, 9};\n        \n        // Find and output the largest element in both arrays\n        System.out.println(\"The Largest element in the array is: \" + Solution.sortArr(arr1));\n        System.out.println(\"The Largest element in the array is: \" + Solution.sortArr(arr2));\n    }\n}",
+        "python": "# Function to sort the array and return the largest element\ndef sortArr(arr):\n    # Sort the array in ascending order\n    arr.sort()\n    \n    # Return the last element (largest element) after sorting\n    return arr[-1]\n\n# Driver code\nif __name__ == \"__main__\":\n    # Initialize arrays\n    arr1 = [2, 5, 1, 3, 0]\n    arr2 = [8, 10, 5, 7, 9]\n    \n    # Find and output the largest element in both arrays\n    print(\"The Largest element in the array is:\", sortArr(arr1))\n    print(\"The Largest element in the array is:\", sortArr(arr2))",
+        "javascript": "// Function to sort the array and return the largest element\nfunction sortArr(arr) {\n    // Sort the array in ascending order\n    arr.sort((a, b) => a - b);\n    \n    // Return the last element (largest element) after sorting\n    return arr[arr.length - 1];\n}\n\n// Main function to handle input and output\nfunction main() {\n    // Initialize arrays\n    let arr1 = [2, 5, 1, 3, 0];\n    let arr2 = [8, 10, 5, 7, 9];\n    \n    // Find and output the largest element in both arrays\n    console.log(\"The Largest element in the array is:\", sortArr(arr1));\n    console.log(\"The Largest element in the array is:\", sortArr(arr2));\n}\n\n// Call the main function\nmain();"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "Create a variable called max and initialize it with the value of the first element in the array.\nUse a for loop to iterate through the rest of the elements in the array.\nIn each iteration, compare the current element with the max variable.\nIf the current element is greater than the max value, update the max value with the current element's value.\nAfter completing the loop, print the max variable, which will hold the largest value in the array.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), where N is the size of the array, as we are iterating through the array once.\nSpace Complexity: O(1), as we are using a constant",
+      "space_complexity_details": "Time Complexity: O(N), where N is the size of the array, as we are iterating through the array once.\nSpace Complexity: O(1), as we are using a constant",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to find the largest element in the array\nint findLargestElement(int arr[], int n) {\n    int max = arr[0];  // Initialize max with the first element in the array\n\n    // Iterate through the array to find the maximum element\n    for (int i = 1; i < n; i++) {\n        if (max < arr[i]) {  // If the current element is greater than max, update max\n            max = arr[i];\n        }\n    }\n\n    return max;  // Return the largest element found\n}\n\nint main() {\n    // Array 1\n    int arr1[] = {2, 5, 1, 3, 0};\n    int n = 5;  // Size of the array\n    int max = findLargestElement(arr1, n);  // Call the function to find the largest element\n    cout << \"The largest element in the array is: \" << max << endl;  // Output the result\n\n    // Array 2\n    int arr2[] = {8, 10, 5, 7, 9};\n    n = 5;  // Size of the array\n    max = findLargestElement(arr2, n);  // Call the function to find the largest element\n    cout << \"The largest element in the array is: \" << max << endl;  // Output the result\n\n    return 0;\n}",
+        "java": "class Solution {\n\n    // Function to find the largest element in the array\n    public static int findLargestElement(int[] arr, int n) {\n        int max = arr[0];  // Initialize max with the first element in the array\n\n        // Iterate through the array to find the maximum element\n        for (int i = 1; i < n; i++) {\n            if (arr[i] > max) {  // If the current element is greater than max, update max\n                max = arr[i];\n            }\n        }\n\n        return max;  // Return the largest element found\n    }\n}\n\npublic class Main {\n\n    public static void main(String[] args) {\n        // Array 1\n        int[] arr1 = {2, 5, 1, 3, 0};\n        int n = arr1.length;  // Size of the array\n        int max = Solution.findLargestElement(arr1, n);  // Call the function to find the largest element\n        System.out.println(\"The largest element in the array is: \" + max);  // Output the result\n\n        // Array 2\n        int[] arr2 = {8, 10, 5, 7, 9};\n        n = arr2.length;  // Size of the array\n        max = Solution.findLargestElement(arr2, n);  // Call the function to find the largest element\n        System.out.println(\"The largest element in the array is: \" + max);  // Output the result\n    }\n}",
+        "python": "# Function to find the largest element in the array\ndef findLargestElement(arr, n):\n    max = arr[0]  # Initialize max with the first element in the array\n\n    # Iterate through the array to find the maximum element\n    for i in range(1, n):\n        if arr[i] > max:  # If the current element is greater than max, update max\n            max = arr[i]\n\n    return max  # Return the largest element found\n\n# Driver code\nif __name__ == \"__main__\":\n    # Array 1\n    arr1 = [2, 5, 1, 3, 0]\n    n = len(arr1)  # Size of the array\n    max = findLargestElement(arr1, n)  # Call the function to find the largest element\n    print(\"The largest element in the array is:\", max)  # Output the result\n\n    # Array 2\n    arr2 = [8, 10, 5, 7, 9]\n    n = len(arr2)  # Size of the array\n    max = findLargestElement(arr2, n)  # Call the function to find the largest element\n    print(\"The largest element in the array is:\", max)  # Output the result",
+        "javascript": "// Function to find the largest element in the array\nfunction findLargestElement(arr, n) {\n    let max = arr[0];  // Initialize max with the first element in the array\n\n    // Iterate through the array to find the maximum element\n    for (let i = 1; i < n; i++) {\n        if (arr[i] > max) {  // If the current element is greater than max, update max\n            max = arr[i];\n        }\n    }\n\n    return max;  // Return the largest element found\n}\n\n// Main function to handle input and output\nfunction main() {\n    // Array 1\n    let arr1 = [2, 5, 1, 3, 0];\n    let n = arr1.length;  // Size of the array\n    let max = findLargestElement(arr1, n);  // Call the function to find the largest element\n    console.log(\"The largest element in the array is:\", max);  // Output the result\n\n    // Array 2\n    let arr2 = [8, 10, 5, 7, 9];\n    n = arr2.length;  // Size of the array\n    max = findLargestElement(arr2, n);  // Call the function to find the largest element\n    console.log(\"The largest element in the array is:\", max);  // Output the result\n}\n\n// Call the main function\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:54Z"
+}

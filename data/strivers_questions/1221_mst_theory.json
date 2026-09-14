@@ -1,0 +1,20 @@
+{
+  "problem_id": "1221",
+  "problem_name": "MST theory",
+  "step_no": 15,
+  "step_name": "Graphs [Concepts & Problems]",
+  "substep_no": 5,
+  "substep_name": "MinimumSpanningTree/Disjoint Set and Problems",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/ZSPjZuZWCME",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/minimum-spanning-tree-theory-g-44/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/mst-theory",
+  "problem_statement": "A spanning tree is a tree in which we have N nodes(i.e. All the nodes present in the original graph) and N-1 edges and all nodes are reachable from each other.\n\nLet’s understand this using an example. Assume we are given an undirected weighted graph with N nodes and M edges. Here in this example, we have taken N as 5 and M as 6.",
+  "examples": [
+    "Now, in case you have understood the concepts well, you can try to figure out the minimum spanning tree for the following undirected weighted graph:\n\nAnswer:\nSum of edge weights = 17\nThe MST of the given Graph will look like this:"
+  ],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:24:20Z"
+}

@@ -156,8 +156,8 @@ export default function CountTheNumberOfNodesLinkedListVisualizer({ currentStep:
                   </div>
 
                   {/* Node Box */}
-                  <div className={`w-14 h-14 flex items-center justify-center rounded-lg border-2 font-mono text-lg font-bold transition-all duration-300 relative z-10 ${
-                    isCurrent ? 'border-indigo-500 bg-indigo-500/20 text-indigo-100 scale-110 shadow-[0_0_15px_rgba(99,102,241,0.4)]' :
+                  <div className={`w-14 h-14 flex items-center justify-center rounded-lg border-2 font-mono text-lg font-bold transition-all duration-200 relative z-10 ${
+                    isCurrent ? 'border-indigo-500 bg-indigo-500/20 text-indigo-100' :
                     isNull ? 'border-white/10 bg-[#0e111a] text-slate-600' :
                     isVisited ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300' :
                     'border-white/20 bg-white/5 text-slate-300'

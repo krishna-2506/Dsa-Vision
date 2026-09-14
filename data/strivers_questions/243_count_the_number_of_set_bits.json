@@ -1,0 +1,49 @@
+{
+  "problem_id": "243",
+  "problem_name": "Count the Number of Set Bits",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn Bit Manipulation",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/nttpF8kwgd4?si=x9o8PsYaA2XVZ9rV",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/count-the-number-of-set-bits",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/count-the-number-of-set-bits",
+  "problem_statement": "Given an integer n, return the number of set bits (1s) in its binary representation. \n Can you solve it in O(log n) time complexity?",
+  "examples": [
+    "Example 1:\nInput: n = 5\nOutput: 2\nExplanation: The binary representation of 5 is 101, which has 2 set bits.\n\nExample 2:\nInput: n = 15\nOutput: 4\nExplanation: The binary representation of 15 is 1111, which has 4 set bits."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force",
+      "algorithm": "Initialize a counter to zero.\nWhile the number is greater than zero:\n\nCheck if the least significant bit (LSB) is 1 by performing bitwise AND with 1.\nIf LSB is 1, increment the counter.\nRight shift the number by one bit.\n\nReturn the counter.",
+      "time_complexity": "O(log n)",
+      "space_complexity": "O(log n)",
+      "time_complexity_details": "Time Complexity: O(log n), because each bit of the integer is checked once.\nSpace Complexity: O(1), only a few variables are used.",
+      "space_complexity_details": "Time Complexity: O(log n), because each bit of the integer is checked once.\nSpace Complexity: O(1), only a few variables are used.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to count the number of set bits (1s) in the binary representation of n\n    int countSetBits(int n) {\n        int count = 0;  // Variable to store the count of set bits\n\n        // Step 1: Count the number of set bits using bitwise operations\n        while (n > 0) {\n            count += (n & 1);  // Check if the least significant bit is set (1)\n            n >>= 1;  // Right shift n by 1 to process the next bit\n        }\n\n        // Step 2: Return the count of set bits\n        return count;\n    }\n};\n\n// Main function to test the solution\nint main() {\n    int n = 29;  // Example input for n (binary: 11101)\n\n    Solution sol;\n    int result = sol.countSetBits(n);\n\n    cout << \"The number of set bits is: \" << result << endl;\n\n    return 0;\n}",
+        "java": "// Solution class containing the countSetBits function\nclass Solution {\n    // Function to count the number of set bits (1s) in the binary representation of n\n    public int countSetBits(int n) {\n        int count = 0;  // Variable to store the count of set bits\n\n        // Step 1: Count the number of set bits using bitwise operations\n        while (n > 0) {\n            count += (n & 1);  // Check if the least significant bit is set (1)\n            n >>= 1;  // Right shift n by 1 to process the next bit\n        }\n\n        // Step 2: Return the count of set bits\n        return count;\n    }\n}\n\n// Main class to test the Solution class\npublic class Main {\n    public static void main(String[] args) {\n        int n = 29;  // Example input for n (binary: 11101)\n\n        Solution sol = new Solution();\n        int result = sol.countSetBits(n);\n\n        System.out.println(\"The number of set bits is: \" + result);\n    }\n}",
+        "python": "class Solution:\n    # Function to count the number of set bits (1s) in the binary representation of n\n    def countSetBits(self, n):\n        count = 0  # Variable to store the count of set bits\n\n        # Step 1: Count the number of set bits using bitwise operations\n        while n > 0:\n            count += (n & 1)  # Check if the least significant bit is set (1)\n            n >>= 1  # Right shift n by 1 to process the next bit\n\n        # Step 2: Return the count of set bits\n        return count\n\n# Main function to test the solution\nif __name__ == \"__main__\":\n    n = 29  # Example input for n (binary: 11101)\n\n    sol = Solution()\n    result = sol.countSetBits(n)\n\n    print(f\"The number of set bits is: {result}\")",
+        "javascript": "class Solution {\n    // Function to count the number of set bits (1s) in the binary representation of n\n    countSetBits(n) {\n        let count = 0;  // Variable to store the count of set bits\n\n        // Step 1: Count the number of set bits using bitwise operations\n        while (n > 0) {\n            count += (n & 1);  // Check if the least significant bit is set (1)\n            n >>= 1;  // Right shift n by 1 to process the next bit\n        }\n\n        // Step 2: Return the count of set bits\n        return count;\n    }\n}\n\n// Main function to test the solution\n(function main() {\n    const n = 29;  // Example input for n (binary: 11101)\n\n    const sol = new Solution();\n    const result = sol.countSetBits(n);\n\n    console.log(`The number of set bits is: ${result}`);\n})();"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "Initialize a counter to zero.\nWhile the number is greater than zero:\n\nCheck if the least significant bit (LSB) is 1 by performing bitwise AND with 1.\nIf LSB is 1, increment the counter.\nRight shift the number by one bit.\n\nReturn the counter.",
+      "time_complexity": "O(k)",
+      "space_complexity": "O(k)",
+      "time_complexity_details": "Time Complexity: O(k), where k is the number of set bits (often faster than checking all bits).\nSpace Complexity: O(1), only a few variables are used.",
+      "space_complexity_details": "Time Complexity: O(k), where k is the number of set bits (often faster than checking all bits).\nSpace Complexity: O(1), only a few variables are used.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to count the number of set bits (1s) in the binary representation of n using Brian Kernighan's Algorithm\n    int countSetBits(int n) {\n        int count = 0;  // Variable to store the count of set bits\n\n        // Step 1: While n is non-zero, turn off the rightmost set bit\n        while (n) {\n            n &= (n - 1);  // Turn off the rightmost set bit\n            count++;  // Increment the count\n        }\n\n        // Step 2: Return the count of set bits\n        return count;\n    }\n};\n\n// Main function to test the solution\nint main() {\n    int n = 29;  // Example input for n (binary: 11101)\n\n    Solution sol;\n    int result = sol.countSetBits(n);\n\n    cout << \"The number of set bits is: \" << result << endl;\n\n    return 0;\n}",
+        "java": "// Solution class containing the countSetBits function\nclass Solution {\n    // Function to count the number of set bits (1s) in the binary representation of n using Brian Kernighan's Algorithm\n    public int countSetBits(int n) {\n        int count = 0;  // Variable to store the count of set bits\n\n        // Step 1: While n is non-zero, turn off the rightmost set bit\n        while (n > 0) {\n            n &= (n - 1);  // Turn off the rightmost set bit\n            count++;  // Increment the count\n        }\n\n        // Step 2: Return the count of set bits\n        return count;\n    }\n}\n\n// Main class to test the Solution class\npublic class Main {\n    public static void main(String[] args) {\n        int n = 29;  // Example input for n (binary: 11101)\n\n        Solution sol = new Solution();\n        int result = sol.countSetBits(n);\n\n        System.out.println(\"The number of set bits is: \" + result);\n    }\n}",
+        "python": "class Solution:\n    # Function to count the number of set bits (1s) in the binary representation of n using Brian Kernighan's Algorithm\n    def countSetBits(self, n):\n        count = 0  # Variable to store the count of set bits\n\n        # Step 1: While n is non-zero, turn off the rightmost set bit\n        while n:\n            n &= (n - 1)  # Turn off the rightmost set bit\n            count += 1  # Increment the count\n\n        # Step 2: Return the count of set bits\n        return count\n\n# Main function to test the solution\nif __name__ == \"__main__\":\n    n = 29  # Example input for n (binary: 11101)\n\n    sol = Solution()\n    result = sol.countSetBits(n)\n\n    print(f\"The number of set bits is: {result}\")",
+        "javascript": "class Solution {\n    // Function to count the number of set bits (1s) in the binary representation of n using Brian Kernighan's Algorithm\n    countSetBits(n) {\n        let count = 0;  // Variable to store the count of set bits\n\n        // Step 1: While n is non-zero, turn off the rightmost set bit\n        while (n > 0) {\n            n &= (n - 1);  // Turn off the rightmost set bit\n            count++;  // Increment the count\n        }\n\n        // Step 2: Return the count of set bits\n        return count;\n    }\n}\n\n// Main function to test the solution\n(function main() {\n    const n = 29;  // Example input for n (binary: 11101)\n\n    const sol = new Solution();\n    const result = sol.countSetBits(n);\n\n    console.log(`The number of set bits is: ${result}`);\n})();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:06Z"
+}

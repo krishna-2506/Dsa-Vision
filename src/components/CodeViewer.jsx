@@ -236,20 +236,20 @@ export default function CodeViewer({
   }, [activeLine]);
 
   return (
-    <div className="code-col h-full rounded-xl border border-[var(--line)] overflow-hidden bg-[var(--code-bg)] flex flex-col shadow-sm">
-      {/* Code Header Bar */}
-      <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-[var(--line)] bg-[var(--board-raised-2)]">
+    <div className="code-col h-full rounded-lg border border-[var(--line)] overflow-hidden bg-[var(--code-bg)] flex flex-col">
+      {/* Code Header Bar (VS Code Editor Tabs) */}
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-[var(--line)] bg-[var(--board-raised-2)]">
         {/* Language Tabs */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {availableLangs.length > 0 ? (
             availableLangs.map((lang) => (
               <button
                 key={lang}
                 onClick={() => setSelectedLang(lang)}
-                className={`px-2.5 py-1 rounded-md text-xs font-mono font-medium transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded text-xs font-mono transition-all cursor-pointer ${
                   currentLang === lang
-                    ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 font-semibold'
-                    : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
+                    ? 'bg-[var(--board-raised)] text-[var(--chalk)] border border-[var(--line)] font-semibold shadow-xs'
+                    : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent'
                 }`}
               >
                 {LANGUAGE_LABELS[lang] || lang.toUpperCase()}
@@ -265,8 +265,9 @@ export default function CodeViewer({
         {/* Right Info & Actions */}
         <div className="flex items-center gap-2">
           {formattedLineBadge && (
-            <span className="text-[11px] font-mono font-semibold text-cyan-600 dark:text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/25">
-              Line {formattedLineBadge}
+            <span className="text-[11px] font-mono font-medium text-indigo-600 dark:text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/25 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+              <span>Line {formattedLineBadge}</span>
             </span>
           )}
 
@@ -275,7 +276,7 @@ export default function CodeViewer({
               href={leetcodeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] transition-all"
+              className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] transition-all"
               title="Open problem on LeetCode"
             >
               <ExternalLink className="w-3 h-3 text-indigo-500" />
@@ -285,7 +286,7 @@ export default function CodeViewer({
 
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-[var(--line)] transition-all cursor-pointer"
+            className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-[var(--line)] transition-all cursor-pointer"
             title="Copy full solution code"
           >
             {copied ? (
@@ -303,7 +304,7 @@ export default function CodeViewer({
         </div>
       </div>
 
-      {/* Code Block with Synchronized Line Highlighting */}
+      {/* Code Block with Synchronized Line Highlighting & Gutter Pointer */}
       <pre className="code max-h-[560px] flex-1 overflow-y-auto" ref={tableRef}>
         {lines.map((line, idx) => {
           const lineNum = idx + 1;
@@ -314,7 +315,10 @@ export default function CodeViewer({
               data-line={lineNum}
               className={`ln${isCur ? ' current' : ''}`}
             >
-              <span className="num">{lineNum}</span>
+              <span className="num flex items-center justify-end gap-1">
+                {isCur && <span className="text-[8.5px] text-indigo-400 font-bold shrink-0">▶</span>}
+                <span>{lineNum}</span>
+              </span>
               <span className="src">{renderHighlightedLine(line, selectedLang)}</span>
             </div>
           );

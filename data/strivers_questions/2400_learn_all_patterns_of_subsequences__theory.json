@@ -1,0 +1,18 @@
+{
+  "problem_id": "2400",
+  "problem_name": "Learn All Patterns of Subsequences (Theory)",
+  "step_no": 7,
+  "step_name": "Recursion [PatternWise]",
+  "substep_no": 2,
+  "substep_name": "Subsequences Pattern",
+  "difficulty": "Easy",
+  "youtube_url": "https://www.youtube.com/watch?v=eQCS_v3bw0Q&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9&index=7",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/learn-all-patterns-of-subsequences-theory",
+  "plus_url": null,
+  "problem_statement": "A subsequence is a sequence derived from another sequence by deleting some or no elements without changing the order of the remaining elements. Unlike substrings, the elements of a subsequence are not required to occupy consecutive positions in the original sequence.\n\nFor example, in the string \"abc\", the subsequences include: \"a\", \"b\", \"c\", \"ab\", \"ac\", \"bc\", and \"abc\".",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:24:04Z"
+}

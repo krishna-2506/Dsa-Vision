@@ -1,0 +1,49 @@
+{
+  "problem_id": "876",
+  "problem_name": "Generate Parentheses",
+  "step_no": 7,
+  "step_name": "Recursion [PatternWise]",
+  "substep_no": 2,
+  "substep_name": "Subsequences Pattern",
+  "difficulty": "Medium",
+  "youtube_url": null,
+  "leetcode_url": "https://leetcode.com/problems/generate-parentheses/",
+  "article_url": "https://takeuforward.org/data-structure/generate-parenthesis",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/generate-parentheses",
+  "problem_statement": "Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.",
+  "examples": [
+    "Example 1:\nInput: n = 3\nOutput: [\"((()))\", \"(()())\", \"(())()\", \"()(())\", \"()()()\"]\n\nExample 2:\nInput: n = 1\nOutput: [\"()\"]"
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force",
+      "algorithm": "Generate all sequences of length 2n.\nFor each sequence, use a validator to check conditions.\nEnsure the count of ')' never exceeds '(' at any point.\nAt the end of the sequence, the count must be 0.",
+      "time_complexity": "O(2^(2n)",
+      "space_complexity": "O(2^(2n)",
+      "time_complexity_details": "Time Complexity: O(2^(2n) * n) due to the generation and validation of all 2^(2n) sequences. \nSpace Complexity: O(n) space required per sequence.",
+      "space_complexity_details": "Time Complexity: O(2^(2n) * n) due to the generation and validation of all 2^(2n) sequences. \nSpace Complexity: O(n) space required per sequence.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Check if a string has valid parentheses\nbool isValid(string s) {\n    int balance = 0;\n    for (char c : s) {\n        if (c == '(') balance++;\n        else balance--;\n        if (balance < 0) return false;\n    }\n    return balance == 0;\n}\n\nvoid generateAll(string curr, int n, vector<string>& res) {\n    if (curr.length() == 2 * n) {\n        if (isValid(curr)) res.push_back(curr);\n        return;\n    }\n    generateAll(curr + '(', n, res);\n    generateAll(curr + ')', n, res);\n}\n\nvector<string> generateParenthesis(int n) {\n    vector<string> res;\n    generateAll(\"\", n, res);\n    return res;\n}\n\nint main() {\n    int n = 3;\n    vector<string> result = generateParenthesis(n);\n    for (string s : result) cout << s << endl;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass BruteSolution {\n    public boolean isValid(String s) {\n        int balance = 0;\n        for (char c : s.toCharArray()) {\n            if (c == '(') balance++;\n            else balance--;\n            if (balance < 0) return false;\n        }\n        return balance == 0;\n    }\n\n    public void generateAll(String curr, int n, List<String> res) {\n        if (curr.length() == 2 * n) {\n            if (isValid(curr)) res.add(curr);\n            return;\n        }\n        generateAll(curr + \"(\", n, res);\n        generateAll(curr + \")\", n, res);\n    }\n\n    public List<String> generateParenthesis(int n) {\n        List<String> res = new ArrayList<>();\n        generateAll(\"\", n, res);\n        return res;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        BruteSolution sol = new BruteSolution();\n        List<String> result = sol.generateParenthesis(3);\n        for (String s : result) {\n            System.out.println(s);\n        }\n    }\n}",
+        "python": "def is_valid(s):\n    balance = 0\n    for c in s:\n        if c == '(':\n            balance += 1\n        else:\n            balance -= 1\n        if balance < 0:\n            return False\n    return balance == 0\n\ndef generate_all(curr, n, res):\n    if len(curr) == 2 * n:\n        if is_valid(curr):\n            res.append(curr)\n        return\n    generate_all(curr + '(', n, res)\n    generate_all(curr + ')', n, res)\n\ndef generate_parenthesis(n):\n    res = []\n    generate_all(\"\", n, res)\n    return res\n\ndef main():\n    result = generate_parenthesis(3)\n    for s in result:\n        print(s)\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "function isValid(s) {\n    let balance = 0;\n    for (let c of s) {\n        if (c === '(') balance++;\n        else balance--;\n        if (balance < 0) return false;\n    }\n    return balance === 0;\n}\n\nfunction generateAll(curr, n, res) {\n    if (curr.length === 2 * n) {\n        if (isValid(curr)) res.push(curr);\n        return;\n    }\n    generateAll(curr + '(', n, res);\n    generateAll(curr + ')', n, res);\n}\n\nfunction generateParenthesis(n) {\n    const res = [];\n    generateAll('', n, res);\n    return res;\n}\n\nfunction main() {\n    const result = generateParenthesis(3);\n    result.forEach(s => console.log(s));\n}\n\nmain();"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "Start with an empty string curr = \"\".\nInitialize counters: open = 0, close = 0.\nIf open < n, add '(' and recurse.\nIf close < open, add ')' and recurse.\nIf curr.length == 2 * n, add it to the result.",
+      "time_complexity": "O(2^n)",
+      "space_complexity": "O(2^n)",
+      "time_complexity_details": "Time Complexity: O(2^n) (Catalan number): C(n) = (2n)! / (n!(n+1)!) is the number of valid sequences.\nEach sequence takes O(n) to build.\nSo, total complexity: O(C(n) × n)\nSpace Complexity: O(n) recursion depth.\nO(C(n) × n) to store results.",
+      "space_complexity_details": "Time Complexity: O(2^n) (Catalan number): C(n) = (2n)! / (n!(n+1)!) is the number of valid sequences.\nEach sequence takes O(n) to build.\nSo, total complexity: O(C(n) × n)\nSpace Complexity: O(n) recursion depth.\nO(C(n) × n) to store results.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid backtrack(string curr, int open, int close, int n, vector<string>& res) {\n    if (curr.length() == 2 * n) {\n        res.push_back(curr);\n        return;\n    }\n    if (open < n) backtrack(curr + '(', open + 1, close, n, res);\n    if (close < open) backtrack(curr + ')', open, close + 1, n, res);\n}\n\nvector<string> generateParenthesis(int n) {\n    vector<string> res;\n    backtrack(\"\", 0, 0, n, res);\n    return res;\n}\n\nint main() {\n    int n = 3;\n    vector<string> result = generateParenthesis(n);\n    for (string s : result) cout << s << endl;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass OptimalSolution {\n    public void backtrack(String curr, int open, int close, int n, List<String> res) {\n        if (curr.length() == 2 * n) {\n            res.add(curr);\n            return;\n        }\n        if (open < n) backtrack(curr + \"(\", open + 1, close, n, res);\n        if (close < open) backtrack(curr + \")\", open, close + 1, n, res);\n    }\n\n    public List<String> generateParenthesis(int n) {\n        List<String> res = new ArrayList<>();\n        backtrack(\"\", 0, 0, n, res);\n        return res;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        OptimalSolution sol = new OptimalSolution();\n        List<String> result = sol.generateParenthesis(3);\n        for (String s : result) {\n            System.out.println(s);\n        }\n    }\n}",
+        "python": "def backtrack(curr, open, close, n, res):\n    if len(curr) == 2 * n:\n        res.append(curr)\n        return\n    if open < n:\n        backtrack(curr + '(', open + 1, close, n, res)\n    if close < open:\n        backtrack(curr + ')', open, close + 1, n, res)\n\ndef generate_parenthesis(n):\n    res = []\n    backtrack(\"\", 0, 0, n, res)\n    return res\n\ndef main():\n    result = generate_parenthesis(3)\n    for s in result:\n        print(s)\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "function backtrack(curr, open, close, n, res) {\n    if (curr.length === 2 * n) {\n        res.push(curr);\n        return;\n    }\n    if (open < n) backtrack(curr + '(', open + 1, close, n, res);\n    if (close < open) backtrack(curr + ')', open, close + 1, n, res);\n}\n\nfunction generateParenthesis(n) {\n    const res = [];\n    backtrack('', 0, 0, n, res);\n    return res;\n}\n\nfunction main() {\n    const result = generateParenthesis(3);\n    result.forEach(s => console.log(s));\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:04Z"
+}

@@ -36,22 +36,19 @@ export default function CallStackView({
 
             let borderClass = 'border-zinc-800 bg-zinc-900/80';
             let titleClass = 'text-zinc-300';
-            let glow = '';
 
             if (isReturning) {
-              borderClass = 'border-emerald-500/80 bg-emerald-950/40 ring-1 ring-emerald-500/40';
+              borderClass = 'border-2 border-emerald-500 bg-emerald-950/40';
               titleClass = 'text-emerald-300 font-bold';
-              glow = 'shadow-[0_0_10px_rgba(16,185,129,0.2)]';
             } else if (isActive) {
-              borderClass = 'border-amber-500 bg-amber-950/30 ring-2 ring-amber-500/30';
+              borderClass = 'border-2 border-amber-500 bg-amber-950/30';
               titleClass = 'text-amber-300 font-bold';
-              glow = 'shadow-[0_0_12px_rgba(245,158,11,0.25)]';
             }
 
             return (
               <div
                 key={frame.id || index}
-                className={`p-2.5 rounded-lg border transition-all duration-300 ${borderClass} ${glow}`}
+                className={`p-2.5 rounded-lg border transition-all duration-200 ${borderClass}`}
               >
                 <div className="flex items-center justify-between font-mono text-xs mb-1.5">
                   <div className="flex items-center gap-2">

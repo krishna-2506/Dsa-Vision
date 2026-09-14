@@ -1,0 +1,35 @@
+{
+  "problem_id": "2394",
+  "problem_name": "Count Number of Substrings",
+  "step_no": 5,
+  "step_name": "Strings [Basic and Medium]",
+  "substep_no": 2,
+  "substep_name": "Medium String Problems",
+  "difficulty": "Easy",
+  "youtube_url": null,
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/count-number-of-substrings",
+  "plus_url": null,
+  "problem_statement": "You are given a string s and a positive integer k.\nReturn the number of substrings that contain exactly k distinct characters.",
+  "examples": [
+    "Example 1: \nInput: s = \"pqpqs\", k = 2 \nOutput: 7 \nExplanation: All substrings with exactly 2 distinct characters: \n\"pq\", \"pqp\", \"pqpq\", \"qp\", \"qpq\", \"pqs\", \"qs\" \nTotal = 7.\n\nExample 2: \nInput: s = \"abcbaa\", k = 3 \nOutput: 5 \nExplanation: All substrings with exactly 3 distinct characters: \n\"abc\", \"abcb\", \"abcba\", \"bcba\", \"cbaa\" \nTotal = 5."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Define a helper function atMostKDistinct(s, k):\n\nUse a sliding window with two pointers (left and right) and a frequency map.\nExpand the window by moving the right pointer and count characters.\nIf the count of distinct characters exceeds k, shrink the window by moving the left pointer.\nFor each valid window, add (right - left + 1) to the result.\n\nTo find substrings with exactly k distinct characters, calculate:\n\natMostKDistinct(s, k) - atMostKDistinct(s, k-1)",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity: O(n) for each call to atMostKDistinct.\nSpace Complexity: O(1) map size bounded by 26 characters for alphabets.",
+      "space_complexity_details": "Time Complexity: O(n) for each call to atMostKDistinct.\nSpace Complexity: O(1) map size bounded by 26 characters for alphabets.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to count substrings with at most k distinct characters\nint atMostKDistinct(string s, int k) {\n    // Left pointer and result\n    int left = 0, res = 0;\n    // Frequency map\n    unordered_map<char, int> freq;\n\n    // Iterate through string with right pointer\n    for (int right = 0; right < s.size(); right++) {\n        // Add current character\n        freq[s[right]]++;\n\n        // Shrink window if distinct characters exceed k\n        while (freq.size() > k) {\n            freq[s[left]]--;\n            if (freq[s[left]] == 0) freq.erase(s[left]);\n            left++;\n        }\n\n        // Count substrings in current window\n        res += (right - left + 1);\n    }\n    return res;\n}\n\n// Function to count substrings with exactly k distinct characters\nint countSubstrings(string s, int k) {\n    // Exactly k = atMost(k) - atMost(k-1)\n    return atMostKDistinct(s, k) - atMostKDistinct(s, k - 1);\n}\n\nint main() {\n    // Sample test\n    string s = \"pqpqs\";\n    int k = 2;\n\n    // Output the result\n    cout << \"Count: \" << countSubstrings(s, k) << endl; // Output: 7\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    // Function to count substrings with at most k distinct characters\n    public static int atMostKDistinct(String s, int k) {\n        int left = 0, res = 0;\n        Map<Character, Integer> freq = new HashMap<>();\n\n        // Iterate with right pointer\n        for (int right = 0; right < s.length(); right++) {\n            freq.put(s.charAt(right), freq.getOrDefault(s.charAt(right), 0) + 1);\n\n            // Shrink window if distinct characters exceed k\n            while (freq.size() > k) {\n                char leftChar = s.charAt(left);\n                freq.put(leftChar, freq.get(leftChar) - 1);\n                if (freq.get(leftChar) == 0) freq.remove(leftChar);\n                left++;\n            }\n\n            // Add count of substrings in current window\n            res += (right - left + 1);\n        }\n        return res;\n    }\n\n    // Function to count substrings with exactly k distinct characters\n    public static int countSubstrings(String s, int k) {\n        return atMostKDistinct(s, k) - atMostKDistinct(s, k - 1);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Sample test\n        String s = \"pqpqs\";\n        int k = 2;\n\n        // Output the result\n        System.out.println(\"Count: \" + Solution.countSubstrings(s, k)); // Output: 7\n    }\n}",
+        "python": "# Function to count substrings with at most k distinct characters\ndef at_most_k_distinct(s, k):\n    left, res = 0, 0\n    freq = {}\n\n    # Iterate with right pointer\n    for right in range(len(s)):\n        freq[s[right]] = freq.get(s[right], 0) + 1\n\n        # Shrink window if distinct characters exceed k\n        while len(freq) > k:\n            freq[s[left]] -= 1\n            if freq[s[left]] == 0:\n                del freq[s[left]]\n            left += 1\n\n        # Count substrings in current window\n        res += (right - left + 1)\n    return res\n\n# Function to count substrings with exactly k distinct characters\ndef count_substrings(s, k):\n    return at_most_k_distinct(s, k) - at_most_k_distinct(s, k - 1)\n\ndef main():\n    # Sample test\n    s = \"pqpqs\"\n    k = 2\n\n    # Output the result\n    print(\"Count:\", count_substrings(s, k))  # Output: 7\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "// Function to count substrings with at most k distinct characters\nfunction atMostKDistinct(s, k) {\n    let left = 0, res = 0;\n    const freq = new Map();\n\n    // Iterate with right pointer\n    for (let right = 0; right < s.length; right++) {\n        freq.set(s[right], (freq.get(s[right]) || 0) + 1);\n\n        // Shrink window if distinct characters exceed k\n        while (freq.size > k) {\n            freq.set(s[left], freq.get(s[left]) - 1);\n            if (freq.get(s[left]) === 0) freq.delete(s[left]);\n            left++;\n        }\n\n        // Count substrings in current window\n        res += (right - left + 1);\n    }\n    return res;\n}\n\n// Function to count substrings with exactly k distinct characters\nfunction countSubstrings(s, k) {\n    return atMostKDistinct(s, k) - atMostKDistinct(s, k - 1);\n}\n\nfunction main() {\n    // Sample test\n    const s = \"pqpqs\";\n    const k = 2;\n\n    // Output the result\n    console.log(\"Count:\", countSubstrings(s, k)); // Output: 7\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}

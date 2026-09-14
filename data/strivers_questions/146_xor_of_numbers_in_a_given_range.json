@@ -1,0 +1,49 @@
+{
+  "problem_id": "146",
+  "problem_name": "XOR of numbers in a given range",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 2,
+  "substep_name": "Interview Problems",
+  "difficulty": "Medium",
+  "youtube_url": "https://youtu.be/WqGb7159h7Q?si=uGUEbNUUaIN_6Vvr",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/find-xor-of-numbers-from-l-to-r",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/xor-of-numbers-in-a-given-range",
+  "problem_statement": "Given two integers L and R. Find the XOR of the elements in the range [L , R].",
+  "examples": [
+    "Example 1:\nInput : L = 3 , R = 5\nOutput : 2\nExplanation : answer = (3 ^ 4 ^ 5) = 2.\n\nExample 2:\nInput : L = 1, R = 3\nOutput : 0\nExplanation : answer = (1 ^ 2 ^ 3) = 0."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force",
+      "algorithm": "XOR is useful for combining values in a reversible way, applying it twice cancels the effect.\nTo find the XOR of all numbers in a range, we can combine them one by one using XOR.\nStart with an initial value that doesn't affect the result (i.e., 0).\nAs each number is XORed in, the result captures the cumulative effect of all values.\nThe final result after traversing the range holds the complete XOR of that range.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N) Traversing through all the numbers take O(N) time.\nSpace Complexity: O(1) Using only a couple of variables, i.e., constant space.",
+      "space_complexity_details": "Time Complexity: O(N) Traversing through all the numbers take O(N) time.\nSpace Complexity: O(1) Using only a couple of variables, i.e., constant space.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n\n    /* Function to find the XOR \n    of numbers from L to R*/\n    int findRangeXOR(int l, int r){\t\t\t\n        \n        // To store the XOR of numbers\n\t\tint ans = 0;\n\t\t\n\t\t// XOR all the numbers\n\t\tfor(int i=l; i <= r; i++) {\n\t\t    ans ^= i;\n\t\t}\n\t\t\n\t\t// Return the result\n\t\treturn ans;\n\t}\n};\n\nint main() {\n    int l = 3, r = 5;\n    \n    /* Creating an instance of \n    Solution class */\n    Solution sol; \n    \n    /* Function call to get the\n    XOR of numbers from L to R*/\n    int ans = sol.findRangeXOR(l, r);\n    \n    cout << \"The XOR of numbers from \" << l << \" to \" << r << \" is: \" << ans;\n    \n    return 0;\n}",
+        "java": "class Solution {\n\n    /* Function to find the XOR \n    of numbers from L to R */\n    public int findRangeXOR(int l, int r) {\n        \n        // To store the XOR of numbers\n        int ans = 0;\n        \n        // XOR all the numbers\n        for (int i = l; i <= r; i++) {\n            ans ^= i;\n        }\n        \n        // Return the result\n        return ans;\n    }\n\n    public static void main(String[] args) {\n        int l = 3, r = 5;\n        \n        /* Creating an instance of \n        Solution class */\n        Solution sol = new Solution();\n        \n        /* Function call to get the\n        XOR of numbers from L to R */\n        int ans = sol.findRangeXOR(l, r);\n        \n        System.out.println(\"The XOR of numbers from \" + l + \" to \" + r + \" is: \" + ans);\n    }\n}",
+        "python": "class Solution:\n    \n    # Function to find the XOR \n    # of numbers from L to R\n    def findRangeXOR(self, l, r):\n        \n        # To store the XOR of numbers\n        ans = 0\n        \n        # XOR all the numbers\n        for i in range(l, r + 1):\n            ans ^= i\n        \n        # Return the result\n        return ans\n\nif __name__ == \"__main__\":\n    l, r = 3, 5\n    \n    # Creating an instance of \n    # Solution class\n    sol = Solution()\n    \n    # Function call to get the\n    # XOR of numbers from L to R\n    ans = sol.findRangeXOR(l, r)\n    \n    print(f\"The XOR of numbers from {l} to {r} is: {ans}\")",
+        "javascript": "class Solution {\n    \n    /* Function to find the XOR \n    of numbers from L to R */\n    findRangeXOR(l, r) {\n        \n        // To store the XOR of numbers\n        let ans = 0;\n        \n        // XOR all the numbers\n        for (let i = l; i <= r; i++) {\n            ans ^= i;\n        }\n        \n        // Return the result\n        return ans;\n    }\n}\n\nconst main = () => {\n    const l = 3, r = 5;\n    \n    /* Creating an instance of \n    Solution class */\n    const sol = new Solution();\n    \n    /* Function call to get the\n    XOR of numbers from L to R */\n    const ans = sol.findRangeXOR(l, r);\n    \n    console.log(`The XOR of numbers from ${l} to ${r} is: ${ans}`);\n};\n\nmain();"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "The XOR of numbers from 1 to n follows a predictable pattern based on n % 4.\nThis pattern helps compute XOR from 1 to any number n in constant time.\nTo get XOR of numbers in the range [L, R], compute XOR(1 to R) and XOR(1 to L - 1).\nApply XOR between these two results, common prefixes cancel out due to XOR properties.\nThis approach avoids looping through the range and achieves optimal performance.",
+      "time_complexity": "O(1)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "Time Complexity: O(1) Using constant time operations.\nSpace Complexity: O(1) Using a couple of variables i.e., constant space.",
+      "space_complexity_details": "Time Complexity: O(1) Using constant time operations.\nSpace Complexity: O(1) Using a couple of variables i.e., constant space.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\nprivate:\n    /* Function to find the XOR \n    of numbers from 1 to n*/\n    int XORtillN(int n) {\n        if(n % 4 == 1) return 1;\n        if(n % 4 == 2) return n+1;\n        if(n % 4 == 3) return 0;\n        return n;\n    }\n    \npublic:\n    /* Function to find the XOR \n    of numbers from L to R*/\n    int findRangeXOR(int l, int r){\t\t\t\n\t\treturn XORtillN(l-1) ^ XORtillN(r);\n\t}\n};\n\nint main() {\n    int l = 3, r = 5;\n    \n    /* Creating an instance of \n    Solution class */\n    Solution sol; \n    \n    /* Function call to get the\n    XOR of numbers from L to R*/\n    int ans = sol.findRangeXOR(l, r);\n    \n    cout << \"The XOR of numbers from \" << l << \" to \" << r << \" is: \" << ans;\n    \n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    /* Function to find the XOR \n    of numbers from 1 to n */\n    private int XORtillN(int n) {\n        if(n % 4 == 1) return 1;\n        if(n % 4 == 2) return n + 1;\n        if(n % 4 == 3) return 0;\n        return n;\n    }\n    \n    /* Function to find the XOR \n    of numbers from L to R */\n    public int findRangeXOR(int l, int r) {\n        return XORtillN(l - 1) ^ XORtillN(r);\n    }\n    \n    public static void main(String[] args) {\n        int l = 3, r = 5;\n        \n        /* Creating an instance of \n        Solution class */\n        Solution sol = new Solution(); \n        \n        /* Function call to get the\n        XOR of numbers from L to R */\n        int ans = sol.findRangeXOR(l, r);\n        \n        System.out.println(\"The XOR of numbers from \" + l + \" to \" + r + \" is: \" + ans);\n    }\n}",
+        "python": "class Solution:\n    # Function to find the XOR \n    # of numbers from 1 to n\n    def XORtillN(self, n):\n        if n % 4 == 1:\n            return 1\n        if n % 4 == 2:\n            return n + 1\n        if n % 4 == 3:\n            return 0\n        return n\n\n    # Function to find the XOR \n    # of numbers from L to R \n    def findRangeXOR(self, l, r):\n        return self.XORtillN(l - 1) ^ self.XORtillN(r)\n\nif __name__ == \"__main__\":\n    l, r = 3, 5\n    \n    # Creating an instance of \n    # Solution class\n    sol = Solution()\n    \n    # Function call to get the\n    # XOR of numbers from L to R\n    ans = sol.findRangeXOR(l, r)\n    \n    print(f\"The XOR of numbers from {l} to {r} is: {ans}\")",
+        "javascript": "class Solution {\n    /* Function to find the XOR \n    of numbers from 1 to n */\n    XORtillN(n) {\n        if (n % 4 === 1) return 1;\n        if (n % 4 === 2) return n + 1;\n        if (n % 4 === 3) return 0;\n        return n;\n    }\n    \n    /* Function to find the XOR \n    of numbers from L to R */\n    findRangeXOR(l, r) {\n        return this.XORtillN(l - 1) ^ this.XORtillN(r);\n    }\n}\n\nconst l = 3, r = 5;\n\n/* Creating an instance of \nSolution class */\nconst sol = new Solution();\n\n/* Function call to get the\nXOR of numbers from L to R */\nconst ans = sol.findRangeXOR(l, r);\n\nconsole.log(`The XOR of numbers from ${l} to ${r} is: ${ans}`);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:06Z"
+}

@@ -1,0 +1,35 @@
+{
+  "problem_id": "905",
+  "problem_name": "Search in Linked List",
+  "step_no": 6,
+  "step_name": "Learn LinkedList [Single LL, Double LL, Medium, Hard Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn 1D LinkedList",
+  "difficulty": "Medium",
+  "youtube_url": "https://youtu.be/Nq7ok-OyEpg?si=WNXcIaXZ_B6cNq0s&t=2524",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/linked-list/search-an-element-in-a-linked-list",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/search-in-linked-list",
+  "problem_statement": "Given the head of a linked list and an integer value, find out whether the integer is present in the linked list or not. Return true if it is present, or else return false.",
+  "examples": [
+    "Input: 0->1->2, val = 2\nOutput: True\nExplanation: Since element 2 is present in the list, return true.\n\nInput: 12->5->8->7, val = 6 \nOutput: False\nExplanation: The list does not contain element 6. Therefore, return false."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "To check if an element is present in the linked list, traverse the entire list and at every node, check whether the data matches with the specified value. If a match is found, return true, otherwise, after traversing the entire list, return false.\n\n Initialise a temporary pointer to traverse the entire list. \nDuring the traversal, check if the data on the current node matches the specified value. If no match is found, move to the next node. \nContinue this traversal until either fast (or next node of fast) reaches null or both the pointers, slow and fast, meet. \n\nAt any moment, if the data of the node matches with the val, stop and return true.\n\n If the temporary pointer reaches null without finding the required value, return false.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Node structure for Linked List\nstruct Node {\n    int data;\n    Node* next;\n    Node(int val) : data(val), next(NULL) {}\n};\n\n// Solution class containing search function\nclass Solution {\npublic:\n    // Function to search for a value in LL\n    bool searchValue(Node* head, int key) {\n        // Pointer to traverse the list\n        Node* current = head;\n\n        // Traverse until end\n        while (current != NULL) {\n            // Check if current node matches key\n            if (current->data == key) {\n                // Return true if found\n                return true;\n            }\n            // Move to next node\n            current = current->next;\n        }\n\n        // Return false if not found\n        return false;\n    }\n};\n\n// Driver code\nint main() {\n    // Creating linked list: 10 -> 20 -> 30\n    Node* head = new Node(10);\n    head->next = new Node(20);\n    head->next->next = new Node(30);\n\n    Solution obj;\n\n    // Search for value\n    if (obj.searchValue(head, 20))\n        cout << \"Found\\n\";\n    else\n        cout << \"Not Found\\n\";\n\n    return 0;\n}",
+        "java": "// Node class for Linked List\nclass Node {\n    int data;\n    Node next;\n\n    Node(int val) {\n        data = val;\n        next = null;\n    }\n}\n\n// Solution class containing search function\nclass Solution {\n    // Function to search for a value in LL\n    public boolean searchValue(Node head, int key) {\n        // Pointer to traverse the list\n        Node current = head;\n\n        // Traverse until end\n        while (current != null) {\n            // Check if current node matches key\n            if (current.data == key) {\n                // Return true if found\n                return true;\n            }\n            // Move to next node\n            current = current.next;\n        }\n\n        // Return false if not found\n        return false;\n    }\n}\n\n// Driver class\npublic class Main {\n    public static void main(String[] args) {\n        // Creating linked list: 10 -> 20 -> 30\n        Node head = new Node(10);\n        head.next = new Node(20);\n        head.next.next = new Node(30);\n\n        Solution obj = new Solution();\n\n        // Search for value\n        if (obj.searchValue(head, 20))\n            System.out.println(\"Found\");\n        else\n            System.out.println(\"Not Found\");\n    }\n}",
+        "python": "# Node class for Linked List\nclass Node:\n    def __init__(self, val):\n        # Store data\n        self.data = val\n        # Store next pointer\n        self.next = None\n\n# Solution class containing search function\nclass Solution:\n    # Function to search for a value in LL\n    def searchValue(self, head, key):\n        # Pointer to traverse the list\n        current = head\n\n        # Traverse until end\n        while current is not None:\n            # Check if current node matches key\n            if current.data == key:\n                # Return True if found\n                return True\n            # Move to next node\n            current = current.next\n\n        # Return False if not found\n        return False\n\n# Driver code\nif __name__ == \"__main__\":\n    # Creating linked list: 10 -> 20 -> 30\n    head = Node(10)\n    head.next = Node(20)\n    head.next.next = Node(30)\n\n    obj = Solution()\n\n    # Search for value\n    if obj.searchValue(head, 20):\n        print(\"Found\")\n    else:\n        print(\"Not Found\")",
+        "javascript": "// Node class for Linked List\nclass Node {\n    constructor(val) {\n        // Store data\n        this.data = val;\n        // Store next pointer\n        this.next = null;\n    }\n}\n\n// Solution class containing search function\nclass Solution {\n    // Function to search for a value in LL\n    searchValue(head, key) {\n        // Pointer to traverse the list\n        let current = head;\n\n        // Traverse until end\n        while (current !== null) {\n            // Check if current node matches key\n            if (current.data === key) {\n                // Return true if found\n                return true;\n            }\n            // Move to next node\n            current = current.next;\n        }\n\n        // Return false if not found\n        return false;\n    }\n}\n\n// Driver code\nlet head = new Node(10);\nhead.next = new Node(20);\nhead.next.next = new Node(30);\n\nlet obj = new Solution();\n\n// Search for value\nif (obj.searchValue(head, 20))\n    console.log(\"Found\");\nelse\n    console.log(\"Not Found\");"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}

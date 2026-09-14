@@ -1,0 +1,33 @@
+{
+  "problem_id": "1237",
+  "problem_name": "Introduction to Singly LinkedList",
+  "step_no": 6,
+  "step_name": "Learn LinkedList [Single LL, Double LL, Medium, Hard Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn 1D LinkedList",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/Nq7ok-OyEpg?si=9PR1o8OPRWil7fRA",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/linked-list/linked-list-introduction",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-to-singly-linkedlist",
+  "problem_statement": "Imagine you are given a task where you have to maintain a data entry of cars entering a parking lot. Since the number of cars entering will be different and may change daily, constructing a fixed-sized data structure like an array might not be helpful. This is when linked lists come into the picture, which allows us to add and remove cars easily. Linked List is a linear data structure that can be visualized as a chain with different nodes connected, where each node represents a different element. The difference between arrays and linked lists is that, unlike arrays, the elements are not stored at a contiguous location.\n\nFor any element to be added in an array, we need the exact next memory location to be empty and it is impossible to guarantee that it is possible. Hence adding elements to an array is not possible after the initial assignment of size.",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Node class represents a node in the linked list\nclass Node {\npublic:\n    int data;     // Data value\n    Node* next;   // Pointer to next node\n\n    // Constructor with data and next\n    Node(int data1, Node* next1) {\n        data = data1;\n        next = next1;\n    }\n\n    // Constructor with only data\n    Node(int data1) {\n        data = data1;\n        next = nullptr;\n    }\n};\n\nint main() {\n    // Create an array\n    vector<int> arr = {2, 5, 8, 7};\n\n    // Create first node\n    Node* y = new Node(arr[0]);\n\n    // Print memory location of node\n    cout << y << '\\n';\n\n    // Print data stored in node\n    cout << y->data << '\\n';\n\n    return 0;\n}",
+        "java": "// Node class represents a node in the linked list\nclass Node {\n    int data;      // Data value\n    Node next;     // Pointer to next node\n\n    // Constructor with data and next\n    Node(int data1, Node next1) {\n        data = data1;\n        next = next1;\n    }\n\n    // Constructor with only data\n    Node(int data1) {\n        data = data1;\n        next = null;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Create an array\n        int[] arr = {2, 5, 8, 7};\n\n        // Create first node\n        Node y = new Node(arr[0]);\n\n        // Print memory reference of node\n        System.out.println(y);\n\n        // Print data stored in node\n        System.out.println(y.data);\n    }\n}",
+        "python": "# Node class represents a node in the linked list\nclass Node:\n    def __init__(self, data, next=None):\n        self.data = data      # Data value\n        self.next = next      # Pointer to next node\n\n# Driver code\nif __name__ == \"__main__\":\n    # Create an array\n    arr = [2, 5, 8, 7]\n\n    # Create first node\n    y = Node(arr[0])\n\n    # Print memory reference of node\n    print(y)\n\n    # Print data stored in node\n    print(y.data)",
+        "javascript": "// Node class represents a node in the linked list\nclass Node {\n    // Constructor with data and next\n    constructor(data, next = null) {\n        this.data = data;   // Data value\n        this.next = next;   // Pointer to next node\n    }\n}\n\n// Driver code\nfunction main() {\n    // Create an array\n    let arr = [2, 5, 8, 7];\n\n    // Create first node\n    let y = new Node(arr[0]);\n\n    // Print memory reference of node\n    console.log(y);\n\n    // Print data stored in node\n    console.log(y.data);\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}

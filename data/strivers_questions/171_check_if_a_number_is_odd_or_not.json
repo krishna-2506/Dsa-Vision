@@ -1,0 +1,35 @@
+{
+  "problem_id": "171",
+  "problem_name": "Check if a Number is Odd or Not",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn Bit Manipulation",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/nttpF8kwgd4?si=x9o8PsYaA2XVZ9rV",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/check-if-a-number-is-odd-or-not",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/check-if-a-number-is-odd-or-not",
+  "problem_statement": "Given a non-negative integer n, determine whether it is odd. Return true if the number is odd, otherwise return false.\n A number is odd if it is not divisible by 2 (i.e., n % 2 != 0).",
+  "examples": [
+    "Example 1:\nInput: n = 7\nOutput: true\nExplanation: 7 is not divisible by 2. Hence, it is odd.\n\nExample 2:\nInput: n = 10\nOutput: false\nExplanation: 10 is divisible by 2. Hence, it is not odd."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Odd numbers leave a remainder when divided by 2, while even numbers do not.\nUse this property to determine the parity of a number.\nIf there's a remainder, the number is odd; if not, it's even.\nThis is a simple and direct way to distinguish between even and odd values.",
+      "time_complexity": "O(1)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "Time Complexity: O(1) — The modulus operation takes constant time. \nSpace Complexity: O(1) — No extra space is required.",
+      "space_complexity_details": "Time Complexity: O(1) — The modulus operation takes constant time. \nSpace Complexity: O(1) — No extra space is required.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to check if a number is odd\n    bool isOdd(int n) {\n        return (n % 2 != 0);  // Return true if the number is odd, else false\n    }\n};\n\nint main() {\n    Solution sol;\n    int num = 7;\n\n    if (sol.isOdd(num)) {\n        cout << num << \" is odd.\" << endl;\n    } else {\n        cout << num << \" is not odd.\" << endl;\n    }\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Function to check if a number is odd\n    public boolean isOdd(int n) {\n        return n % 2 != 0;  // Return true if the number is odd, else false\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        int num = 7;\n\n        if (sol.isOdd(num)) {\n            System.out.println(num + \" is odd.\");\n        } else {\n            System.out.println(num + \" is not odd.\");\n        }\n    }\n}",
+        "python": "class Solution:\n    # Function to check if a number is odd\n    def isOdd(self, n):\n        return n % 2 != 0  # Return True if the number is odd, else False\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    num = 7\n\n    if sol.isOdd(num):\n        print(f\"{num} is odd.\")\n    else:\n        print(f\"{num} is not odd.\")",
+        "javascript": "class Solution {\n    // Function to check if a number is odd\n    isOdd(n) {\n        return n % 2 !== 0;  // Return true if the number is odd, else false\n    }\n}\n\n\nconst sol = new Solution();\nconst num = 7;\n\nif (sol.isOdd(num)) {\n    console.log(`${num} is odd.`);\n} else {\n    console.log(`${num} is not odd.`);\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:06Z"
+}

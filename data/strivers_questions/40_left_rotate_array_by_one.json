@@ -1,0 +1,49 @@
+{
+  "problem_id": "40",
+  "problem_name": "Left Rotate Array by One",
+  "step_no": 3,
+  "step_name": "Solve Problems on Arrays [Easy -> Medium -> Hard]",
+  "substep_no": 1,
+  "substep_name": "Easy",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/wvcQg43_V8U?t=61",
+  "leetcode_url": "https://leetcode.com/problems/rotate-array/",
+  "article_url": "https://takeuforward.org/data-structure/left-rotate-the-array-by-one/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/left-rotate-array-by-one",
+  "problem_statement": "Given an integer array nums, rotate the array to the left by one.\n\nNote: There is no need to return anything, just modify the given array.",
+  "examples": [
+    "Example 1: \nInput: nums = [1, 2, 3, 4, 5] \nOutput: [2, 3, 4, 5, 1] \nExplanation: Initially, nums = [1, 2, 3, 4, 5] \nRotating once to the left results in nums = [2, 3, 4, 5, 1].\n\nExample 2: \nInput: nums = [-1, 0, 3, 6] \nOutput: [0, 3, 6, -1] \nExplanation: Initially, nums = [-1, 0, 3, 6] \nRotating once to the left results in nums = [0, 3, 6, -1]."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force",
+      "algorithm": "Create a dummy array of the same length as the original array.\nShift all elements in the original array toward the left, copying them into the dummy array.\nAfter shifting, place the value of the 0th index of the original array into the last element of the dummy array.\nFinally, print the dummy array which now contains the left-shifted elements with the 0th element moved to the last position.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), where N is the size of the array. This is because we traverse the array once to shift the elements.\nSpace Complexity: O(N), as we are using a temporary array of the same size as the input array to store the shifted elements.",
+      "space_complexity_details": "Time Complexity: O(N), where N is the size of the array. This is because we traverse the array once to shift the elements.\nSpace Complexity: O(N), as we are using a temporary array of the same size as the input array to store the shifted elements.",
+      "codes": {
+        "cpp": "#include<bits/stdc++.h>\nusing namespace std;\n\n// Function to solve and shift array elements left by one position\nvoid solve(int arr[], int n) {\n    int temp[n];  // Create a temporary array to store the shifted elements\n\n    // Shift the elements to the left by one position\n    for (int i = 1; i < n; i++) {\n        temp[i - 1] = arr[i];\n    }\n    temp[n - 1] = arr[0];  // The first element moves to the last position\n\n    // Print the rotated array\n    for (int i = 0; i < n; i++) {\n        cout << temp[i] << \" \";  // Print each element of the rotated array\n    }\n    cout << endl;\n}\n\nint main() {\n    int n = 5;  // Size of the array\n    int arr[] = {1, 2, 3, 4, 5};  // Original array\n\n    solve(arr, n);  // Call the solve function to rotate and print the result\n\n    return 0;\n}",
+        "java": "// Class containing the solve method\nclass Solution {\n\n    // Function to solve and shift array elements left by one position\n    public static void solve(int[] arr, int n) {\n        int[] temp = new int[n];  // Temporary array to store shifted elements\n\n        // Shift elements to the left by one position\n        for (int i = 1; i < n; i++) {\n            temp[i - 1] = arr[i];\n        }\n        temp[n - 1] = arr[0];  // First element moves to the last position\n\n        // Print the rotated array\n        for (int i = 0; i < n; i++) {\n            System.out.print(temp[i] + \" \");\n        }\n        System.out.println();\n    }\n}\n\n// Main class\npublic class Main {\n    public static void main(String[] args) {\n        int n = 5;  // Size of the array\n        int[] arr = {1, 2, 3, 4, 5};  // Original array\n\n        Solution.solve(arr, n);  // Call the solve function from Solution class\n    }\n}",
+        "python": "# Function to solve and shift array elements left by one position\ndef solve(arr, n):\n    temp = [0] * n  # Create a temporary array to store the shifted elements\n\n    # Shift the elements to the left by one position\n    for i in range(1, n):\n        temp[i - 1] = arr[i]\n    temp[n - 1] = arr[0]  # The first element moves to the last position\n\n    # Print the rotated array\n    for num in temp:\n        print(num, end=\" \")  # Print each element of the rotated array\n    print()\n\n# Main function\nif __name__ == \"__main__\":\n    n = 5  # Size of the array\n    arr = [1, 2, 3, 4, 5]  # Original array\n\n    solve(arr, n)  # Call the solve function to rotate and print the result",
+        "javascript": "// Function to solve and shift array elements left by one position\nfunction solve(arr, n) {\n    let temp = new Array(n);  // Create a temporary array to store the shifted elements\n\n    // Shift the elements to the left by one position\n    for (let i = 1; i < n; i++) {\n        temp[i - 1] = arr[i];\n    }\n    temp[n - 1] = arr[0];  // The first element moves to the last position\n\n    // Print the rotated array\n    for (let i = 0; i < n; i++) {\n        process.stdout.write(temp[i] + \" \");  // Print each element of the rotated array\n    }\n    console.log();\n}\n\n// Main function\nfunction main() {\n    let n = 5;  // Size of the array\n    let arr = [1, 2, 3, 4, 5];  // Original array\n\n    solve(arr, n);  // Call the solve function to rotate and print the result\n}\n\n// Call the main function\nmain();"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "Store the value of the first element of the array in a temporary variable.\nIterate through the array starting from the second element.\nShift each element one position to the left by assigning the current element to the position of its predecessor.\nAfter completing the iteration, place the value from the temporary variable into the last position of the array.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), where N is the size of the input array. This is because we traverse the array once to shift the elements.\nSpace Complexity: O(1), as we are using only a constant amount of extra space for the temporary variable.",
+      "space_complexity_details": "Time Complexity: O(N), where N is the size of the input array. This is because we traverse the array once to shift the elements.\nSpace Complexity: O(1), as we are using only a constant amount of extra space for the temporary variable.",
+      "codes": {
+        "cpp": "#include<bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    void rotateArrayByOne(vector<int>& nums) {\n        // Store the first element in a temporary variable\n        int temp = nums[0];\n        \n        // Shift elements to the left\n        for (int i = 1; i < nums.size(); ++i) {\n            nums[i - 1] = nums[i];\n        }\n\n        // Place the first element at the end\n        nums[nums.size() - 1] = temp;\n    }\n};\n\nint main() {\n    Solution solution;\n    vector<int> nums = {1, 2, 3, 4, 5};\n\n    solution.rotateArrayByOne(nums);\n\n    for (int num : nums) {\n        cout << num << \" \"; // Output the rotated array\n    }\n\n    return 0;\n}",
+        "java": "class Solution {\n    public void rotateArrayByOne(int[] nums) {\n        // Store the first element in a temporary variable\n        int temp = nums[0];\n        \n        // Shift elements to the left\n        for (int i = 1; i < nums.length; i++) {\n            nums[i - 1] = nums[i];\n        }\n\n        // Place the first element at the end\n        nums[nums.length - 1] = temp;\n    }\n}\n\nclass Main {\n    public static void main(String[] args) {\n        Solution solution = new Solution();\n        int[] nums = {1, 2, 3, 4, 5};\n\n        solution.rotateArrayByOne(nums);\n\n        // Output the rotated array\n        for (int num : nums) {\n            System.out.print(num + \" \");\n        }\n    }\n}",
+        "python": "class Solution:\n    def rotateArrayByOne(self, nums):\n        # Store the first element in a temporary variable\n        temp = nums[0]\n        \n        # Shift elements to the left\n        for i in range(1, len(nums)):\n            nums[i - 1] = nums[i]\n        \n        # Place the first element at the end\n        nums[-1] = temp\n\n# Main method for testing\nif __name__ == \"__main__\":\n    solution = Solution()\n    nums = [1, 2, 3, 4, 5]\n    \n    solution.rotateArrayByOne(nums)\n    \n    print(nums)  # Output the rotated array",
+        "javascript": "class Solution {\n    rotateArrayByOne(nums) {\n        // Store the first element in a temporary variable\n        const temp = nums[0];\n        \n        // Shift elements to the left\n        for (let i = 1; i < nums.length; i++) {\n            nums[i - 1] = nums[i];\n        }\n\n        // Place the first element at the end\n        nums[nums.length - 1] = temp;\n    }\n}\n\n// Main method for testing\nconst solution = new Solution();\nconst nums = [1, 2, 3, 4, 5];\n\nsolution.rotateArrayByOne(nums);\n\nconsole.log(nums);  // Output the rotated array"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:55Z"
+}

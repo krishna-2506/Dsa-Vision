@@ -1,0 +1,35 @@
+{
+  "problem_id": "901",
+  "problem_name": "Reverse a Stack",
+  "step_no": 7,
+  "step_name": "Recursion [PatternWise]",
+  "substep_no": 1,
+  "substep_name": "Get a Strong Hold",
+  "difficulty": "Medium",
+  "youtube_url": null,
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/reverse-a-stack-using-recursion",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/reverse-a-stack",
+  "problem_statement": "You are given a stack of integers. Your task is to reverse the stack using recursion. You may only use standard stack operations (push, pop, top/peek, isEmpty). You are not allowed to use any loop constructs or additional data structures like arrays or queues.\n\nYour solution must modify the input stack in-place to reverse the order of its elements.",
+  "examples": [
+    "Example 1:\nInput: stack = [4, 1, 3, 2] \nOutput: [2, 3, 1, 4]\n\nExample 2:\nInput: stack = [10, 20, -5, 7, 15] \nOutput: [15, 7, -5, 20, 10]"
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Define a helper function insertAtBottom to insert a value at the bottom of the stack.\nIf the stack is empty, push the value.\nIf the stack is not empty, pop the top element, recursively call insertAtBottom, and push the popped element back.\nDefine the main function reverseStack:\nIf the stack is empty, return.\nPop the top element, recursively reverse the rest of the stack.\nUse insertAtBottom to insert the popped element at the bottom of the stack.",
+      "time_complexity": "O(n²)",
+      "space_complexity": "O(n²)",
+      "time_complexity_details": "Time Complexity: O(n²), as each element is popped and inserted at the bottom (O(n) per element).\nSpace Complexity: O(n), as only the recursion stack is used.",
+      "space_complexity_details": "Time Complexity: O(n²), as each element is popped and inserted at the bottom (O(n) per element).\nSpace Complexity: O(n), as only the recursion stack is used.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to insert an element at the bottom of the stack\nvoid insertAtBottom(stack<int> &st, int val) {\n    // If stack is empty, push the value\n    if (st.empty()) {\n        st.push(val);\n        return;\n    }\n\n    // Pop the top element\n    int topVal = st.top();\n    st.pop();\n\n    // Recurse for the rest of the stack\n    insertAtBottom(st, val);\n\n    // Push the popped element back\n    st.push(topVal);\n}\n\n// Function to reverse the stack\nvoid reverseStack(stack<int> &st) {\n    // Base case: If stack is empty, return\n    if (st.empty()) return;\n\n    // Pop the top element\n    int topVal = st.top();\n    st.pop();\n\n    // Recursively reverse the remaining stack\n    reverseStack(st);\n\n    // Insert the popped element at the bottom\n    insertAtBottom(st, topVal);\n}\n\nint main() {\n    // Create a sample stack\n    stack<int> st;\n    st.push(4);\n    st.push(1);\n    st.push(3);\n    st.push(2);\n\n    // Reverse the stack\n    reverseStack(st);\n\n    // Print the reversed stack\n    cout << \"Reversed Stack: \";\n    while (!st.empty()) {\n        cout << st.top() << \" \";\n        st.pop();\n    }\n    cout << endl;\n\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    // Function to insert an element at the bottom of the stack\n    public static void insertAtBottom(Stack<Integer> st, int val) {\n        // If stack is empty, push the value\n        if (st.isEmpty()) {\n            st.push(val);\n            return;\n        }\n\n        // Pop the top element\n        int topVal = st.pop();\n\n        // Recurse for the rest of the stack\n        insertAtBottom(st, val);\n\n        // Push the popped element back\n        st.push(topVal);\n    }\n\n    // Function to reverse the stack\n    public static void reverseStack(Stack<Integer> st) {\n        // Base case: If stack is empty, return\n        if (st.isEmpty()) return;\n\n        // Pop the top element\n        int topVal = st.pop();\n\n        // Recursively reverse the remaining stack\n        reverseStack(st);\n\n        // Insert the popped element at the bottom\n        insertAtBottom(st, topVal);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Create a sample stack\n        Stack<Integer> st = new Stack<>();\n        st.push(4);\n        st.push(1);\n        st.push(3);\n        st.push(2);\n\n        // Reverse the stack\n        Solution.reverseStack(st);\n\n        // Print the reversed stack\n        System.out.print(\"Reversed Stack: \");\n        while (!st.isEmpty()) {\n            System.out.print(st.pop() + \" \");\n        }\n        System.out.println();\n    }\n}",
+        "python": "# Function to insert element at the bottom of the stack\ndef insert_at_bottom(stack, val):\n    # If stack is empty, append the value\n    if not stack:\n        stack.append(val)\n        return\n\n    # Pop the top element\n    top_val = stack.pop()\n\n    # Recurse for the rest of the stack\n    insert_at_bottom(stack, val)\n\n    # Push the popped element back\n    stack.append(top_val)\n\n# Function to reverse the stack\ndef reverse_stack(stack):\n    # Base case: If stack is empty, return\n    if not stack:\n        return\n\n    # Pop the top element\n    top_val = stack.pop()\n\n    # Recursively reverse the remaining stack\n    reverse_stack(stack)\n\n    # Insert the popped element at the bottom\n    insert_at_bottom(stack, top_val)\n\ndef main():\n    # Create a sample stack\n    stack = [4, 1, 3, 2]\n\n    # Reverse the stack\n    reverse_stack(stack)\n\n    # Print the reversed stack\n    print(\"Reversed Stack:\", stack)\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "// Function to insert element at the bottom of the stack\nfunction insertAtBottom(stack, val) {\n    // If stack is empty, push the value\n    if (stack.length === 0) {\n        stack.push(val);\n        return;\n    }\n\n    // Pop the top element\n    let topVal = stack.pop();\n\n    // Recurse for the rest of the stack\n    insertAtBottom(stack, val);\n\n    // Push the popped element back\n    stack.push(topVal);\n}\n\n// Function to reverse the stack\nfunction reverseStack(stack) {\n    // Base case: If stack is empty, return\n    if (stack.length === 0) return;\n\n    // Pop the top element\n    let topVal = stack.pop();\n\n    // Recursively reverse the remaining stack\n    reverseStack(stack);\n\n    // Insert the popped element at the bottom\n    insertAtBottom(stack, topVal);\n}\n\nfunction main() {\n    // Create a sample stack\n    let stack = [4, 1, 3, 2];\n\n    // Reverse the stack\n    reverseStack(stack);\n\n    // Print the reversed stack\n    console.log(\"Reversed Stack:\", stack);\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:04Z"
+}

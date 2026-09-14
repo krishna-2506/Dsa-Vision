@@ -1,0 +1,35 @@
+{
+  "problem_id": "141",
+  "problem_name": "Minimum Bit Flips to Convert Number",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 2,
+  "substep_name": "Interview Problems",
+  "difficulty": "Medium",
+  "youtube_url": "https://youtu.be/OOdrmcfZXd8?si=rnkRVz1UiVBKWC69",
+  "leetcode_url": "https://leetcode.com/problems/minimum-bit-flips-to-convert-number/",
+  "article_url": "https://takeuforward.org/data-structure/count-number-of-bits-to-be-flipped-to-convert-a-to-b",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/minimum-bit-flips-to-convert-number",
+  "problem_statement": "Given two integers start and goal. Flip the minimum number of bits of start integer to convert it into goal integer.\n A bits flip in the number val is to choose any bit in binary representation of val and flipping it from either 0 to 1 or 1 to 0.",
+  "examples": [
+    "Example 1:\nInput : start = 10 , goal = 7\nOutput : 3\nExplanation : The binary representation of 10 is \"1010\". The binary representation of 7 is \"111\". If we flip the underlined bits in binary representation of 10 then we will obtain our goal.\n\nExample 2 :\nInput : start = 3 , goal = 4\nOutput : 3\nExplanation : The binary representation of 3 is \"011\".The binary representation of 4 is \"100\". So if we flip all the three bits of 3 then we will reach our goal number."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "To find how many bits differ between two numbers, compare them bit by bit.\nXOR highlights the positions where the two numbers have different bits.\nEach set bit in the XOR result represents a required flip to match the numbers.\nCount the number of set bits in the XOR result to get the total flips needed.\nThis provides the minimum number of bit changes to convert one number into the other.",
+      "time_complexity": "O(1)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "Time Complexity: O(1), The XOR operation between two integers is performed in constant time, O(1). The for loop iterates over a fixed number of bits (32 bits for a standard integer), which is as good as O(1).\nSpace Complexity: O(1) – Using a couple of variables i.e., constant space.",
+      "space_complexity_details": "Time Complexity: O(1), The XOR operation between two integers is performed in constant time, O(1). The for loop iterates over a fixed number of bits (32 bits for a standard integer), which is as good as O(1).\nSpace Complexity: O(1) – Using a couple of variables i.e., constant space.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    /* Function to get the minimum\n     bit flips to convert number */\n    int minBitsFlip(int start, int goal) {\n        \n        /* Variable to store bits that\n        are different in both numbers */\n        int num = start ^ goal;\n        \n        /* Variable to count \n        number of set bits */\n        int count = 0;\n\n        for(int i = 0; i < 32; i++) {\n            /* Update count if the \n            rightmost bit is set */\n            count += (num & 1); \n            \n            /* Shift the number every \n            time by 1 place */\n            num = num >> 1;\n        }\n        return count;\n    }\n};\n\nint main() {\n    int start = 10, goal = 7;\n    \n    /* Creating an instance of \n    Solution class */\n    Solution sol; \n    \n    /* Function call to get the minimum\n     bit flips to convert number */\n    int ans = sol.minBitsFlip(start, goal);\n    \n    cout << \"The minimum bit flips to convert number is: \" << ans;\n    \n    return 0;\n}",
+        "java": "class Solution {\n    /* Function to get the minimum\n     bit flips to convert number */\n    public int minBitsFlip(int start, int goal) {\n        \n        /* Variable to store bits that\n        are different in both numbers */\n        int num = start ^ goal;\n        \n        /* Variable to count \n        number of set bits */\n        int count = 0;\n\n        for (int i = 0; i < 32; i++) {\n            /* Update count if the \n            rightmost bit is set */\n            count += (num & 1); \n            \n            /* Shift the number every \n            time by 1 place */\n            num = num >> 1;\n        }\n        return count;\n    }\n\n    public static void main(String[] args) {\n        int start = 10, goal = 7;\n        \n        /* Creating an instance of \n        Solution class */\n        Solution sol = new Solution(); \n        \n        /* Function call to get the minimum\n         bit flips to convert number */\n        int ans = sol.minBitsFlip(start, goal);\n        \n        System.out.println(\"The minimum bit flips to convert number is: \" + ans);\n    }\n}",
+        "python": "class Solution:\n    # Function to get the minimum \n    # bit flips to convert number\n    def minBitsFlip(self, start, goal):\n        \n        # Variable to store bits that \n        # are different in both numbers\n        num = start ^ goal\n        \n        # Variable to count \n        # number of set bits\n        count = 0\n\n        for i in range(32):\n            # Update count if the \n            # rightmost bit is set\n            count += (num & 1)\n            \n            # Shift the number every\n            # time by 1 place\n            num = num >> 1\n        \n        return count\n\n# Main function\nif __name__ == \"__main__\":\n    start, goal = 10, 7\n    \n    # Creating an instance of Solution class\n    sol = Solution()\n    \n    # Function call to get the minimum \n    # bit flips to convert number\n    ans = sol.minBitsFlip(start, goal)\n    \n    print(\"The minimum bit flips to convert number is:\", ans)",
+        "javascript": "class Solution {\n    /* Function to get the minimum\n     bit flips to convert number */\n    minBitsFlip(start, goal) {\n        \n        /* Variable to store bits that\n        are different in both numbers */\n        let num = start ^ goal;\n        \n        /* Variable to count \n        number of set bits */\n        let count = 0;\n\n        for (let i = 0; i < 32; i++) {\n            /* Update count if the \n            rightmost bit is set */\n            count += (num & 1);\n            \n            /* Shift the number every \n            time by 1 place */\n            num = num >> 1;\n        }\n        return count;\n    }\n}\n\n// Main function\nconst start = 10, goal = 7;\n\n/* Creating an instance of \nSolution class */\nconst sol = new Solution();\n\n/* Function call to get the minimum\n bit flips to convert number */\nconst ans = sol.minBitsFlip(start, goal);\n\nconsole.log(\"The minimum bit flips to convert number is:\", ans);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:06Z"
+}

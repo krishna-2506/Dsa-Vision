@@ -1,0 +1,18 @@
+{
+  "problem_id": "1217",
+  "problem_name": "Java Collections",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 4,
+  "substep_name": "Learn STL/Java-Collections or similar thing in your language",
+  "difficulty": "Easy",
+  "youtube_url": null,
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/java-collections",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/java-collections",
+  "problem_statement": "When you start programming in Java, the first tool you probably use to store multiple values is an array. Arrays are easy to understand: they hold a fixed number of elements of the same type, and you can access them by index. But they have a big limitation their size is fixed once created. If you suddenly need to store more elements than the array’s capacity, you’re stuck. You’d have to create a new array, copy all the old elements into it, and then add the new ones. This process is not just tedious but also error-prone and inefficient. Arrays also don’t provide built-in methods for common operations like searching, sorting, or removing elements.\n\nThis is exactly why Java Collections Framework (JCF) exists. The JCF is part of the java.util package and provides a set of ready-to-use classes and interfaces for storing and manipulating groups of objects. Collections are dynamic — meaning they can grow or shrink in size and they come with built-in methods for common operations. They also follow a consistent design, which means once you learn how to use one collection, you can quickly adapt to others.\n\nAlongside these is the Map interface, which isn’t technically a subtype of Collection but is still part of the framework. A Map stores data in key-value pairs, ensuring that each key is unique.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:23:52Z"
+}

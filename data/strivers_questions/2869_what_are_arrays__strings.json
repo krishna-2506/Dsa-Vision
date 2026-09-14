@@ -1,0 +1,18 @@
+{
+  "problem_id": "2869",
+  "problem_name": "What are arrays, strings?",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 1,
+  "substep_name": "Things to Know in C++/Java/Python or any language",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/EAR7De6Goz4?t=2415",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/what-are-arrays-strings",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/cpp",
+  "problem_statement": "",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:23:00Z"
+}

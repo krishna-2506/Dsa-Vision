@@ -1,0 +1,33 @@
+{
+  "problem_id": "1195",
+  "problem_name": "Introduction to DP",
+  "step_no": 16,
+  "step_name": "Dynamic Programming [Patterns and Problems]",
+  "substep_no": 1,
+  "substep_name": "Introduction to DP",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/tyB0ztf0DNY",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/dynamic-programming-introduction/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-to-dp",
+  "problem_statement": "Dynamic Programming can be described as storing answers to various sub-problems to be used later whenever required to solve the main problem.\n\nThe two common dynamic programming approaches are:",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    int fib(int n) {\n        // If n is 0 return 0\n        if(n == 0) return 0;\n        // If n is 1 return 1\n        if(n == 1) return 1;\n\n        // prev2 stores fib(n-2)\n        int prev2 = 0;\n        // prev stores fib(n-1)\n        int prev = 1;\n        // curr stores current fib\n        int curr;\n\n        // Loop from 2 to n\n        for(int i = 2; i <= n; i++) {\n            // Calculate current fib\n            curr = prev + prev2;\n            // Update prev2\n            prev2 = prev;\n            // Update prev\n            prev = curr;\n        }\n        // Return final answer\n        return prev;\n    }\n};\n\nint main() {\n    Solution s;\n    int n = 10;\n    cout << s.fib(n);\n    return 0;\n}",
+        "java": "class Solution {\n    public int fib(int n) {\n        // If n is 0 return 0\n        if(n == 0) return 0;\n        // If n is 1 return 1\n        if(n == 1) return 1;\n\n        // prev2 stores fib(n-2)\n        int prev2 = 0;\n        // prev stores fib(n-1)\n        int prev = 1;\n        // curr stores current fib\n        int curr = 0;\n\n        // Loop from 2 to n\n        for(int i = 2; i <= n; i++) {\n            // Calculate current fib\n            curr = prev + prev2;\n            // Update prev2\n            prev2 = prev;\n            // Update prev\n            prev = curr;\n        }\n        // Return final answer\n        return prev;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution s = new Solution();\n        int n = 10;\n        System.out.println(s.fib(n));\n    }\n}",
+        "python": "class Solution:\n    def fib(self, n: int) -> int:\n        # If n is 0 return 0\n        if n == 0:\n            return 0\n        # If n is 1 return 1\n        if n == 1:\n            return 1\n\n        # prev2 stores fib(n-2)\n        prev2 = 0\n        # prev stores fib(n-1)\n        prev = 1\n\n        # Loop from 2 to n\n        for i in range(2, n + 1):\n            # Calculate current fib\n            curr = prev + prev2\n            # Update prev2\n            prev2 = prev\n            # Update prev\n            prev = curr\n\n        # Return final answer\n        return prev\n\ndef main():\n    s = Solution()\n    n = 10\n    print(s.fib(n))\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "class Solution {\n    fib(n) {\n        // If n is 0 return 0\n        if (n === 0) return 0;\n        // If n is 1 return 1\n        if (n === 1) return 1;\n\n        // prev2 stores fib(n-2)\n        let prev2 = 0;\n        // prev stores fib(n-1)\n        let prev = 1;\n        // curr stores current fib\n        let curr;\n\n        // Loop from 2 to n\n        for (let i = 2; i <= n; i++) {\n            // Calculate current fib\n            curr = prev + prev2;\n            // Update prev2\n            prev2 = prev;\n            // Update prev\n            prev = curr;\n        }\n        // Return final answer\n        return prev;\n    }\n}\n\nfunction main() {\n    const s = new Solution();\n    const n = 10;\n    console.log(s.fib(n));\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:21Z"
+}

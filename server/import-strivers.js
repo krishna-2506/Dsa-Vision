@@ -309,6 +309,6 @@ export function importStriversSheet() {
 }
 
 // Run directly if executed as script
-if (process.argv[1]?.includes('import-strivers')) {
+if (process.argv[1]?.endsWith('import-strivers.js')) {
   importStriversSheet();
 }

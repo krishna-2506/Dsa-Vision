@@ -22,7 +22,7 @@ const DLLNode = ({ node, isNew }) => {
       </div>
       
       {/* Main Node Body */}
-      <div className={`flex bg-[#1c2529] border ${isNew ? 'border-[#5fb3a6] shadow-[0_0_15px_rgba(95,179,166,0.3)]' : 'border-[#eef1ea]/30'} rounded-sm overflow-hidden w-48 h-20`} style={{ filter: 'url(#rough)' }}>
+      <div className={`flex bg-[#1c2529] border ${isNew ? 'border-2 border-[#5fb3a6]' : 'border-[#eef1ea]/30'} rounded-sm overflow-hidden w-48 h-20`} style={{ filter: 'url(#rough)' }}>
         
         {/* Prev Pointer Block */}
         <div className={`flex-1 flex flex-col border-r border-[#eef1ea]/20 text-[10px] items-center justify-center ${node.prev === 'NULL' ? 'bg-red-900/10' : 'bg-black/20'}`}>

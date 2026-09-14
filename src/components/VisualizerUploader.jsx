@@ -20,7 +20,7 @@ export default function VisualizerUploader({
   const [statusMsg, setStatusMsg] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
-  // AI Prompt — Chalkboard theme + multi-language (C++/Java/Python) per tier
+  // AI Prompt — Apple HIG theme + deep educational explanation + multi-language per tier
   const geminiPrompt = `Act as an expert algorithm educator and React visualization engineer for AlgoVision Studio.
 Create an interactive, animated React visualizer component for this DSA problem:
 
@@ -39,84 +39,91 @@ ${solutions.cpp || '// Provide full C++ solution here'}
 \`\`\`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ALGOVISION STUDIO ARCHITECTURE — READ CAREFULLY
+1. ALGOVISION STUDIO ARCHITECTURE & CONTEXT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 The Studio already provides:
   • Approach tier tabs (Intuitive / Better / Optimal) above the stage
-  • Split-screen: your canvas LEFT, syntax-highlighted code viewer RIGHT
+  • Split-screen layout: your canvas LEFT, syntax-highlighted code viewer RIGHT
   • Transport controls: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x
-  • Step title above your canvas and Prev/Next navigation
+  • Step title and Prev/Next navigation
+  • Educational Explanation & Live Variables Inspector Panel below the stage
 
-DO NOT render any of: card wrappers, "Step X of Y" counters, prev/next buttons,
-language tabs, or copy-code buttons. Just render the visualization canvas content.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-VISUAL STYLE — CHALKBOARD / WHITEBOARD AESTHETIC
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-PALETTE (use exact hex values):
-  Stage background:     #12181a
-  Node/box fill:        #1c2529
-  Divider lines:        rgba(238,241,234,0.09)
-  Primary text:         #eef1ea
-  Dim text:             #8fa09a
-  Faint index labels:   #5f6f6a
-  Amber / active:       #e8a33d
-  Teal  / secondary:    #5fb3a6
-  Easy green: #7cb473 | Hard red: #e06c75
-
-SVG DRAWING RULES:
-  Array/node boxes:
-    fill="#1c2529" stroke="#5f6f6a" strokeWidth=1.4 rx=3
-    filter="url(#rough)"  ← already defined in the page's HTML root
-
-  Active element (curr/selected):
-    Amber glow ring: stroke="#e8a33d" strokeWidth=2.2 rx=6 (+5px each side)
-
-  Previous/secondary element:
-    Teal dashed ring: stroke="#5fb3a6" strokeWidth=1.6 strokeDasharray="3 4"
-
-  Value inside box:
-    font-family="IBM Plex Mono, monospace" fontSize=16 fontWeight=500 fill="#eef1ea"
-
-  Index label below:
-    font-family="IBM Plex Mono, monospace" fontSize=10.5 fill="#5f6f6a"
-
-  Pointer labels (curr, prev, L, R, head, slow, fast):
-    font-family="Kalam, cursive" fontSize=14
-    fill=#e8a33d (active/curr — place ABOVE) or #5fb3a6 (secondary/prev — place BELOW)
-
-  Arrows: stroke="#5f6f6a" strokeWidth=1.2 with arrowhead marker
-  Linked-List nodes: 3-compartment (PREV | VAL | NEXT) + hex address tags above
-  Tree: circles fill="#1c2529" stroke="#5f6f6a"
-
-STATUS HUD — render below canvas:
-  <div className="status-line"><span className="prev-b">prev = 12</span>, <b>curr = 35</b></div>
-
-EXPLANATION — render below status:
-  <p className="explain">35 beats curr, so <span className="note">prev</span> inherits old value.</p>
+DO NOT render: outer card frames, "Step X of Y" counters, prev/next buttons, language tabs, or copy-code buttons. Just render the visualization canvas content.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MULTI-LANGUAGE CODE — 3 LANGUAGES × 3 TIERS
+2. AESTHETIC: APPLE macOS & HIG DESIGN SYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The visualizer must feel like an Apple native product (macOS Sequoia / iOS).
+Keep the visualizer theme and the site theme IDENTICAL:
 
-For EACH approach tier, provide COMPLETE solutions in:
-  • C++    (always required, full function)
-  • Java   (required — full class Solution { public ... } wrapper)
-  • Python (required — def with type hints)
+CSS VARIABLES (Mandatory — automatically supports Light & Dark themes):
+  Canvas / Stage bg:    var(--board)
+  Card / Node fill:     var(--board-raised)
+  Subtle container:     var(--board-raised-2)
+  Hairline border:      var(--line)
+  Primary text:         var(--chalk)
+  Secondary / dim text: var(--chalk-dim)
+  Faint index text:     var(--chalk-faint)
 
-Add educational line-by-line comments explaining WHAT and WHY.
-Do NOT write "..." or stubs — write full working code.
+AUTHENTIC APPLE ACCENT PALETTE:
+  Active Focus / Pointers:  var(--indigo) (#0a84ff - Apple System Blue)
+  Comparison / Scanning:    var(--amber)  (#ff9f0a - Apple System Orange)
+  Success / Matched / Done: var(--easy)   (#30d158 - Apple System Mint/Green)
+  Conflict / Eliminated:    var(--hard)   (#ff453a - Apple System Coral Red)
+  Secondary Pointer / Aux:  var(--teal)   (#64d2ff - Apple System Cyan)
+  Special Structure / Hash: var(--purple) (#bf5af2 - Apple System Purple)
 
-CRITICAL — codeLine sync:
-  Each step needs codeLine: N = the EXACT line number in C++ (count from line 1).
-  The code viewer highlights that line live as the animation plays.
+GEOMETRY & STYLING RULES:
+  • Rounded Squircles: Use rx="10" or rx="8" for array/node boxes.
+  • Glassmorphism: Frosted translucent fills, subtle drop shadows, and delicate 1px specular borders.
+  • Floating Pointers: Render pointers as floating Apple rounded pill badges with indicator arrows (↓ top, ↑ bottom), NOT hand-drawn scratchy text.
+  • Typography: font-family="'SF Mono', 'JetBrains Mono', monospace" for data values; "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" for badges.
+  • Prohibited: Do NOT use rough chalkboard filters (filter="url(#rough)"), dark chalkboard slate (#12181a), or Kalam cursive font.
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. DEEP EDUCATIONAL EXPLANATION & PEDAGOGY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Every step object in the \`steps\` array MUST be rich, intuitive, and teach the algorithm with senior clarity:
+
+Each step MUST contain:
+  • title: Concise action title (e.g. "2. Compare nums[left] (2) + nums[right] (23) == 25")
+  • phase: Semantic phase badge (e.g. 'INITIALIZING' | 'SCANNING' | 'COMPARING' | 'SWAPPING' | 'PARTITIONING' | 'MATCH_FOUND' | 'PRUNING')
+  • explain: 2-3 clear educational sentences explaining WHAT happened, WHY this step is taken, and how it progresses the algorithm.
+  • intuition: A "Why this works / Key takeaway" note explaining how this decision prunes candidates or maintains the loop invariant.
+  • variables: An object of all live pointers and accumulators (e.g. { left: 0, right: 5, sum: 25, target: 26 })
+  • codeLine: EXACT 1-indexed line number in the C++ solution corresponding to this execution step!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. SUPERIOR ANIMATIONS & DYNAMIC MOTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Fluid transitions on moving elements: CSS transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1).
+  • Distinct Visual States:
+      - Unprocessed / Inactive: Subdued frosted opacity (0.5).
+      - Scanning / In-Focus: Apple System Blue glow halo with scale(1.03).
+      - Comparing: Apple Orange dual-focus with comparison badge or connecting arc.
+      - Matched / Solved: Apple Mint emerald glow halo with soft spring pop.
+      - Eliminated / Discarded: Muted strike or dimming.
+  • Data Structure Primitives:
+      - Arrays: Sleek squircle cells with indices below and floating pill pointers above.
+      - Linked Lists: Apple 3-compartment squircle nodes (prev | val | next) + bezier arrow curves.
+      - Trees: Apple frosted glass circles with glowing branch lines.
+      - DP Matrices: Heatmap grid with glowing active cell and reference source arrows.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. MULTI-LANGUAGE SOLUTIONS (3 TIERS × 3 LANGUAGES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For EACH approach tier (Intuitive, Better, Optimal), provide complete working code:
+  • C++    (Full function with line comments, codeLine sync basis)
+  • Java   (Full class Solution { public ... } wrapper)
+  • Python (Full function with type hints)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. COMPLETE COMPONENT SCAFFOLD (DROP-IN READY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`jsx
 import React, { useMemo } from 'react';
-// Primitives: ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView
-// import ArrayView from '../components/primitives/ArrayView';
+// Available primitives: ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView
+import ArrayView from '../components/primitives/ArrayView';
 
 export const approaches = {
   intuitive: {
@@ -126,42 +133,33 @@ export const approaches = {
     steps: [
       {
         title: '1. Initialize pointers',
-        codeLine: 3,          // exact C++ line number
+        phase: 'INITIALIZING',
+        codeLine: 3,
         variables: { i: 0, j: 1 },
-        status: '<span class="prev-b">i = 0</span>, <b>j = 1</b>',
-        explain: 'Start at index 0...',
+        explain: 'Start at index 0 and inspect all pairs sequentially.',
+        intuition: 'Brute force checks every possible combination to guarantee finding a solution.',
         activeIndex: 0,
+        compareIndex: 1,
       }
     ],
     solutions: {
-      cpp: \`// C++ Brute Force — O(N²)
-int solution(int arr[], int n) {   // line 1
-  // ...
-}\`,
-      java: \`// Java Brute Force — O(N²)
-class Solution {
-  public int solution(int[] arr) {
-    // ...
-  }
-}\`,
-      python: \`# Python Brute Force — O(N²)
-def solution(arr: list[int]) -> int:
-    # ...
-\`
+      cpp: \`// C++ Brute Force — O(N²)\`,
+      java: \`// Java Brute Force — O(N²)\`,
+      python: \`# Python Brute Force — O(N²)\`
     }
   },
   better: {
-    title: 'Better: Intermediate',
+    title: 'Better: Hash / Sub-Optimal',
     badge: 'Sub-Optimal',
-    complexity: { time: 'O(N log N)', space: 'O(N)' },
-    steps: [ /* all steps with codeLine */ ],
+    complexity: { time: 'O(N)', space: 'O(N)' },
+    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
     solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   },
   optimal: {
-    title: 'Optimal: Single Pass',
+    title: 'Optimal: Optimal Two Pointers / Direct',
     badge: 'Optimal',
     complexity: { time: '${question.time_complexity || 'O(N)'}', space: '${question.space_complexity || 'O(1)'}' },
-    steps: [ /* all steps with codeLine */ ],
+    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
     solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   }
 };
@@ -175,7 +173,7 @@ export const meta = {
   difficulty:      "${question.difficulty}",
   timeComplexity:  "${question.time_complexity || 'O(N)'}",
   spaceComplexity: "${question.space_complexity || 'O(1)'}",
-  description:     ${JSON.stringify((question.description || '').slice(0, 140))}
+  description:     ${JSON.stringify((question.description || '').slice(0, 160))}
 };
 
 export default function ${componentKey}({
@@ -191,30 +189,21 @@ export default function ${componentKey}({
   const stepData       = activeSteps[stepIndex] || activeSteps[0];
 
   return (
-    <div className="w-full flex flex-col">
-      {/* ── Chalkboard Canvas ── */}
-      <div className="w-full py-6 flex items-center justify-center">
-        <svg viewBox="0 0 620 180" width="100%" height="180">
-          <defs>
-            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 Z" fill="#5f6f6a"/>
-            </marker>
-          </defs>
-          {/* render based on stepData */}
-        </svg>
-      </div>
-      {stepData.status && (
-        <div className="status-line" dangerouslySetInnerHTML={{ __html: stepData.status }} />
-      )}
-      {stepData.explain && (
-        <p className="explain" dangerouslySetInnerHTML={{ __html: stepData.explain }} />
-      )}
+    <div className="w-full flex flex-col items-center justify-center p-4">
+      {/* Visual Canvas using Apple Design Primitives */}
+      <ArrayView
+        items={stepData.items || [2, 7, 11, 15]}
+        pointers={[
+          { index: stepData.activeIndex ?? 0, label: 'curr', color: 'blue' },
+          { index: stepData.compareIndex ?? 1, label: 'scan', color: 'amber' }
+        ]}
+      />
     </div>
   );
 }
 \`\`\`
 
-Return ONLY the complete, ready-to-run React JSX code. No markdown outside the code block.`;
+Return ONLY the complete, ready-to-run React JSX code block. No text outside the code block.`;
 
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(geminiPrompt);
@@ -279,39 +268,39 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
   };
 
   return (
-    <div className="bg-[var(--board-raised)] border border-[var(--line)] rounded-[3px] p-6 space-y-6 shadow-2xl relative">
+    <div className="apple-card border border-[var(--line)] rounded-2xl p-6 sm:p-7 space-y-6 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
       {/* Header & Prompt Generator */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--line)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[var(--line)]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--amber)]">
-              Interactive Animation Studio
+            <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[var(--indigo)] bg-[var(--indigo-dim)] px-2.5 py-0.5 rounded-full border border-[var(--indigo)]/20">
+              Visualizer Studio
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-[var(--amber-dim)] text-[var(--amber)] border border-[rgba(232,163,61,0.3)]">
-              +150 XP Contributor Reward
+            <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[var(--amber-dim)] text-[var(--amber)] border border-[var(--amber)]/20 font-semibold">
+              +150 XP Contributor
             </span>
           </div>
-          <h3 className="text-base font-mono font-bold text-[var(--chalk)] mt-0.5">
-            Add or Update Visualizer for This Problem
+          <h3 className="text-base font-semibold text-[var(--chalk)] mt-1.5 tracking-tight">
+            Add or Update Visualizer Component
           </h3>
-          <p className="text-xs text-[var(--chalk-dim)] font-sans mt-0.5">
-            Ask Gemini for this visualizer with 1-click prompt, then drop the generated code below.
+          <p className="text-xs text-[var(--chalk-dim)] font-normal mt-0.5">
+            Generate with the Apple HIG architecture prompt below, then drop the compiled <code className="text-[var(--indigo)]">.jsx</code> file.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={handleCopyPrompt}
-            className="chalk-btn chalk-btn-amber"
+            className="btn-primary flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-full shadow-sm cursor-pointer"
           >
-            {copiedPrompt ? <Check className="w-3.5 h-3.5 text-[var(--easy)]" /> : <Sparkles className="w-3.5 h-3.5 text-[var(--amber)]" />}
-            <span>{copiedPrompt ? 'Copied Prompt for Gemini!' : 'Copy Gemini Prompt'}</span>
+            {copiedPrompt ? <Check className="w-3.5 h-3.5 text-white" /> : <Sparkles className="w-3.5 h-3.5 text-white" />}
+            <span>{copiedPrompt ? 'Copied Apple HIG Prompt!' : 'Copy Apple HIG Prompt'}</span>
           </button>
 
           {onClose && (
             <button
               onClick={onClose}
-              className="p-2 rounded text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-raised-2)] transition cursor-pointer"
+              className="p-2 rounded-full text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-raised-2)] transition cursor-pointer"
               title="Close Uploader"
             >
               <X className="w-4 h-4" />
@@ -322,10 +311,10 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
 
       {statusMsg && (
         <div
-          className={`p-3 rounded text-xs font-mono flex items-center gap-2 ${
+          className={`p-3.5 rounded-xl text-xs font-mono flex items-center gap-2.5 ${
             statusMsg.type === 'success'
-              ? 'bg-[rgba(124,180,115,0.15)] text-[var(--easy)] border border-[rgba(124,180,115,0.3)]'
-              : 'bg-[rgba(224,108,117,0.15)] text-[#e06c75] border border-[rgba(224,108,117,0.3)]'
+              ? 'bg-[var(--easy)]/15 text-[var(--easy)] border border-[var(--easy)]/30'
+              : 'bg-[var(--hard)]/15 text-[var(--hard)] border border-[var(--hard)]/30'
           }`}
         >
           {statusMsg.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
@@ -350,18 +339,20 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
           setIsDragging(false);
         }}
         onDrop={handleFileDrop}
-        className={`relative border border-dashed rounded-[3px] p-8 text-center transition flex flex-col items-center justify-center space-y-2 cursor-pointer select-none ${
+        className={`relative border-2 border-dashed rounded-2xl p-8 text-center transition duration-200 flex flex-col items-center justify-center space-y-2 cursor-pointer select-none ${
           isDragging
-            ? 'border-[var(--amber)] bg-[var(--amber-dim)]'
-            : 'border-[var(--line-strong)] hover:border-[var(--amber)] bg-[var(--board-raised-2)]'
+            ? 'border-[var(--indigo)] bg-[var(--indigo-dim)] scale-[1.01]'
+            : 'border-[var(--line-strong)] hover:border-[var(--indigo)] bg-[var(--board-raised-2)]/50 backdrop-blur-sm'
         }`}
       >
-        <Upload className="w-8 h-8 text-[var(--amber)] pointer-events-none" />
-        <p className="text-xs font-mono text-[var(--chalk)] pointer-events-none">
-          Drag & drop Gemini's <code className="text-[var(--amber)] font-bold">.jsx</code> visualizer file here
+        <div className="w-12 h-12 rounded-full bg-[var(--indigo-dim)] flex items-center justify-center text-[var(--indigo)] mb-1">
+          <Upload className="w-6 h-6 pointer-events-none" />
+        </div>
+        <p className="text-xs font-medium text-[var(--chalk)] pointer-events-none">
+          Drag & drop your visualizer <code className="text-[var(--indigo)] font-mono font-semibold">.jsx</code> file here
         </p>
-        <p className="text-[11px] text-[var(--chalk-faint)] font-mono pointer-events-none">
-          or click inside this box to browse files
+        <p className="text-[11px] text-[var(--chalk-dim)] font-normal pointer-events-none">
+          or click anywhere in this area to browse files
         </p>
         <input
           ref={fileInputRef}
@@ -375,44 +366,44 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
       </div>
 
       {/* Code Paste Area */}
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-mono font-medium text-[var(--chalk)]">
-            Or Paste Visualizer JSX Code
+          <label className="text-xs font-semibold text-[var(--chalk)]">
+            Or Paste Component Source Code
           </label>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono text-[var(--chalk-faint)]">Component Key:</span>
+            <span className="text-[11px] text-[var(--chalk-dim)]">Component Key:</span>
             <input
               type="text"
               value={componentKey}
               onChange={(e) => setComponentKey(e.target.value)}
               placeholder="e.g. TwoSumVisualizer"
-              className="px-2.5 py-1 bg-[var(--board-raised-2)] border border-[var(--line)] rounded-[3px] text-xs font-mono text-[var(--chalk)] focus:outline-none focus:border-[var(--amber)]"
+              className="px-3 py-1 bg-[var(--board-raised-2)] border border-[var(--line)] rounded-lg text-xs font-mono text-[var(--chalk)] focus:outline-none focus:border-[var(--indigo)] transition"
             />
           </div>
         </div>
 
         <textarea
-          rows={10}
+          rows={9}
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="// Paste React visualizer component code here...
 import React from 'react';
 export default function MyVisualizer() { ... }"
-          className="w-full p-3 bg-[var(--board)] border border-[var(--line)] rounded-[3px] text-xs font-mono text-[var(--chalk)] focus:outline-none focus:border-[var(--amber)] leading-relaxed resize-y"
+          className="w-full p-3.5 bg-[var(--board-raised-2)]/60 border border-[var(--line)] rounded-xl text-xs font-mono text-[var(--chalk)] focus:outline-none focus:border-[var(--indigo)] leading-relaxed resize-y transition"
         />
       </div>
 
       {/* Actions */}
       <div className="flex items-center justify-between pt-2">
-        <span className="text-[11px] font-mono text-[var(--chalk-faint)]">
-          Saved components compile instantly into the AlgoVision registry
+        <span className="text-[11px] text-[var(--chalk-dim)]">
+          Components hot-reload instantly into the AlgoVision registry
         </span>
 
         <button
           onClick={handleSave}
           disabled={isUploading || !code.trim()}
-          className="chalk-btn chalk-btn-amber disabled:opacity-30 disabled:pointer-events-none"
+          className="btn-primary flex items-center gap-2 px-5 py-2.5 text-xs font-semibold rounded-full shadow-md disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
         >
           {isUploading ? 'Compiling & Saving...' : 'Save & Mount Visualizer'}
         </button>

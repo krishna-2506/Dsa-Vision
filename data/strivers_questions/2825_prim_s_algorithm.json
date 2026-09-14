@@ -1,0 +1,31 @@
+{
+  "problem_id": "2825",
+  "problem_name": "Prim's Algorithm",
+  "step_no": 15,
+  "step_name": "Graphs [Concepts & Problems]",
+  "substep_no": 5,
+  "substep_name": "MinimumSpanningTree/Disjoint Set and Problems",
+  "difficulty": "Hard",
+  "youtube_url": "https://youtu.be/mJcZjjKzeqk",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/prims-algorithm-minimum-spanning-tree-c-and-java-g-45/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/find-the-mst-weight",
+  "problem_statement": "Given a weighted, undirected, and connected graph of V vertices and E edges. The task is to find the sum of weights of the edges of the Minimum Spanning Tree.(Sometimes it may be asked to find the MST as well, where in the MST the edge-informations will be stored in the form {u, v}(u = starting node, v = ending node).)",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution\n{\npublic:\n\t//Function to find sum of weights of edges of the Minimum Spanning Tree.\n\tint spanningTree(int V, vector<vector<int>> adj[])\n\t{\n\t\tpriority_queue<pair<int, int>,\n\t\t               vector<pair<int, int> >, greater<pair<int, int>>> pq;\n\n\t\tvector<int> vis(V, 0);\n\t\t// {wt, node}\n\t\tpq.push({0, 0});\n\t\tint sum = 0;\n\t\twhile (!pq.empty()) {\n\t\t\tauto it = pq.top();\n\t\t\tpq.pop();\n\t\t\tint node = it.second;\n\t\t\tint wt = it.first;\n\n\t\t\tif (vis[node] == 1) continue;\n\t\t\t// add it to the mst\n\t\t\tvis[node] = 1;\n\t\t\tsum += wt;\n\t\t\tfor (auto it : adj[node]) {\n\t\t\t\tint adjNode = it[0];\n\t\t\t\tint edW = it[1];\n\t\t\t\tif (!vis[adjNode]) {\n\t\t\t\t\tpq.push({edW, adjNode});\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t\treturn sum;\n\t}\n};\n\n\nint main() {\n\n\tint V = 5;\n\tvector<vector<int>> edges = {{0, 1, 2}, {0, 2, 1}, {1, 2, 1}, {2, 3, 2}, {3, 4, 1}, {4, 2, 2}};\n\tvector<vector<int>> adj[V];\n\tfor (auto it : edges) {\n\t\tvector<int> tmp(2);\n\t\ttmp[0] = it[1];\n\t\ttmp[1] = it[2];\n\t\tadj[it[0]].push_back(tmp);\n\n\t\ttmp[0] = it[0];\n\t\ttmp[1] = it[2];\n\t\tadj[it[1]].push_back(tmp);\n\t}\n\n\tSolution obj;\n\tint sum = obj.spanningTree(V, adj);\n\tcout << \"The sum of all the edge weights: \" << sum << endl;\n\n\treturn 0;\n}",
+        "java": "import java.util.*;\n\n// User function Template for Java\n\nclass Pair {\n    int node;\n    int distance;\n    public Pair(int distance, int node) {\n        this.node = node;\n        this.distance = distance;\n    }\n}\nclass Solution {\n    //Function to find sum of weights of edges of the Minimum Spanning Tree.\n    static int spanningTree(int V,\n                            ArrayList<ArrayList<ArrayList<Integer>>> adj) {\n        PriorityQueue<Pair> pq =\n            new PriorityQueue<Pair>((x, y) -> x.distance - y.distance);\n\n        int[] vis = new int[V];\n        // {wt, node}\n        pq.add(new Pair(0, 0));\n        int sum = 0;\n        while (pq.size() > 0) {\n            int wt = pq.peek().distance;\n            int node = pq.peek().node;\n            pq.remove();\n\n            if (vis[node] == 1) continue;\n            // add it to the mst\n            vis[node] = 1;\n            sum += wt;\n\n            for (int i = 0; i < adj.get(node).size(); i++) {\n                int edW = adj.get(node).get(i).get(1);\n                int adjNode = adj.get(node).get(i).get(0);\n                if (vis[adjNode] == 0) {\n                    pq.add(new Pair(edW, adjNode));\n                }\n            }\n        }\n        return sum;\n    }\n}\n\npublic class tUf {\n    public static void main(String[] args) {\n        int V = 5;\n        ArrayList<ArrayList<ArrayList<Integer>>> adj = new ArrayList<ArrayList<ArrayList<Integer>>>();\n        int[][] edges =  {{0, 1, 2}, {0, 2, 1}, {1, 2, 1}, {2, 3, 2}, {3, 4, 1}, {4, 2, 2}};\n\n        for (int i = 0; i < V; i++) {\n            adj.add(new ArrayList<ArrayList<Integer>>());\n        }\n\n        for (int i = 0; i < 6; i++) {\n            int u = edges[i][0];\n            int v = edges[i][1];\n            int w = edges[i][2];\n\n            ArrayList<Integer> tmp1 = new ArrayList<Integer>();\n            ArrayList<Integer> tmp2 = new ArrayList<Integer>();\n            tmp1.add(v);\n            tmp1.add(w);\n\n            tmp2.add(u);\n            tmp2.add(w);\n\n            adj.get(u).add(tmp1);\n            adj.get(v).add(tmp2);\n        }\n\n        Solution obj = new Solution();\n        int sum = obj.spanningTree(V, adj);\n        System.out.println(\"The sum of all the edge weights: \" + sum);\n    }\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:20Z"
+}

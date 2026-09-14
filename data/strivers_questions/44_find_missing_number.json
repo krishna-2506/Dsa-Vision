@@ -1,0 +1,18 @@
+{
+  "problem_id": "44",
+  "problem_name": "Find missing number",
+  "step_no": 3,
+  "step_name": "Solve Problems on Arrays [Easy -> Medium -> Hard]",
+  "substep_no": 1,
+  "substep_name": "Easy",
+  "difficulty": "Easy",
+  "youtube_url": null,
+  "leetcode_url": null,
+  "article_url": "https://www.geeksforgeeks.org/find-the-missing-number/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/find-missing-number",
+  "problem_statement": "Given an array arr[] of size n-1 with distinct integers in the range of [1, n]. This array represents a permutation of the integers from 1 to n with one element missing. Find the missing element in the array.\n\nInput: arr[] = [8, 2, 4, 5, 3, 7, 1]Output: 6Explanation: All the numbers from 1 to 8 are present except 6.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:23:56Z"
+}

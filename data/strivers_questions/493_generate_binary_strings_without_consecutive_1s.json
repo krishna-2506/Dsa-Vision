@@ -1,0 +1,35 @@
+{
+  "problem_id": "493",
+  "problem_name": "Generate Binary Strings Without Consecutive 1s",
+  "step_no": 7,
+  "step_name": "Recursion [PatternWise]",
+  "substep_no": 2,
+  "substep_name": "Subsequences Pattern",
+  "difficulty": "Medium",
+  "youtube_url": null,
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/generate-all-binary-strings",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/generate-binary-strings-without-consecutive-1s",
+  "problem_statement": "Given an integer n, return all binary strings of length n that do not contain consecutive 1s. Return the result in lexicographically increasing order.\n\nA binary string is a string consisting only of characters '0' and '1'.",
+  "examples": [
+    "Example 1:\nInput: n = 3 \nOutput: [\"000\", \"001\", \"010\", \"100\", \"101\"] \nExplanation: All binary strings of length 3 that do not contain consecutive 1s.\n\nExample 2:\nInput: n = 2 \nOutput: [\"00\", \"01\", \"10\"] \nExplanation: All binary strings of length 2 that do not contain consecutive 1s."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "At each step, try to place '0' or '1' at the current position.\nYou can always place '0'.\nYou can place '1' only if the previous character was not '1'.\nRecurse until the length becomes n, and collect all valid strings.",
+      "time_complexity": "O(2^n)",
+      "space_complexity": "O(2^n)",
+      "time_complexity_details": "Time Complexity: O(2^n), since each position has 2 choices.\nSpace Complexity: O(n) per recursive path (due to call stack)",
+      "space_complexity_details": "Time Complexity: O(2^n), since each position has 2 choices.\nSpace Complexity: O(n) per recursive path (due to call stack)",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nvoid generate(int n, string curr, vector<string>& result) {\n    // Base case: if length is n, add to result\n    if (curr.length() == n) {\n        result.push_back(curr);\n        return;\n    }\n\n    // Always try adding '0'\n    generate(n, curr + \"0\", result);\n\n    // Add '1' only if previous char is not '1'\n    if (curr.empty() || curr.back() != '1') {\n        generate(n, curr + \"1\", result);\n    }\n}\n\nint main() {\n    // Input length n\n    int n = 3;\n\n    // Vector to store results\n    vector<string> result;\n\n    // Start recursion with empty string\n    generate(n, \"\", result);\n\n    // Print results\n    for (string& s : result) {\n        cout << s << \" \";\n    }\n    cout << endl;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    static void generate(int n, String curr, List<String> result) {\n        // Base case: if length is n, add to result\n        if (curr.length() == n) {\n            result.add(curr);\n            return;\n        }\n\n        // Always try adding '0'\n        generate(n, curr + \"0\", result);\n\n        // Add '1' only if previous char is not '1'\n        if (curr.isEmpty() || curr.charAt(curr.length() - 1) != '1') {\n            generate(n, curr + \"1\", result);\n        }\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Input length n\n        int n = 3;\n\n        // List to store results\n        List<String> result = new ArrayList<>();\n\n        // Start recursion with empty string\n        Solution.generate(n, \"\", result);\n\n        // Print results\n        for (String s : result) {\n            System.out.print(s + \" \");\n        }\n        System.out.println();\n    }\n}",
+        "python": "def generate(n, curr, result):\n    # Base case: if length is n, add to result\n    if len(curr) == n:\n        result.append(curr)\n        return\n\n    # Always try adding '0'\n    generate(n, curr + \"0\", result)\n\n    # Add '1' only if previous char is not '1'\n    if not curr or curr[-1] != '1':\n        generate(n, curr + \"1\", result)\n\ndef main():\n    # Input length n\n    n = 3\n\n    # List to store results\n    result = []\n\n    # Start recursion with empty string\n    generate(n, \"\", result)\n\n    # Print results\n    print(result)\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "function generate(n, curr, result) {\n    // Base case: if length is n, add to result\n    if (curr.length === n) {\n        result.push(curr);\n        return;\n    }\n\n    // Always try adding '0'\n    generate(n, curr + \"0\", result);\n\n    // Add '1' only if previous char is not '1'\n    if (curr.length === 0 || curr[curr.length - 1] !== '1') {\n        generate(n, curr + \"1\", result);\n    }\n}\n\nfunction main() {\n    // Input length n\n    const n = 3;\n\n    // Array to store results\n    const result = [];\n\n    // Start recursion with empty string\n    generate(n, \"\", result);\n\n    // Print results\n    console.log(result);\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:04Z"
+}

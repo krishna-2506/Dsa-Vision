@@ -1,0 +1,35 @@
+{
+  "problem_id": "352",
+  "problem_name": "Deletion of the head of LL",
+  "step_no": 6,
+  "step_name": "Learn LinkedList [Single LL, Double LL, Medium, Hard Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn 1D LinkedList",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/VaECK03Dz-g?si=CRaBHbOo2bHFbOT5",
+  "leetcode_url": "https://leetcode.com/problems/delete-node-in-a-linked-list/",
+  "article_url": "https://takeuforward.org/data-structure/delete-last-node-of-linked-list/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/deletion-of-the-head-of-ll",
+  "problem_statement": "Given a Linked List, delete the tail of the list and print the updated list.",
+  "examples": [
+    "Input: 0->1->2\nOutput: 0->1\n\nExplanation: Last node of the Linked List is 2.\n\nInput: 12->5->8->7\nOutput: 12->5->8\nExplanation: Last node of the Linked List is 7."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "To delete the tail of a linked list, we update the linkage between its last node and its second last node. The main intuition is to point the second last node to null to get the updated linked list. \n Some edge cases to consider is when the list is empty or when there is only one node in the entire list.\n \n\nIf the list is empty, return immediately as there is nothing to delete.\nIf list has only one node, delete the node and return an empty list.\nTraverse the linked list to the second last node and keep track of it using the tail pointer.\nSet the next pointer of the second last node to null. This step effectively disconnects the initial tail node from the list, making second last node as the new tail node.\nDeallocate the memory occupied by the tail node by deleting it.\nReturn the head of the doubly linked list as the result.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Definition for singly linked list\nstruct Node {\n    int data;\n    Node* next;\n    Node(int val) {\n        data = val;\n        next = NULL;\n    }\n};\n\nclass Solution {\npublic:\n    // Function to delete tail node of linked list\n    Node* deleteTail(Node* head) {\n        // If list is empty or has one node\n        if (head == NULL || head->next == NULL) {\n            delete head;\n            return NULL;\n        }\n\n        // Traverse to the second last node\n        Node* curr = head;\n        while (curr->next->next != NULL) {\n            curr = curr->next;\n        }\n\n        // Delete tail node\n        delete curr->next;\n        curr->next = NULL;\n\n        // Return updated head\n        return head;\n    }\n};\n\n// Driver code\nint main() {\n    Node* head = new Node(1);\n    head->next = new Node(2);\n    head->next->next = new Node(3);\n\n    Solution obj;\n    head = obj.deleteTail(head);\n\n    // Print list after deletion\n    Node* temp = head;\n    while (temp) {\n        cout << temp->data << \" \";\n        temp = temp->next;\n    }\n    return 0;\n}",
+        "java": "// Definition for singly linked list\nclass Node {\n    int data;\n    Node next;\n    Node(int val) {\n        data = val;\n        next = null;\n    }\n}\n\nclass Solution {\n    // Function to delete tail node of linked list\n    public Node deleteTail(Node head) {\n        // If list is empty or has one node\n        if (head == null || head.next == null) {\n            return null;\n        }\n\n        // Traverse to the second last node\n        Node curr = head;\n        while (curr.next.next != null) {\n            curr = curr.next;\n        }\n\n        // Delete tail node\n        curr.next = null;\n\n        // Return updated head\n        return head;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Node head = new Node(1);\n        head.next = new Node(2);\n        head.next.next = new Node(3);\n\n        Solution obj = new Solution();\n        head = obj.deleteTail(head);\n\n        // Print list after deletion\n        Node temp = head;\n        while (temp != null) {\n            System.out.print(temp.data + \" \");\n            temp = temp.next;\n        }\n    }\n}",
+        "python": "# Definition for singly linked list\nclass Node:\n    def __init__(self, val):\n        self.data = val\n        self.next = None\n\nclass Solution:\n    # Function to delete tail node of linked list\n    def deleteTail(self, head):\n        # If list is empty or has one node\n        if head is None or head.next is None:\n            return None\n\n        # Traverse to the second last node\n        curr = head\n        while curr.next.next is not None:\n            curr = curr.next\n\n        # Delete tail node\n        curr.next = None\n\n        # Return updated head\n        return head\n\n# Driver code\nhead = Node(1)\nhead.next = Node(2)\nhead.next.next = Node(3)\n\nobj = Solution()\nhead = obj.deleteTail(head)\n\n# Print list after deletion\ntemp = head\nwhile temp:\n    print(temp.data, end=\" \")\n    temp = temp.next",
+        "javascript": "// Definition for singly linked list\nclass Node {\n    constructor(val) {\n        this.data = val;\n        this.next = null;\n    }\n}\n\nclass Solution {\n    // Function to delete tail node of linked list\n    deleteTail(head) {\n        // If list is empty or has one node\n        if (head === null || head.next === null) {\n            return null;\n        }\n\n        // Traverse to the second last node\n        let curr = head;\n        while (curr.next.next !== null) {\n            curr = curr.next;\n        }\n\n        // Delete tail node\n        curr.next = null;\n\n        // Return updated head\n        return head;\n    }\n}\n\n// Driver code\nlet head = new Node(1);\nhead.next = new Node(2);\nhead.next.next = new Node(3);\n\nlet obj = new Solution();\nhead = obj.deleteTail(head);\n\n// Print list after deletion\nlet temp = head;\nlet output = \"\";\nwhile (temp) {\n    output += temp.data + \" \";\n    temp = temp.next;\n}\nconsole.log(output);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}

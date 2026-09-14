@@ -1,0 +1,35 @@
+{
+  "problem_id": "376",
+  "problem_name": "Reverse a number",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 5,
+  "substep_name": "Know Basic Maths",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/1xNbjMdbjug?t=930",
+  "leetcode_url": "https://leetcode.com/problems/reverse-integer/",
+  "article_url": "https://takeuforward.org/maths/reverse-digits-of-a-number",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/reverse-a-number",
+  "problem_statement": "Given an integer N return the reverse of the given number.",
+  "examples": [
+    "Input: N = 12345\nOutput:54321\nExplanation: The reverse of 12345 is 54321.\nInput: N = 7789 \nOutput: 9877\nExplanation: The reverse of number 7789 is 9877."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "We know that extracting digits of a number can be done by repeatedly taking modulo 10 and dividing by 10. Now, instead of just extracting digits, if we build a new number by appending these digits in reverse order, we effectively reverse the number. Each new digit becomes the least significant digit of the reversed number by multiplying the current reversed value by 10 before adding the digit. Initialize a variable to store the reversed number as 0. Loop while the original number is greater than 0. Extract the last digit by performing modulo 10. Multiply the reversed number by 10 and add the extracted digit. Remove the last digit from the original number using integer division by 10. Continue this process until the original number becomes 0. Return the reversed number.",
+      "time_complexity": "O(log₁₀N)",
+      "space_complexity": "O(log₁₀N)",
+      "time_complexity_details": "Time Complexity: O(log₁₀N),The number of iterations in the loop depends on the number of digits in the number N. Since each digit is processed once using constant time operations (modulo, division, multiplication, and addition), the total time taken is proportional to the number of digits, which is log₁₀N.\nSpace Complexity: O(1),Only a constant number of variables are used regardless of the size of the input number.",
+      "space_complexity_details": "Time Complexity: O(log₁₀N),The number of iterations in the loop depends on the number of digits in the number N. Since each digit is processed once using constant time operations (modulo, division, multiplication, and addition), the total time taken is proportional to the number of digits, which is log₁₀N.\nSpace Complexity: O(1),Only a constant number of variables are used regardless of the size of the input number.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to reverse digits of a number\n    int reverseNumber(int n) {\n        // Variable to store reversed number\n        int revNum = 0;\n\n        // Loop until all digits are processed\n        while (n > 0) {\n            // Get the last digit\n            int lastDigit = n % 10;\n\n            // Append it to the reversed number\n            revNum = revNum * 10 + lastDigit;\n\n            // Remove the last digit from n\n            n = n / 10;\n        }\n\n        // Return the reversed number\n        return revNum;\n    }\n};\n\n// Driver code\nint main() {\n    Solution obj;\n    int num = 12345;\n    cout << obj.reverseNumber(num) << endl;  // Output: 54321\n    return 0;\n}",
+        "java": "import.java.util.*;\npublic class Solution {\n    // Function to reverse digits of a number\n    public int reverseNumber(int n) {\n        // Variable to store reversed number\n        int revNum = 0;\n\n        // Loop until all digits are processed\n        while (n > 0) {\n            // Get the last digit\n            int lastDigit = n % 10;\n\n            // Append it to the reversed number\n            revNum = revNum * 10 + lastDigit;\n\n            // Remove the last digit from n\n            n = n / 10;\n        }\n\n        // Return the reversed number\n        return revNum;\n    }\n}\n\n// Driver code\nclass Main {\n    public static void main(String[] args) {\n        Solution obj = new Solution();\n        int num = 12345;\n        System.out.println(obj.reverseNumber(num));  // Output: 54321\n    }\n}",
+        "python": "class Solution:\n    # Function to reverse digits of a number\n    def reverseNumber(self, n):\n        # Variable to store reversed number\n        revNum = 0\n\n        # Loop until all digits are processed\n        while n > 0:\n            # Get the last digit\n            lastDigit = n % 10\n\n            # Append it to the reversed number\n            revNum = revNum * 10 + lastDigit\n\n            # Remove the last digit from n\n            n = n // 10\n\n        # Return the reversed number\n        return revNum\n\n# Driver code\nobj = Solution()\nnum = 12345\nprint(obj.reverseNumber(num))  # Output: 54321",
+        "javascript": "class Solution {\n    // Function to reverse digits of a number\n    reverseNumber(n) {\n        // Variable to store reversed number\n        let revNum = 0;\n\n        // Loop until all digits are processed\n        while (n > 0) {\n            // Get the last digit\n            let lastDigit = n % 10;\n\n            // Append it to the reversed number\n            revNum = revNum * 10 + lastDigit;\n\n            // Remove the last digit from n\n            n = Math.floor(n / 10);\n        }\n\n        // Return the reversed number\n        return revNum;\n    }\n}\n\n// Driver code\nconst obj = new Solution();\nconst num = 12345;\nconsole.log(obj.reverseNumber(num));  // Output: 54321"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:52Z"
+}

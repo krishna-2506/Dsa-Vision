@@ -1,0 +1,31 @@
+{
+  "problem_id": "2867",
+  "problem_name": "For loops",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 1,
+  "substep_name": "Things to Know in C++/Java/Python or any language",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/EAR7De6Goz4?t=3096",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/for-loop/understanding-for-loop/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/for-loop",
+  "problem_statement": "In case you are learning DSA, you should definitely check out our free A2Z DSA Course with videos and blogs.\n\nWhat is a For Loop and Why is it Used?",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <iostream>\nusing namespace std;\n\nint main() {\n    for (int i = 1; i <= 25; i += 5) {\n        cout << \"i = \" << i << endl;\n    }\n    return 0;\n}",
+        "java": "public class Main {\n    public static void main(String[] args) {\n        for (int i = 1; i <= 25; i += 5) {\n            System.out.println(\"i = \" + i);\n        }\n    }\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:45Z"
+}

@@ -1,0 +1,35 @@
+{
+  "problem_id": "882",
+  "problem_name": "Recursive Insertion Sort",
+  "step_no": 2,
+  "step_name": "Learn Important Sorting Techniques",
+  "substep_no": 2,
+  "substep_name": "Sorting-II",
+  "difficulty": "Easy",
+  "youtube_url": null,
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/arrays/recursive-insertion-sort-algorithm/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/recursive-insertion-sort",
+  "problem_statement": "Given an array of N integers, write a program to implement the Recursive Insertion Sort algorithm.",
+  "examples": [
+    "Example 1:\nInput: N = 6, array[] = {13,46,24,52,20,9}\nOutput: 9,13,20,24,46,52\nExplanation: After sorting we get 9,13,20,24,46,52\n\nExample 2:\nInput: N = 5, array[] = {5,4,3,2,1}\nOutput: 1,2,3,4,5\nExplanation: After sorting we get 1,2,3,4,5"
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "In the iterative method, we did the following:\n\nTake an element from the unsorted array(using an outer loop).\nPlace it in its corresponding position in the sorted part(using an inner loop).\nShift the remaining elements accordingly.\n\nIn recursive method we will do the following\nFirst, call the recursive function with the given array, the size of the array, and the index of the selected element(let's say i).\nInside that recursive function, take the element at index i from the unsorted array.\nThen, place the element in its corresponding position in the sorted part(using swapping).\nAfter that, Shift the remaining elements accordingly.\nFinally, call the recursion increasing the index(i) by 1.\nThe recursion will continue until the index reaches n(i.e. All the elements are covered). Base Case: if(i == n) return.\n\nDry Run\nThe purple color represents the unsorted array.\nThe yellow color represents the current element that needs to be placed in the appropriate position.\nThe green color represents the sorted array.",
+      "time_complexity": "O(N2)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N2), (where N = size of the array), for the worst, and average cases.",
+      "space_complexity_details": "Space Complexity: O(N) auxiliary stack space.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Recursive insertion sort function\nvoid insertion_sort(int arr[], int i, int n) {\n    // Base Case: if index reaches the size, return\n    if (i == n) return;\n\n    int j = i;\n    // Shift the element to the left while it's smaller than its predecessor\n    while (j > 0 && arr[j - 1] > arr[j]) {\n        // Swap arr[j] and arr[j-1]\n        int temp = arr[j - 1];\n        arr[j - 1] = arr[j];\n        arr[j] = temp;\n        j--;\n    }\n\n    // Recur for the next index\n    insertion_sort(arr, i + 1, n);\n}\n\nint main() {\n    int arr[] = {13, 46, 24, 52, 20, 9};\n    int n = sizeof(arr) / sizeof(arr[0]);\n\n    cout << \"Before Using Insertion Sort: \" << endl;\n    for (int i = 0; i < n; i++) {\n        cout << arr[i] << \" \";\n    }\n    cout << endl;\n\n    // Call recursive insertion sort\n    insertion_sort(arr, 0, n);\n\n    cout << \"After Using Insertion Sort: \" << endl;\n    for (int i = 0; i < n; i++) {\n        cout << arr[i] << \" \";\n    }\n    cout << endl;\n\n    return 0;\n}",
+        "java": "public class RecursiveInsertionSort {\n    // Recursive insertion sort function\n    static void insertionSort(int[] arr, int i, int n) {\n        // Base case\n        if (i == n) return;\n\n        int j = i;\n        // Move the current element back until it's in the correct place\n        while (j > 0 && arr[j - 1] > arr[j]) {\n            // Swap arr[j] and arr[j-1]\n            int temp = arr[j - 1];\n            arr[j - 1] = arr[j];\n            arr[j] = temp;\n            j--;\n        }\n\n        // Recur for the next index\n        insertionSort(arr, i + 1, n);\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {13, 46, 24, 52, 20, 9};\n        int n = arr.length;\n\n        System.out.println(\"Before Using Insertion Sort:\");\n        for (int value : arr)\n            System.out.print(value + \" \");\n        System.out.println();\n\n        insertionSort(arr, 0, n);\n\n        System.out.println(\"After Using Insertion Sort:\");\n        for (int value : arr)\n            System.out.print(value + \" \");\n        System.out.println();\n    }\n}",
+        "python": "def insertion_sort(arr, i, n):\n    # Base case\n    if i == n:\n        return\n\n    j = i\n    # Move the element to the left while it's smaller than its predecessor\n    while j > 0 and arr[j - 1] > arr[j]:\n        # Swap\n        arr[j - 1], arr[j] = arr[j], arr[j - 1]\n        j -= 1\n\n    # Recur for the next index\n    insertion_sort(arr, i + 1, n)\n\n# Driver code\narr = [13, 46, 24, 52, 20, 9]\nn = len(arr)\n\nprint(\"Before Using Insertion Sort:\")\nprint(arr)\n\ninsertion_sort(arr, 0, n)\n\nprint(\"After Using Insertion Sort:\")\nprint(arr)",
+        "javascript": "function insertionSort(arr, i, n) {\n    // Base case\n    if (i === n) return;\n\n    let j = i;\n    // Shift element to its correct position in sorted part\n    while (j > 0 && arr[j - 1] > arr[j]) {\n        // Swap using destructuring\n        [arr[j - 1], arr[j]] = [arr[j], arr[j - 1]];\n        j--;\n    }\n\n    // Recursive call for the next element\n    insertionSort(arr, i + 1, n);\n}\n\n// Driver code\nlet arr = [13, 46, 24, 52, 20, 9];\nconsole.log(\"Before Using Insertion Sort:\");\nconsole.log(arr);\n\ninsertionSort(arr, 0, arr.length);\n\nconsole.log(\"After Using Insertion Sort:\");\nconsole.log(arr);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:54Z"
+}

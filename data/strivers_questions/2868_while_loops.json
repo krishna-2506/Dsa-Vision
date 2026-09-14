@@ -1,0 +1,33 @@
+{
+  "problem_id": "2868",
+  "problem_name": "While loops",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 1,
+  "substep_name": "Things to Know in C++/Java/Python or any language",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/EAR7De6Goz4?t=3459",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/while-loop/while-loops-in-programming/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/while-loop",
+  "problem_statement": "In the world of computer programming, loops are invaluable tools that allow us to execute a block of code repeatedly until a certain condition is met. One such loop is the \"while\" loop.\n\nA while loop follows a simple sequence of steps:",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int n = 5;\n    int factorial = 1;\n\n    while (n > 0) {\n        factorial *= n;  //Keep finding factorial with n and decrement n \n        n--;\n    }\n\n    cout << \"Factorial of 5 is: \" << factorial << endl;  //Print the factorial\n\n    return 0;\n}",
+        "java": "public class FactorialCalculator {\n    public static void main(String[] args) {\n        int n = 5;\n        int factorial = 1;\n\n        while (n > 0) {\n            factorial *= n;  //Keep finding factorial with n and decrement n \n            n--;\n        }\n\n        System.out.println(\"Factorial of 5 is: \" + factorial);  //Print the factorial\n    }\n}",
+        "python": "# Initialize number\nn = 5\nfactorial = 1\n\n# Loop to calculate factorial using while\nwhile n > 0:\n    factorial *= n\n    n -= 1\n\nprint(f\"Factorial of 5 is: {factorial}\")",
+        "javascript": "let n = 5;\nlet factorial = 1;\n\n// Loop to calculate factorial using while\nwhile (n > 0) {\n    factorial *= n;\n    n--;\n}\n\nconsole.log(`Factorial of 5 is: ${factorial}`);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:45Z"
+}

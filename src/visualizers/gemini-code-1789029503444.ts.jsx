@@ -101,19 +101,149 @@ function largest(arr: number[]): number {
 };
 
 export const steps = [
-  { i: null, ans: 0, codeLine: 12, title: "Initialize 'maxVal' = arr[0] (1)", msg: "Initialize 'maxVal' with the first element (arr[0] = 1)." },
-  { i: 1, ans: 0, codeLine: 15, title: "Start Loop at Index 1", msg: "Start iteration with pointer 'i' at index 1 (val = 8)." },
-  { i: 1, ans: 0, codeLine: 17, title: "Compare: arr[1] (8) > maxVal (1)", msg: "Compare: Is arr[1] (8) > current 'maxVal' (1)? True." },
-  { i: 1, ans: 1, codeLine: 19, title: "Update maxVal = 8", msg: "Update 'maxVal' to 8 at index 1." },
-  { i: 2, ans: 1, codeLine: 15, title: "Advance to Index 2", msg: "Increment 'i' to index 2 (val = 7)." },
-  { i: 2, ans: 1, codeLine: 17, title: "Compare: arr[2] (7) > maxVal (8)", msg: "7 > 8 is False. 'maxVal' remains 8." },
-  { i: 3, ans: 1, codeLine: 15, title: "Advance to Index 3", msg: "Increment 'i' to index 3 (val = 56)." },
-  { i: 3, ans: 1, codeLine: 17, title: "Compare: arr[3] (56) > maxVal (8)", msg: "56 > 8 is True. Update 'maxVal'." },
-  { i: 3, ans: 3, codeLine: 19, title: "Update maxVal = 56", msg: "Update 'maxVal' to 56 at index 3." },
-  { i: 4, ans: 3, codeLine: 15, title: "Advance to Index 4", msg: "Increment 'i' to index 4 (val = 90)." },
-  { i: 4, ans: 3, codeLine: 17, title: "Compare: arr[4] (90) > maxVal (56)", msg: "90 > 56 is True. Update 'maxVal'." },
-  { i: 4, ans: 4, codeLine: 19, title: "Update maxVal = 90", msg: "Update 'maxVal' to 90 at index 4." },
-  { i: null, ans: 4, codeLine: 24, title: "Traversal Complete", msg: "Array traversal complete. Return maxVal = 90." }
+  {
+    i: null,
+    ans: 0,
+    codeLine: 12,
+    title: "Initialize 'maxVal' = arr[0] (1)",
+    operation: "Initialize maxVal with arr[0]",
+    state: { current: 1, maxVal: 1, i: 0 },
+    decision: "Array non-empty (n = 5)",
+    result: "maxVal initialized to 1",
+    msg: "Initialize 'maxVal' with the first element (arr[0] = 1)."
+  },
+  {
+    i: 1,
+    ans: 0,
+    codeLine: 15,
+    title: "Start Loop at Index 1",
+    operation: "Initialize loop iteration pointer i = 1",
+    state: { current: 8, maxVal: 1, i: 1 },
+    decision: "1 < 5 → True",
+    result: "Inspect element arr[1] = 8",
+    msg: "Start iteration with pointer 'i' at index 1 (val = 8)."
+  },
+  {
+    i: 1,
+    ans: 0,
+    codeLine: 17,
+    title: "Compare: arr[1] (8) > maxVal (1)",
+    operation: "Comparing arr[1] against maxVal",
+    state: { current: 8, maxVal: 1, i: 1 },
+    decision: "8 > 1 → True",
+    result: "Condition met: arr[1] is greater than current max",
+    msg: "Compare: Is arr[1] (8) > current 'maxVal' (1)? True."
+  },
+  {
+    i: 1,
+    ans: 1,
+    codeLine: 19,
+    title: "Update maxVal = 8",
+    operation: "Update maxVal = arr[1]",
+    state: { current: 8, maxVal: 8, i: 1 },
+    decision: "State assignment executed",
+    result: "maxVal updated from 1 to 8",
+    msg: "Update 'maxVal' to 8 at index 1."
+  },
+  {
+    i: 2,
+    ans: 1,
+    codeLine: 15,
+    title: "Advance to Index 2",
+    operation: "Incrementing pointer i to 2",
+    state: { current: 7, maxVal: 8, i: 2 },
+    decision: "2 < 5 → True",
+    result: "Inspect element arr[2] = 7",
+    msg: "Increment 'i' to index 2 (val = 7)."
+  },
+  {
+    i: 2,
+    ans: 1,
+    codeLine: 17,
+    title: "Compare: arr[2] (7) > maxVal (8)",
+    operation: "Comparing arr[2] against maxVal",
+    state: { current: 7, maxVal: 8, i: 2 },
+    decision: "7 > 8 → False",
+    result: "Maximum unchanged (maxVal remains 8)",
+    msg: "7 > 8 is False. 'maxVal' remains 8."
+  },
+  {
+    i: 3,
+    ans: 1,
+    codeLine: 15,
+    title: "Advance to Index 3",
+    operation: "Incrementing pointer i to 3",
+    state: { current: 56, maxVal: 8, i: 3 },
+    decision: "3 < 5 → True",
+    result: "Inspect element arr[3] = 56",
+    msg: "Increment 'i' to index 3 (val = 56)."
+  },
+  {
+    i: 3,
+    ans: 1,
+    codeLine: 17,
+    title: "Compare: arr[3] (56) > maxVal (8)",
+    operation: "Comparing arr[3] against maxVal",
+    state: { current: 56, maxVal: 8, i: 3 },
+    decision: "56 > 8 → True",
+    result: "Condition met: arr[3] is greater than current max",
+    msg: "56 > 8 is True. Update 'maxVal'."
+  },
+  {
+    i: 3,
+    ans: 3,
+    codeLine: 19,
+    title: "Update maxVal = 56",
+    operation: "Update maxVal = arr[3]",
+    state: { current: 56, maxVal: 56, i: 3 },
+    decision: "State assignment executed",
+    result: "maxVal updated from 8 to 56",
+    msg: "Update 'maxVal' to 56 at index 3."
+  },
+  {
+    i: 4,
+    ans: 3,
+    codeLine: 15,
+    title: "Advance to Index 4",
+    operation: "Incrementing pointer i to 4",
+    state: { current: 90, maxVal: 56, i: 4 },
+    decision: "4 < 5 → True",
+    result: "Inspect element arr[4] = 90",
+    msg: "Increment 'i' to index 4 (val = 90)."
+  },
+  {
+    i: 4,
+    ans: 3,
+    codeLine: 17,
+    title: "Compare: arr[4] (90) > maxVal (56)",
+    operation: "Comparing arr[4] against maxVal",
+    state: { current: 90, maxVal: 56, i: 4 },
+    decision: "90 > 56 → True",
+    result: "Condition met: arr[4] is greater than current max",
+    msg: "90 > 56 is True. Update 'maxVal'."
+  },
+  {
+    i: 4,
+    ans: 4,
+    codeLine: 19,
+    title: "Update maxVal = 90",
+    operation: "Update maxVal = arr[4]",
+    state: { current: 90, maxVal: 90, i: 4 },
+    decision: "State assignment executed",
+    result: "maxVal updated from 56 to 90",
+    msg: "Update 'maxVal' to 90 at index 4."
+  },
+  {
+    i: null,
+    ans: 4,
+    codeLine: 24,
+    title: "Traversal Complete",
+    operation: "Return largest element found",
+    state: { current: null, maxVal: 90, i: "done" },
+    decision: "5 < 5 → False (loop finished)",
+    result: "Return final maxVal = 90",
+    msg: "Array traversal complete. Return maxVal = 90."
+  }
 ];
 
 export default function LargestElementVisualizer({ currentStep = 0 }) {
@@ -124,7 +254,7 @@ export default function LargestElementVisualizer({ currentStep = 0 }) {
   return (
     <div className="w-full flex flex-col items-center justify-center p-4">
       {/* Visualizer Step Explanation Callout */}
-      <div className="w-full max-w-2xl mb-6 p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center gap-3">
+      <div className="w-full max-w-2xl mb-6 p-3.5 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center gap-3">
         <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
         <p className="text-xs sm:text-sm text-[var(--chalk)] font-sans leading-relaxed">
           <span className="font-semibold text-indigo-600 dark:text-indigo-400 mr-1.5">
@@ -135,7 +265,7 @@ export default function LargestElementVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Array Canvas */}
-      <div className="relative w-full max-w-2xl min-h-[220px] flex flex-col justify-center items-center bg-[var(--board)] rounded-xl border border-[var(--line)] p-6 overflow-hidden">
+      <div className="relative w-full max-w-2xl min-h-[220px] flex flex-col justify-center items-center bg-[var(--board)] rounded-lg border border-[var(--line)] p-6 overflow-hidden">
         <div className="relative flex gap-3 sm:gap-4.5 z-20">
           {array.map((val, idx) => {
             const isAns = stepData.ans === idx;
@@ -158,11 +288,11 @@ export default function LargestElementVisualizer({ currentStep = 0 }) {
                 {/* Main Array Element Tile */}
                 <div
                   className={`
-                    w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-lg sm:text-xl font-mono font-bold border transition-all duration-300
+                    w-12 h-12 sm:w-14 sm:h-14 rounded-lg flex items-center justify-center text-lg sm:text-xl font-mono font-bold border transition-all duration-200
                     ${isAns
-                      ? 'bg-emerald-500/15 border-emerald-500 text-emerald-600 dark:text-emerald-400 shadow-[0_0_16px_rgba(16,185,129,0.25)] scale-105'
+                      ? 'bg-emerald-500/15 border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400'
                       : isI
-                      ? 'bg-amber-500/15 border-amber-500 text-amber-600 dark:text-amber-400 scale-102'
+                      ? 'bg-amber-500/15 border-2 border-amber-500 text-amber-600 dark:text-amber-400'
                       : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk)]'
                     }
                   `}

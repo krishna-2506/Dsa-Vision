@@ -1,0 +1,18 @@
+{
+  "problem_id": "1153",
+  "problem_name": "Introduction to BST",
+  "step_no": 14,
+  "step_name": "Binary Search Trees [Concept and Problems]",
+  "substep_no": 1,
+  "substep_name": "Concepts",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/p7-9UvDQZ3w",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/binary-search-tree/introduction-to-binary-search-trees/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-to-bst",
+  "problem_statement": "Binary Search Trees, popularly known as BST, are the category of Binary Trees used to optimize the operation of searching an element among the Tree Nodes in a Binary Tree.\n\nLet’s understand the dynamics of a Binary Search Tree using an illustration below:",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:24:17Z"
+}

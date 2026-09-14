@@ -1,0 +1,35 @@
+{
+  "problem_id": "529",
+  "problem_name": "Traversal Techniques",
+  "step_no": 15,
+  "step_name": "Graphs [Concepts & Problems]",
+  "substep_no": 1,
+  "substep_name": "Learning",
+  "difficulty": "Medium",
+  "youtube_url": "https://youtu.be/Qzf1a--rhp8",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/depth-first-search-dfs/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/traversal-techniques",
+  "problem_statement": "Given an undirected graph, return a vector of all nodes by traversing the graph using depth-first search (DFS).",
+  "examples": [
+    "Input: V = 5, adj = [[2,3], [1,4,5], [1], [2,5], [4,5]]\n\nOutput: 1 2 4 5 3\nExplanation: We traverse the entire graph using DFS technique.\n\nInput: V = 4, adj = [[2,3], [1,4], [1], [2]]\nOutput: 1 2 4 3\nExplanation: We traverse the entire graph using DFS technique."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "DFS is a traversal technique which involves the idea of recursion and backtracking. DFS goes in-depth, i.e., traverses all nodes by going ahead, and when there are no further nodes to traverse in the current path, then it backtracks on the same path and traverses other unvisited nodes. Imagine navigating through a maze where you follow one path as deep as it goes, and when you can’t proceed further, you backtrack to the last junction and try a different route.\n \n\nStart from a chosen node and mark it as visited, storing it in the traversal list.\nLook at all the neighbors of the current node using the adjacency list. \nFor each neighbor, if it is not visited, recursively apply DFS on that neighbor.\nThis process continues, going deeper into one path until no unvisited nodes remain.\nOnce a path is fully explored, backtrack to explore the remaining neighbors.\nRepeat until all nodes in the graph have been visited.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to perform DFS traversal\n    void dfs(int v, vector<int> adj[], \n             vector<int>& visited, \n             vector<int>& result) {\n        \n        // Mark current node as visited\n        visited[v] = 1;\n\n        // Store node in result\n        result.push_back(v);\n\n        // Traverse all neighbours\n        for (int u : adj[v]) {\n            if (!visited[u]) {\n                dfs(u, adj, visited, result);\n            }\n        }\n    }\n};\n\nint main() {\n    // Number of vertices\n    int V = 5;\n\n    // Adjacency list\n    vector<int> adj[V];\n    adj[0] = {1, 2};\n    adj[1] = {0, 3};\n    adj[2] = {0, 4};\n    adj[3] = {1};\n    adj[4] = {2};\n\n    // Visited array\n    vector<int> visited(V, 0);\n\n    // Result vector\n    vector<int> result;\n\n    // Create object\n    Solution sol;\n\n    // Run DFS from node 0\n    sol.dfs(0, adj, visited, result);\n\n    // Print traversal\n    for (int x : result) cout << x << \" \";\n    cout << endl;\n\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    // Function to perform DFS traversal\n    public void dfs(int v, List<Integer>[] adj, \n                    boolean[] visited, \n                    List<Integer> result) {\n        \n        // Mark current node as visited\n        visited[v] = true;\n\n        // Store node in result\n        result.add(v);\n\n        // Traverse all neighbours\n        for (int u : adj[v]) {\n            if (!visited[u]) {\n                dfs(u, adj, visited, result);\n            }\n        }\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Number of vertices\n        int V = 5;\n\n        // Adjacency list\n        List<Integer>[] adj = new ArrayList[V];\n        for (int i = 0; i < V; i++) {\n            adj[i] = new ArrayList<>();\n        }\n        adj[0].addAll(Arrays.asList(1, 2));\n        adj[1].addAll(Arrays.asList(0, 3));\n        adj[2].addAll(Arrays.asList(0, 4));\n        adj[3].add(1);\n        adj[4].add(2);\n\n        // Visited array\n        boolean[] visited = new boolean[V];\n\n        // Result list\n        List<Integer> result = new ArrayList<>();\n\n        // Create object\n        Solution sol = new Solution();\n\n        // Run DFS from node 0\n        sol.dfs(0, adj, visited, result);\n\n        // Print traversal\n        for (int x : result) {\n            System.out.print(x + \" \");\n        }\n        System.out.println();\n    }\n}",
+        "python": "class Solution:\n    # Function to perform DFS traversal\n    def dfs(self, v, adj, visited, result):\n        # Mark current node as visited\n        visited[v] = True\n\n        # Store node in result\n        result.append(v)\n\n        # Traverse all neighbours\n        for u in adj[v]:\n            if not visited[u]:\n                self.dfs(u, adj, visited, result)\n\n\ndef main():\n    # Number of vertices\n    V = 5\n\n    # Adjacency list\n    adj = [[] for _ in range(V)]\n    adj[0] = [1, 2]\n    adj[1] = [0, 3]\n    adj[2] = [0, 4]\n    adj[3] = [1]\n    adj[4] = [2]\n\n    # Visited array\n    visited = [False] * V\n\n    # Result list\n    result = []\n\n    # Create object\n    sol = Solution()\n\n    # Run DFS from node 0\n    sol.dfs(0, adj, visited, result)\n\n    # Print traversal\n    print(\" \".join(map(str, result)))\n\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "class Solution {\n    // Function to perform DFS traversal\n    dfs(v, adj, visited, result) {\n        // Mark current node as visited\n        visited[v] = true;\n\n        // Store node in result\n        result.push(v);\n\n        // Traverse all neighbours\n        for (let u of adj[v]) {\n            if (!visited[u]) {\n                this.dfs(u, adj, visited, result);\n            }\n        }\n    }\n}\n\nfunction main() {\n    // Number of vertices\n    let V = 5;\n\n    // Adjacency list\n    let adj = Array.from({ length: V }, () => []);\n    adj[0] = [1, 2];\n    adj[1] = [0, 3];\n    adj[2] = [0, 4];\n    adj[3] = [1];\n    adj[4] = [2];\n\n    // Visited array\n    let visited = Array(V).fill(false);\n\n    // Result list\n    let result = [];\n\n    // Create object\n    let sol = new Solution();\n\n    // Run DFS from node 0\n    sol.dfs(0, adj, visited, result);\n\n    // Print traversal\n    console.log(result.join(\" \"));\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:18Z"
+}

@@ -1,0 +1,35 @@
+{
+  "problem_id": "287",
+  "problem_name": "Climbing stairs",
+  "step_no": 16,
+  "step_name": "Dynamic Programming [Patterns and Problems]",
+  "substep_no": 2,
+  "substep_name": "1D DP",
+  "difficulty": "Medium",
+  "youtube_url": "https://youtu.be/mLfjzJsN8us",
+  "leetcode_url": "https://leetcode.com/problems/climbing-stairs/",
+  "article_url": "https://takeuforward.org/data-structure/dynamic-programming-climbing-stairs/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/climbing-stairs",
+  "problem_statement": "Given a number of stairs. Starting from the 0th stair we need to climb to the\n “Nth” stair. At a time we can climb either one or two steps. We need to return the total number of distinct ways to\n reach from 0th to Nth stair.",
+  "examples": [
+    "Input: n = 2\nOutput: 2\nExplanation: There are 2 unique ways to climb to the 2nd step:\n1. 1 step + 1 step\n2. 2 steps\n\nInput: n = 3\nOutput: 3\nExplanation: There are 3 unique ways to climb to the 3rd step:\n1. 1 step + 1 step + 1 step\n2. 2 steps + 1 step\n3. 1 step + 2 steps"
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "The Fibonacci sequence is defined as F(n) = F(n-1) + F(n-2) with base cases F(0)=1 and\n F(1)=1. A naive recursive solution recalculates many subproblems, leading to exponential\n time. By storing results in a DP array, we avoid recomputation and compute the result\n efficiently.\nApproach:\n\nInitialize a DP array dp of size n+1 with -1 to store results.\n \nSet the base cases: dp[0] = 1, dp[1] = 1.\nIterate from i = 2 to n and compute\n dp[i] = dp[i-1] + dp[i-2].\n \nReturn dp[n] as the answer.",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity: O(n), since we compute each Fibonacci number from 2 to n\n exactly once.\nSpace Complexity: O(n), for storing the DP array of size n+1.",
+      "space_complexity_details": "Time Complexity: O(n), since we compute each Fibonacci number from 2 to n\n exactly once.\nSpace Complexity: O(n), for storing the DP array of size n+1.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    // Number for which Fibonacci is to be calculated\n    int n = 3;\n\n    // Create a dp array initialized with -1\n    vector<int> dp(n + 1, -1);\n\n    // Base cases\n    dp[0] = 1;\n    dp[1] = 1;\n\n    // Fill dp array using bottom-up dynamic programming\n    for (int i = 2; i <= n; i++) {\n        dp[i] = dp[i - 1] + dp[i - 2];\n    }\n\n    // Print the nth Fibonacci number\n    cout << dp[n];\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Main {\n    public static void main(String[] args) {\n        // Number for which Fibonacci is to be calculated\n        int n = 3;\n\n        // Create a dp array initialized with -1\n        int[] dp = new int[n + 1];\n        Arrays.fill(dp, -1);\n\n        // Base cases\n        dp[0] = 1;\n        dp[1] = 1;\n\n        // Fill dp array using bottom-up dynamic programming\n        for (int i = 2; i <= n; i++) {\n            dp[i] = dp[i - 1] + dp[i - 2];\n        }\n\n        // Print the nth Fibonacci number\n        System.out.println(dp[n]);\n    }\n}",
+        "python": "def main():\n    # Number for which Fibonacci is to be calculated\n    n = 3\n\n    # Create a dp array initialized with -1\n    dp = [-1] * (n + 1)\n\n    # Base cases\n    dp[0] = 1\n    dp[1] = 1\n\n    # Fill dp array using bottom-up dynamic programming\n    for i in range(2, n + 1):\n        dp[i] = dp[i - 1] + dp[i - 2]\n\n    # Print the nth Fibonacci number\n    print(dp[n])\n\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "function main() {\n    // Number for which Fibonacci is to be calculated\n    let n = 3;\n\n    // Create a dp array initialized with -1\n    let dp = new Array(n + 1).fill(-1);\n\n    // Base cases\n    dp[0] = 1;\n    dp[1] = 1;\n\n    // Fill dp array using bottom-up dynamic programming\n    for (let i = 2; i <= n; i++) {\n        dp[i] = dp[i - 1] + dp[i - 2];\n    }\n\n    // Print the nth Fibonacci number\n    console.log(dp[n]);\n}\n\n// Driver code\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:21Z"
+}

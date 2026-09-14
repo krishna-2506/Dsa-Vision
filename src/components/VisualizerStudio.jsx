@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   ArrowLeft,
   Play,
@@ -34,7 +34,6 @@ import { visualizersRegistry } from '../visualizers';
 import { api } from '../services/api';
 import CodeViewer from './CodeViewer';
 import VisualizerUploader from './VisualizerUploader';
-import VariableInspector from './primitives/VariableInspector';
 import ReportSolutionModal from './ReportSolutionModal';
 import AiQuestionEnhancerModal from './AiQuestionEnhancerModal';
 import VisualizerErrorBoundary from './VisualizerErrorBoundary';
@@ -70,11 +69,20 @@ export default function VisualizerStudio({
   const [activeTier, setActiveTier] = useState('optimal'); // 'intuitive' | 'better' | 'optimal'
   const [showReportModal, setShowReportModal] = useState(false);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
-  const stepsList = visualizerEntry?.approaches?.[activeTier]?.steps || visualizerEntry?.steps || null;
+  const activeApproachData = visualizerEntry?.approaches?.[activeTier] || null;
+  const currentApproachObj = useMemo(() => {
+    const list = Array.isArray(question.approaches_data) ? question.approaches_data : [];
+    if (list.length === 0) return null;
+    if (activeTier === 'intuitive') return list[0];
+    if (activeTier === 'better') return list.length >= 3 ? list[1] : (list.length === 2 ? list[0] : list[0]);
+    return list[list.length - 1];
+  }, [question.approaches_data, activeTier]);
+  const stepsList = activeApproachData?.steps || visualizerEntry?.steps || null;
   const maxSteps = stepsList?.length || 6;
   const hasVisualizer = Boolean(Component);
 
   const [currentStep, setCurrentStep] = useState(0);
+  const currentStepData = stepsList && stepsList[currentStep] ? stepsList[currentStep] : null;
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [loop, setLoop] = useState(false);
@@ -224,87 +232,91 @@ ${cppCode}
 \`\`\`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ALGOVISION STUDIO ARCHITECTURE — READ CAREFULLY
+1. ALGOVISION STUDIO ARCHITECTURE & CONTEXT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 The Studio already provides:
   • Approach tier tabs (Intuitive / Better / Optimal) above the stage
-  • Split-screen: your canvas LEFT, syntax-highlighted code viewer RIGHT
+  • Split-screen layout: your canvas LEFT, syntax-highlighted code viewer RIGHT
   • Transport controls: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x
-  • Step title ("1. Initialize pointers") displayed above your canvas
-  • Prev/Next step buttons and Prev/Next problem navigation
+  • Step title and Prev/Next navigation
+  • Educational Explanation & Live Variables Inspector Panel below the stage
 
-DO NOT render any of: outer card frames, "Step X of Y" counters, prev/next buttons,
-language tabs, or copy-code buttons. The Studio already wraps you. Just render canvas content.
+DO NOT render: outer card frames, "Step X of Y" counters, prev/next buttons, language tabs, or copy-code buttons. Just render the visualization canvas content.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-VISUAL STYLE & DUAL THEME SPECIFICATION (LIGHT & DARK MODE)
+2. AESTHETIC: APPLE macOS & HIG DESIGN SYSTEM
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+The visualizer must feel like an Apple native product (macOS Sequoia / iOS).
+Keep the visualizer theme and the site theme IDENTICAL:
 
-AlgoVision supports both LIGHT and DARK themes.
-You MUST use the app's CSS variables so your visualizer renders cleanly in BOTH themes:
-
-COLOR TOKENS (use these CSS variables directly in SVG and styles):
-  Canvas / Stage bg:   var(--board)
-  Card / node fill:    var(--board-raised)
-  Node border / line:  var(--line)
-  Primary text:        var(--chalk)
+CSS VARIABLES (Mandatory — automatically supports Light & Dark themes):
+  Canvas / Stage bg:    var(--board)
+  Card / Node fill:     var(--board-raised)
+  Subtle container:     var(--board-raised-2)
+  Hairline border:      var(--line)
+  Primary text:         var(--chalk)
   Secondary / dim text: var(--chalk-dim)
-  Faint index text:    var(--chalk-faint)
-  Active / curr glow:  var(--indigo) (#6366f1) or var(--amber) (#f59e0b)
-  Secondary pointer:   var(--teal) (#06b6d4)
-  Success / Done:      var(--easy) (#10b981)
-  Error / Collision:   var(--hard) (#f43f5e)
+  Faint index text:     var(--chalk-faint)
 
-SVG DRAWING RULES:
-  Array / node boxes:
-    fill="var(--board-raised)" stroke="var(--line)" strokeWidth=1.5 rx=6
-  Active element (curr / selected):
-    stroke="var(--indigo)" strokeWidth=2.4 rx=8 (or amber glow)
-  Previous / secondary element:
-    stroke="var(--teal)" strokeWidth=1.8 strokeDasharray="4 4"
-  Value inside box:
-    font-family="'JetBrains Mono', monospace" fontSize=15 fontWeight=600 fill="var(--chalk)"
-  Index label below box:
-    font-family="'JetBrains Mono', monospace" fontSize=11 fill="var(--chalk-faint)"
-  Pointer labels (curr, prev, L, R, slow, fast, i, j):
-    font-family="'Plus Jakarta Sans', sans-serif" fontSize=13 fontWeight=700 fill="var(--indigo)" (active) or "var(--teal)" (secondary)
+AUTHENTIC APPLE ACCENT PALETTE:
+  Active Focus / Pointers:  var(--indigo) (#0a84ff - Apple System Blue)
+  Comparison / Scanning:    var(--amber)  (#ff9f0a - Apple System Orange)
+  Success / Matched / Done: var(--easy)   (#30d158 - Apple System Mint/Green)
+  Conflict / Eliminated:    var(--hard)   (#ff453a - Apple System Coral Red)
+  Secondary Pointer / Aux:  var(--teal)   (#64d2ff - Apple System Cyan)
+  Special Structure / Hash: var(--purple) (#bf5af2 - Apple System Purple)
 
-STATUS HUD — render below canvas:
-  <div className="status-line"><span className="prev-b">prev = 12</span>, <b>curr = 35</b></div>
-
-EXPLANATION — render below status HUD:
-  <p className="explain">35 beats curr, so prev inherits the old value.</p>
+GEOMETRY & STYLING RULES:
+  • Rounded Squircles: Use rx="10" or rx="8" for array/node boxes.
+  • Glassmorphism: Frosted translucent fills, subtle drop shadows, and delicate 1px specular borders.
+  • Floating Pointers: Render pointers as floating Apple rounded pill badges with indicator arrows (↓ top, ↑ bottom), NOT hand-drawn scratchy text.
+  • Typography: font-family="'SF Mono', 'JetBrains Mono', monospace" for data values; "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" for badges.
+  • Prohibited: Do NOT use rough chalkboard filters (filter="url(#rough)"), dark chalkboard slate (#12181a), or Kalam cursive font.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MULTI-LANGUAGE CODE — 3 LANGUAGES × 3 TIERS
+3. DEEP EDUCATIONAL EXPLANATION & PEDAGOGY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Every step object in the \`steps\` array MUST be rich, intuitive, and teach the algorithm with senior clarity:
 
-For EACH approach tier, provide COMPLETE, fully written solutions in:
-  • C++    (always required, full function)
-  • Java   (required — full "class Solution { public ... }" wrapper)
-  • Python (required — def with type hints, "# type: ignore" if needed)
-
-Add educational line-by-line comments in each language explaining WHAT happens and WHY.
-Do NOT write "..." or placeholder stubs — the code viewer shows the full source.
-
-CRITICAL — codeLine sync with animation:
-  Each step object needs codeLine: N where N = the EXACT line number in the C++ solution.
-  The code viewer highlights that line live as the animation plays.
-  Count lines carefully starting from line 1.
-  (Java/Python have different line counts — only C++ line is used for sync.)
-
-  If a tier doesn't meaningfully differ, you may reuse the same steps array and
-  write "// Same approach as optimal" in the other tier's solutions.
+Each step MUST contain:
+  • title: Concise action title (e.g. "2. Compare nums[left] (2) + nums[right] (23) == 25")
+  • phase: Semantic phase badge (e.g. 'INITIALIZING' | 'SCANNING' | 'COMPARING' | 'SWAPPING' | 'PARTITIONING' | 'MATCH_FOUND' | 'PRUNING')
+  • explain: 2-3 clear educational sentences explaining WHAT happened, WHY this step is taken, and how it progresses the algorithm.
+  • intuition: A "Why this works / Key takeaway" note explaining how this decision prunes candidates or maintains the loop invariant.
+  • variables: An object of all live pointers and accumulators (e.g. { left: 0, right: 5, sum: 25, target: 26 })
+  • codeLine: EXACT 1-indexed line number in the C++ solution corresponding to this execution step!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXPORT FORMAT (scaffold — complete all sections)
+4. SUPERIOR ANIMATIONS & DYNAMIC MOTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Fluid transitions on moving elements: CSS transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1).
+  • Distinct Visual States:
+      - Unprocessed / Inactive: Subdued frosted opacity (0.5).
+      - Scanning / In-Focus: Apple System Blue glow halo with scale(1.03).
+      - Comparing: Apple Orange dual-focus with comparison badge or connecting arc.
+      - Matched / Solved: Apple Mint emerald glow halo with soft spring pop.
+      - Eliminated / Discarded: Muted strike or dimming.
+  • Data Structure Primitives:
+      - Arrays: Sleek squircle cells with indices below and floating pill pointers above.
+      - Linked Lists: Apple 3-compartment squircle nodes (prev | val | next) + bezier arrow curves.
+      - Trees: Apple frosted glass circles with glowing branch lines.
+      - DP Matrices: Heatmap grid with glowing active cell and reference source arrows.
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. MULTI-LANGUAGE SOLUTIONS (3 TIERS × 3 LANGUAGES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+For EACH approach tier (Intuitive, Better, Optimal), provide complete working code:
+  • C++    (Full function with line comments, codeLine sync basis)
+  • Java   (Full class Solution { public ... } wrapper)
+  • Python (Full function with type hints)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. COMPLETE COMPONENT SCAFFOLD (DROP-IN READY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 \`\`\`jsx
 import React, { useMemo } from 'react';
 // Available primitives: ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView
-// import ArrayView from '../components/primitives/ArrayView';
+import ArrayView from '../components/primitives/ArrayView';
 
 export const approaches = {
   intuitive: {
@@ -313,55 +325,34 @@ export const approaches = {
     complexity: { time: 'O(N²)', space: 'O(1)' },
     steps: [
       {
-        title: '1. Initialize pointers',   // shown as step title above canvas
-        codeLine: 3,                        // ← exact C++ line number, count carefully
-        variables: { i: 0, j: 1 },         // shown in variable inspector
-        status: '<span class="prev-b">i = 0</span>, <b>j = 1</b>',
-        explain: 'Start at index 0 and scan every element...',
-        // add problem-specific visual state here:
+        title: '1. Initialize pointers',
+        phase: 'INITIALIZING',
+        codeLine: 3,
+        variables: { i: 0, j: 1 },
+        explain: 'Start at index 0 and inspect all pairs sequentially.',
+        intuition: 'Brute force checks every possible combination to guarantee finding a solution.',
         activeIndex: 0,
         compareIndex: 1,
-      },
-      // ... every meaningful algorithm step
+      }
     ],
     solutions: {
-      cpp: \`// C++ Brute Force — O(N²)
-// Scan all pairs to find the second largest
-int solution(int arr[], int n) {   // line 3
-  int first = -1, second = -1;     // line 4  ← codeLine 4 for steps that touch this
-  for (int i = 0; i < n; i++) {   // line 5
-    // ...
-  }
-  return second;                   // line N
-}\`,
-      java: \`// Java Brute Force — O(N²)
-class Solution {
-  public int solution(int[] arr) {
-    int first = Integer.MIN_VALUE, second = Integer.MIN_VALUE;
-    // ...
-    return second;
-  }
-}\`,
-      python: \`# Python Brute Force — O(N²)
-def solution(arr: list[int]) -> int:
-    first = second = float('-inf')
-    # ...
-    return second
-\`
+      cpp: \`// C++ Brute Force — O(N²)\`,
+      java: \`// Java Brute Force — O(N²)\`,
+      python: \`# Python Brute Force — O(N²)\`
     }
   },
   better: {
-    title: 'Better: Sort + Scan',
+    title: 'Better: Hash / Sub-Optimal',
     badge: 'Sub-Optimal',
-    complexity: { time: 'O(N log N)', space: 'O(1)' },
-    steps: [ /* all steps with codeLine */ ],
+    complexity: { time: 'O(N)', space: 'O(N)' },
+    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
     solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   },
   optimal: {
-    title: 'Optimal: Single Pass',
+    title: 'Optimal: Optimal Two Pointers / Direct',
     badge: 'Optimal',
     complexity: { time: '${timeC}', space: '${spaceC}' },
-    steps: [ /* all steps with codeLine */ ],
+    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
     solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
   }
 };
@@ -391,34 +382,21 @@ export default function ${key}({
   const stepData       = activeSteps[stepIndex] || activeSteps[0];
 
   return (
-    <div className="w-full flex flex-col">
-      {/* ── Chalkboard Canvas ── */}
-      <div className="w-full py-6 flex items-center justify-center">
-        <svg viewBox="0 0 620 180" width="100%" height="180">
-          <defs>
-            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 Z" fill="#5f6f6a"/>
-            </marker>
-          </defs>
-          {/* Render boxes / arrows / pointers based on stepData */}
-        </svg>
-      </div>
-
-      {/* ── Status HUD ── */}
-      {stepData.status && (
-        <div className="status-line" dangerouslySetInnerHTML={{ __html: stepData.status }} />
-      )}
-
-      {/* ── Explanation ── */}
-      {stepData.explain && (
-        <p className="explain" dangerouslySetInnerHTML={{ __html: stepData.explain }} />
-      )}
+    <div className="w-full flex flex-col items-center justify-center p-4">
+      {/* Visual Canvas using Apple Design Primitives */}
+      <ArrayView
+        items={stepData.items || [2, 7, 11, 15]}
+        pointers={[
+          { index: stepData.activeIndex ?? 0, label: 'curr', color: 'blue' },
+          { index: stepData.compareIndex ?? 1, label: 'scan', color: 'amber' }
+        ]}
+      />
     </div>
   );
 }
 \`\`\`
 
-Return ONLY the complete, ready-to-run React JSX code. No markdown outside the code block.`;
+Return ONLY the complete, ready-to-run React JSX code block. No text outside the code block.`;
 
     navigator.clipboard.writeText(promptText);
     sound.playStep(640);
@@ -616,18 +594,8 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
     onNavigateQuestion
   ]);
 
-  // Compute active line and variables for real-time inspection & code sync
-  const currentStepData = stepsList ? stepsList[currentStep] : null;
+  // Compute active line for real-time code sync
   const activeCodeLine = currentStepData?.codeLines || currentStepData?.codeLine || currentStepData?.highlightLines || currentStepData?.line || null;
-  const currentVariables = currentStepData?.variables || {
-    ...(currentStepData?.low !== undefined ? { low: currentStepData.low } : {}),
-    ...(currentStepData?.high !== undefined ? { high: currentStepData.high } : {}),
-    ...(currentStepData?.mid !== undefined ? { mid: currentStepData.mid } : {}),
-    ...(currentStepData?.left !== undefined ? { left: currentStepData.left } : {}),
-    ...(currentStepData?.right !== undefined ? { right: currentStepData.right } : {}),
-    ...(currentStepData?.currentSum !== undefined ? { currentSum: currentStepData.currentSum } : {}),
-    ...(currentStepData?.status ? { status: currentStepData.status } : {})
-  };
 
   const handleReviewConfidence = async (confidence) => {
     await api.recordReview(currentUser?.id, question.id, confidence);
@@ -728,13 +696,13 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
   return (
     <div className="max-w-[1360px] mx-auto px-4 sm:px-6 py-6 space-y-6">
       {/* ── ZONE 1: Problem Overview & Command Toolbar (Senior Workbench Card) ── */}
-      <div className="card specular-card shadow-sm p-5 sm:p-6 space-y-4 bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl">
+      <div className="card specular-card shadow-sm p-5 sm:p-6 space-y-4 bg-[var(--board-raised)] border border-[var(--line)] rounded-lg">
         {/* Top Header Row */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <button
               onClick={onBack}
-              className="p-2 rounded-xl bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all shrink-0 cursor-pointer group"
+              className="p-2 rounded-md bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all shrink-0 cursor-pointer group"
               title="Back to problem library (Esc)"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
@@ -756,10 +724,10 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                   {question.display_id || (question.leetcode_id ? `#${question.leetcode_id}` : 'DSA')}
                 </span>
 
-                {/* Category */}
-                {question.category && (
-                  <span className="text-xs font-sans font-medium text-[var(--chalk-dim)]">
-                    {question.category.replace(/^\d+\.\s*/, '')}
+                {/* Step & Substep Badge */}
+                {question.step_no && (
+                  <span className="text-xs font-sans font-medium px-2 py-0.5 rounded-full bg-[var(--board-raised-2)] text-[var(--chalk-dim)] border border-[var(--line)]">
+                    Step {question.step_no}: {question.step_name} {question.substep_name ? `· ${question.substep_name}` : ''}
                   </span>
                 )}
               </div>
@@ -772,16 +740,16 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
 
           {/* Right Action Tools Toolbar */}
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-            {/* Complexity Badges */}
-            <div className="hidden xl:flex items-center gap-2.5 text-xs font-mono text-[var(--chalk-dim)] px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
+            {/* Dynamic Complexity Badges */}
+            <div className="hidden xl:flex items-center gap-2.5 text-xs font-mono text-[var(--chalk-dim)] px-3 py-1.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)]">
               <span className="flex items-center gap-1.5" title="Time Complexity">
                 <Clock className="w-3.5 h-3.5 text-amber-500" />
-                <span>{formatComplexity(question.time_complexity)}</span>
+                <span>{formatComplexity(currentApproachObj?.time_complexity || question.time_complexity)}</span>
               </span>
               <span className="text-[var(--line-strong)]">·</span>
               <span className="flex items-center gap-1.5" title="Space Complexity">
                 <Cpu className="w-3.5 h-3.5 text-cyan-500" />
-                <span>{formatComplexity(question.space_complexity)}</span>
+                <span>{formatComplexity(currentApproachObj?.space_complexity || question.space_complexity)}</span>
               </span>
             </div>
 
@@ -852,7 +820,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               {showJumper && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowJumper(false)} />
-                  <div className="absolute top-full mt-2 right-0 w-80 bg-[var(--board-raised)] border border-[var(--line-strong)] rounded-2xl shadow-2xl z-50 overflow-hidden fade-in">
+                  <div className="absolute top-full mt-2 right-0 w-80 bg-[var(--board-raised)] border border-[var(--line-strong)] rounded-lg shadow-xl z-50 overflow-hidden fade-in">
                     <div className="p-3 border-b border-[var(--line)] flex items-center gap-2">
                       <Search className="w-3.5 h-3.5 text-[var(--chalk-dim)] shrink-0" />
                       <input
@@ -905,17 +873,59 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               <Flag className="w-3.5 h-3.5" />
             </button>
 
+            {/* Striver YouTube Tutorial Link */}
+            {question.youtube_url && (
+              <a
+                href={question.youtube_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary h-8 px-2.5 text-xs text-rose-500 hover:text-rose-400 bg-rose-500/10 border border-rose-500/30 font-semibold"
+                title="Watch Striver's Video Editorial"
+              >
+                <Play className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+                <span className="hidden sm:inline">Striver Video</span>
+              </a>
+            )}
+
+            {/* TakeUForward Article Link */}
+            {question.article_url && (
+              <a
+                href={question.article_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary h-8 px-2.5 text-xs text-teal-600 dark:text-teal-300 hover:text-teal-200 bg-teal-500/10 border border-teal-500/30"
+                title="Read Editorial on TakeUForward"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Editorial</span>
+              </a>
+            )}
+
             {/* LeetCode Link */}
             {question.leetcode_url && (
               <a
                 href={question.leetcode_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary h-8 px-2.5 text-xs text-indigo-300 hover:text-white"
+                className="btn-secondary h-8 px-2.5 text-xs text-indigo-400 hover:text-indigo-200"
                 title="Open on LeetCode"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">LeetCode</span>
+              </a>
+            )}
+
+            {/* TUF+ Link */}
+            {question.plus_url && (
+              <a
+                href={question.plus_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary h-8 px-2.5 text-xs text-[var(--chalk-dim)] hover:text-[var(--chalk)]"
+                title="Practice on TUF+"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">TUF+</span>
               </a>
             )}
           </div>
@@ -1002,12 +1012,34 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
           </div>
         </div>
 
-        {/* Problem Statement text */}
-        <div className="text-[13px] text-[var(--chalk)] leading-relaxed whitespace-pre-wrap font-sans bg-[var(--board)] p-4 rounded-xl border border-[var(--line)] max-h-52 overflow-y-auto">
-          {question.description || 'No description available for this problem.'}
+        {/* Problem Statement & Examples */}
+        <div className="space-y-3.5">
+          <div className="text-[13px] text-[var(--chalk)] leading-relaxed whitespace-pre-wrap font-sans bg-[var(--board)] p-4 rounded-xl border border-[var(--line)] max-h-60 overflow-y-auto">
+            <div className="font-semibold text-xs text-[var(--indigo)] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Problem Statement</span>
+            </div>
+            {question.problem_statement || question.description || 'No description available for this problem.'}
+          </div>
+
+          {/* Examples & Test Cases */}
+          {Array.isArray(question.examples) && question.examples.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-1.5 text-xs font-sans font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">
+                <span>Examples & Test Cases</span>
+              </div>
+              <div className="grid grid-cols-1 gap-2.5">
+                {question.examples.map((ex, exIdx) => (
+                  <div key={exIdx} className="p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] font-mono text-xs whitespace-pre-wrap text-[var(--chalk)] leading-relaxed">
+                    {ex}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Collapsible Approach & Hints Accordion */}
+        {/* Collapsible Approach & Invariants Accordion */}
         <div>
           <button
             onClick={() => setShowApproach(!showApproach)}
@@ -1017,47 +1049,81 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               {showApproach ? '▾' : '▸'}
             </span>
             <span className="font-semibold underline decoration-indigo-500/40 underline-offset-4">
-              {showApproach ? 'Hide algorithm approach & invariants' : 'Show algorithm approach & invariants'}
+              {showApproach
+                ? 'Hide algorithm breakdown & complexity details'
+                : `Show ${activeTier === 'intuitive' ? 'Brute Force' : activeTier === 'better' ? 'Better Approach' : 'Optimal Approach'} breakdown & complexity`}
             </span>
           </button>
           {showApproach && (
-            <div className="approach-panel fade-in">
-              {question.approach || 'Standard optimal algorithm approach.'}
+            <div className="approach-panel fade-in space-y-3 mt-2.5 p-4.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
+              <div>
+                <h4 className="text-xs font-bold text-[var(--indigo)] uppercase tracking-wider mb-1.5">
+                  {currentApproachObj?.approach_name || (activeTier === 'intuitive' ? 'Intuitive / Brute Force Approach' : activeTier === 'better' ? 'Better Approach' : 'Optimal Approach')}
+                </h4>
+                <p className="text-xs text-[var(--chalk)] leading-relaxed whitespace-pre-wrap font-sans">
+                  {currentApproachObj?.algorithm || question.approach || 'Detailed algorithm walkthrough.'}
+                </p>
+              </div>
+
+              {(currentApproachObj?.time_complexity_details || currentApproachObj?.space_complexity_details) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2.5 border-t border-[var(--line)] font-mono text-[11px]">
+                  {currentApproachObj?.time_complexity_details && (
+                    <div className="p-3 rounded-lg bg-[var(--board)] border border-[var(--line)]">
+                      <span className="font-bold text-[var(--amber)]">Time Complexity:</span>
+                      <p className="mt-1 text-[var(--chalk-dim)] leading-relaxed">{currentApproachObj.time_complexity_details}</p>
+                    </div>
+                  )}
+                  {currentApproachObj?.space_complexity_details && (
+                    <div className="p-3 rounded-lg bg-[var(--board)] border border-[var(--line)]">
+                      <span className="font-bold text-[var(--teal)]">Space Complexity:</span>
+                      <p className="mt-1 text-[var(--chalk-dim)] leading-relaxed">{currentApproachObj.space_complexity_details}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
 
-      {/* ── ZONE 2: Interactive Visualizer Stage (IDE Workbench Card) ── */}
-      <div className="card specular-card shadow-2xl overflow-hidden rounded-2xl bg-[var(--board-raised)] border border-[var(--line)]">
-        {/* Modern Tier Switcher Bar */}
-        <div className="flex items-center gap-2 p-3 border-b border-[var(--line)] bg-[var(--board-raised-2)] overflow-x-auto scrollbar-none">
-          <span className="text-xs font-mono text-[var(--chalk-dim)] mr-2 font-medium">Approach Tier:</span>
-          {[
-            { id: 'intuitive', label: '1. Intuitive', sub: 'Brute Force' },
-            { id: 'better', label: '2. Better', sub: 'Sub-Optimal' },
-            { id: 'optimal', label: '3. Optimal', sub: 'Single Pass / Optimal' }
-          ].map((tier) => {
-            const isActive = activeTier === tier.id;
-            const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
-            return (
-              <button
-                key={tier.id}
-                onClick={() => handleSelectTier(tier.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-200 border border-indigo-500/40 shadow-[0_0_12px_rgba(99,102,241,0.25)] font-semibold'
-                    : 'text-[var(--chalk-muted)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent'
-                }`}
-              >
-                <span>{tier.label}</span>
-                <span className="text-[10.5px] opacity-70 font-normal">({tier.sub})</span>
-                {hasCustomAnimation && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 ml-0.5 shadow-[0_0_6px_rgba(6,182,212,0.8)]" title="Dedicated interactive visualizer available" />
-                )}
-              </button>
-            );
-          })}
+      {/* ── ZONE 2: Interactive Visualizer Stage (macOS Window Frame) ── */}
+      <div className="macos-window mb-6">
+        {/* macOS Titlebar Chrome with Traffic Light Dots */}
+        <div className="macos-titlebar flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <div className="traffic-lights">
+              <span className="traffic-light traffic-light-red" />
+              <span className="traffic-light traffic-light-yellow" />
+              <span className="traffic-light traffic-light-green" />
+            </div>
+            <span className="text-xs font-sans font-medium text-[var(--chalk-dim)] hidden sm:inline">
+              AlgoVision Studio — {activeApproachData?.title || question.title}
+            </span>
+          </div>
+
+          {/* Apple Segmented Approach Switcher */}
+          <div className="segmented-control">
+            {[
+              { id: 'intuitive', label: '1. Intuitive', sub: 'Brute Force' },
+              { id: 'better', label: '2. Better', sub: 'Sub-Optimal' },
+              { id: 'optimal', label: '3. Optimal', sub: 'Single Pass / Optimal' }
+            ].map((tier) => {
+              const isActive = activeTier === tier.id;
+              const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
+              return (
+                <button
+                  key={tier.id}
+                  onClick={() => handleSelectTier(tier.id)}
+                  className={`segmented-item flex items-center gap-1.5 ${isActive ? 'active' : ''}`}
+                >
+                  <span>{tier.label}</span>
+                  {hasCustomAnimation && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--teal)]" title="Dedicated interactive visualizer available" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Main Stage Grid */}
@@ -1071,10 +1137,10 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
           {/* Canvas Column */}
           {viewMode !== 'code_only' && (
             <div className="canvas-col">
-              <div className="flex items-center justify-between gap-3 mb-5 pb-3 border-b border-[var(--line)]">
+              <div className="flex items-center justify-between gap-3 mb-4 pb-2.5 border-b border-[var(--line)]">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.8)] shrink-0" />
-                  <span className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-300 uppercase tracking-wider shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-[var(--indigo)] shrink-0 animate-pulse shadow-[0_0_8px_rgba(10,132,255,0.6)]" />
+                  <span className="text-xs font-sans font-bold text-[var(--indigo)] uppercase tracking-wider shrink-0">
                     Step {currentStep + 1} of {maxSteps}
                   </span>
                   <span className="text-[var(--chalk-faint)] shrink-0">·</span>
@@ -1109,7 +1175,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                   }}
                   onDrop={handleDirectFileDrop}
                   onClick={() => barFileInputRef.current?.click()}
-                  className={`flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer border border-dashed rounded-[3px] transition-all duration-200 ${
+                  className={`flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer border border-dashed rounded-2xl transition-all duration-200 ${
                     isBarDragging
                       ? 'border-[var(--amber)] bg-[var(--amber-dim)]'
                       : 'border-[var(--line-strong)] hover:border-[var(--amber)]'
@@ -1123,11 +1189,11 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                     className="hidden"
                   />
                   <UploadCloud className="w-8 h-8 text-[var(--amber)]" />
-                  <p className="text-[13px] font-medium text-[var(--chalk)]">
+                  <p className="text-[13px] font-sans font-medium text-[var(--chalk)]">
                     {isBarDragging ? 'Drop your .jsx file now!' : 'No visualizer for this question yet'}
                   </p>
-                  <p className="text-[12px] text-[var(--chalk-dim)] max-w-sm">
-                    Drag &amp; drop your React visualizer <code className="text-[var(--amber)]">.jsx</code> file here, or click to browse.
+                  <p className="text-[12px] text-[var(--chalk-dim)] max-w-sm font-sans">
+                    Drag &amp; drop your React visualizer <code className="text-[var(--amber)] font-mono">.jsx</code> file here, or click to browse.
                   </p>
                   <div className="pt-2 flex items-center gap-2">
                     <button
@@ -1136,7 +1202,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                         e.stopPropagation();
                         handleDirectCopyPrompt();
                       }}
-                      className="chalk-btn chalk-btn-amber"
+                      className="btn-primary"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
                       <span>{copiedDirect ? 'Copied Prompt!' : 'Copy AI Prompt'}</span>
@@ -1147,7 +1213,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                         e.stopPropagation();
                         setShowUploader(true);
                       }}
-                      className="chalk-btn"
+                      className="btn-secondary"
                     >
                       <UploadCloud className="w-3.5 h-3.5" />
                       <span>Upload Code</span>
@@ -1156,12 +1222,60 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                 </div>
               )}
 
-              {/* Live Variable Inspector HUD */}
-              {currentVariables && Object.keys(currentVariables).length > 0 && (
-                <div className="px-5 pb-3">
-                  <VariableInspector variables={currentVariables} />
+              {/* Apple-Grade Educational Explanation & Invariant Panel */}
+              {currentStepData && (
+                <div className="mt-4 p-4 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] backdrop-blur-xl shadow-sm transition-all duration-300">
+                  <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--indigo-dim)] border border-[var(--indigo)]/30 text-[var(--indigo)] text-[10.5px] font-sans font-bold uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--indigo)] animate-pulse" />
+                        {currentStepData.phase || 'Algorithmic Execution'}
+                      </span>
+                      <span className="text-xs font-sans font-semibold text-[var(--chalk)]">
+                        {currentStepData.title}
+                      </span>
+                    </div>
+
+                    {currentStepData.codeLine && (
+                      <span className="text-[11px] font-mono text-[var(--chalk-dim)] px-2.5 py-0.5 rounded-full bg-[var(--board-raised)] border border-[var(--line)]">
+                        Synced with C++ line <strong className="text-[var(--indigo)]">{currentStepData.codeLine}</strong>
+                      </span>
+                    )}
+                  </div>
+
+                  {(currentStepData.explain || currentStepData.explanation) && (
+                    <p className="text-[13px] text-[var(--chalk-dim)] leading-relaxed font-sans mb-3">
+                      {currentStepData.explain || currentStepData.explanation}
+                    </p>
+                  )}
+
+                  {currentStepData.intuition && (
+                    <div className="p-3 rounded-xl bg-[var(--indigo-dim)]/40 border border-[var(--indigo)]/20 text-xs text-[var(--chalk)] mb-3 flex items-start gap-2.5">
+                      <Sparkles className="w-4 h-4 text-[var(--indigo)] shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-[var(--indigo)] block mb-0.5 font-semibold">Algorithmic Invariant & Intuition</strong>
+                        <span>{currentStepData.intuition}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {currentStepData.variables && Object.keys(currentStepData.variables).length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap pt-2.5 border-t border-[var(--line)]">
+                      <span className="text-[11px] font-sans text-[var(--chalk-faint)] font-medium">Memory &amp; State:</span>
+                      {Object.entries(currentStepData.variables).map(([k, v]) => (
+                        <span
+                          key={k}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--board-raised)] border border-[var(--line)] font-mono text-[11px]"
+                        >
+                          <span className="text-[var(--chalk-dim)]">{k}:</span>
+                          <strong className="text-[var(--indigo)] font-semibold">{String(v)}</strong>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
+
             </div>
           )}
 
@@ -1266,8 +1380,8 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
           />
         </div>
 
-        {/* ── Docked Transport HUD (Senior Media Player HUD) ── */}
-        <div className="transport-hud px-5 py-3 border-t border-[var(--line)] bg-[var(--board-raised)] flex items-center justify-between gap-4 flex-wrap">
+        {/* ── Docked Transport HUD (VS Code Debugger Control Bar) ── */}
+        <div className="transport-hud px-4 py-2.5 border-t border-[var(--line)] bg-[var(--board-raised)] flex items-center justify-between gap-3 flex-wrap">
           {/* Scrubber Ticks */}
           <div className="flex items-center gap-1.5" id="ticks">
             {Array.from({ length: maxSteps }).map((_, idx) => {
@@ -1281,12 +1395,12 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                     sound.playStep(500 + idx * 30);
                     if (idx === maxSteps - 1) triggerCompletionCelebration();
                   }}
-                  className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${
+                  className={`h-1.5 rounded-full transition-all duration-150 cursor-pointer ${
                     isCurrent
-                      ? 'w-7 bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.8)]'
+                      ? 'w-6 bg-indigo-500'
                       : isDone
-                      ? 'w-3.5 bg-indigo-500/40 hover:bg-indigo-500/60'
-                      : 'w-3.5 bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)]'
+                      ? 'w-3 bg-indigo-500/40 hover:bg-indigo-500/60'
+                      : 'w-3 bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)]'
                   }`}
                   title={`Step ${idx + 1} of ${maxSteps}`}
                 />
@@ -1295,22 +1409,33 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
           </div>
 
           {/* Center Transport Controls HUD */}
-          <div className="flex items-center gap-3">
-            {/* Reset */}
+          <div className="flex items-center gap-2">
+            {/* Restart (R) */}
             <button
               onClick={handleReset}
-              className="p-2 rounded-xl text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] transition-all cursor-pointer"
-              title="Reset to step 1 (R)"
+              className="p-1.5 rounded-md text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent hover:border-[var(--line)] transition-all cursor-pointer"
+              title="Restart execution (R)"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
 
-            {/* Prominent Play / Pause Button with Glow */}
+            {/* Previous Step (←) */}
+            <button
+              className="p-1.5 rounded-md text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent hover:border-[var(--line)] transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+              id="prevBtn"
+              onClick={handlePrevStep}
+              disabled={currentStep === 0}
+              title="Previous step (←)"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {/* Play / Pause (Space) */}
             <button
               onClick={togglePlay}
-              className={`h-9 px-4 rounded-xl flex items-center gap-2 text-xs font-mono font-semibold transition-all cursor-pointer ${
+              className={`h-8 px-3 rounded-md flex items-center gap-1.5 text-xs font-mono font-semibold transition-all cursor-pointer ${
                 isPlaying
-                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 shadow-[0_0_16px_rgba(245,158,11,0.3)]'
+                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30'
                   : 'btn-primary'
               }`}
               title="Play / Pause (Space)"
@@ -1318,38 +1443,51 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               {isPlaying ? (
                 <>
                   <Pause className="w-3.5 h-3.5 fill-current" />
-                  <span>PAUSE</span>
+                  <span>Pause</span>
                 </>
               ) : (
                 <>
                   <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                  <span>AUTO PLAY</span>
+                  <span>Play</span>
                 </>
               )}
             </button>
 
+            {/* Next Step (→) */}
+            <button
+              className="p-1.5 rounded-md text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent hover:border-[var(--line)] transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+              id="nextBtn"
+              onClick={handleNextStep}
+              disabled={currentStep === maxSteps - 1}
+              title="Next step (→)"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+
+            <span className="text-[var(--line-strong)] mx-0.5 text-xs">·</span>
+
             {/* Loop Toggle */}
             <button
               onClick={() => setLoop(!loop)}
-              className={`p-2 rounded-xl transition-all cursor-pointer ${
+              className={`p-1.5 rounded-md transition-all cursor-pointer ${
                 loop
                   ? 'text-cyan-600 dark:text-cyan-300 bg-cyan-500/15 border border-cyan-500/30'
                   : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
               }`}
               title={loop ? 'Looping enabled' : 'Looping disabled'}
             >
-              <Repeat className="w-4 h-4" />
+              <Repeat className="w-3.5 h-3.5" />
             </button>
 
             {/* Speed Selector Segmented Control */}
-            <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-0.5 text-xs font-mono">
+            <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded-md p-0.5 text-[11px] font-mono">
               {[0.5, 1, 1.5, 2].map((s) => (
                 <button
                   key={s}
                   onClick={() => setSpeed(s)}
-                  className={`px-2 py-1 rounded-lg transition-all cursor-pointer ${
+                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
                     speed === s
-                      ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold shadow-sm'
+                      ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold'
                       : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
                   }`}
                 >
@@ -1359,7 +1497,7 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
             </div>
 
             {/* Step Counter Badge */}
-            <span className="text-xs font-mono text-[var(--chalk-dim)] ml-1 px-2 py-1 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)]">
+            <span className="text-xs font-mono text-[var(--chalk-dim)] px-2 py-0.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)]">
               {currentStep + 1} / {maxSteps}
             </span>
 
@@ -1367,37 +1505,18 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
             <button
               type="button"
               onClick={() => setShowShortcutsModal(true)}
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all cursor-pointer"
+              className="hidden md:flex items-center gap-1.5 px-2 py-1 rounded-md bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all cursor-pointer"
               title="View keyboard shortcuts (?)"
             >
-              <Keyboard className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+              <Keyboard className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
               <span>Keys</span>
-              <kbd className="text-[10px]">?</kbd>
+              <kbd className="text-[9px]">?</kbd>
             </button>
           </div>
 
-          {/* Step Back / Step Forward Navigation */}
-          <div className="flex items-center gap-2">
-            <button
-              className="btn-secondary h-8 px-3 text-xs disabled:opacity-30 disabled:pointer-events-none"
-              id="prevBtn"
-              onClick={handlePrevStep}
-              disabled={currentStep === 0}
-              title="Previous step (←)"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-              <span>Step</span>
-            </button>
-            <button
-              className="btn-primary h-8 px-3.5 text-xs disabled:opacity-30 disabled:pointer-events-none"
-              id="nextBtn"
-              onClick={handleNextStep}
-              disabled={currentStep === maxSteps - 1}
-              title="Next step (→)"
-            >
-              <span>Step</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+          {/* Step Back / Step Forward Shortcut Navigation */}
+          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[var(--chalk-faint)]">
+            <span>Keys: <kbd>Space</kbd> <kbd>←</kbd> <kbd>→</kbd> <kbd>R</kbd></span>
           </div>
         </div>
       </div>
@@ -1418,17 +1537,26 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         />
       )}
 
-      {/* ── Zone 3: Knowledge Hub ── */}
-      <div className="card overflow-hidden">
+      {/* ── Zone 3: Knowledge Hub (GitHub Discussions & Notes) ── */}
+      <div className="rounded-lg border border-[var(--line)] bg-[var(--board-raised)] overflow-hidden">
         {/* Tab bar */}
-        <div className="flex items-center gap-5 border-b border-[var(--line)] px-4">
-          {[['comments','Discussion', comments.length],['public_notes','Notes', publicNotes.length],['private_notes','Private', null]].map(([id, label, count]) => (
+        <div className="flex items-center gap-6 border-b border-[var(--line)] px-4 bg-[var(--board-raised-2)]">
+          {[
+            ['comments', 'Discussion', comments.length],
+            ['public_notes', 'Community Notes', publicNotes.length],
+            ['private_notes', 'Private Scratchpad', null]
+          ].map(([id, label, count]) => (
             <button
               key={id}
               onClick={() => setHubTab(id)}
               className={`tab-btn ${hubTab === id ? 'active' : ''}`}
             >
-              {label}{count !== null && <span className="text-[var(--chalk-faint)] ml-0.5 font-normal">({count})</span>}
+              <span>{label}</span>
+              {count !== null && (
+                <span className="text-[10.5px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--board-raised)] border border-[var(--line)] text-[var(--chalk-dim)] ml-1">
+                  {count}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -1436,58 +1564,66 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         {hubTab === 'comments' && (
           <div className="p-4 space-y-4">
             <form onSubmit={handlePostComment} className="space-y-2">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--chalk-faint)]">
-                <span className="hub-avatar">{currentUser?.avatar || '⚡'}</span>
-                <span>Posting as <span className="text-[var(--chalk)] font-medium">{currentUser?.username || 'Guest'}</span></span>
-                <span className="text-[var(--teal)] ml-auto">+10 XP on post</span>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--chalk-dim)]">
+                <span className="w-5 h-5 rounded-md bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xs">
+                  {currentUser?.avatar || '⚡'}
+                </span>
+                <span>
+                  Comment as <strong className="text-[var(--chalk)] font-medium">@{currentUser?.username || 'Guest'}</strong>
+                </span>
+                <span className="text-cyan-600 dark:text-cyan-400 ml-auto">+10 XP</span>
               </div>
               <textarea
                 rows={2}
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Ask a question, share an insight, or discuss edge cases…"
-                className="hub-textarea"
-                style={{ resize: 'none' }}
+                placeholder="Ask a question, discuss edge cases, or share an invariant..."
+                className="hub-textarea rounded-md text-xs"
+                style={{ resize: 'vertical' }}
               />
               <div className="flex justify-end">
                 <button
                   type="submit"
                   disabled={isPostingComment || !newComment.trim()}
-                  className="chalk-btn chalk-btn-amber disabled:opacity-30"
+                  className="btn-primary h-7.5 px-3 text-xs disabled:opacity-40"
                 >
                   <Send className="w-3 h-3" />
-                  <span>{isPostingComment ? 'Posting…' : 'Post'}</span>
+                  <span>{isPostingComment ? 'Posting…' : 'Comment'}</span>
                 </button>
               </div>
             </form>
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {comments.length === 0 ? (
-                <div className="py-12 text-center">
-                  <MessageSquare className="w-7 h-7 text-[var(--chalk-faint)] mx-auto mb-2 opacity-50" />
-                  <p className="text-[12px] text-[var(--chalk-faint)]">No comments yet — be the first.</p>
+                <div className="py-10 text-center space-y-1">
+                  <MessageSquare className="w-6 h-6 text-[var(--chalk-faint)] mx-auto opacity-50" />
+                  <p className="text-xs text-[var(--chalk-faint)]">No discussions yet — start the conversation.</p>
                 </div>
               ) : (
                 comments.map((c) => (
-                  <div key={c.id} className="hub-comment space-y-2">
+                  <div key={c.id} className="p-3 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)] space-y-2 hover:border-[var(--line-strong)] transition-all">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="hub-avatar">{c.avatar || '⚡'}</span>
-                        <span className="text-[12px] font-medium text-[var(--chalk)]">{c.username}</span>
-                        <span className="text-[10.5px] font-mono text-[var(--chalk-faint)]">
-                          {c.created_at ? new Date(c.created_at).toLocaleDateString() : ''}
+                        <span className="w-5 h-5 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs">
+                          {c.avatar || '⚡'}
+                        </span>
+                        <span className="text-xs font-semibold text-[var(--chalk)] hover:underline cursor-pointer">
+                          @{c.username}
+                        </span>
+                        <span className="text-[10px] font-mono text-[var(--chalk-faint)]">
+                          {c.created_at ? new Date(c.created_at).toLocaleDateString() : 'recently'}
                         </span>
                       </div>
                       <button
                         onClick={() => handleUpvoteComment(c.id)}
-                        className="hub-upvote"
-                        title="Upvote"
+                        className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono text-[var(--chalk-dim)] hover:text-indigo-400 hover:bg-indigo-500/10 border border-[var(--line)] transition-all cursor-pointer"
+                        title="Upvote comment"
                       >
                         <ThumbsUp className="w-3 h-3" />
-                        <span className="font-bold">{c.upvotes || 0}</span>
+                        <span className="font-semibold">{c.upvotes || 0}</span>
                       </button>
                     </div>
-                    <p className="text-[12.5px] text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-8">
+                    <p className="text-xs text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-7">
                       {c.content}
                     </p>
                   </div>
@@ -1500,27 +1636,27 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
         {hubTab === 'public_notes' && (
           <div className="p-4 space-y-4">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11.5px] text-[var(--chalk-faint)] font-sans">
-                Community intuitions, pattern breakdowns, interview tricks
+              <span className="text-xs text-[var(--chalk-faint)] font-sans">
+                Community intuitions, invariant breakdowns, and interview tricks
               </span>
               <button
                 onClick={() => setShowAddPublicNote(!showAddPublicNote)}
-                className="chalk-btn"
+                className="btn-secondary h-7 px-2.5 text-xs"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3 h-3" />
                 <span>{showAddPublicNote ? 'Cancel' : 'Share Note'}</span>
               </button>
             </div>
 
             {/* Form to add public note */}
             {showAddPublicNote && (
-              <form onSubmit={handlePostPublicNote} className="p-4 rounded-[4px] bg-[var(--board-raised-2)] border border-[var(--teal)]/30 space-y-3 fade-in">
+              <form onSubmit={handlePostPublicNote} className="p-3.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line-strong)] space-y-2.5 fade-in">
                 <input
                   type="text"
                   value={newNoteTitle}
                   onChange={(e) => setNewNoteTitle(e.target.value)}
                   placeholder="Note Title: e.g. Invariant: Sliding window boundary condition"
-                  className="hub-input"
+                  className="hub-input rounded-md"
                   required
                 />
                 <textarea
@@ -1528,21 +1664,21 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
                   value={newNoteContent}
                   onChange={(e) => setNewNoteContent(e.target.value)}
                   placeholder="Write the core algorithmic insight, invariant, or trick to remember..."
-                  className="hub-textarea"
+                  className="hub-textarea rounded-md text-xs"
                   required
                 />
                 <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={() => setShowAddPublicNote(false)}
-                    className="chalk-btn"
+                    className="btn-secondary h-7 px-2.5 text-xs"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isPostingNote || !newNoteContent.trim()}
-                    className="chalk-btn chalk-btn-amber disabled:opacity-30"
+                    className="btn-primary h-7 px-3 text-xs disabled:opacity-40"
                   >
                     {isPostingNote ? 'Publishing...' : 'Publish to Community'}
                   </button>
@@ -1550,33 +1686,35 @@ Return ONLY the complete, ready-to-run React JSX code. No markdown outside the c
               </form>
             )}
 
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {publicNotes.length === 0 ? (
-                <div className="py-12 text-center">
-                  <BookOpen className="w-7 h-7 text-[var(--chalk-faint)] mx-auto mb-2 opacity-50" />
-                  <p className="text-[12px] text-[var(--chalk-faint)]">No notes yet — share the first insight.</p>
+                <div className="py-10 text-center space-y-1">
+                  <BookOpen className="w-6 h-6 text-[var(--chalk-faint)] mx-auto opacity-50" />
+                  <p className="text-xs text-[var(--chalk-faint)]">No community notes yet — share the first insight.</p>
                 </div>
               ) : (
                 publicNotes.map((note) => (
-                  <div key={note.id} className="note-card space-y-2">
+                  <div key={note.id} className="p-3 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)] space-y-2 hover:border-[var(--line-strong)] transition-all">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="hub-avatar teal">{note.avatar || '⚡'}</span>
+                        <span className="w-5 h-5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs">
+                          {note.avatar || '⚡'}
+                        </span>
                         <div>
-                          <h4 className="text-[12.5px] font-medium text-[var(--chalk)]">{note.title || 'Algorithmic Insight'}</h4>
-                          <span className="text-[10.5px] font-mono text-[var(--chalk-faint)]">by {note.username}</span>
+                          <h4 className="text-xs font-semibold text-[var(--chalk)]">{note.title || 'Algorithmic Insight'}</h4>
+                          <span className="text-[10px] font-mono text-[var(--chalk-faint)]">by @{note.username}</span>
                         </div>
                       </div>
                       <button
                         onClick={() => handleUpvotePublicNote(note.id)}
-                        className="hub-upvote"
-                        title="Helpful"
+                        className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono text-[var(--chalk-dim)] hover:text-cyan-400 hover:bg-cyan-500/10 border border-[var(--line)] transition-all cursor-pointer"
+                        title="Mark as helpful"
                       >
                         <ThumbsUp className="w-3 h-3" />
-                        <span className="font-bold">{note.upvotes || 0}</span>
+                        <span className="font-semibold">{note.upvotes || 0}</span>
                       </button>
                     </div>
-                    <p className="text-[12.5px] text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-8">
+                    <p className="text-xs text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-7">
                       {note.content}
                     </p>
                   </div>

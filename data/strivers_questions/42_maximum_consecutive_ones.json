@@ -1,0 +1,35 @@
+{
+  "problem_id": "42",
+  "problem_name": "Maximum Consecutive Ones",
+  "step_no": 3,
+  "step_name": "Solve Problems on Arrays [Easy -> Medium -> Hard]",
+  "substep_no": 1,
+  "substep_name": "Easy",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/bYWLJb3vCWY?t=1124",
+  "leetcode_url": "https://leetcode.com/problems/max-consecutive-ones/",
+  "article_url": "https://takeuforward.org/data-structure/count-maximum-consecutive-ones-in-the-array/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/maximum-consecutive-ones",
+  "problem_statement": "Given an array that contains only 1 and 0 return the count of maximum\n consecutive ones in the array..",
+  "examples": [
+    "Example 1:\nInput: prices = {1, 1, 0, 1, 1, 1}\nOutput: 3\nExplanation: There are two consecutive 1’s and three consecutive 1’s in the array out of which maximum is 3.\n\nExample 2:\nInput: prices = {1, 0, 1, 1, 0, 1} \nOutput: 2\nExplanation: There are two consecutive 1's in the array."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "We need to find the longest streak of consecutive 1’s in a binary array.\n A simple idea is to traverse the array while maintaining a counter.\n Every time we encounter a 1, we increase the counter.\n If we encounter a 0, the streak breaks, so we reset the counter to 0.\n At each step, we track the maximum streak length seen so far.\n \n\nInitialize two variables:\n \ncnt → counts the current streak of 1’s.\nmaxi → stores the maximum streak found so far.\n\nTraverse through the array:\n \nIf nums[i] == 1, increment cnt.\nIf nums[i] == 0, reset cnt to 0.\nUpdate maxi = max(maxi, cnt) at each step.\n\nFinally, return maxi, which contains the length of the longest consecutive\n 1’s.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), since we scan the array once.\nSpace Complexity: O(1), as only constant extra variables are used.",
+      "space_complexity_details": "Time Complexity: O(N), since we scan the array once.\nSpace Complexity: O(1), as only constant extra variables are used.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to find maximum consecutive 1's in an array\n    int findMaxConsecutiveOnes(vector<int> &nums) {\n        // Variable to store current count of consecutive 1's\n        int cnt = 0;\n        // Variable to store maximum consecutive 1's\n        int maxi = 0;\n\n        // Traverse the array\n        for (int i = 0; i < nums.size(); i++) {\n            // If current element is 1, increment count\n            if (nums[i] == 1) {\n                cnt++;\n            } else {\n                // If element is 0, reset count\n                cnt = 0;\n            }\n\n            // Update maximum if current count is greater\n            maxi = max(maxi, cnt);\n        }\n\n        // Return maximum consecutive 1's\n        return maxi;\n    }\n};\n\nint main() {\n    // Input array\n    vector<int> nums = {1, 1, 0, 1, 1, 1};\n\n    // Create Solution object\n    Solution obj;\n\n    // Get answer\n    int ans = obj.findMaxConsecutiveOnes(nums);\n\n    // Print result\n    cout << \"The maximum consecutive 1's are \" << ans;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    // Function to find maximum consecutive 1's in an array\n    public int findMaxConsecutiveOnes(int[] nums) {\n        // Variable to store current count of consecutive 1's\n        int cnt = 0;\n        // Variable to store maximum consecutive 1's\n        int maxi = 0;\n\n        // Traverse the array\n        for (int i = 0; i < nums.length; i++) {\n            // If current element is 1, increment count\n            if (nums[i] == 1) {\n                cnt++;\n            } else {\n                // If element is 0, reset count\n                cnt = 0;\n            }\n\n            // Update maximum if current count is greater\n            maxi = Math.max(maxi, cnt);\n        }\n\n        // Return maximum consecutive 1's\n        return maxi;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Input array\n        int[] nums = {1, 1, 0, 1, 1, 1};\n\n        // Create Solution object\n        Solution obj = new Solution();\n\n        // Get answer\n        int ans = obj.findMaxConsecutiveOnes(nums);\n\n        // Print result\n        System.out.println(\"The maximum consecutive 1's are \" + ans);\n    }\n}",
+        "python": "class Solution:\n    # Function to find maximum consecutive 1's in an array\n    def findMaxConsecutiveOnes(self, nums):\n        # Variable to store current count of consecutive 1's\n        cnt = 0\n        # Variable to store maximum consecutive 1's\n        maxi = 0\n\n        # Traverse the array\n        for i in range(len(nums)):\n            # If current element is 1, increment count\n            if nums[i] == 1:\n                cnt += 1\n            else:\n                # If element is 0, reset count\n                cnt = 0\n\n            # Update maximum if current count is greater\n            maxi = max(maxi, cnt)\n\n        # Return maximum consecutive 1's\n        return maxi\n\n# Input array\nnums = [1, 1, 0, 1, 1, 1]\n\n# Create Solution object\nobj = Solution()\n\n# Get answer\nans = obj.findMaxConsecutiveOnes(nums)\n\n# Print result\nprint(\"The maximum consecutive 1's are\", ans)",
+        "javascript": "class Solution {\n    // Function to find maximum consecutive 1's in an array\n    findMaxConsecutiveOnes(nums) {\n        // Variable to store current count of consecutive 1's\n        let cnt = 0;\n        // Variable to store maximum consecutive 1's\n        let maxi = 0;\n\n        // Traverse the array\n        for (let i = 0; i < nums.length; i++) {\n            // If current element is 1, increment count\n            if (nums[i] === 1) {\n                cnt++;\n            } else {\n                // If element is 0, reset count\n                cnt = 0;\n            }\n\n            // Update maximum if current count is greater\n            maxi = Math.max(maxi, cnt);\n        }\n\n        // Return maximum consecutive 1's\n        return maxi;\n    }\n}\n\n// Input array\nlet nums = [1, 1, 0, 1, 1, 1];\n\n// Create Solution object\nlet obj = new Solution();\n\n// Get answer\nlet ans = obj.findMaxConsecutiveOnes(nums);\n\n// Print result\nconsole.log(\"The maximum consecutive 1's are\", ans);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:55Z"
+}

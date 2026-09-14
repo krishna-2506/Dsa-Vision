@@ -1,0 +1,18 @@
+{
+  "problem_id": "1155",
+  "problem_name": "Introduction to Bits and Tricks",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn Bit Manipulation",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/qQd-ViW7bfk?si=QtdNaRhHmZb08Mr8",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/introduction-to-bit-manipulation-theory",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-to-bits-and-tricks",
+  "problem_statement": "This article serves as an introduction to some fundamental concepts in binary number manipulation, including binary number conversion, one's complement, and two's complement and many more concepts. These concepts are not only fundamental to understanding how computers work but also crucial for solving a variety of problems in computer science.\n\nHaving an understanding of binary numbers is extremely important in the field of computer science as everything stored in a computer is in the form of only 0s and 1s.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:24:05Z"
+}

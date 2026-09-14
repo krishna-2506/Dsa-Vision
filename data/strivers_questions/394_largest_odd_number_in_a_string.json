@@ -1,0 +1,35 @@
+{
+  "problem_id": "394",
+  "problem_name": "Largest Odd Number in a String",
+  "step_no": 5,
+  "step_name": "Strings [Basic and Medium]",
+  "substep_no": 1,
+  "substep_name": "Basic and Easy String Problems",
+  "difficulty": "Easy",
+  "youtube_url": null,
+  "leetcode_url": "https://leetcode.com/problems/largest-odd-number-in-string/",
+  "article_url": "https://takeuforward.org/data-structure/largest-odd-number-in-a-string",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/largest-odd-number-in-a-string",
+  "problem_statement": "Given a string s, representing a large integer, the task is to return the largest-valued odd integer (as a string) that is a substring of the given string s.\n \n The number returned should not have leading zero's. But the given input string may have leading zero.",
+  "examples": [
+    "Example 1\nInput: s = \"5347\"\nOutput: \"5347\"\nExplanation: The odd numbers formed by the given string are → 5, 3, 53, 347, 5347. The largest odd number without leading zeroes is 5347.\n\nExample 2\nInput: s = \"0214638\"\nOutput: \"21463\"\nExplanation: The odd numbers formed by the string are → 1, 3, 21, 63, 463, 1463, 21463. We can't use numbers starting with 0, so the largest valid odd number is 21463."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Focus on finding the longest valid odd number starting from the original string.\nAn odd number must end with an odd digit, so we look for the last odd digit when scanning from the end.\nLeading zeroes don’t add value to the number, so we aim to remove them for a cleaner representation.\nOnce the endpoint (last odd digit) is determined, we identify the starting point by skipping any leading zeroes before it.\nExtract the portion between these two positions, this gives the largest possible odd integer from the string.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), since the loop runs once through the string of length N. \nSpace Complexity: O(1), as we are using only a constant amount of extra space.",
+      "space_complexity_details": "Time Complexity: O(N), since the loop runs once through the string of length N. \nSpace Complexity: O(1), as we are using only a constant amount of extra space.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Returns the largest odd number substring from the given string\n    string largeOddNum(string& s) {\n        int ind = -1;\n\n        // Find the last odd digit in the string\n        int i;\n        for (i = s.length() - 1; i >= 0; i--) {\n            if ((s[i] - '0') % 2 == 1) {\n                ind = i;\n                break;\n            }\n        }\n\n        // Skip leading zeroes up to the odd digit\n        i = 0;\n        while (i <= ind && s[i] == '0') i++;\n\n        // Return substring from first non-zero to odd digit\n        return s.substr(i, ind - i + 1);\n    }\n};\n\nint main() {\n    Solution solution;\n    string num = \"504\";\n    string result = solution.largeOddNum(num);\n    cout << \"Largest odd number: \" << result << endl;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    // Returns the largest odd number substring from the given string\n    public String largeOddNum(String s) {\n        int ind = -1;\n\n        // Find the last odd digit in the string\n        int i;\n        for (i = s.length() - 1; i >= 0; i--) {\n            if ((s.charAt(i) - '0') % 2 == 1) {\n                ind = i;\n                break;\n            }\n        }\n\n        // Return empty string if no odd digit was found\n        if (ind == -1) return \"\";\n\n        // Skip leading zeroes up to the odd digit\n        i = 0;\n        while (i <= ind && s.charAt(i) == '0') i++;\n\n        // Return substring from first non-zero to odd digit\n        return s.substring(i, ind + 1);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution solution = new Solution();\n        String num = \"504\";\n        String result = solution.largeOddNum(num);\n        System.out.println(\"Largest odd number: \" + result);\n    }\n}",
+        "python": "class Solution:\n    # Function to find the largest odd number that is a substring of given string \n    def largeOddNum(self, s: str) -> str:\n        ind = -1\n        \n        # Iterate through the string from the end to beginning\n        i = 0\n        for i in range(len(s) - 1, -1, -1):\n            # Break if an odd digit is found\n            if (int(s[i]) % 2) == 1:\n                ind = i\n                break\n        \n        # Skipping any leading zeroes\n        i = 0\n        while i <= ind and s[i] == '0':\n            i += 1\n        \n        # Return the largest odd number substring\n        return s[i:ind + 1]\n\n# Driver code\nsolution = Solution()\nnum = \"504\"\nresult = solution.largeOddNum(num)\nprint(\"Largest odd number:\", result)",
+        "javascript": "class Solution {\n    // Returns the largest odd number substring from the given string\n    largeOddNum(s) {\n        let ind = -1;\n\n        // Find the last odd digit in the string\n        let i;\n        for (i = s.length - 1; i >= 0; i--) {\n            if ((s[i] - '0') % 2 === 1) {\n                ind = i;\n                break;\n            }\n        }\n\n        // Skip leading zeroes up to the found odd digit\n        i = 0;\n        while (i <= ind && s[i] === '0') i++;\n\n        // Return the substring from first non-zero to the odd digit\n        return s.substring(i, ind + 1);\n    }\n}\n\n// Driver code\nconst solution = new Solution();\nconst num = \"504\";\nconst result = solution.largeOddNum(num);\nconsole.log(\"Largest odd number:\", result);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:00Z"
+}

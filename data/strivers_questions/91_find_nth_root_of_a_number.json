@@ -1,0 +1,49 @@
+{
+  "problem_id": "91",
+  "problem_name": "Find Nth root of a number",
+  "step_no": 4,
+  "step_name": "Binary Search [1D, 2D Arrays, Search Space]",
+  "substep_no": 2,
+  "substep_name": "BS on Answers",
+  "difficulty": "Medium",
+  "youtube_url": "https://www.youtube.com/watch?v=WjpswYrS2nY&list=PLgUwDviBIf0p4ozDR_kJJkONnb1wdx2Ma&index=62",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/nth-root-of-a-number-using-binary-search/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/find-nth-root-of-a-number",
+  "problem_statement": "Given two numbers N and M, find the Nth root of M. The nth root of a number M is defined as a number X when raised to the power N equals M. If the 'nth root is not an integer, return -1.",
+  "examples": [
+    "Input: N = 3, M = 27\nOutput: 3\nExplanation: The cube root of 27 is equal to 3.\n\nInput : N = 4, M = 69\nOutput: -1\nExplanation : The 4th root of 69 does not exist. So, the answer is -1."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute-Force Approach",
+      "algorithm": "To find the nth root of a number m, we want to find a number x such that x^n = m. The naive approach to solve this is to linearly search for every possible number.\nUsing linear search, we start from 1 and gradually try increasing values, checking if raising them to the power n gets us close to or exactly equals m.\n Start a loop from 1 to m for linear search. For each value in the loop, compute the value raised to power n. If the result equals m, return that value. If the result exceeds m, break the loop as the nth root does not exist as an integer. If no exact match is found, return -1 to indicate failure.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to find Nth root of M\n    int nthRoot(int n, int m) {\n        // Loop from 1 to m\n        for (int i = 1; i <= m; i++) {\n            // Compute i^n\n            long long power = pow(i, n);\n\n            // If equal to m, return i\n            if (power == m) return i;\n\n            // If exceeds m, break\n            if (power > m) break;\n        }\n\n        // If not found, return -1\n        return -1;\n    }\n};\n\nint main() {\n    Solution sol;\n    int n = 3, m = 27;\n\n    // Find nth root\n    cout << \"Nth Root: \" << sol.nthRoot(n, m) << endl;\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Function to find Nth root of M\n    public int nthRoot(int n, int m) {\n        // Loop from 1 to m\n        for (int i = 1; i <= m; i++) {\n            // Compute i^n\n            long power = (long) Math.pow(i, n);\n\n            // If equal to m, return i\n            if (power == m) return i;\n\n            // If exceeds m, break\n            if (power > m) break;\n        }\n\n        // If not found, return -1\n        return -1;\n    }\n}\n\n// Main class\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        int n = 3, m = 27;\n\n        // Find nth root\n        System.out.println(\"Nth Root: \" + sol.nthRoot(n, m));\n    }\n}",
+        "python": "class Solution:\n    # Function to find Nth root of M\n    def nthRoot(self, n, m):\n        # Loop from 1 to m\n        for i in range(1, m + 1):\n            # Compute i^n\n            power = i ** n\n\n            # If equal to m, return i\n            if power == m:\n                return i\n\n            # If exceeds m, break\n            if power > m:\n                break\n\n        # If not found, return -1\n        return -1\n\n# Main execution\nsol = Solution()\nn = 3\nm = 27\n\n# Find nth root\nprint(\"Nth Root:\", sol.nthRoot(n, m))",
+        "javascript": "class Solution {\n    // Function to find Nth root of M\n    nthRoot(n, m) {\n        // Loop from 1 to m\n        for (let i = 1; i <= m; i++) {\n            // Compute i^n\n            let power = Math.pow(i, n);\n\n            // If equal to m, return i\n            if (power === m) return i;\n\n            // If exceeds m, break\n            if (power > m) break;\n        }\n\n        // If not found, return -1\n        return -1;\n    }\n}\n\n// Main execution\nconst sol = new Solution();\nlet n = 3, m = 27;\n\n// Find nth root\nconsole.log(\"Nth Root:\", sol.nthRoot(n, m));"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "To find the N-th root of a number M, instead of checking every number from 1 to M (which is inefficient), we use binary search to efficiently reduce the search space. Since the N-th root lies between 1 and M, we start with a search range from 1 to M. For each middle value in this range, we compute its N-th power by multiplying it with itself N times, without using built-in power functions (to avoid integer overflow). During this multiplication, if the result exceeds M, we stop early to save time. If the final result equals M, we’ve found the N-th root. Otherwise, we adjust our search range accordingly to continue the binary search. This method significantly speeds up the process by halving the range at each step.\n Start binary search with low as 1 and high as M. Find mid of the range and multiply it with itself N times to get Nth power of mid. If Nth power of mid equals M, return mid as the N-th root. If Nth power of mid is less than M, shift search to the right half. If Nth power of mid is greater than M, shift search to the left half. If no integer root is found after the loop, return -1.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n        \nclass Solution {\npublic:\n    // Function to find N-th root of M using binary search\n    int nthRoot(int n, int m) {\n        // Set low and high for binary search\n        int low = 1, high = m;\n\n        // Start binary search\n        while (low <= high) {\n            // Calculate mid\n            int mid = (low + high) / 2;\n\n            // Store result of mid^n\n            long long ans = 1;\n            for (int i = 0; i < n; i++) {\n                ans *= mid;\n                if (ans > m) break;\n            }\n\n            // If mid^n equals m\n            if (ans == m) return mid;\n\n            // If mid^n is less than m\n            if (ans < m) low = mid + 1;\n\n            // If mid^n is more than m\n            else high = mid - 1;\n        }\n\n        // Return -1 if not found\n        return -1;\n    }\n};\n\n// Main function\nint main() {\n    Solution obj;\n    int result = obj.nthRoot(3, 27);\n    return 0;\n}",
+        "java": "class Solution {\n    // Function to find N-th root of M using binary search\n    public int nthRoot(int n, int m) {\n        // Set low and high for binary search\n        int low = 1, high = m;\n\n        // Start binary search\n        while (low <= high) {\n            // Calculate mid\n            int mid = (low + high) / 2;\n\n            // Store result of mid^n\n            long ans = 1;\n            for (int i = 0; i < n; i++) {\n                ans *= mid;\n                if (ans > m) break;\n            }\n\n            // If mid^n equals m\n            if (ans == m) return mid;\n\n            // If mid^n is less than m\n            if (ans < m) low = mid + 1;\n\n            // If mid^n is more than m\n            else high = mid - 1;\n        }\n\n        // Return -1 if not found\n        return -1;\n    }\n}\n\n// Main class\npublic class Main {\n    public static void main(String[] args) {\n        Solution obj = new Solution();\n        int result = obj.nthRoot(3, 27);\n    }\n}",
+        "python": "class Solution:\n    # Function to find N-th root of M using binary search\n    def nthRoot(self, n, m):\n        # Set low and high for binary search\n        low, high = 1, m\n\n        # Start binary search\n        while low <= high:\n            # Calculate mid\n            mid = (low + high) // 2\n\n            # Store result of mid^n\n            ans = 1\n            for _ in range(n):\n                ans *= mid\n                if ans > m:\n                    break\n\n            # If mid^n equals m\n            if ans == m:\n                return mid\n\n            # If mid^n is less than m\n            if ans < m:\n                low = mid + 1\n\n            # If mid^n is more than m\n            else:\n                high = mid - 1\n\n        # Return -1 if not found\n        return -1\n\n# Driver code\nobj = Solution()\nresult = obj.nthRoot(3, 27)",
+        "javascript": "class Solution {\n    // Function to find N-th root of M using binary search\n    nthRoot(n, m) {\n        // Set low and high for binary search\n        let low = 1, high = m;\n\n        // Start binary search\n        while (low <= high) {\n            // Calculate mid\n            let mid = Math.floor((low + high) / 2);\n\n            // Store result of mid^n\n            let ans = 1;\n            for (let i = 0; i < n; i++) {\n                ans *= mid;\n                if (ans > m) break;\n            }\n\n            // If mid^n equals m\n            if (ans === m) return mid;\n\n            // If mid^n is less than m\n            if (ans < m) low = mid + 1;\n\n            // If mid^n is more than m\n            else high = mid - 1;\n        }\n\n        // Return -1 if not found\n        return -1;\n    }\n}\n\n// Driver code\nconst obj = new Solution();\nconst result = obj.nthRoot(3, 27);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:59Z"
+}

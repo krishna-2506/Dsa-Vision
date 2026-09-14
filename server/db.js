@@ -164,6 +164,46 @@ try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN last_reviewed_at TEXT");
 } catch (e) {}
 
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN step_no INTEGER");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN step_name TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN substep_no INTEGER");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN substep_name TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN youtube_url TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN article_url TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN plus_url TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN problem_statement TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN examples TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN approaches_data TEXT");
+} catch (e) {}
+
 // Performance Indexes for high-speed queries
 sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_code_solutions_qid_tier ON code_solutions(question_id, approach_tier);
@@ -171,6 +211,7 @@ sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_user_progress_uid ON user_progress(user_id);
   CREATE INDEX IF NOT EXISTS idx_public_notes_qid ON public_notes(question_id);
   CREATE INDEX IF NOT EXISTS idx_private_notes_uid_qid ON private_notes(user_id, question_id);
+  CREATE INDEX IF NOT EXISTS idx_questions_step ON questions(step_no, substep_no);
 `);
 
 try {
@@ -618,7 +659,10 @@ export const dbService = {
       SELECT q.*, n.content as notes
       FROM questions q
       LEFT JOIN notes n ON q.id = n.question_id
-      ORDER BY q.leetcode_id ASC
+      ORDER BY 
+        CASE WHEN q.step_no IS NULL THEN 99 ELSE q.step_no END ASC,
+        CASE WHEN q.substep_no IS NULL THEN 99 ELSE q.substep_no END ASC,
+        q.id ASC
     `);
     const rows = stmt.all();
     return rows.map(r => {
@@ -630,9 +674,23 @@ export const dbService = {
           parsedTags = String(r.tags).split(',').map(t => t.trim()).filter(Boolean);
         }
       }
+      let parsedExamples = [];
+      if (r.examples) {
+        try {
+          parsedExamples = typeof r.examples === 'string' ? JSON.parse(r.examples) : r.examples;
+        } catch {}
+      }
+      let parsedApproaches = [];
+      if (r.approaches_data) {
+        try {
+          parsedApproaches = typeof r.approaches_data === 'string' ? JSON.parse(r.approaches_data) : r.approaches_data;
+        } catch {}
+      }
       return {
         ...r,
         tags: Array.isArray(parsedTags) ? parsedTags : [],
+        examples: Array.isArray(parsedExamples) ? parsedExamples : [],
+        approaches_data: Array.isArray(parsedApproaches) ? parsedApproaches : [],
         is_favorite: Boolean(r.is_favorite)
       };
     });
@@ -655,9 +713,23 @@ export const dbService = {
         parsedTags = String(row.tags).split(',').map(t => t.trim()).filter(Boolean);
       }
     }
+    let parsedExamples = [];
+    if (row.examples) {
+      try {
+        parsedExamples = typeof row.examples === 'string' ? JSON.parse(row.examples) : row.examples;
+      } catch {}
+    }
+    let parsedApproaches = [];
+    if (row.approaches_data) {
+      try {
+        parsedApproaches = typeof row.approaches_data === 'string' ? JSON.parse(row.approaches_data) : row.approaches_data;
+      } catch {}
+    }
     return {
       ...row,
       tags: Array.isArray(parsedTags) ? parsedTags : [],
+      examples: Array.isArray(parsedExamples) ? parsedExamples : [],
+      approaches_data: Array.isArray(parsedApproaches) ? parsedApproaches : [],
       is_favorite: Boolean(row.is_favorite)
     };
   },
@@ -1036,7 +1108,18 @@ export const dbService = {
     const mastered = sqlite.prepare("SELECT COUNT(*) as count FROM questions WHERE status = 'mastered'").get().count;
     const inProgress = sqlite.prepare("SELECT COUNT(*) as count FROM questions WHERE status = 'in_progress'").get().count;
     const toLearn = sqlite.prepare("SELECT COUNT(*) as count FROM questions WHERE status = 'to_learn'").get().count;
-    return { total, mastered, inProgress, toLearn };
+
+    const stepRows = sqlite.prepare(`
+      SELECT step_no, step_name, COUNT(*) as total,
+        SUM(CASE WHEN status = 'mastered' THEN 1 ELSE 0 END) as mastered,
+        SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress
+      FROM questions
+      WHERE step_no IS NOT NULL
+      GROUP BY step_no, step_name
+      ORDER BY step_no ASC
+    `).all();
+
+    return { total, mastered, inProgress, toLearn, steps: stepRows };
   },
 
   // ----------------------------------------------------

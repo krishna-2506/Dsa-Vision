@@ -1,0 +1,18 @@
+{
+  "problem_id": "2871",
+  "problem_name": "Graph Representation | Java",
+  "step_no": 15,
+  "step_name": "Graphs [Concepts & Problems]",
+  "substep_no": 1,
+  "substep_name": "Learning",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/3oI-34aPMWM",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/graph-representation-in-java",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-to-graph",
+  "problem_statement": "In the question, they will mention whether it is a directed or undirected graph. The first line contains two space-separated integers n and m denoting the number of nodes and the number of edges respectively. Next m lines contain two integers u and v representing an edge between u and v. In the case of an undirected graph if there is an edge between u and v, it means there is an edge between v and u as well. Now the question arises if there is any boundation on the number of edges, i.e., the value of m? The answer is NO. If we add more edges, then the value of m will increase.\n\nAfter understanding the input format, let us try to understand how the graph can be stored. The two most commonly used representations for graphs are",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:24:18Z"
+}

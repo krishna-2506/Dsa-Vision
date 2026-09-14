@@ -1,0 +1,49 @@
+{
+  "problem_id": "177",
+  "problem_name": "Check if the i-th bit is Set or Not",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn Bit Manipulation",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/nttpF8kwgd4?si=x9o8PsYaA2XVZ9rV",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/check-if-the-i-th-bit-is-set-or-not",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/check-if-the-i-th-bit-is-set-or-not",
+  "problem_statement": "Given two integers n and i, return true if the ith bit in the binary representation of n (counting from the least significant bit, 0-indexed) is set (i.e., equal to 1). Otherwise, return false.",
+  "examples": [
+    "Example 1:\nInput: n = 5, i = 0\nOutput: true\nExplanation: Binary representation of 5 is 101. The 0-th bit from LSB is set (1).\n\nExample 2:\nInput: n = 10, i = 1\nOutput: true\nExplanation: Binary representation of 10 is 1010. The 1-st bit from LSB is set (1)."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force",
+      "algorithm": "Think of the binary form of a number as a series of switches representing powers of 2.\nThe i-th bit corresponds to whether the 2ⁱ switch is on or off in the number.\nTo check this, examine the bit at the i-th position from the right (least significant side).\nIf the number doesn't have enough bits to reach position i, then that bit doesn't exist, return false.\nIf it does exist, the bit's value tells you whether that power of 2 contributes to the number.",
+      "time_complexity": "O(log n)",
+      "space_complexity": "O(log n)",
+      "time_complexity_details": "Time Complexity: O(log n), due to integer-to-binary conversion and indexing. \nSpace Complexity: O(log n), for the binary string.",
+      "space_complexity_details": "Time Complexity: O(log n), due to integer-to-binary conversion and indexing. \nSpace Complexity: O(log n), for the binary string.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to check if the i-th bit of number n is set (1)\n    bool checkIthBit(int n, int i) {\n        string binary = \"\";\n        // Convert the number into its binary representation\n        while (n > 0) {\n            binary += (n % 2 == 0 ? '0' : '1');  // Append '0' or '1' depending on the least significant bit\n            n /= 2;  // Move to the next higher bit\n        }\n\n        // If the bit index is greater than the length of the binary string, the bit is 0\n        if (i >= binary.size()) return false;\n\n        // Return true if the i-th bit is 1, otherwise false\n        return binary[i] == '1';\n    }\n};\n\n// Main function to test the solution\nint main() {\n    Solution sol;\n    int num = 5;  // Binary: 101\n    int bitIndex = 2;  // Check the 2nd bit (0-based index)\n\n    if (sol.checkIthBit(num, bitIndex)) {\n        cout << \"The \" << bitIndex << \"-th bit of \" << num << \" is set (1).\" << endl;\n    } else {\n        cout << \"The \" << bitIndex << \"-th bit of \" << num << \" is not set (0).\" << endl;\n    }\n\n    return 0;\n}",
+        "java": "// Solution class containing the checkIthBit function\nclass Solution {\n    // Function to check if the i-th bit of number n is set (1)\n    public boolean checkIthBit(int n, int i) {\n        String binary = Integer.toBinaryString(n);  // Convert the number into binary string representation\n\n        // If the bit index is greater than the length of the binary string, the bit is 0\n        if (i >= binary.length()) return false;\n\n        // Return true if the i-th bit is 1, otherwise false\n        return binary.charAt(binary.length() - 1 - i) == '1';\n    }\n}\n\n// Main class to test the Solution class\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        int num = 5;  // Binary: 101\n        int bitIndex = 2;  // Check the 2nd bit (0-based index)\n\n        if (sol.checkIthBit(num, bitIndex)) {\n            System.out.println(\"The \" + bitIndex + \"-th bit of \" + num + \" is set (1).\");\n        } else {\n            System.out.println(\"The \" + bitIndex + \"-th bit of \" + num + \" is not set (0).\");\n        }\n    }\n}",
+        "python": "class Solution:\n    # Function to check if the i-th bit of number n is set (1)\n    def checkIthBit(self, n, i):\n        binary = bin(n)[2:]  # Convert the number into binary string representation (strip '0b' prefix)\n\n        # If the bit index is greater than the length of the binary string, the bit is 0\n        if i >= len(binary):\n            return False\n\n        # Return True if the i-th bit is 1, otherwise False\n        return binary[-(i + 1)] == '1'\n\n# Main function to test the solution\nif __name__ == \"__main__\":\n    sol = Solution()\n    num = 5  # Binary: 101\n    bitIndex = 2  # Check the 2nd bit (0-based index)\n\n    if sol.checkIthBit(num, bitIndex):\n        print(f\"The {bitIndex}-th bit of {num} is set (1).\")\n    else:\n        print(f\"The {bitIndex}-th bit of {num} is not set (0).\")",
+        "javascript": "class Solution {\n    // Function to check if the i-th bit of number n is set (1)\n    checkIthBit(n, i) {\n        let binary = n.toString(2);  // Convert the number into binary string representation\n\n        // If the bit index is greater than the length of the binary string, the bit is 0\n        if (i >= binary.length) return false;\n\n        // Return true if the i-th bit is 1, otherwise false\n        return binary[binary.length - 1 - i] === '1';\n    }\n}\n\n// Main function to test the solution\nconst sol = new Solution();\nconst num = 5;  \nconst bitIndex = 2;  // Check the 2nd bit (0-based index)\n\nif (sol.checkIthBit(num, bitIndex)) {\n    console.log(`The ${bitIndex}-th bit of ${num} is set (1).`);\n} else {\n    console.log(`The ${bitIndex}-th bit of ${num} is not set (0).`);\n}"
+      }
+    },
+    {
+      "approach_name": "Optinal Approach",
+      "algorithm": "Use bit masking to isolate the i-th bit in the binary representation of the number.\nBy shifting 1 to the left i times, you create a mask where only the i-th bit is set.\nPerform a bitwise AND between the number and the mask to check if that specific bit is active.\nIf the result is non-zero, the i-th bit is set to 1; otherwise, it is 0.",
+      "time_complexity": "O(1)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "Time Complexity: O(1), constant time bitwise operation. \nSpace Complexity: O(1), no additional space used.",
+      "space_complexity_details": "Time Complexity: O(1), constant time bitwise operation. \nSpace Complexity: O(1), no additional space used.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to check if the i-th bit of number n is set (1)\n    bool checkIthBit(int n, int i) {\n        // Check if the i-th bit is set using bitwise AND operation\n        return (n & (1 << i)) != 0;  // If the i-th bit is 1, the result will be non-zero\n    }\n};\n\nint main() {\n    Solution sol;\n    int num = 5;  // Binary: 101\n    int bitIndex = 2;  // Check the 2nd bit (0-based index)\n\n    if (sol.checkIthBit(num, bitIndex)) {\n        cout << \"The \" << bitIndex << \"-th bit of \" << num << \" is set (1).\" << endl;\n    } else {\n        cout << \"The \" << bitIndex << \"-th bit of \" << num << \" is not set (0).\" << endl;\n    }\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Function to check if the i-th bit of number n is set (1)\n    public boolean checkIthBit(int n, int i) {\n        // Check if the i-th bit is set using bitwise AND operation\n        return (n & (1 << i)) != 0;  // If the i-th bit is 1, the result will be non-zero\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        int num = 5;  // Binary: 101\n        int bitIndex = 2;  // Check the 2nd bit (0-based index)\n\n        if (sol.checkIthBit(num, bitIndex)) {\n            System.out.println(\"The \" + bitIndex + \"-th bit of \" + num + \" is set (1).\");\n        } else {\n            System.out.println(\"The \" + bitIndex + \"-th bit of \" + num + \" is not set (0).\");\n        }\n    }\n}",
+        "python": "class Solution:\n    # Function to check if the i-th bit of number n is set (1)\n    def checkIthBit(self, n, i):\n        # Check if the i-th bit is set using bitwise AND operation\n        return (n & (1 << i)) != 0  # If the i-th bit is 1, the result will be non-zero\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    num = 5  # Binary: 101\n    bitIndex = 2  # Check the 2nd bit (0-based index)\n\n    if sol.checkIthBit(num, bitIndex):\n        print(f\"The {bitIndex}-th bit of {num} is set (1).\")\n    else:\n        print(f\"The {bitIndex}-th bit of {num} is not set (0).\")",
+        "javascript": "class Solution {\n    // Function to check if the i-th bit of number n is set (1)\n    checkIthBit(n, i) {\n        // Check if the i-th bit is set using bitwise AND operation\n        return (n & (1 << i)) !== 0;  // If the i-th bit is 1, the result will be non-zero\n    }\n}\n\n// Main function to test the solution\nconst sol = new Solution();\nconst num = 5;  // Binary: 101\nconst bitIndex = 2;  // Check the 2nd bit (0-based index)\n\nif (sol.checkIthBit(num, bitIndex)) {\n    console.log(`The ${bitIndex}-th bit of ${num} is set (1).`);\n} else {\n    console.log(`The ${bitIndex}-th bit of ${num} is not set (0).`);\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:05Z"
+}

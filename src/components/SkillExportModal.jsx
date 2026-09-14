@@ -3,33 +3,52 @@ import { X, Copy, Check, Download, FileCode, Code2, BookOpen, Layers } from 'luc
 
 const SKILL_MD = `---
 name: dsa-visualizer
-description: Production-grade Gemini Skill for generating interactive React algorithm animations, fluid sliding pointer visualizers, thoroughly commented multi-language code solutions, and SQLite database entries for AlgoVision Studio.
+description: Apple HIG-grade Gemini Skill for generating interactive React algorithm animations, fluid sliding pointer visualizers, thoroughly commented multi-language code solutions, and SQLite database entries for AlgoVision Studio.
 ---
 
-# DSA Visualizer Skill for AlgoVision Studio (Production Guide)
+# DSA Visualizer Skill for AlgoVision Studio (Apple HIG Architecture)
 
 Use this skill whenever asked to visualize any Data Structures & Algorithms problem, Striver's A2Z DSA Sheet question, or LeetCode challenge for AlgoVision Studio.
 
-## 1. Unified Visualizer UI Architecture
-Every React visualizer component generated for AlgoVision Studio MUST adhere to the standard 5-layer layout:
-- Sub-Header Bar: Step Counter (Step 1/6) | Title | Prev / Next buttons
-- Canvas Zone: Dynamic canvas area (using var(--board) / var(--board-raised)) with animated items, sliding pointers (L, R, mid), and SVG connector arrows
-- Real-Time HUD: Active Variables & Comparison Inspector (e.g. nums[L] + nums[R] == Target)
-- Explanation Footer: Educational breakdown of why pointers shifted & loop invariants
+## 1. AlgoVision Studio Architecture & Context
+The AlgoVision Studio provides an Apple macOS-grade interactive environment:
+- Approach Tier Switcher: Segmented control pill (Intuitive / Better / Optimal) above the stage.
+- Split-Screen Layout: Interactive visualizer canvas on the LEFT, syntax-highlighted multi-language code viewer on the RIGHT.
+- macOS Floating Dock Transport HUD: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x, and keyboard shortcuts.
+- Apple Invariant & Memory Inspector: Automatically renders below the stage displaying:
+  - Semantic Phase Pill (INITIALIZING, SCANNING, COMPARING, SWAPPING, MATCH_FOUND, etc.)
+  - Synchronized C++ Line Indicator (codeLine: N)
+  - Multi-Sentence Educational Reasoning (explain)
+  - Algorithmic Loop Invariant & Pruning Takeaway (intuition)
+  - Real-Time Live Memory Badges (variables: { left: 0, right: 5, sum: 25 })
 
-### Dual-Theme Color Palette & Tokens (Light & Dark Compatible):
-- Backgrounds: var(--board) for base canvas, var(--board-raised) for containers & cards, var(--board-hover) for hovered elements
-- Borders: var(--line) for structural outlines and dividers
-- Typography: var(--chalk) for primary headers/values, var(--chalk-muted) for descriptions, var(--chalk-dim) for secondary labels
-- Primary Accent: Indigo (#6366f1)
-- Semantic Scale: Emerald (#10b981) for match/success, Amber (#f59e0b) for active evaluation, Rose (#f43f5e) for eliminated bounds
-- Shape Language: Rectangular micro-badges with rounded-[6px] and font-mono text-[10px]
-- IMPORTANT: Never hardcode pure dark backgrounds like bg-black or #0b0d14 without light-mode variants. AlgoVision will dynamically manipulate and switch visualizer colors according to the user's active theme.
+CRITICAL RULE: Do NOT render card frames, outer borders, "Step X of Y" counters, prev/next buttons, language switchers, or copy-code buttons inside your visualizer component. Just render the internal visual canvas and primitives.
 
-## 2. Platform Architecture Context
-The AlgoVision Studio already provides a synchronized syntax-highlighted code execution viewer (C++, Python, Java, JavaScript) beside the visualizer in Split Screen mode.
-DO NOT replicate a full code editor on the visualizer canvas.
-INSTEAD, focus completely on crafting the richest visual diagrams (dynamic heap memory nodes, address tags, pointers, SVGs, trees, graphs, sliding windows, DP grids).
+## 2. Design System: Apple macOS & HIG Dual-Theme
+Your visualizer must feel like a native Apple product (macOS Sequoia / iOS). The visualizer canvas theme and the application theme are 100% IDENTICAL.
+
+CSS Variables (Supports Light & Dark Modes Automatically):
+- Stage Background: var(--board)
+- Card / Node Box Fill: var(--board-raised)
+- Subtle Container: var(--board-raised-2)
+- Hairline Border: var(--line)
+- Primary Text: var(--chalk)
+- Secondary / Dim Text: var(--chalk-dim)
+- Faint Index Labels: var(--chalk-faint)
+
+Apple HIG Accent Palette:
+- Active Focus / Pointers: var(--indigo) (#0a84ff - Apple System Blue)
+- Comparison / Scanning: var(--amber) (#ff9f0a - Apple System Orange)
+- Success / Matched / Done: var(--easy) (#30d158 - Apple System Mint/Green)
+- Conflict / Eliminated: var(--hard) (#ff453a - Apple System Coral Red)
+- Secondary Pointer / Aux: var(--teal) (#64d2ff - Apple System Cyan)
+- Special Structure / Hash: var(--purple) (#bf5af2 - Apple System Purple)
+
+Geometry & Motion:
+- Rounded Squircles: rx="10" or rx="8"
+- Glassmorphism: Translucent frosted fills, subtle drop shadows, delicate 1px specular borders
+- Floating Pill Pointers: Apple rounded pill badges with indicator arrows (↓ top, ↑ bottom)
+- Motion: CSS transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1)
 
 ## 3. Mandatory Multi-Tier Exports
 1. export const approaches = {
@@ -40,156 +59,127 @@ INSTEAD, focus completely on crafting the richest visual diagrams (dynamic heap 
 2. export const solutions = approaches.optimal.solutions;
 3. export const steps = approaches.optimal.steps;
 4. export const meta = { display_id, title, category, difficulty, timeComplexity, spaceComplexity, description };
-5. export default function ComponentVisualizer({ currentStep, onStepChange, customInput, customTarget, approachTier = 'optimal' }) { ... }
+5. export default function ComponentVisualizer({ currentStep, onStepChange, approachTier = 'optimal' }) { ... }
 `;
 
-const TEMPLATE_CODE = `import React, { useState } from 'react';
+const TEMPLATE_CODE = `import React from 'react';
 import ArrayView from '../components/primitives/ArrayView';
 
-export const meta = {
-  display_id: 'Q-001',
-  leetcode_id: 167,
-  title: 'Two Sum II - Input Array Is Sorted',
-  category: '1. Arrays',
-  difficulty: 'Medium',
-  timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  leetcodeUrl: 'https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/',
-  description: 'Find two numbers in a 1-indexed sorted array that add up to a target number using two converging pointers.'
+export const approaches = {
+  intuitive: {
+    title: 'Intuitive: Brute Force',
+    badge: 'Brute Force',
+    complexity: { time: 'O(N²)', space: 'O(1)' },
+    steps: [
+      {
+        title: '1. Initialize Iteration',
+        phase: 'INITIALIZING',
+        codeLine: 3,
+        variables: { i: 0, j: 1 },
+        explain: 'Start at index 0 and inspect all pairs sequentially.',
+        intuition: 'Brute force checks every possible combination to guarantee finding a solution.',
+        activeIndex: 0,
+        compareIndex: 1
+      }
+    ],
+    solutions: {
+      cpp: \`// C++ Brute Force — O(N²)\`,
+      java: \`// Java Brute Force — O(N²)\`,
+      python: \`# Python Brute Force — O(N²)\`
+    }
+  },
+  better: {
+    title: 'Better: Binary Search',
+    badge: 'Sub-Optimal',
+    complexity: { time: 'O(N log N)', space: 'O(1)' },
+    steps: [ /* rich pedagogical steps */ ],
+    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
+  },
+  optimal: {
+    title: 'Optimal: Two Pointers',
+    badge: 'Optimal',
+    complexity: { time: 'O(N)', space: 'O(1)' },
+    steps: [
+      {
+        title: '1. Initialize Left & Right Boundaries',
+        phase: 'INITIALIZING',
+        codeLine: 3,
+        variables: { left: 0, right: 5, sum: 25, target: 26 },
+        explain: 'Place left pointer at index 0 (val=2) and right pointer at index 5 (val=23). Target = 26.',
+        intuition: 'The array is sorted, so sum < target requires left++, and sum > target requires right--.',
+        activeIndex: 0,
+        compareIndex: 5
+      },
+      {
+        title: '2. Evaluate Pair: 2 + 23 = 25 (< 26)',
+        phase: 'COMPARING',
+        codeLine: 8,
+        variables: { left: 0, right: 5, sum: 25, target: 26 },
+        explain: 'Sum 25 is less than target 26. Since the array is sorted, incrementing left increases our sum.',
+        intuition: 'Incrementing left prunes all pairs (left, <= right) from the search space.',
+        activeIndex: 0,
+        compareIndex: 5
+      },
+      {
+        title: '3. Match Found! 7 + 19 == 26',
+        phase: 'MATCH_FOUND',
+        codeLine: 7,
+        variables: { left: 1, right: 4, sum: 26, target: 26 },
+        explain: 'Match found! numbers[1] (7) + numbers[4] (19) equals target 26.',
+        intuition: 'Optimal O(N) single-pass complete with zero auxiliary space.',
+        activeIndex: 1,
+        compareIndex: 4
+      }
+    ],
+    solutions: {
+      cpp: \`// C++ Optimal Two Pointers
+vector<int> twoSum(vector<int>& numbers, int target) {
+    int left = 0, right = numbers.size() - 1;
+    while (left < right) {
+        int sum = numbers[left] + numbers[right];
+        if (sum == target) return {left + 1, right + 1};
+        else if (sum < target) left++;
+        else right--;
+    }
+    return {};
+}\`,
+      java: \`// Java Solution\`,
+      python: \`# Python Solution\`
+    }
+  }
 };
 
-const ARRAY = [2, 7, 11, 15, 19, 23];
-const TARGET = 26;
+export const solutions = approaches.optimal.solutions;
+export const steps     = approaches.optimal.steps;
+export const meta = {
+  display_id:      'Q-001',
+  leetcode_id:     167,
+  title:           'Two Sum II - Input Array Is Sorted',
+  category:        '1. Arrays',
+  difficulty:      'Medium',
+  timeComplexity:  'O(N)',
+  spaceComplexity: 'O(1)',
+  description:     'Find two numbers in a sorted array that add up to a target number using converging pointers.'
+};
 
-export const steps = [
-  {
-    title: '1. Initialize Left & Right Boundaries',
-    left: 0,
-    right: 5,
-    codeLine: 3,
-    code: 'int left = 0, right = numbers.size() - 1;\\nint target = 26;',
-    explanation: 'Place left pointer at index 0 (val=2) and right pointer at index 5 (val=23). Target = 26.',
-    currentSum: 25,
-    status: 'less'
-  },
-  {
-    title: '2. Evaluate Pair: 2 + 23 = 25 (< 26)',
-    left: 0,
-    right: 5,
-    codeLine: 8,
-    code: 'int sum = numbers[left] + numbers[right]; // 2 + 23 = 25\\nif (sum < target) left++; // Need larger sum',
-    explanation: 'Sum 25 is less than target 26. Since array is sorted, incrementing left increases our sum.',
-    currentSum: 25,
-    status: 'less'
-  },
-  {
-    title: '3. Increment Left: index 0 -> 1',
-    left: 1,
-    right: 5,
-    codeLine: 9,
-    code: 'left++; // Left slides to index 1 (val = 7)',
-    explanation: 'Left pointer advances to index 1. New candidate pair is numbers[1] (7) and numbers[5] (23).',
-    currentSum: 30,
-    status: 'calc'
-  },
-  {
-    title: '4. Target Match Found! 7 + 19 == 26',
-    left: 1,
-    right: 4,
-    codeLine: 7,
-    code: 'if (sum == target) return { left + 1, right + 1 }; // Return [2, 5]',
-    explanation: 'Match found! numbers[1] (7) + numbers[4] (19) equals target 26. Optimal O(N) time and O(1) space.',
-    currentSum: 26,
-    status: 'found'
-  }
-];
-
-export default function ProblemVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => {
-    if (stepIndex < steps.length - 1) setStep(stepIndex + 1);
-  };
-
-  const handlePrev = () => {
-    if (stepIndex > 0) setStep(stepIndex - 1);
-  };
-
-  const pointers = [
-    { index: stepData.left, label: 'L', color: stepData.status === 'found' ? 'emerald' : 'indigo' },
-    { index: stepData.right, label: 'R', color: stepData.status === 'found' ? 'emerald' : 'amber' }
-  ];
-
-  const matchIndices = stepData.status === 'found' ? [stepData.left, stepData.right] : [];
+export default function TwoSumIIInputArrayIsSortedVisualizer({
+  currentStep = 0,
+  approachTier = 'optimal'
+}) {
+  const activeApproach = approaches[approachTier] || approaches.optimal;
+  const activeSteps    = activeApproach.steps;
+  const stepIndex      = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
+  const stepData       = activeSteps[stepIndex] || activeSteps[0];
 
   return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={handlePrev}
-            disabled={stepIndex === 0}
-            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition"
-          >
-            ← Prev
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={stepIndex === steps.length - 1}
-            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition"
-          >
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* Canvas Zone */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
-        <ArrayView
-          items={ARRAY}
-          pointers={pointers}
-          matchIndices={matchIndices}
-        />
-
-        {/* Real-Time HUD */}
-        <div className="mt-5 flex items-center gap-4 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-          <div className="flex items-center gap-1.5">
-            <span className="text-indigo-400 font-bold">nums[{stepData.left}]</span>
-            <span className="text-slate-600">+</span>
-            <span className="text-amber-400 font-bold">nums[{stepData.right}]</span>
-            <span className="text-slate-600">=</span>
-            <span className="font-bold text-emerald-400">
-              {stepData.currentSum}
-            </span>
-          </div>
-
-          <span className="text-slate-700">|</span>
-
-          <div className="flex items-center gap-2">
-            <span className="text-slate-500">Target: <strong className="text-white">{TARGET}</strong></span>
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded border bg-emerald-500/20 text-emerald-400 border-emerald-500/40">
-              MATCH ✓
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Explanation Footer */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
-        {stepData.explanation}
-      </div>
+    <div className="w-full flex flex-col items-center justify-center p-4">
+      <ArrayView
+        items={[2, 7, 11, 15, 19, 23]}
+        pointers={[
+          { index: stepData.activeIndex ?? 0, label: 'L', color: 'blue' },
+          { index: stepData.compareIndex ?? 5, label: 'R', color: 'amber' }
+        ]}
+      />
     </div>
   );
 }
@@ -222,71 +212,73 @@ export default function SkillExportModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#0e1017] border border-white/10 rounded-2xl max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="px-6 py-4 bg-[#0a0c11] border-b border-white/5 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              <FileCode className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl animate-in fade-in duration-200">
+      <div className="macos-window max-w-3xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-[var(--line-strong)] bg-[var(--board-raised)]/95 backdrop-blur-2xl rounded-2xl">
+        {/* macOS Titlebar */}
+        <div className="macos-titlebar px-5 py-3.5 bg-[var(--board-raised-2)]/80 border-b border-[var(--line)] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="traffic-lights">
+              <span className="close" onClick={onClose} />
+              <span className="minimize" />
+              <span className="maximize" />
             </div>
-            <div>
-              <h3 className="text-sm font-bold text-white tracking-tight flex items-center gap-2">
-                <span>Gemini DSA Skill & Template Hub</span>
-                <span className="text-[10px] font-mono font-normal px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                  Standardized UI
-                </span>
-              </h3>
-              <p className="text-xs text-slate-400">
-                Gives Gemini the blueprint to generate identical, high-fidelity visualizers
-              </p>
+            <div className="flex items-center gap-2 ml-2">
+              <FileCode className="w-4 h-4 text-[var(--indigo)]" />
+              <span className="text-xs font-semibold text-[var(--chalk)] tracking-tight">
+                Apple HIG Skill & Architecture Hub
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--indigo-dim)] text-[var(--indigo)] border border-[var(--indigo)]/20 font-semibold">
+                HIG Spec
+              </span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition"
+            className="p-1 rounded-full text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-raised-2)] transition cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex items-center px-6 border-b border-white/5 bg-[#090b10] text-xs font-mono">
-          <button
-            onClick={() => setActiveTab('skill')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition ${
-              activeTab === 'skill'
-                ? 'border-indigo-500 text-white font-bold bg-white/[0.02]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
-            <span>1. SKILL.md (System Rules)</span>
-          </button>
+        {/* Apple Segmented Tab Navigation */}
+        <div className="flex items-center px-6 py-2 border-b border-[var(--line)] bg-[var(--board-raised)] text-xs">
+          <div className="segmented-control p-0.5 rounded-lg flex items-center gap-1">
+            <button
+              onClick={() => setActiveTab('skill')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-medium transition cursor-pointer ${
+                activeTab === 'skill'
+                  ? 'active shadow-sm font-semibold'
+                  : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-[var(--indigo)]" />
+              <span>1. SKILL.md (Rules)</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('template')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition ${
-              activeTab === 'template'
-                ? 'border-indigo-500 text-white font-bold bg-white/[0.02]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Code2 className="w-3.5 h-3.5 text-indigo-400" />
-            <span>2. Visualizer JSX Template</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('template')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-medium transition cursor-pointer ${
+                activeTab === 'template'
+                  ? 'active shadow-sm font-semibold'
+                  : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+              }`}
+            >
+              <Code2 className="w-3.5 h-3.5 text-[var(--indigo)]" />
+              <span>2. Visualizer JSX Template</span>
+            </button>
 
-          <button
-            onClick={() => setActiveTab('guide')}
-            className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium transition ${
-              activeTab === 'guide'
-                ? 'border-indigo-500 text-white font-bold bg-white/[0.02]'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Layers className="w-3.5 h-3.5 text-indigo-400" />
-            <span>3. How to Setup in Gemini</span>
-          </button>
+            <button
+              onClick={() => setActiveTab('guide')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-medium transition cursor-pointer ${
+                activeTab === 'guide'
+                  ? 'active shadow-sm font-semibold'
+                  : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5 text-[var(--indigo)]" />
+              <span>3. Setup Guide</span>
+            </button>
+          </div>
         </div>
 
         {/* Content Body */}
@@ -294,10 +286,10 @@ export default function SkillExportModal({ isOpen, onClose }) {
           {activeTab === 'skill' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-300">Complete SKILL.md Rules & Design Specification</span>
-                <span className="font-mono text-slate-500 text-[11px]">skills/dsa-visualizer/SKILL.md</span>
+                <span className="font-semibold text-[var(--chalk)]">Complete SKILL.md Rules & Design Specification</span>
+                <span className="font-mono text-[var(--chalk-faint)] text-[11px]">skills/dsa-visualizer/SKILL.md</span>
               </div>
-              <pre className="w-full p-4 bg-[#08090d] border border-white/5 rounded-xl text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed max-h-[380px] overflow-y-auto selection:bg-indigo-600">
+              <pre className="w-full p-4 bg-[var(--board)] border border-[var(--line)] rounded-xl text-xs text-[var(--chalk-dim)] font-mono whitespace-pre-wrap leading-relaxed max-h-[380px] overflow-y-auto selection:bg-[var(--indigo)] select-all">
                 {SKILL_MD}
               </pre>
             </div>
@@ -306,13 +298,13 @@ export default function SkillExportModal({ isOpen, onClose }) {
           {activeTab === 'template' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-300">Standard React Visualizer Template (Copy or Inject)</span>
-                <span className="font-mono text-emerald-400 text-[11px]">Unified 5-Layer UI Architecture</span>
+                <span className="font-semibold text-[var(--chalk)]">Standard Apple HIG Visualizer Template</span>
+                <span className="font-mono text-[var(--easy)] text-[11px] font-semibold">Ready to Mount</span>
               </div>
-              <p className="text-xs text-slate-400">
-                Gemini uses this scaffold to output ready-to-run React components matching AlgoVision Studio's exact dark obsidian theme, pointer mechanics, and HUD inspector.
+              <p className="text-xs text-[var(--chalk-dim)]">
+                Gemini uses this scaffold to output ready-to-run React components matching AlgoVision Studio's exact Apple HIG theme, squircle primitives, and deep educational explanation panel.
               </p>
-              <pre className="w-full p-4 bg-[#08090d] border border-white/5 rounded-xl text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed max-h-[340px] overflow-y-auto selection:bg-indigo-600">
+              <pre className="w-full p-4 bg-[var(--board)] border border-[var(--line)] rounded-xl text-xs text-[var(--chalk-dim)] font-mono whitespace-pre-wrap leading-relaxed max-h-[340px] overflow-y-auto selection:bg-[var(--indigo)] select-all">
                 {TEMPLATE_CODE}
               </pre>
             </div>
@@ -320,28 +312,28 @@ export default function SkillExportModal({ isOpen, onClose }) {
 
           {activeTab === 'guide' && (
             <div className="space-y-4 text-xs">
-              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-2">
-                <span className="text-indigo-400 font-bold block text-sm">Option A: Antigravity IDE / CLI Skill</span>
-                <p className="text-slate-300">
-                  Save <code className="text-indigo-300 bg-black/40 px-1.5 py-0.5 rounded">SKILL.md</code> directly into your local configuration:
+              <div className="p-4 bg-[var(--board-raised-2)]/50 border border-[var(--line)] rounded-xl space-y-2">
+                <span className="text-[var(--indigo)] font-semibold block text-sm">Option A: Antigravity IDE / CLI Skill</span>
+                <p className="text-[var(--chalk-dim)]">
+                  Save <code className="text-[var(--indigo)] bg-[var(--board)] px-1.5 py-0.5 rounded font-mono">SKILL.md</code> directly into your local configuration:
                 </p>
-                <div className="p-2.5 bg-[#08090e] rounded border border-white/5 font-mono text-[11px] text-slate-300 select-all">
+                <div className="p-2.5 bg-[var(--board)] rounded-lg border border-[var(--line)] font-mono text-[11px] text-[var(--chalk)] select-all">
                   C:\Users\&lt;username&gt;\.gemini\config\skills\dsa-visualizer\SKILL.md
                 </div>
-                <p className="text-slate-400">Antigravity will automatically detect and activate this skill when working on DSA visualization tasks.</p>
+                <p className="text-[var(--chalk-dim)]">Antigravity will automatically detect and activate this skill when working on DSA visualization tasks.</p>
               </div>
 
-              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-2">
-                <span className="text-indigo-400 font-bold block text-sm">Option B: Gemini Custom Gem</span>
-                <p className="text-slate-300">
-                  Create a new Gem named <strong>AlgoVision Engineer</strong> at <a href="https://gemini.google.com/gems" target="_blank" rel="noreferrer" className="text-indigo-400 underline">gemini.google.com</a> and paste the contents of SKILL.md into its <em>Instructions</em> box.
+              <div className="p-4 bg-[var(--board-raised-2)]/50 border border-[var(--line)] rounded-xl space-y-2">
+                <span className="text-[var(--indigo)] font-semibold block text-sm">Option B: Gemini Custom Gem</span>
+                <p className="text-[var(--chalk-dim)]">
+                  Create a new Gem named <strong>AlgoVision Engineer</strong> at <a href="https://gemini.google.com/gems" target="_blank" rel="noreferrer" className="text-[var(--indigo)] underline">gemini.google.com</a> and paste the contents of SKILL.md into its <em>Instructions</em> box.
                 </p>
               </div>
 
-              <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl space-y-2">
-                <span className="text-emerald-400 font-bold block text-sm">Option C: 1-Click Studio Prompt (Easiest)</span>
-                <p className="text-slate-300">
-                  In AlgoVision Studio, open any problem and click <strong>"Upload Visualizer"</strong> &gt; <strong>"Copy Gemini Prompt"</strong>. It automatically injects the exact template, test cases, and problem statement into your clipboard!
+              <div className="p-4 bg-[var(--board-raised-2)]/50 border border-[var(--line)] rounded-xl space-y-2">
+                <span className="text-[var(--easy)] font-semibold block text-sm">Option C: 1-Click Studio Prompt (Easiest)</span>
+                <p className="text-[var(--chalk-dim)]">
+                  In AlgoVision Studio, open any problem and click <strong>"AI Prompt"</strong> or <strong>"Copy Gemini Prompt"</strong>. It automatically generates the prompt with the exact Apple HIG design specification, test cases, and problem statement into your clipboard!
                 </p>
               </div>
             </div>
@@ -349,27 +341,27 @@ export default function SkillExportModal({ isOpen, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-[#0a0c11] border-t border-white/5 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[var(--board-raised-2)]/60 border-t border-[var(--line)] flex items-center justify-between">
           <button
             onClick={handleDownload}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold border border-white/10 transition"
+            className="btn-ghost flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold cursor-pointer"
           >
-            <Download className="w-4 h-4 text-indigo-400" />
+            <Download className="w-4 h-4 text-[var(--indigo)]" />
             <span>Download {activeTab === 'template' ? 'Template (.jsx)' : 'SKILL.md'}</span>
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+              className="btn-ghost px-4 py-2 rounded-full text-xs font-medium cursor-pointer"
             >
               Done
             </button>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-2 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/25 transition"
+              className="btn-primary flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold shadow-md cursor-pointer"
             >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-white" /> : <Copy className="w-4 h-4 text-white" />}
               <span>{copied ? 'Copied to Clipboard!' : activeTab === 'template' ? 'Copy React Template' : 'Copy SKILL.md'}</span>
             </button>
           </div>

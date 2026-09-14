@@ -1,0 +1,31 @@
+{
+  "problem_id": "2814",
+  "problem_name": "Cycle Detection in Directed Graph (DFS)",
+  "step_no": 15,
+  "step_name": "Graphs [Concepts & Problems]",
+  "substep_no": 2,
+  "substep_name": "Problems on BFS/DFS",
+  "difficulty": "Hard",
+  "youtube_url": "https://youtu.be/9twcmtQj4DU",
+  "leetcode_url": "https://leetcode.com/problems/course-schedule-ii/discuss/293048/detecting-cycle-in-directed-graph-problem",
+  "article_url": "https://takeuforward.org/data-structure/detect-cycle-in-a-directed-graph-using-dfs-g-19/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/detect-a-cycle-in-a-directed-graph",
+  "problem_statement": "Given a directed graph with V vertices and E edges, check whether it contains any cycle or not.",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\nprivate:\n\tbool dfsCheck(int node, vector<int> adj[], int vis[], int pathVis[]) {\n\t\tvis[node] = 1;\n\t\tpathVis[node] = 1;\n\n\t\t// traverse for adjacent nodes\n\t\tfor (auto it : adj[node]) {\n\t\t\t// when the node is not visited\n\t\t\tif (!vis[it]) {\n\t\t\t\tif (dfsCheck(it, adj, vis, pathVis) == true)\n\t\t\t\t\treturn true;\n\t\t\t}\n\t\t\t// if the node has been previously visited\n\t\t\t// but it has to be visited on the same path\n\t\t\telse if (pathVis[it]) {\n\t\t\t\treturn true;\n\t\t\t}\n\t\t}\n\n\t\tpathVis[node] = 0;\n\t\treturn false;\n\t}\npublic:\n\t// Function to detect cycle in a directed graph.\n\tbool isCyclic(int V, vector<int> adj[]) {\n\t\tint vis[V] = {0};\n\t\tint pathVis[V] = {0};\n\n\t\tfor (int i = 0; i < V; i++) {\n\t\t\tif (!vis[i]) {\n\t\t\t\tif (dfsCheck(i, adj, vis, pathVis) == true) return true;\n\t\t\t}\n\t\t}\n\t\treturn false;\n\t}\n};\n\n\nint main() {\n\n\t// V = 11, E = 11;\n\tvector<int> adj[11] = {{}, {2}, {3}, {4, 7}, {5}, {6}, {}, {5}, {9}, {10}, {8}};\n\tint V = 11;\n\tSolution obj;\n\tbool ans = obj.isCyclic(V, adj);\n\n\tif (ans)\n\t\tcout << \"True\\n\";\n\telse\n\t\tcout << \"False\\n\";\n\n\treturn 0;\n}",
+        "java": "import java.util.*;\n\n\nclass Solution {\n    private boolean dfsCheck(int node, ArrayList<ArrayList<Integer>> adj, int vis[], int pathVis[]) {\n        vis[node] = 1; \n        pathVis[node] = 1; \n        \n        // traverse for adjacent nodes \n        for(int it : adj.get(node)) {\n            // when the node is not visited \n            if(vis[it] == 0) {\n                if(dfsCheck(it, adj, vis, pathVis) == true) \n                    return true; \n            }\n            // if the node has been previously visited\n            // but it has to be visited on the same path \n            else if(pathVis[it] == 1) {\n                return true; \n            }\n        }\n        \n        pathVis[node] = 0; \n        return false; \n    }\n\n    // Function to detect cycle in a directed graph.\n    public boolean isCyclic(int V, ArrayList<ArrayList<Integer>> adj) {\n        int vis[] = new int[V];\n        int pathVis[] = new int[V];\n        \n        for(int i = 0;i<V;i++) {\n            if(vis[i] == 0) {\n                if(dfsCheck(i, adj, vis, pathVis) == true) return true; \n            }\n        }\n        return false; \n    }\n}\n\npublic class tUf {\n    public static void main(String[] args) {\n        int V = 11;\n        ArrayList<ArrayList<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < V; i++) {\n            adj.add(new ArrayList<>());\n        }\n        adj.get(1).add(2);\n        adj.get(2).add(3);\n        adj.get(3).add(4);\n        adj.get(3).add(7);\n        adj.get(4).add(5);\n        adj.get(5).add(6);\n        adj.get(7).add(5);\n        adj.get(8).add(9);\n        adj.get(9).add(10);\n        adj.get(10).add(8);\n\n        Solution obj = new Solution();\n        boolean ans = obj.isCyclic(V, adj);\n        if (ans)\n            System.out.println(\"True\");\n        else\n            System.out.println(\"False\");\n\n    }\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:19Z"
+}

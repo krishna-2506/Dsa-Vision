@@ -1,0 +1,49 @@
+{
+  "problem_id": "371",
+  "problem_name": "Factorial of a given number",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 6,
+  "substep_name": "Learn Basic Recursion",
+  "difficulty": "Easy",
+  "youtube_url": "https://www.youtube.com/watch?v=69ZCDFy-OUo&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9&index=3",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/factorial-of-a-number-iterative-and-recursive",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/factorial-of-a-given-number-i",
+  "problem_statement": "Given a number X,  print its factorial.",
+  "examples": [
+    "Example 1:\nInput: X = 5\nOutput: 120\nExplanation: 5! = 5*4*3*2*1\n\nExample 2:\nInput: X = 3\nOutput: 6\nExplanation: 3!=3*2*1"
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Iterative Solution",
+      "algorithm": "Since the factorial of a number X is the product of the number itself and\n all its preceding positive integers, we can calculate it using a loop.\nWe initialize a variable (say fact) to 1, which will hold the running\n product.\nWe run a loop from i = 1 to X.\nIn each iteration, we multiply fact by i (i.e.,\n fact = fact * i).\n \nAfter the loop ends, fact will contain the factorial of X.",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity: O(n)\n\nSpace Complexity: O(1)",
+      "space_complexity_details": "Time Complexity: O(n)\n\nSpace Complexity: O(1)",
+      "codes": {
+        "cpp": "#include <iostream>\nusing namespace std;\n\n// Function to calculate factorial of a number\nint factorial(int X) {\n    int ans = 1;\n\n    // Loop from 1 to X to compute factorial\n    for (int i = 1; i <= X; i++) {\n        ans = ans * i;\n    }\n\n    // Return the final result\n    return ans;\n}\n\nint main() {\n    // Input value for which factorial is to be calculated\n    int X = 5;\n\n    // Call the factorial function and store the result\n    int result = factorial(X);\n\n    // Print the result\n    cout << \"The factorial of \" << X << \" is \" << result;\n\n    return 0;\n}",
+        "java": "public class Main {\n\n    // Function to calculate factorial of a number\n    public static int factorial(int X) {\n        int ans = 1;\n\n        // Loop from 1 to X to compute factorial\n        for (int i = 1; i <= X; i++) {\n            ans = ans * i;\n        }\n\n        // Return the final result\n        return ans;\n    }\n\n    public static void main(String[] args) {\n        // Input value for which factorial is to be calculated\n        int X = 5;\n\n        // Call the factorial function and store the result\n        int result = factorial(X);\n\n        // Print the result\n        System.out.println(\"The factorial of \" + X + \" is \" + result);\n    }\n}",
+        "python": "# Function to calculate factorial of a number\ndef factorial(X):\n    ans = 1\n\n    # Loop from 1 to X to compute factorial\n    for i in range(1, X + 1):\n        ans *= i\n\n    # Return the final result\n    return ans\n\n# Input value for which factorial is to be calculated\nX = 5\n\n# Call the factorial function and store the result\nresult = factorial(X)\n\n# Print the result\nprint(f\"The factorial of {X} is {result}\")",
+        "javascript": "// Function to calculate factorial of a number\nfunction factorial(X) {\n    let ans = 1;\n\n    // Loop from 1 to X to compute factorial\n    for (let i = 1; i <= X; i++) {\n        ans *= i;\n    }\n\n    // Return the final result\n    return ans;\n}\n\n// Input value for which factorial is to be calculated\nconst X = 5;\n\n// Call the factorial function and store the result\nconst result = factorial(X);\n\n// Print the result\nconsole.log(`The factorial of ${X} is ${result}`);"
+      }
+    },
+    {
+      "approach_name": "Recursive Solution",
+      "algorithm": "The factorial of a number N can be calculated by multiplying all natural\n numbers from 1 to N.\nWe can visualize this using recursion:\n\nfactorial(N) = N * factorial(N - 1)\nThis means the factorial of N is the product of N and the\n factorial of N - 1.\n\nWe define a base case:\n \nIf N == 0, we return 1, since 0! = 1 by definition.\n \n\nThis approach breaks the problem into smaller subproblems, and the results of each\n subproblem are multiplied together as the recursive calls return.\nThe final result is stored and printed as the output of the factorial(N)\n function.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), Since the function is being called n times, and for each\n function, we have only one printable line that takes O(1) time, so the cumulative time\n complexity would be O(N) \n\nSpace Complexity: O(N), In the worst case, the recursion stack space would be\n full with all the function calls waiting to get completed and that would make it an O(N)\n recursion stack space.",
+      "space_complexity_details": "Time Complexity: O(N), Since the function is being called n times, and for each\n function, we have only one printable line that takes O(1) time, so the cumulative time\n complexity would be O(N) \n\nSpace Complexity: O(N), In the worst case, the recursion stack space would be\n full with all the function calls waiting to get completed and that would make it an O(N)\n recursion stack space.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Recursive function to calculate factorial of a number\nint factorial(int n) {\n    // Base case: factorial of 0 is 1\n    if (n == 0) {\n        return 1;\n    }\n\n    // Recursive case: n * factorial of (n-1)\n    return n * factorial(n - 1);\n}\n\nint main() {\n    // Define the number to compute factorial\n    int n = 3;\n\n    // Call the factorial function and print the result\n    cout << factorial(n) << endl;\n\n    return 0;\n}",
+        "java": "public class Main {\n\n    // Recursive function to calculate factorial of a number\n    public static int factorial(int n) {\n        // Base case: factorial of 0 is 1\n        if (n == 0) {\n            return 1;\n        }\n\n        // Recursive case: n * factorial of (n-1)\n        return n * factorial(n - 1);\n    }\n\n    public static void main(String[] args) {\n        // Define the number to compute factorial\n        int n = 3;\n\n        // Call the factorial function and print the result\n        System.out.println(factorial(n));\n    }\n}",
+        "python": "# Recursive function to calculate factorial of a number\ndef factorial(n):\n    # Base case: factorial of 0 is 1\n    if n == 0:\n        return 1\n\n    # Recursive case: n * factorial of (n-1)\n    return n * factorial(n - 1)\n\n# Define the number to compute factorial\nn = 3\n\n# Call the factorial function and print the result\nprint(factorial(n))",
+        "javascript": "// Recursive function to calculate factorial of a number\nfunction factorial(n) {\n    // Base case: factorial of 0 is 1\n    if (n === 0) {\n        return 1;\n    }\n\n    // Recursive case: n * factorial of (n-1)\n    return n * factorial(n - 1);\n}\n\n// Define the number to compute factorial\nconst n = 3;\n\n// Call the factorial function and print the result\nconsole.log(factorial(n));"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:53Z"
+}

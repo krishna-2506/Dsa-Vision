@@ -1,0 +1,35 @@
+{
+  "problem_id": "993",
+  "problem_name": "Sum of Beauty of All Substrings",
+  "step_no": 5,
+  "step_name": "Strings [Basic and Medium]",
+  "substep_no": 2,
+  "substep_name": "Medium String Problems",
+  "difficulty": "Medium",
+  "youtube_url": null,
+  "leetcode_url": "https://leetcode.com/problems/sum-of-beauty-of-all-substrings/",
+  "article_url": "https://takeuforward.org/data-structure/sum-of-beauty-of-all-substring",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/sum-of-beauty-of-all-substrings",
+  "problem_statement": "The beauty of a string is defined as the difference between the frequency of the most frequent character and the least frequent character (excluding characters that do not appear) in that string.\n\nGiven a string s, return the sum of beauty values of all possible substrings of s.",
+  "examples": [
+    "Example 1:\nInput: s = \"xyx\"\nOutput: 1\nExplanation: The substrings with non-zero beauty are:\n\"xyx\" → frequencies: x:2, y:1 → beauty = 2 - 1 = 1\n\"xy\" → x:1, y:1 → beauty = 0\n\"yx\" → y:1, x:1 → beauty = 0\n\"x\" or \"y\" → beauty = 0\nTotal sum = 1 (from \"xyx\") = 1\n\nExample 2:\nInput: s = \"aabcbaa\"\nOutput: 17\nExplanation: Various substrings such as \"aabc\", \"bcba\", etc., have non-zero beauty values. Summing all gives 17."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Loop through all substrings of the string.\nMaintain a frequency map of characters for each substring.\nFor each substring:\nFind the most frequent character's count.\n\nFind the least frequent non-zero character's count.\nCalculate the difference between the two counts.\nAdd the difference to the running sum.",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity:\nOuter loop: O(n) (for each starting index)\nInner loop: O(n) (for each ending index)\nComputing max and min for frequencies: O(26) in the worst case (since only lowercase letters), O(n^2 * 26) ≈ O(n^2) because 26 is constant.\n\nSpace Complexity:\nFrequency map uses at most 26 characters → O(26) = O(1).\nNo extra data structures apart from that.",
+      "space_complexity_details": "Time Complexity:\nOuter loop: O(n) (for each starting index)\nInner loop: O(n) (for each ending index)\nComputing max and min for frequencies: O(26) in the worst case (since only lowercase letters), O(n^2 * 26) ≈ O(n^2) because 26 is constant.\n\nSpace Complexity:\nFrequency map uses at most 26 characters → O(26) = O(1).\nNo extra data structures apart from that.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    int beautySum(string s) {\n        int n = s.length();\n        int sum = 0;\n\n        // Loop over all substrings\n        for (int i = 0; i < n; i++) {\n            unordered_map<char, int> freq;\n\n            for (int j = i; j < n; j++) {\n                // Increase frequency of current character\n                freq[s[j]]++;\n\n                int maxi = INT_MIN;\n                int mini = INT_MAX;\n\n                // Find max and min frequency\n                for (auto it : freq) {\n                    mini = min(mini, it.second);\n                    maxi = max(maxi, it.second);\n                }\n\n                // Add difference to sum\n                sum += (maxi - mini);\n            }\n        }\n\n        return sum;\n    }\n};\n\nint main() {\n    Solution sol;\n    string s = \"xyx\";\n    cout << \"Beauty Sum: \" << sol.beautySum(s) << endl;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    public int beautySum(String s) {\n        int n = s.length();\n        int sum = 0;\n\n        // Loop through all substrings\n        for (int i = 0; i < n; i++) {\n            Map<Character, Integer> freq = new HashMap<>();\n\n            for (int j = i; j < n; j++) {\n                // Increase character frequency\n                freq.put(s.charAt(j), freq.getOrDefault(s.charAt(j), 0) + 1);\n\n                int maxi = Integer.MIN_VALUE;\n                int mini = Integer.MAX_VALUE;\n\n                // Calculate max and min frequency\n                for (int val : freq.values()) {\n                    mini = Math.min(mini, val);\n                    maxi = Math.max(maxi, val);\n                }\n\n                // Add to sum\n                sum += (maxi - mini);\n            }\n        }\n\n        return sum;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        String s = \"xyx\";\n        System.out.println(\"Beauty Sum: \" + sol.beautySum(s));\n    }\n}",
+        "python": "# Function to compute beauty sum\ndef beauty_sum(s):\n    n = len(s)\n    total = 0\n\n    # Loop over all substrings\n    for i in range(n):\n        freq = {}\n\n        for j in range(i, n):\n            # Increment frequency\n            freq[s[j]] = freq.get(s[j], 0) + 1\n\n            values = freq.values()\n            maxi = max(values)\n            mini = min(values)\n\n            # Add difference\n            total += (maxi - mini)\n\n    return total\n\n# Main function\ndef main():\n    s = \"xyx\"\n    print(\"Beauty Sum:\", beauty_sum(s))\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "// Function to compute beauty sum\nfunction beautySum(s) {\n    const n = s.length;\n    let total = 0;\n\n    // Loop through all substrings\n    for (let i = 0; i < n; i++) {\n        const freq = {};\n\n        for (let j = i; j < n; j++) {\n            const ch = s[j];\n            freq[ch] = (freq[ch] || 0) + 1;\n\n            const values = Object.values(freq);\n            const maxFreq = Math.max(...values);\n            const minFreq = Math.min(...values);\n\n            total += (maxFreq - minFreq);\n        }\n    }\n\n    return total;\n}\n\n// Main function\nfunction main() {\n    const s = \"xyx\";\n    console.log(\"Beauty Sum:\", beautySum(s));\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}

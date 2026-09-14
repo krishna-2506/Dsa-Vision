@@ -1,0 +1,18 @@
+{
+  "problem_id": "1218",
+  "problem_name": "STL",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 4,
+  "substep_name": "Learn STL/Java-Collections or similar thing in your language",
+  "difficulty": "Easy",
+  "youtube_url": "https://www.youtube.com/watch?v=RRVYpIET_RU",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/c/c-stl-tutorial-most-frequent-used-stl-containers/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/stl",
+  "problem_statement": "C++ is one of the most popular high-level programming language which is used extensively for a long time by developers and has always been loved by all programmers, especially competitive programmers because of its faster execution time.\n\nSTL is one of the unique abilities of C++ which makes it stand out from every other programming language. STL stands for standard template library which contains a lot of pre-defined templates in terms of containers and classes which makes it very easy for developers or programmers to implement different data structures easily without having to write complete code and worry about space-time complexities.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:23:52Z"
+}

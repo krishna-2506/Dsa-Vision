@@ -10,7 +10,7 @@ const DLLNode = ({ node, isCurr, isNxt, isAns }) => {
       </div>
       
       {/* Main Node Body */}
-      <div className={`flex bg-slate-900 border ${isCurr ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]' : isNxt ? 'border-amber-500 shadow-[0_0_15px_rgba(245,158,11,0.3)]' : 'border-slate-700'} rounded-lg overflow-hidden shadow-xl w-40 h-20 transition-all duration-300`}>
+      <div className={`flex bg-slate-900 border ${isCurr ? 'border-2 border-indigo-500' : isNxt ? 'border-2 border-amber-500' : 'border-slate-700'} rounded-lg overflow-hidden shadow-sm w-40 h-20 transition-all duration-200`}>
         
         {/* Prev Pointer Block */}
         <div className={`flex-1 flex flex-col border-r border-slate-700 text-[10px] items-center justify-center ${node.prev === 'NULL' ? 'bg-rose-900/20' : 'bg-slate-800/40'} transition-colors`}>

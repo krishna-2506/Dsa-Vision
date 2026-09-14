@@ -1,0 +1,31 @@
+{
+  "problem_id": "516",
+  "problem_name": "Disjoint Set",
+  "step_no": 15,
+  "step_name": "Graphs [Concepts & Problems]",
+  "substep_no": 5,
+  "substep_name": "MinimumSpanningTree/Disjoint Set and Problems",
+  "difficulty": "Hard",
+  "youtube_url": "https://youtu.be/aBxjDBC4M1U",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/disjoint-set-union-by-rank-union-by-size-path-compression-g-46/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/disjoint-set-",
+  "problem_statement": "In this article, we will discuss the Disjoint Set data structure which is a very important topic in the entire graph series. Let’s first understand why we need a Disjoint Set data structure using the below question:\n\nQuestion: Given two components of an undirected graph",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\nclass DisjointSet {\n    vector<int> rank, parent, size;\npublic:\n    DisjointSet(int n) {\n        rank.resize(n + 1, 0);\n        parent.resize(n + 1);\n        size.resize(n + 1);\n        for (int i = 0; i <= n; i++) {\n            parent[i] = i;\n            size[i] = 1;\n        }\n    }\n\n    int findUPar(int node) {\n        if (node == parent[node])\n            return node;\n        return parent[node] = findUPar(parent[node]);\n    }\n\n    void unionByRank(int u, int v) {\n        int ulp_u = findUPar(u);\n        int ulp_v = findUPar(v);\n        if (ulp_u == ulp_v) return;\n        if (rank[ulp_u] < rank[ulp_v]) {\n            parent[ulp_u] = ulp_v;\n        }\n        else if (rank[ulp_v] < rank[ulp_u]) {\n            parent[ulp_v] = ulp_u;\n        }\n        else {\n            parent[ulp_v] = ulp_u;\n            rank[ulp_u]++;\n        }\n    }\n\n    void unionBySize(int u, int v) {\n        int ulp_u = findUPar(u);\n        int ulp_v = findUPar(v);\n        if (ulp_u == ulp_v) return;\n        if (size[ulp_u] < size[ulp_v]) {\n            parent[ulp_u] = ulp_v;\n            size[ulp_v] += size[ulp_u];\n        }\n        else {\n            parent[ulp_v] = ulp_u;\n            size[ulp_u] += size[ulp_v];\n        }\n    }\n};\nint main() {\n    DisjointSet ds(7);\n    ds.unionBySize(1, 2);\n    ds.unionBySize(2, 3);\n    ds.unionBySize(4, 5);\n    ds.unionBySize(6, 7);\n    ds.unionBySize(5, 6);\n    // if 3 and 7 same or not\n    if (ds.findUPar(3) == ds.findUPar(7)) {\n        cout << \"Same\\n\";\n    }\n    else cout << \"Not same\\n\";\n\n    ds.unionBySize(3, 7);\n\n    if (ds.findUPar(3) == ds.findUPar(7)) {\n        cout << \"Same\\n\";\n    }\n    else cout << \"Not same\\n\";\n    return 0;\n}",
+        "java": "import java.io.*;\nimport java.util.*;\nclass DisjointSet {\n    List<Integer> rank = new ArrayList<>();\n    List<Integer> parent = new ArrayList<>();\n    List<Integer> size = new ArrayList<>();\n    public DisjointSet(int n) {\n        for (int i = 0; i <= n; i++) {\n            rank.add(0);\n            parent.add(i);\n            size.add(1);\n        }\n    }\n\n    public int findUPar(int node) {\n        if (node == parent.get(node)) {\n            return node;\n        }\n        int ulp = findUPar(parent.get(node));\n        parent.set(node, ulp);\n        return parent.get(node);\n    }\n\n    public void unionByRank(int u, int v) {\n        int ulp_u = findUPar(u);\n        int ulp_v = findUPar(v);\n        if (ulp_u == ulp_v) return;\n        if (rank.get(ulp_u) < rank.get(ulp_v)) {\n            parent.set(ulp_u, ulp_v);\n        } else if (rank.get(ulp_v) < rank.get(ulp_u)) {\n            parent.set(ulp_v, ulp_u);\n        } else {\n            parent.set(ulp_v, ulp_u);\n            int rankU = rank.get(ulp_u);\n            rank.set(ulp_u, rankU + 1);\n        }\n    }\n\n    public void unionBySize(int u, int v) {\n        int ulp_u = findUPar(u);\n        int ulp_v = findUPar(v);\n        if (ulp_u == ulp_v) return;\n        if (size.get(ulp_u) < size.get(ulp_v)) {\n            parent.set(ulp_u, ulp_v);\n            size.set(ulp_v, size.get(ulp_v) + size.get(ulp_u));\n        } else {\n            parent.set(ulp_v, ulp_u);\n            size.set(ulp_u, size.get(ulp_u) + size.get(ulp_v));\n        }\n    }\n}\n\nclass Main {\n    public static void main (String[] args) {\n        DisjointSet ds = new DisjointSet(7);\n        ds.unionByRank(1, 2);\n        ds.unionByRank(2, 3);\n        ds.unionByRank(4, 5);\n        ds.unionByRank(6, 7);\n        ds.unionByRank(5, 6);\n\n        // if 3 and 7 same or not\n        if (ds.findUPar(3) == ds.findUPar(7)) {\n            System.out.println(\"Same\");\n        } else\n            System.out.println(\"Not Same\");\n\n        ds.unionByRank(3, 7);\n        if (ds.findUPar(3) == ds.findUPar(7)) {\n            System.out.println(\"Same\");\n        } else\n            System.out.println(\"Not Same\");\n    }\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:20Z"
+}

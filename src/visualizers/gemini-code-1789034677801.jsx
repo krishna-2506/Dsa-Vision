@@ -169,9 +169,9 @@ export default function DeletingNodeInLinkedListVisualizer({ currentStep: extern
                       {node.label}
                     </span>
                   )}
-                  <div className={`w-12 h-12 flex items-center justify-center rounded-lg border-2 transition-all duration-300 ${
-                    node.active ? 'border-indigo-500 bg-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.3)] scale-110 z-10' : 
-                    node.isTarget ? 'border-rose-500/80 bg-rose-500/10 shadow-[0_0_10px_rgba(244,63,94,0.2)]' : 
+                  <div className={`w-12 h-12 flex items-center justify-center rounded-lg border-2 transition-all duration-200 ${
+                    node.active ? 'border-indigo-500 bg-indigo-500/20 z-10' : 
+                    node.isTarget ? 'border-rose-500 bg-rose-500/10' : 
                     'border-white/20 bg-white/5'
                   } font-mono text-white text-lg`}>
                     {node.val}

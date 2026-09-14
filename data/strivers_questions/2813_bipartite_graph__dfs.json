@@ -1,0 +1,31 @@
+{
+  "problem_id": "2813",
+  "problem_name": "Bipartite Graph (DFS)",
+  "step_no": 15,
+  "step_name": "Graphs [Concepts & Problems]",
+  "substep_no": 2,
+  "substep_name": "Problems on BFS/DFS",
+  "difficulty": "Hard",
+  "youtube_url": "https://youtu.be/KG5YFfR0j8A",
+  "leetcode_url": "https://leetcode.com/problems/is-graph-bipartite/",
+  "article_url": "https://takeuforward.org/graph/bipartite-graph-dfs-implementation/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/bipartite-graph",
+  "problem_statement": "Given an adjacency list of a graph adj of V no. of vertices having 0 based index. Check whether the graph is bipartite or not.",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include<bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\nprivate: \n    bool dfs(int node, int col, int color[], vector<int> adj[]) {\n        color[node] = col; \n        \n        // traverse adjacent nodes\n        for(auto it : adj[node]) {\n            // if uncoloured\n            if(color[it] == -1) {\n                if(dfs(it, !col, color, adj) == false) return false; \n            }\n            // if previously coloured and have the same colour\n            else if(color[it] == col) {\n                return false; \n            }\n        }\n        \n        return true; \n    }\npublic:\n\tbool isBipartite(int V, vector<int>adj[]){\n\t    int color[V];\n\t    for(int i = 0;i<V;i++) color[i] = -1; \n\t    \n\t    // for connected components\n\t    for(int i = 0;i<V;i++) {\n\t        if(color[i] == -1) {\n\t            if(dfs(i, 0, color, adj) == false) \n\t                return false; \n\t        }\n\t    }\n\t    return true; \n\t}\n};\n\nvoid addEdge(vector <int> adj[], int u, int v) {\n    adj[u].push_back(v);\n    adj[v].push_back(u);\n}\n\nint main(){\n\t\n\t// V = 4, E = 4\n\tvector<int>adj[4];\n\t\n\taddEdge(adj, 0, 2);\n   \taddEdge(adj, 0, 3);\n\taddEdge(adj, 2, 3);\n\taddEdge(adj, 3, 1);\n\n\tSolution obj;\n\tbool ans = obj.isBipartite(4, adj);    \n\tif(ans)cout << \"1\\n\";\n\telse cout << \"0\\n\";  \n\t\n\treturn 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution\n{\n    private boolean dfs(int node, int col, int color[], \n    ArrayList<ArrayList<Integer>>adj) {\n        \n        color[node] = col; \n        \n        // traverse adjacent nodes\n        for(int it : adj.get(node)) {\n            // if uncoloured\n            if(color[it] == -1) {\n                if(dfs(it, 1 - col, color, adj) == false) return false; \n            }\n            // if previously coloured and have the same colour\n            else if(color[it] == col) {\n                return false; \n            }\n        }\n        \n        return true; \n    }\n    public boolean isBipartite(int V, ArrayList<ArrayList<Integer>>adj)\n    {\n        int color[] = new int[V];\n\t    for(int i = 0;i<V;i++) color[i] = -1; \n\t    \n\t    // for connected components\n\t    for(int i = 0;i<V;i++) {\n\t        if(color[i] == -1) {\n\t            if(dfs(i, 0, color, adj) == false) return false; \n\t        }\n\t    }\n\t    return true; \n    }\n     public static void main(String[] args)\n    {\n        // V = 4, E = 4\n        ArrayList < ArrayList < Integer >> adj = new ArrayList < > ();\n        for (int i = 0; i < 4; i++) {\n            adj.add(new ArrayList < > ());\n        }\n        adj.get(0).add(2);\n        adj.get(2).add(0);\n        adj.get(0).add(3);\n        adj.get(3).add(0);\n        adj.get(1).add(3);\n        adj.get(3).add(1);\n        adj.get(2).add(3);\n        adj.get(3).add(2);\n\n        Solution obj = new Solution();\n        boolean ans = obj.isBipartite(4, adj);\n        if(ans)\n            System.out.println(\"1\");\n        else System.out.println(\"0\");\n    }\n\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:19Z"
+}

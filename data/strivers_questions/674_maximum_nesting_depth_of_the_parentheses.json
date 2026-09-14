@@ -1,0 +1,35 @@
+{
+  "problem_id": "674",
+  "problem_name": "Maximum Nesting Depth of the Parentheses",
+  "step_no": 5,
+  "step_name": "Strings [Basic and Medium]",
+  "substep_no": 2,
+  "substep_name": "Medium String Problems",
+  "difficulty": "Medium",
+  "youtube_url": null,
+  "leetcode_url": "https://leetcode.com/problems/maximum-nesting-depth-of-the-parentheses/",
+  "article_url": "https://takeuforward.org/data-structure/maximum-nesting-depth-of-parenthesis",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/maximum-nesting-depth-of-the-parentheses",
+  "problem_statement": "Given a valid parentheses string s, return the nesting depth of s. The nesting depth is the maximum number of nested parentheses.",
+  "examples": [
+    "Example 1:\nInput: s = \"(1+(2*3)+((8)/4))+1\"\nOutput: 3\nExplanation: Digit 8 is inside of 3 nested parentheses in the string.\n\nExample 2:\nInput: s = \"(1)+((2))+(((3)))\"\nOutput: 3\nExplanation: Digit 3 is inside of 3 nested parentheses in the string."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "We're interested in measuring how deeply nested the parentheses are at any point in the string.\nEach opening bracket indicates going deeper into a new level of nesting.\nEach closing bracket signals returning to the previous level of nesting.\nBy tracking how deep we go at each step, we can monitor the peak nesting level.\nThe deepest level we reach during this traversal is the answer.",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity: O(n), where n is the length of the string. \nSpace Complexity: O(1), as only constant extra space is used.",
+      "space_complexity_details": "Time Complexity: O(n), where n is the length of the string. \nSpace Complexity: O(1), as only constant extra space is used.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Method to compute maximum depth of parentheses\n    int maxDepth(string s) {\n        int p = 0;  \n        int ans = 0;\n        for (char x : s) {\n            // Increase depth on open parenthesis\n            if (x == '(') p++;\n            // Decrease depth on close parenthesis\n            else if (x == ')') p--;\n            // Update maximum depth encountered\n            ans = max(ans, p);\n        }\n        return ans;\n    }\n};\n\n// Main function to test the method\nint main() {\n    Solution sol;\n    string s = \"(1+(2*3)+((8)/4))+1\";\n    int result = sol.maxDepth(s);\n    cout << \"Max Depth: \" << result << endl;\n    return 0;\n}",
+        "java": "class Solution {\n    // Method to compute maximum depth of parentheses\n    public int maxDepth(String s) {\n        int p = 0; \n        int ans = 0; \n        for (char ch : s.toCharArray()) {\n            // Increase depth on open parenthesis\n            if (ch == '(') p++;\n            // Decrease depth on close parenthesis\n            else if (ch == ')') p--;\n            // Update maximum depth encountered\n            ans = Math.max(ans, p);\n        }\n        return ans; \n    }\n}\n\n// Main class to test the function\nclass Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        String s = \"(1+(2*3)+((8)/4))+1\";\n        int result = sol.maxDepth(s);\n        System.out.println(\"Max Depth: \" + result);\n    }\n}",
+        "python": "class Solution:\n    # Method to compute maximum depth of parentheses\n    def maxDepth(self, s: str) -> int:\n        p = 0  \n        ans = 0\n        for ch in s:\n            # Increase depth on open parenthesis\n            if ch == '(':\n                p += 1\n            # Decrease depth on close parenthesis\n            elif ch == ')':\n                p -= 1\n            # Update maximum depth encountered\n            ans = max(ans, p)\n        return ans  \n\n# Main test\nif __name__ == \"__main__\":\n    sol = Solution()\n    s = \"(1+(2*3)+((8)/4))+1\"\n    result = sol.maxDepth(s)\n    print(\"Max Depth:\", result)",
+        "javascript": "class Solution {\n    // Method to compute maximum depth of parentheses\n    maxDepth(s) {\n        let p = 0;  \n        let ans = 0;    \n        for (let ch of s) {\n            // Increase depth on open parenthesis\n            if (ch === '(') p++;\n            // Decrease depth on close parenthesis\n            else if (ch === ')') p--;\n            // Update maximum depth encountered\n            ans = Math.max(ans, p);\n        }\n        return ans; \n    }\n}\n\n// Test the function\nconst sol = new Solution();\nconst s = \"(1+(2*3)+((8)/4))+1\";\nconst result = sol.maxDepth(s);\nconsole.log(\"Max Depth:\", result);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:00Z"
+}

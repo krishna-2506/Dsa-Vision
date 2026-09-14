@@ -1,0 +1,49 @@
+{
+  "problem_id": "370",
+  "problem_name": "Divisors of a Number",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 3,
+  "substep_name": "Advanced Maths",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/1xNbjMdbjug?t=1580",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/print-all-divisors-of-a-given-number/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/divisors-of-a-number",
+  "problem_statement": "Given an integer N, return all divisors of N. A divisor of an integer N is a positive integer that divides N without leaving a remainder. In other words, if N is divisible by another integer without any remainder, then that integer is considered a divisor of N.",
+  "examples": [
+    "Input: N = 36\nOutput: [1, 2, 3, 4, 6, 9, 12, 18, 36] \nExplanation: The divisors of 36 are 1, 2, 3, 4, 6, 9, 12, 18, 36.\n\nInput: N = 12\nOutput: [1, 2, 3, 4, 6, 12]\nExplanation: The divisors of 12 are 1, 2, 3, 4, 6, 12."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force Approach",
+      "algorithm": "The brute force approach to find all the divisors of a number is to iterate through every number from 1 to N and check whether it is a divisor or not. We can store all the divisors and return the list of divisors after iteration.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to find all divisors\n    vector<int> getDivisors(int N) {\n        // Create a vector to store divisors\n        vector<int> res;\n\n        // Loop from 1 to N\n        for (int i = 1; i <= N; i++) {\n            // Check if i is a divisor of N\n            if (N % i == 0) {\n                // Add i to the result\n                res.push_back(i);\n            }\n        }\n        // Return the list of divisors\n        return res;\n    }\n};\n\nint main() {\n    // Create object of Solution class\n    Solution sol;\n\n    // Input number\n    int N = 36;\n\n    // Call the function to get divisors\n    vector<int> result = sol.getDivisors(N);\n\n    // Print the result\n    cout << \"Divisors of \" << N << \": \";\n    for (int val : result) {\n        cout << val << \" \";\n    }\n    cout << endl;\n\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    // Function to find all divisors\n    public List<Integer> getDivisors(int N) {\n        // Create list to store divisors\n        List<Integer> res = new ArrayList<>();\n\n        // Loop from 1 to N\n        for (int i = 1; i <= N; i++) {\n            // Check if i is a divisor of N\n            if (N % i == 0) {\n                // Add i to the result\n                res.add(i);\n            }\n        }\n        // Return the list of divisors\n        return res;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Create object of Solution class\n        Solution sol = new Solution();\n\n        // Input number\n        int N = 36;\n\n        // Call the function to get divisors\n        List<Integer> result = sol.getDivisors(N);\n\n        // Print the result\n        System.out.print(\"Divisors of \" + N + \": \");\n        for (int val : result) {\n            System.out.print(val + \" \");\n        }\n        System.out.println();\n    }\n}",
+        "python": "class Solution:\n    # Function to find all divisors\n    def getDivisors(self, N):\n        # Create list to store divisors\n        res = []\n\n        # Loop from 1 to N\n        for i in range(1, N + 1):\n            # Check if i is a divisor of N\n            if N % i == 0:\n                # Add i to result\n                res.append(i)\n\n        # Return the list of divisors\n        return res\n\n# Create object of Solution class\nsol = Solution()\n\n# Input number\nN = 36\n\n# Call the function to get divisors\nresult = sol.getDivisors(N)\n\n# Print the result\nprint(\"Divisors of\", N, \":\", *result)",
+        "javascript": "class Solution {\n    // Function to find all divisors\n    getDivisors(N) {\n        // Create array to store divisors\n        let res = [];\n\n        // Loop from 1 to N\n        for (let i = 1; i <= N; i++) {\n            // Check if i is a divisor of N\n            if (N % i === 0) {\n                // Add i to result\n                res.push(i);\n            }\n        }\n\n        // Return the list of divisors\n        return res;\n    }\n}\n\n// Create object of Solution class\nconst sol = new Solution();\n\n// Input number\nconst N = 36;\n\n// Call the function to get divisors\nconst result = sol.getDivisors(N);\n\n// Print the result\nconsole.log(\"Divisors of\", N, \":\", result.join(\" \"));"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "We can optimise the previous approach by using the property that for any non-negative integer n, if d is a divisor of n then n/d is also a divisor of n. This property is symmetric about the square root of N. Thus, by traversing just the first half we can avoid redundant iteration and computations improving the efficiency of the algorithm.\n\nIterate from 1 to sqrt(N) and for every divisor found, if N/divisor is distinct, add that to the list of divisors as well.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to get all divisors\n    vector<int> getDivisors(int N) {\n        // Create a vector to store divisors\n        vector<int> res;\n\n        // Loop from 1 to square root of N\n        for (int i = 1; i * i <= N; i++) {\n            // Check if i divides N\n            if (N % i == 0) {\n                // Add i to the result\n                res.push_back(i);\n\n                // If N / i is different from i, add N / i too\n                if (i != N / i) {\n                    res.push_back(N / i);\n                }\n            }\n        }\n\n        // Return the list of divisors\n        return res;\n    }\n};\n\nint main() {\n    // Create object of Solution class\n    Solution sol;\n\n    // Input number\n    int N = 36;\n\n    // Get divisors\n    vector<int> result = sol.getDivisors(N);\n\n    // Print the result\n    cout << \"Divisors of \" << N << \": \";\n    for (int val : result) {\n        cout << val << \" \";\n    }\n    cout << endl;\n\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass Solution {\n    // Function to get all divisors\n    public List<Integer> getDivisors(int N) {\n        // Create a list to store divisors\n        List<Integer> res = new ArrayList<>();\n\n        // Loop from 1 to square root of N\n        for (int i = 1; i * i <= N; i++) {\n            // Check if i divides N\n            if (N % i == 0) {\n                // Add i to result\n                res.add(i);\n\n                // If N / i is different from i, add N / i too\n                if (i != N / i) {\n                    res.add(N / i);\n                }\n            }\n        }\n\n        // Return the list of divisors\n        return res;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Create object of Solution class\n        Solution sol = new Solution();\n\n        // Input number\n        int N = 36;\n\n        // Get divisors\n        List<Integer> result = sol.getDivisors(N);\n\n        // Print the result\n        System.out.print(\"Divisors of \" + N + \": \");\n        for (int val : result) {\n            System.out.print(val + \" \");\n        }\n        System.out.println();\n    }\n}",
+        "python": "import math\n\nclass Solution:\n    # Function to get all divisors\n    def getDivisors(self, N):\n        # Create list to store divisors\n        res = []\n\n        # Loop from 1 to square root of N\n        for i in range(1, int(math.isqrt(N)) + 1):\n            # Check if i divides N\n            if N % i == 0:\n                # Add i to result\n                res.append(i)\n\n                # If N // i is not the same, add that too\n                if i != N // i:\n                    res.append(N // i)\n\n        # Return the list of divisors\n        return res\n\n# Create object of Solution class\nsol = Solution()\n\n# Input number\nN = 36\n\n# Get divisors\nresult = sol.getDivisors(N)\n\n# Print the result\nprint(\"Divisors of\", N, \":\", *result)",
+        "javascript": "class Solution {\n    // Function to get all divisors\n    getDivisors(N) {\n        // Create array to store divisors\n        let res = [];\n\n        // Loop from 1 to square root of N\n        for (let i = 1; i * i <= N; i++) {\n            // Check if i divides N\n            if (N % i === 0) {\n                // Add i to result\n                res.push(i);\n\n                // If N / i is different, add that too\n                if (i !== N / i) {\n                    res.push(N / i);\n                }\n            }\n        }\n\n        // Return the list of divisors\n        return res;\n    }\n}\n\n// Create object of Solution class\nconst sol = new Solution();\n\n// Input number\nconst N = 36;\n\n// Get divisors\nconst result = sol.getDivisors(N);\n\n// Print the result\nconsole.log(\"Divisors of\", N, \":\", result.join(\" \"));"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:07Z"
+}

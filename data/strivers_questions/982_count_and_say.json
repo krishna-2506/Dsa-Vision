@@ -1,0 +1,35 @@
+{
+  "problem_id": "982",
+  "problem_name": "Count and say",
+  "step_no": 18,
+  "step_name": "Strings",
+  "substep_no": 1,
+  "substep_name": "Hard Problems",
+  "difficulty": "Hard",
+  "youtube_url": null,
+  "leetcode_url": "https://leetcode.com/problems/count-and-say/",
+  "article_url": "https://takeuforward.org/data-structure/count-and-say",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/count-and-say",
+  "problem_statement": "The count-and-say sequence is a sequence of digit strings defined by the recursive formula: \n countAndSay(1) = \"1\"\ncountAndSay(n) is the run-length encoding of countAndSay(n - 1).",
+  "examples": [
+    "Input: 4\nOutput: \"1211\"\nExplanation: \ncountAndSay(1) = \"1\"\ncountAndSay(2) = RLE of \"1\" = \"11\"\ncountAndSay(3) = RLE of \"11\" = \"21\"\ncountAndSay(4) = RLE of \"21\" = \"1211\"\n\nInput: 1\nOutput: \"1\"\nExplanation: This is the base case."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "We are generating each term in a sequence by describing the previous term. For example, if the previous term is 1211, we say it as \"one 1, one 2, two 1s\", giving 111221.\n \nStart from the first term as \"1\".\nFor each new term, scan the previous term from left to right and count how many times the current digit appears consecutively.\nAppend the count followed by the digit to build the next term.\nRepeat this process until reaching the required term.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Function to generate the nth term of the count-and-say sequence\n    string countAndSay(int n) {\n        string result = \"1\";\n\n        // Generate the sequence up to the nth term\n        for (int i = 1; i < n; ++i) {\n            string current = \"\";\n            int count = 1;\n\n            // Traverse the previous result\n            for (int j = 1; j < result.size(); ++j) {\n                // If current character matches previous, increment count\n                if (result[j] == result[j - 1]) {\n                    count++;\n                } else {\n                    // Append count and character to current result\n                    current += to_string(count) + result[j - 1];\n                    count = 1;\n                }\n            }\n\n            // Append the last group\n            current += to_string(count) + result.back();\n\n            // Update result for next iteration\n            result = current;\n        }\n\n        // Return the final result\n        return result;\n    }\n};\n\nint main() {\n    Solution solver;\n    int n = 5;\n    cout << \"Count and Say term \" << n << \": \" << solver.countAndSay(n) << endl;\n    return 0;\n}",
+        "java": "// Solution class to generate the nth term of the count-and-say sequence\nclass Solution {\n    public String countAndSay(int n) {\n        String result = \"1\";\n\n        // Generate the sequence up to the nth term\n        for (int i = 1; i < n; i++) {\n            StringBuilder current = new StringBuilder();\n            int count = 1;\n\n            // Traverse the previous result\n            for (int j = 1; j < result.length(); j++) {\n                // If current character matches previous, increment count\n                if (result.charAt(j) == result.charAt(j - 1)) {\n                    count++;\n                } else {\n                    // Append count and character to current result\n                    current.append(count).append(result.charAt(j - 1));\n                    count = 1;\n                }\n            }\n\n            // Append the last group\n            current.append(count).append(result.charAt(result.length() - 1));\n\n            // Update result for next iteration\n            result = current.toString();\n        }\n\n        // Return the final result\n        return result;\n    }\n}\n\n// Main class with main method\npublic class Main {\n    public static void main(String[] args) {\n        Solution solver = new Solution();\n        int n = 5;\n        System.out.println(\"Count and Say term \" + n + \": \" + solver.countAndSay(n));\n    }\n}",
+        "python": "# Function to generate the nth term of the count-and-say sequence\ndef countAndSay(n):\n    result = \"1\"\n\n    # Generate the sequence up to the nth term\n    for _ in range(1, n):\n        current = \"\"\n        count = 1\n\n        # Traverse the previous result\n        for j in range(1, len(result)):\n            # If current character matches previous, increment count\n            if result[j] == result[j - 1]:\n                count += 1\n            else:\n                # Append count and character to current result\n                current += str(count) + result[j - 1]\n                count = 1\n\n        # Append the last group\n        current += str(count) + result[-1]\n\n        # Update result for next iteration\n        result = current\n\n    # Return the final result\n    return result\n\n# Call the function and print the result\nn = 5\nprint(\"Count and Say term\", n, \":\", countAndSay(n))",
+        "javascript": "// Function to generate the nth term of the count-and-say sequence\nfunction countAndSay(n) {\n    let result = \"1\";\n\n    // Generate the sequence up to the nth term\n    for (let i = 1; i < n; i++) {\n        let current = \"\";\n        let count = 1;\n\n        // Traverse the previous result\n        for (let j = 1; j < result.length; j++) {\n            // If current character matches previous, increment count\n            if (result[j] === result[j - 1]) {\n                count++;\n            } else {\n                // Append count and character to current result\n                current += count.toString() + result[j - 1];\n                count = 1;\n            }\n        }\n\n        // Append the last group\n        current += count.toString() + result[result.length - 1];\n\n        // Update result for next iteration\n        result = current;\n    }\n\n    // Return the final result\n    return result;\n}\n\n// Call the function and print the result\nlet n = 5;\nconsole.log(\"Count and Say term \" + n + \": \" + countAndSay(n));"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:26Z"
+}

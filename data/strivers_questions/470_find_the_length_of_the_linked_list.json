@@ -1,0 +1,35 @@
+{
+  "problem_id": "470",
+  "problem_name": "Find the length of the Linked List",
+  "step_no": 6,
+  "step_name": "Learn LinkedList [Single LL, Double LL, Medium, Hard Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn 1D LinkedList",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/Nq7ok-OyEpg?si=xqQbukLfo2oZ6C6s&t=2240",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/linked-list/find-the-length-of-a-linked-list",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/find-the-length-of-the-linked-list",
+  "problem_statement": "Given the head of a linked list, print the length of the linked list.",
+  "examples": [
+    "Input: 0->1->2 \nOutput: 3\nExplanation: The list has a total of 3 nodes, thus the length of the list is 3.\n\nInput: 12->5->8->7\nOutput: 4\nExplanation: The list has a total of 4 nodes, thus the length of the list is 4."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "The simple idea to solve this problem is to traverse the linked list and count the number of nodes using a counter. \n\n Initialize a temporary pointer to the head of the list. The temporary pointer will be used to traverse the list.\n\nTraverse the linked list until the the current node is not null. \n\nAt every node, increment the counter to count number of nodes.\nAfter reaching the end of the linked list, return the count. This will be your total number of nodes which is the length of the linked list.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Node class to represent each element in the linked list\nclass Node {\npublic:\n    int data;\n    Node* next;\n\n    // Constructor to initialize data and next pointer\n    Node(int data1) {\n        data = data1;\n        next = nullptr;\n    }\n};\n\n// Solution class containing the method to find length\nclass Solution {\npublic:\n    // Function to find the length of the linked list\n    int lengthOfLinkedList(Node* head) {\n        // Initialize counter to 0\n        int count = 0;\n\n        // Initialize a temporary pointer to head\n        Node* temp = head;\n\n        // Traverse the linked list\n        while (temp != nullptr) {\n            // Increment count for each node\n            count++;\n\n            // Move to the next node\n            temp = temp->next;\n        }\n\n        // Return the total count\n        return count;\n    }\n};\n\nint main() {\n    // Creating a sample linked list\n    Node* head = new Node(10);\n    head->next = new Node(20);\n    head->next->next = new Node(30);\n\n    // Create Solution object\n    Solution obj;\n\n    // Find and print the length of linked list\n    cout << \"Length of Linked List: \"\n         << obj.lengthOfLinkedList(head) << endl;\n\n    return 0;\n}",
+        "java": "// Node class to represent each element in the linked list\nclass Node {\n    int data;\n    Node next;\n\n    // Constructor to initialize data and next pointer\n    Node(int data1) {\n        data = data1;\n        next = null;\n    }\n}\n\n// Solution class containing the method to find length\nclass Solution {\n    // Function to find the length of the linked list\n    public int lengthOfLinkedList(Node head) {\n        // Initialize counter to 0\n        int count = 0;\n\n        // Initialize a temporary pointer to head\n        Node temp = head;\n\n        // Traverse the linked list\n        while (temp != null) {\n            // Increment count for each node\n            count++;\n\n            // Move to the next node\n            temp = temp.next;\n        }\n\n        // Return the total count\n        return count;\n    }\n}\n\n// Main class to run the program\npublic class Main {\n    public static void main(String[] args) {\n        // Creating a sample linked list\n        Node head = new Node(10);\n        head.next = new Node(20);\n        head.next.next = new Node(30);\n\n        // Create Solution object\n        Solution obj = new Solution();\n\n        // Find and print the length of linked list\n        System.out.println(\"Length of Linked List: \"\n                           + obj.lengthOfLinkedList(head));\n    }\n}",
+        "python": "# Node class to represent each element in the linked list\nclass Node:\n    # Constructor to initialize data and next pointer\n    def __init__(self, data1):\n        self.data = data1\n        self.next = None\n\n# Solution class containing the method to find length\nclass Solution:\n    # Function to find the length of the linked list\n    def lengthOfLinkedList(self, head):\n        # Initialize counter to 0\n        count = 0\n\n        # Initialize a temporary pointer to head\n        temp = head\n\n        # Traverse the linked list\n        while temp is not None:\n            # Increment count for each node\n            count += 1\n\n            # Move to the next node\n            temp = temp.next\n\n        # Return the total count\n        return count\n\n# Driver code\nif __name__ == \"__main__\":\n    # Creating a sample linked list\n    head = Node(10)\n    head.next = Node(20)\n    head.next.next = Node(30)\n\n    # Create Solution object\n    obj = Solution()\n\n    # Find and print the length of linked list\n    print(\"Length of Linked List:\",\n          obj.lengthOfLinkedList(head))",
+        "javascript": "// Node class to represent each element in the linked list\nclass Node {\n    // Constructor to initialize data and next pointer\n    constructor(data1) {\n        this.data = data1;\n        this.next = null;\n    }\n}\n\n// Solution class containing the method to find length\nclass Solution {\n    // Function to find the length of the linked list\n    lengthOfLinkedList(head) {\n        // Initialize counter to 0\n        let count = 0;\n\n        // Initialize a temporary pointer to head\n        let temp = head;\n\n        // Traverse the linked list\n        while (temp !== null) {\n            // Increment count for each node\n            count++;\n\n            // Move to the next node\n            temp = temp.next;\n        }\n\n        // Return the total count\n        return count;\n    }\n}\n\n// Driver code\nlet head = new Node(10);\nhead.next = new Node(20);\nhead.next.next = new Node(30);\n\n// Create Solution object\nlet obj = new Solution();\n\n// Find and print the length of linked list\nconsole.log(\"Length of Linked List:\",\n            obj.lengthOfLinkedList(head));"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}

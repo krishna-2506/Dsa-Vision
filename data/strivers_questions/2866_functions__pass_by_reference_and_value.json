@@ -1,0 +1,18 @@
+{
+  "problem_id": "2866",
+  "problem_name": "Functions (Pass by Reference and Value)",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 1,
+  "substep_name": "Things to Know in C++/Java/Python or any language",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/EAR7De6Goz4?t=3677",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/functions-pass-by-reference-and-value",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/pass-by-ref",
+  "problem_statement": "Before jumping into code, let’s first understand the concept with a real-life analogy. Imagine you are helping your friend prepare a resume. There are two ways to help:\n\nThis is exactly what happens in programming. Depending on the language and how you pass data to functions, you either pass a copy or the actual data.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:23:45Z"
+}

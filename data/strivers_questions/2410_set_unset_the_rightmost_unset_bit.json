@@ -1,0 +1,35 @@
+{
+  "problem_id": "2410",
+  "problem_name": "Set/Unset the rightmost unset bit",
+  "step_no": 8,
+  "step_name": "Bit Manipulation [Concepts & Problems]",
+  "substep_no": 1,
+  "substep_name": "Learn Bit Manipulation",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/nttpF8kwgd4?si=x9o8PsYaA2XVZ9rV",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/set-the-rightmost-bit",
+  "plus_url": null,
+  "problem_statement": "Given a positive integer n, set the rightmost unset (0) bit of its binary representation to 1 and return the resulting integer. \n\nIf all bits are already set, return the number as it is.",
+  "examples": [
+    "Example 1: \nInput: n = 10 (binary: 1010) \nOutput: 11 (binary: 1011) \nExplanation: The rightmost unset bit is the least significant bit (LSB). Setting it to 1 gives 1011 = 11.\n\nExample 2: \nInput: n = 7 (binary: 111) \nOutput: 7 (binary: 111) \nExplanation: All bits are already set to 1, so the number remains the same."
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Use bitwise OR with n + 1:\n\nresult = n | (n + 1)\nn + 1 flips the rightmost 0 in n to 1, and all bits to the right become 0.\nPerforming OR sets that bit to 1 while leaving other bits unchanged.",
+      "time_complexity": "O(1)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "Time Complexity: O(1) since only one bitwise operation is performed.\nSpace Complexity: O(1) since no extra space is used.",
+      "space_complexity_details": "Time Complexity: O(1) since only one bitwise operation is performed.\nSpace Complexity: O(1) since no extra space is used.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to set the rightmost unset bit (0 -> 1)\nint setRightmostUnsetBit(int n) {\n    // Use bitwise OR with n+1 to set rightmost 0\n    return n | (n + 1);\n}\n\nint main() {\n    // Sample input\n    int n = 10; // binary: 1010\n\n    // Call function\n    int result = setRightmostUnsetBit(n);\n\n    // Print output\n    cout << \"Number after setting rightmost unset bit: \" << result << endl; // Output: 11\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Function to set the rightmost unset bit\n    public static int setRightmostUnsetBit(int n) {\n        // OR with n+1 sets the rightmost 0 to 1\n        return n | (n + 1);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Sample input\n        int n = 10; // binary: 1010\n\n        // Call function\n        int result = Solution.setRightmostUnsetBit(n);\n\n        // Print output\n        System.out.println(\"Number after setting rightmost unset bit: \" + result); // Output: 11\n    }\n}",
+        "python": "# Function to set the rightmost unset bit\ndef set_rightmost_unset_bit(n):\n    # OR with n+1 sets the rightmost 0 to 1\n    return n | (n + 1)\n\ndef main():\n    # Sample input\n    n = 10  # binary: 1010\n\n    # Call function\n    result = set_rightmost_unset_bit(n)\n\n    # Print output\n    print(\"Number after setting rightmost unset bit:\", result)  # Output: 11\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "// Function to set the rightmost unset bit\nfunction setRightmostUnsetBit(n) {\n    // OR with n+1 sets the rightmost 0 to 1\n    return n | (n + 1);\n}\n\nfunction main() {\n    // Sample input\n    const n = 10; // binary: 1010\n\n    // Call function\n    const result = setRightmostUnsetBit(n);\n\n    // Print output\n    console.log(\"Number after setting rightmost unset bit:\", result); // Output: 11\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:06Z"
+}

@@ -1,15 +1,9 @@
 import React from 'react';
 
 /**
- * TreeGraphView Primitive
- * Interactive SVG + HTML visualizer for Binary Trees, BSTs, Heaps, and Graphs.
- * Automatically computes layout positions and renders bezier connector curves,
- * node glowing animations, values, and pointer labels.
- * 
- * @param {Object} root - Binary tree node structure: { val, left: {...}, right: {...}, isHighlighted, isVisited, isCurrent, isTarget, label }
- * @param {Array} rawNodes - Alternative flat array of nodes: [{ id, val, parentId, leftId, rightId, isHighlighted, ... }]
- * @param {Number} width - Canvas width in px (default 650)
- * @param {Number} height - Canvas height in px (default 320)
+ * TreeGraphView Primitive (Apple Cupertino Pro Design)
+ * Interactive SVG visualizer for Binary Trees, BSTs, Heaps, and Graphs.
+ * Features Apple frosted glass capsules, glowing gradient arcs, and dual-theme compatibility.
  */
 export default function TreeGraphView({
   root = null,
@@ -28,12 +22,11 @@ export default function TreeGraphView({
     }
 
     if (root) {
-      // Traverse binary tree recursively and assign coordinates
       function layoutTree(node, depth = 0, leftBound = 0, rightBound = width, parentPos = null) {
         if (!node) return;
 
         const x = (leftBound + rightBound) / 2;
-        const y = 40 + depth * 65;
+        const y = 44 + depth * 68;
         const nodeId = node.id || `node-${depth}-${Math.round(x)}`;
 
         const nodeData = {
@@ -58,7 +51,7 @@ export default function TreeGraphView({
             y1: parentPos.y,
             x2: x,
             y2: y,
-            isActive: node.isHighlighted || node.isCurrent
+            isActive: node.isHighlighted || node.isCurrent || node.isTarget
           });
         }
 
@@ -78,73 +71,88 @@ export default function TreeGraphView({
 
   if (nodes.length === 0) {
     return (
-      <div className="flex items-center justify-center p-8 rounded-xl border border-dashed border-zinc-800 bg-zinc-950/40 text-zinc-500 font-mono text-sm">
+      <div className="flex items-center justify-center p-8 rounded-2xl border border-dashed border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)] font-mono text-xs">
         Tree is empty (NULL)
       </div>
     );
   }
 
   return (
-    <div className={`relative w-full overflow-x-auto flex justify-center py-4 custom-scrollbar ${className}`}>
+    <div className={`relative w-full overflow-x-auto flex justify-center py-4 scrollbar-none ${className}`}>
       <svg width={width} height={height} className="overflow-visible select-none">
         <defs>
-          <linearGradient id="edgeActiveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#d97706" />
+          <linearGradient id="appleTreeActiveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#0a84ff" />
+            <stop offset="100%" stopColor="#64d2ff" />
           </linearGradient>
+          <filter id="treeGlowBlue" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#0a84ff" floodOpacity="0.45" />
+          </filter>
+          <filter id="treeGlowMint" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="5" floodColor="#30d158" floodOpacity="0.5" />
+          </filter>
+          <filter id="treeGlowAmber" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="#ff9f0a" floodOpacity="0.45" />
+          </filter>
         </defs>
 
-        {/* Edges / Branches */}
+        {/* Edges / Connector Branches */}
         {edges.map((edge) => (
           <line
             key={edge.id}
             x1={edge.x1}
-            y1={edge.y1 + 18}
+            y1={edge.y1 + 19}
             x2={edge.x2}
-            y2={edge.y2 - 18}
-            stroke={edge.isActive ? 'url(#edgeActiveGrad)' : '#3f3f46'}
+            y2={edge.y2 - 19}
+            stroke={edge.isActive ? 'url(#appleTreeActiveGrad)' : 'var(--line-strong)'}
             strokeWidth={edge.isActive ? '2.5' : '1.5'}
-            strokeDasharray={edge.isActive ? 'none' : 'none'}
+            strokeLinecap="round"
             className="transition-all duration-300"
           />
         ))}
 
-        {/* Tree Nodes */}
+        {/* Apple Tree Nodes */}
         {nodes.map((node) => {
-          let circleFill = '#18181b';
-          let circleStroke = '#52525b';
-          let textColor = '#f4f4f5';
-          let glow = '';
+          let circleFill = 'var(--board-raised)';
+          let circleStroke = 'var(--line-strong)';
+          let textColor = 'var(--chalk)';
+          let filter = undefined;
 
-          if (node.isCurrent) {
-            circleFill = '#451a03';
-            circleStroke = '#f59e0b';
-            textColor = '#fbbf24';
-            glow = 'drop-shadow(0 0 8px rgba(245, 158, 11, 0.6))';
-          } else if (node.isTarget) {
-            circleFill = '#064e3b';
-            circleStroke = '#10b981';
-            textColor = '#34d399';
-            glow = 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6))';
-          } else if (node.isVisited) {
-            circleFill = '#1e1b4b';
-            circleStroke = '#6366f1';
-            textColor = '#a5b4fc';
-          } else if (node.isHighlighted) {
-            circleFill = '#1e293b';
-            circleStroke = '#38bdf8';
-            textColor = '#7dd3fc';
+          if (node.isTarget) {
+            circleFill = 'var(--easy-dim)';
+            circleStroke = 'var(--easy)';
+            textColor = 'var(--easy)';
+            filter = 'url(#treeGlowMint)';
+          } else if (node.isCurrent) {
+            circleFill = 'var(--amber-dim)';
+            circleStroke = 'var(--amber)';
+            textColor = 'var(--amber)';
+            filter = 'url(#treeGlowAmber)';
+          } else if (node.isVisited || node.isHighlighted) {
+            circleFill = 'var(--indigo-dim)';
+            circleStroke = 'var(--indigo)';
+            textColor = 'var(--indigo)';
+            filter = 'url(#treeGlowBlue)';
           }
 
           return (
-            <g key={node.id} transform={`translate(${node.x}, ${node.y})`} style={{ filter: glow }}>
+            <g key={node.id} transform={`translate(${node.x}, ${node.y})`} filter={filter}>
               {/* Outer circle */}
               <circle
-                r="18"
+                r="19"
                 fill={circleFill}
                 stroke={circleStroke}
                 strokeWidth="2"
                 className="transition-all duration-300"
+              />
+
+              {/* Top Specular Arc */}
+              <path
+                d="M -12 -10 A 17 17 0 0 1 12 -10"
+                stroke="rgba(255, 255, 255, 0.2)"
+                strokeWidth="1"
+                fill="none"
+                strokeLinecap="round"
               />
 
               {/* Node Value */}
@@ -152,33 +160,33 @@ export default function TreeGraphView({
                 dy="0.35em"
                 textAnchor="middle"
                 fill={textColor}
-                fontSize="12"
-                fontWeight="bold"
-                fontFamily="monospace"
+                fontSize="12.5"
+                fontWeight="600"
+                fontFamily="'SF Mono', 'JetBrains Mono', Menlo, monospace"
               >
                 {node.val}
               </text>
 
               {/* Optional label badge above/below */}
               {node.label && (
-                <g transform="translate(0, -26)">
+                <g transform="translate(0, -28)">
                   <rect
-                    x={-(node.label.length * 4 + 6)}
+                    x={-(node.label.length * 4.5 + 8)}
                     y="-10"
-                    width={node.label.length * 8 + 12}
-                    height="16"
-                    rx="4"
-                    fill="#27272a"
-                    stroke="#3f3f46"
+                    width={node.label.length * 9 + 16}
+                    height="18"
+                    rx={9999}
+                    fill="var(--board-raised-2)"
+                    stroke="var(--line)"
                     strokeWidth="1"
                   />
                   <text
-                    dy="2"
+                    dy="2.5"
                     textAnchor="middle"
-                    fill="#fbbf24"
-                    fontSize="9"
-                    fontFamily="monospace"
-                    fontWeight="600"
+                    fill="var(--indigo)"
+                    fontSize="9.5"
+                    fontFamily="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif"
+                    fontWeight="700"
                   >
                     {node.label}
                   </text>

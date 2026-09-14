@@ -1,0 +1,18 @@
+{
+  "problem_id": "1219",
+  "problem_name": "Theory with examples",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 1,
+  "substep_name": "Things to Know in C++/Java/Python or any language",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/FPu9Uld7W-E",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/time-complexity/time-and-space-complexity-strivers-a2z-dsa-course/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/theory-with-examples",
+  "problem_statement": "We can solve a problem using different logic and different codes. Time complexity basically helps to judge different codes and also helps to decide which code is better. In an interview, an interviewer generally judges a code by its time complexity.\n\nNow, the term, time complexity, seems that it is referring to the time taken by a machine to execute a particular code. But in real life, Time complexity does not refer to the time taken by the machine to execute a particular code.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:23:45Z"
+}

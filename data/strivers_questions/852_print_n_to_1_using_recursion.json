@@ -1,0 +1,49 @@
+{
+  "problem_id": "852",
+  "problem_name": "Print N to 1 using Recursion",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 6,
+  "substep_name": "Learn Basic Recursion",
+  "difficulty": "Easy",
+  "youtube_url": "https://www.youtube.com/watch?v=un6PLygfXrA&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9&index=2",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/recursion/print-n-to-1-using-recursion/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/print-n-to-1-using-recursion",
+  "problem_statement": "Problem Description: Given an integer N, write a program to print numbers from N to 1.",
+  "examples": [
+    "Input: N = 4\nOutput: 4, 3, 2, 1\nExplanation: All the numbers from 4 to 1 are printed.\n\nInput: N = 1\nOutput: 1 \nExplanation: This is the base case."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Forward Recursion",
+      "algorithm": "To print numbers from n down to 1 using forward recursion, the approach involves defining a recursive function that takes the current number as a parameter. The function first checks if the current number is less than 1, if it is, the recursion terminates. Otherwise, it prints the current number and then recursively calls itself with the next number decremented by one. This way, the numbers are printed in descending order as the recursion unfolds forward from the base case down to 1. The key is to make the print statement before the recursive call, ensuring the numbers appear from n down to 1 in order.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Recursive function to print numbers from current down to 1\n    void printNumbers(int current) {\n        // Base case: if current is less than 1, stop recursion\n        if (current < 1)\n            return;\n\n        // Print current number\n        cout << current << \" \";\n\n        // Recursive call with next smaller number\n        printNumbers(current - 1);\n    }\n};\n\nint main() {\n    Solution sol;\n    int n = 10;\n\n    sol.printNumbers(n);\n    cout << \"\\n\";\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Recursive function to print numbers from current down to 1\n    public void printNumbers(int current) {\n        // Base case: if current is less than 1, stop recursion\n        if (current < 1)\n            return;\n\n        // Print current number\n        System.out.print(current + \" \");\n\n        // Recursive call with next smaller number\n        printNumbers(current - 1);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        int n = 10;\n\n        sol.printNumbers(n);\n        System.out.println();\n    }\n}",
+        "python": "class Solution:\n    # Recursive function to print numbers from current down to 1\n    def printNumbers(self, current):\n        # Base case: if current is less than 1, stop recursion\n        if current < 1:\n            return\n\n        # Print current number\n        print(current, end=' ')\n\n        # Recursive call with next smaller number\n        self.printNumbers(current - 1)\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    n = 10\n\n    sol.printNumbers(n)\n    print()",
+        "javascript": "class Solution {\n    // Recursive function to print numbers from current down to 1\n    printNumbers(current) {\n        // Base case: if current is less than 1, stop recursion\n        if (current < 1) return;\n\n        // Print current number\n        process.stdout.write(current + \" \");\n\n        // Recursive call with next smaller number\n        this.printNumbers(current - 1);\n    }\n}\n\n// Driver code\nconst sol = new Solution();\nconst n = 10;\n\nsol.printNumbers(n);\nconsole.log();"
+      }
+    },
+    {
+      "approach_name": "Backtracking",
+      "algorithm": "Backtracking builds solutions by exploring all options and undoing choices when needed. To print numbers from n down to 1 using backtracking, the function recursively calls itself with the previous number until it goes below 1. After reaching the base case, it prints the numbers while returning from the recursion. This way, numbers are printed in ascending order because the print happens after the recursive call during backtracking. The main difference from forward recursion is that printing occurs on the way back, not before the recursive call.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Recursive function to print numbers from current down to 1 using backtracking\n    void printNumbers(int current) {\n        // Base case: if current is less than 1, stop recursion\n        if (current < 1)\n            return;\n\n        // Recursive call with previous number\n        printNumbers(current - 1);\n\n        // Print current number during backtracking\n        cout << current << \" \";\n    }\n};\n\nint main() {\n    Solution sol;\n    int n = 10;\n\n    sol.printNumbers(n);\n    cout << \"\\n\";\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Recursive function to print numbers from current down to 1 using backtracking\n    public void printNumbers(int current) {\n        // Base case: if current is less than 1, stop recursion\n        if (current < 1)\n            return;\n\n        // Recursive call with previous number\n        printNumbers(current - 1);\n\n        // Print current number during backtracking\n        System.out.print(current + \" \");\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n        int n = 10;\n\n        sol.printNumbers(n);\n        System.out.println();\n    }\n}",
+        "python": "class Solution:\n    # Recursive function to print numbers from current down to 1 using backtracking\n    def printNumbers(self, current):\n        # Base case: if current is less than 1, stop recursion\n        if current < 1:\n            return\n\n        # Recursive call with previous number\n        self.printNumbers(current - 1)\n\n        # Print current number during backtracking\n        print(current, end=' ')\n\nif __name__ == \"__main__\":\n    sol = Solution()\n    n = 10\n\n    sol.printNumbers(n)\n    print()",
+        "javascript": "class Solution {\n    // Recursive function to print numbers from current down to 1 using backtracking\n    printNumbers(current) {\n        // Base case: if current is less than 1, stop recursion\n        if (current < 1) return;\n\n        // Recursive call with previous number\n        this.printNumbers(current - 1);\n\n        // Print current number during backtracking\n        process.stdout.write(current + \" \");\n    }\n}\n\n// Driver code\nconst sol = new Solution();\nconst n = 10;\n\nsol.printNumbers(n);\nconsole.log();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:53Z"
+}

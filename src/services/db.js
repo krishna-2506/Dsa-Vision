@@ -73,24 +73,30 @@ export const STARTER_QUESTIONS = [
   }
 ];
 
+export const STRIVER_STEPS = [
+  { step_no: 1, title: 'Learn the basics' },
+  { step_no: 2, title: 'Learn Important Sorting Techniques' },
+  { step_no: 3, title: 'Solve Problems on Arrays [Easy -> Medium -> Hard]' },
+  { step_no: 4, title: 'Binary Search [1D, 2D Arrays, Search Space]' },
+  { step_no: 5, title: 'Strings [Basic and Medium]' },
+  { step_no: 6, title: 'Learn LinkedList [Single LL, Double LL, Medium, Hard Problems]' },
+  { step_no: 7, title: 'Recursion [PatternWise]' },
+  { step_no: 8, title: 'Bit Manipulation [Concepts & Problems]' },
+  { step_no: 9, title: 'Stack and Queues [Learning, Pre-In-Post-fix, Monotonic Stack, Implementation]' },
+  { step_no: 10, title: 'Sliding Window & Two Pointer Combined Problems' },
+  { step_no: 11, title: 'Heaps [Learning, Medium, Hard Problems]' },
+  { step_no: 12, title: 'Greedy Algorithms [Easy, Medium/Hard]' },
+  { step_no: 13, title: 'Binary Trees [Traversals, Medium and Hard Problems]' },
+  { step_no: 14, title: 'Binary Search Trees [Concept and Problems]' },
+  { step_no: 15, title: 'Graphs [Concepts & Problems]' },
+  { step_no: 16, title: 'Dynamic Programming [Patterns and Problems]' },
+  { step_no: 17, title: 'Tries' },
+  { step_no: 18, title: 'Strings Advanced Algorithms' }
+];
+
 export const CATEGORIES = [
   'All',
-  '1. Arrays',
-  '2. Binary Search',
-  '3. Strings',
-  '4. Linked List',
-  '5. Recursion',
-  '6. Bit Manipulation',
-  '7. Stack and Queues',
-  '8. Sliding Window',
-  '9. Heaps',
-  '10. Greedy Approach',
-  '11. Binary Trees',
-  '12. Binary Search Trees',
-  '13. Graphs',
-  '14. Dynamic Programming',
-  '15. Tries',
-  '16. Strings (Hard)'
+  ...STRIVER_STEPS.map(s => `Step ${s.step_no}: ${s.title}`)
 ];
 
 export const db = {

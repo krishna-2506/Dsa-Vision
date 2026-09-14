@@ -1,0 +1,49 @@
+{
+  "problem_id": "379",
+  "problem_name": "Check if the Array is Sorted II",
+  "step_no": 3,
+  "step_name": "Solve Problems on Arrays [Easy -> Medium -> Hard]",
+  "substep_no": 1,
+  "substep_name": "Easy",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/37E9ckMDdTk?t=17224",
+  "leetcode_url": "https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/#:~:text=Input%3A%20nums%20%3D%20%5B2%2C,no%20rotation)%20to%20make%20nums.",
+  "article_url": "https://takeuforward.org/data-structure/check-if-an-array-is-sorted/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/check-if-the-array-is-sorted-ii",
+  "problem_statement": "Given an array of size n, write a program to check if the given\n array is sorted in (ascending / Increasing / Non-decreasing) order or not. If the array is sorted\n then return True, Else return False.",
+  "examples": [
+    "Example 1:\nInput: N = 5, array[] = {1,2,3,4,5}\nOutput: True.\nExplanation: The given array is sorted i.e Every element in the array is smaller than or equals to its next values, So the answer is True.\n\nExample 2:\nInput: N = 5, array[] = {5,4,6,7,8}\nOutput: False.\nExplanation: The given array is Not sorted i.e Every element in the array is not smaller than or equal to its next values, So the answer is False.\nHere element 5 is not smaller than or equal to its future elements."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force Approach",
+      "algorithm": "The idea is pretty simple here, We will start with the element at the\n 0th index, and will compare it with all of its future\n elements that are present in the array.\n \nIf the picked element is smaller than or equal to all of its future values then we will\n move to the next Index/element until the whole array is traversed.\nIf any of the picked elements is greater than its future elements, Then simply we will\n return False.\nIf the size of the array is Zero or One i.e ( N = 0 or N = 1 ) or the\n entire array is traversed successfully then we will simply return True.",
+      "time_complexity": "O(N2)",
+      "space_complexity": "O(N2)",
+      "time_complexity_details": "Time Complexity: O(N2), as it uses two nested loops to compare every\n pair of elements in the array.\nSpace Complexity: O(1), as no extra space is used apart from a few variables.",
+      "space_complexity_details": "Time Complexity: O(N2), as it uses two nested loops to compare every\n pair of elements in the array.\nSpace Complexity: O(1), as no extra space is used apart from a few variables.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to check if the array is sorted\nbool isSorted(int arr[], int n) {\n    for (int i = 0; i < n; i++) {\n        for (int j = i + 1; j < n; j++) {\n            // If any element is smaller than the previous one, return false\n            if (arr[j] < arr[i]) \n                return false;\n        }\n    }\n\n    return true; // Return true if no unsorted elements are found\n}\n\nint main() {\n    int arr[] = {1, 2, 3, 4, 5}, n = 5;\n    bool ans = isSorted(arr, n);\n    \n    // Output result\n    if (ans) cout << \"True\" << endl;\n    else cout << \"False\" << endl;\n    \n    return 0;\n}",
+        "java": "class Solution {\n    // Function to check if the array is sorted\n    public boolean isSorted(int[] arr, int n) {\n        for (int i = 0; i < n; i++) {\n            for (int j = i + 1; j < n; j++) {\n                // If any element is smaller than the previous one, return false\n                if (arr[j] < arr[i]) \n                    return false;\n            }\n        }\n        return true; // Return true if no unsorted elements are found\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5};\n        int n = 5;\n        Solution obj = new Solution();\n        \n        boolean ans = obj.isSorted(arr, n);\n        \n        // Output result\n        if (ans) \n            System.out.println(\"True\");\n        else \n            System.out.println(\"False\");\n    }\n}",
+        "python": "# Function to check if the array is sorted\ndef isSorted(arr, n):\n    for i in range(n):\n        for j in range(i + 1, n):\n            # If any element is smaller than the previous one, return false\n            if arr[j] < arr[i]:\n                return False\n    return True  # Return true if no unsorted elements are found\n\n# Driver code\narr = [1, 2, 3, 4, 5]\nn = len(arr)\n\nans = isSorted(arr, n)\n\n# Output result\nif ans:\n    print(\"True\")\nelse:\n    print(\"False\")",
+        "javascript": "class Solution {\n    // Function to check if the array is sorted\n    isSorted(arr, n) {\n        for (let i = 0; i < n; i++) {\n            for (let j = i + 1; j < n; j++) {\n                // If any element is smaller than the previous one, return false\n                if (arr[j] < arr[i]) \n                    return false;\n            }\n        }\n        return true; // Return true if no unsorted elements are found\n    }\n}\n\n// Driver code\nlet arr = [1, 2, 3, 4, 5];\nlet n = arr.length;\nlet obj = new Solution();\n\nlet ans = obj.isSorted(arr, n);\n\n// Output result\nif (ans) {\n    console.log(\"True\");\n} else {\n    console.log(\"False\");\n}"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "As we know that for a sorted array the previous of every element is smaller than or\n equal to its current element.\nSo, Through this, we can conclude that if the previous element is smaller than or equal\n to the current element then. Then we can say that the two elements are sorted. If the\n condition is true for the entire array then the array is sorted.\nWe will check every element with its previous element if the previous element is smaller\n than or equal to the current element then we will move to the next index.\nIf the whole array is traversed successfully or the size of the given array is zero or\n one (i.e N = 0 or N = 1). Then we will return True\n else return False.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), as it checks each adjacent pair once in a single pass\n through the array.\nSpace Complexity: O(1), as it uses constant extra space regardless of input\n size.",
+      "space_complexity_details": "Time Complexity: O(N), as it checks each adjacent pair once in a single pass\n through the array.\nSpace Complexity: O(1), as it uses constant extra space regardless of input\n size.",
+      "codes": {
+        "cpp": "#include<bits/stdc++.h>\nusing namespace std;\n\n// Function to check if the array is sorted\nbool isSorted(int arr[], int n) {\n    for (int i = 1; i < n; i++) {\n        if (arr[i] < arr[i - 1])  // If any element is smaller than the previous one, return false\n            return false;\n    }\n\n    return true;  // Return true if the array is sorted\n}\n\nint main() {\n    int arr[] = {1, 2, 3, 4, 5}, n = 5;\n    printf(\"%s\", isSorted(arr, n) ? \"True\" : \"False\");  // Output result\n}",
+        "java": "class Solution {\n    // Function to check if the array is sorted\n    public boolean isSorted(int[] arr, int n) {\n        for (int i = 1; i < n; i++) {\n            if (arr[i] < arr[i - 1])  // If any element is smaller than the previous one, return false\n                return false;\n        }\n        return true;  // Return true if the array is sorted\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4, 5};\n        int n = arr.length;\n        Solution obj = new Solution();\n        \n        // Output result\n        System.out.println(obj.isSorted(arr, n) ? \"True\" : \"False\");\n    }\n}",
+        "python": "# Function to check if the array is sorted\ndef isSorted(arr, n):\n    for i in range(1, n):\n        if arr[i] < arr[i - 1]:  # If any element is smaller than the previous one, return false\n            return False\n    return True  # Return true if the array is sorted\n\n# Driver code\narr = [1, 2, 3, 4, 5]\nn = len(arr)\n\n# Output result\nprint(\"True\" if isSorted(arr, n) else \"False\")",
+        "javascript": "class Solution {\n    // Function to check if the array is sorted\n    isSorted(arr, n) {\n        for (let i = 1; i < n; i++) {\n            if (arr[i] < arr[i - 1])  // If any element is smaller than the previous one, return false\n                return false;\n        }\n        return true;  // Return true if the array is sorted\n    }\n}\n\n// Driver code\nlet arr = [1, 2, 3, 4, 5];\nlet n = arr.length;\nlet obj = new Solution();\n\n// Output result\nconsole.log(obj.isSorted(arr, n) ? \"True\" : \"False\");"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:55Z"
+}

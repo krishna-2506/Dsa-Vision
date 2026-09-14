@@ -1,0 +1,49 @@
+{
+  "problem_id": "82",
+  "problem_name": "Upper Bound",
+  "step_no": 4,
+  "step_name": "Binary Search [1D, 2D Arrays, Search Space]",
+  "substep_no": 1,
+  "substep_name": "BS on 1D Arrays",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/6zhGS79oQ4k",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/arrays/implement-upper-bound/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/upper-bound",
+  "problem_statement": "Given a sorted array of N integers and an integer x, write a program to find the upper bound of x.",
+  "examples": [
+    "Example 1:\nInput Format: N = 4, arr[] = {1,2,2,3}, x = 2\nResult: 3\nExplanation: Index 3 is the smallest index such that arr[3] > x.\n\nExample 2:\nInput Format: N = 6, arr[] = {3,5,8,9,15,19}, x = 9\nResult: 4\nExplanation: Index 4 is the smallest index such that arr[4] > x."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force Approach",
+      "algorithm": "Let’s understand how we can find the answer using the linear search algorithm. With the knowledge that the array is sorted, our approach involves traversing the array starting from the beginning. During this traversal, each element will be compared with the target value, x. The index, i, where the condition arr[i] > x is first satisfied, will be the answer.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Class to find the upper bound index in an array\nclass UpperBoundFinder {\npublic:\n    // Linear search method to find upper bound\n    int upperBound(vector<int> &arr, int x, int n) {\n        for (int i = 0; i < n; i++) {\n            if (arr[i] > x) {\n                return i; // First element strictly greater than x\n            }\n        }\n        return n; // If no such element exists, return n\n    }\n};\n\nint main() {\n    vector<int> arr = {3, 5, 8, 9, 15, 19}; // Sorted input array\n    int n = arr.size();                    // Size of the array\n    int x = 9;                             // Target value\n\n    UpperBoundFinder finder;              // Create object of class\n    int ind = finder.upperBound(arr, x, n); // Call method\n\n    cout << \"The upper bound is the index: \" << ind << \"\\n\"; // Output result\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass UpperBoundFinder {\n    // Linear search method to find upper bound\n    public int upperBound(int[] arr, int x) {\n        for (int i = 0; i < arr.length; i++) {\n            if (arr[i] > x) {\n                return i; // Return index of first element > x\n            }\n        }\n        return arr.length; // Return length if no such element found\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {3, 5, 8, 9, 15, 19}; // Sorted array\n        int x = 9;\n\n        UpperBoundFinder finder = new UpperBoundFinder();\n        int ind = finder.upperBound(arr, x); // Call function\n\n        System.out.println(\"The upper bound is the index: \" + ind); // Output result\n    }\n}",
+        "python": "class UpperBoundFinder:\n    # Linear search to find upper bound\n    def upper_bound(self, arr, x):\n        for i in range(len(arr)):\n            if arr[i] > x:\n                return i  # First element greater than x\n        return len(arr)   # Return size if no such element found\n\n# Driver code\narr = [3, 5, 8, 9, 15, 19]  # Sorted array\nx = 9\n\nfinder = UpperBoundFinder()\nind = finder.upper_bound(arr, x)\n\nprint(\"The upper bound is the index:\", ind)",
+        "javascript": "class UpperBoundFinder {\n    // Linear search for upper bound\n    upperBound(arr, x) {\n        for (let i = 0; i < arr.length; i++) {\n            if (arr[i] > x) {\n                return i; // Return index of first element > x\n            }\n        }\n        return arr.length; // Return length if not found\n    }\n}\n\n// Driver code\nconst arr = [3, 5, 8, 9, 15, 19]; // Sorted array\nconst x = 9;\n\nconst finder = new UpperBoundFinder();\nconst ind = finder.upperBound(arr, x); // Call method\n\nconsole.log(\"The upper bound is the index:\", ind);"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "As the array is sorted, we will apply the Binary Search algorithm to find the index. The steps are as follows:\nWe will declare the 2 pointers and an ‘ans’ variable initialized to n i.e. the size of the array(as If we don’t find any index, we will return n).\n \nPlace the 2 pointers i.e. low and high: Initially, we will place the pointers like this: low will point to the first index, and high will point to the last index.\nCalculate the ‘mid’: Now, we will calculate the value of mid using the following formula: mid = (low+high) // 2 ( ‘//’ refers to integer division)\nCompare arr[mid] with x: With comparing arr[mid] to x, we can observe 2 different cases:\n\nCase 1 - If arr[mid] > x: This condition means that the index mid may be an answer. So, we will update the ‘ans’ variable with mid and search in the left half if there is any smaller index that satisfies the same condition. Here, we are eliminating the right half.\nCase 2 - If arr[mid] <= x: In this case, mid cannot be our answer and we need to find some bigger element. So, we will eliminate the left half and search in the right half for the answer.",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Class to compute upper bound\nclass UpperBoundFinder {\npublic:\n    // Function to find the upper bound using binary search\n    int upperBound(vector<int> &arr, int x, int n) {\n        int low = 0, high = n - 1;\n        int ans = n;  // Default answer if x is >= all elements\n\n        while (low <= high) {\n            int mid = (low + high) / 2;\n\n            if (arr[mid] > x) {\n                ans = mid;        // Potential answer found\n                high = mid - 1;   // Try to find smaller valid index on the left\n            } else {\n                low = mid + 1;    // Move right if mid is <= x\n            }\n        }\n        return ans;  // Index of the first element > x\n    }\n};\n\nint main() {\n    vector<int> arr = {3, 5, 8, 9, 15, 19};  // Sorted input array\n    int n = arr.size();                     // Size of the array\n    int x = 9;                              // Target value\n\n    UpperBoundFinder finder;               // Create object\n    int ind = finder.upperBound(arr, x, n);  // Call method\n\n    cout << \"The upper bound is the index: \" << ind << \"\\n\";  // Output result\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass UpperBoundFinder {\n    // Binary search to find upper bound\n    public int upperBound(int[] arr, int x) {\n        int low = 0, high = arr.length - 1;\n        int ans = arr.length;  // Default to length if not found\n\n        while (low <= high) {\n            int mid = (low + high) / 2;\n\n            if (arr[mid] > x) {\n                ans = mid;        // Store current index as potential answer\n                high = mid - 1;   // Move left\n            } else {\n                low = mid + 1;    // Move right\n            }\n        }\n        return ans;  // Return final answer\n    }\n\n    public static void main(String[] args) {\n        int[] arr = {3, 5, 8, 9, 15, 19};  // Sorted array\n        int x = 9;\n\n        UpperBoundFinder finder = new UpperBoundFinder();\n        int ind = finder.upperBound(arr, x);  // Call method\n\n        System.out.println(\"The upper bound is the index: \" + ind);\n    }\n}",
+        "python": "class UpperBoundFinder:\n    # Binary search to find upper bound\n    def upper_bound(self, arr, x):\n        low, high = 0, len(arr) - 1\n        ans = len(arr)  # Default to length if no element > x\n\n        while low <= high:\n            mid = (low + high) // 2\n\n            if arr[mid] > x:\n                ans = mid      # Store current mid as answer\n                high = mid - 1 # Search left\n            else:\n                low = mid + 1  # Search right\n        return ans\n\n# Driver code\narr = [3, 5, 8, 9, 15, 19]\nx = 9\n\nfinder = UpperBoundFinder()\nind = finder.upper_bound(arr, x)\n\nprint(\"The upper bound is the index:\", ind)",
+        "javascript": "class UpperBoundFinder {\n    // Binary search to find upper bound\n    upperBound(arr, x) {\n        let low = 0, high = arr.length - 1;\n        let ans = arr.length; // Default to array length if no upper bound found\n\n        while (low <= high) {\n            const mid = Math.floor((low + high) / 2);\n\n            if (arr[mid] > x) {\n                ans = mid;       // Store current index\n                high = mid - 1;  // Move left\n            } else {\n                low = mid + 1;   // Move right\n            }\n        }"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:58Z"
+}

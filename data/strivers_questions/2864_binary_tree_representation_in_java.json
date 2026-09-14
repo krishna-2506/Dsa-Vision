@@ -1,0 +1,18 @@
+{
+  "problem_id": "2864",
+  "problem_name": "Binary Tree Representation in Java",
+  "step_no": 13,
+  "step_name": "Binary Trees [Traversals, Medium and Hard Problems]",
+  "substep_no": 1,
+  "substep_name": "Traversals",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/hyLyW7rP24I",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/binary-tree/binary-tree-representation-in-java/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-",
+  "problem_statement": "In Java, a binary tree is structured using references to other nodes, forming a hierarchical arrangement where each node can refer to at most two other nodes: a left child and a right child.\n\nThis reference-based approach establishes connections between nodes, enabling traversal and navigation within the tree structure.",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:24:14Z"
+}

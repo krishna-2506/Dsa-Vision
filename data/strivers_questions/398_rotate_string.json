@@ -1,0 +1,49 @@
+{
+  "problem_id": "398",
+  "problem_name": "Rotate String",
+  "step_no": 5,
+  "step_name": "Strings [Basic and Medium]",
+  "substep_no": 1,
+  "substep_name": "Basic and Easy String Problems",
+  "difficulty": "Easy",
+  "youtube_url": null,
+  "leetcode_url": "https://leetcode.com/problems/rotate-string/",
+  "article_url": "https://takeuforward.org/data-structure/check-if-one-string-is-rotation-of-another",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/rotate-string",
+  "problem_statement": "Time Complexity: O(N^2) since generating N rotations and each comparison takes O(N) time.\nSpace Complexity: O(N) for the space needed to store each rotated string.\n\nTime Complexity: O(N), because checking for a substring in s + s is linear in time. \nSpace Complexity: O(N) for the space needed to store the concatenated string s + s.",
+  "examples": [
+    "Example 1:\nInput: s = \"rotation\", goal = \"tionrota\"\nOutput: true\nExplanation: After multiple left shifts on \"rotation\", we get:\n 1st shift → \"otationr\"\n 2nd shift → \"tationro\"\n 3rd shift → \"ationrot\"\n 4th shift → \"tionrota\"\n So the goal string can be obtained by rotating the original string.\n\nExample 2:\nInput: s = \"hello\", goal = \"lohelx\"\nOutput: false\nExplanation: \nEven after all possible rotations of \"hello\", we cannot form \"lohelx\" due to the presence of an extra character 'x'. Hence, it's not possible."
+  ],
+  "total_approaches": 2,
+  "approaches": [
+    {
+      "approach_name": "Brute Force",
+      "algorithm": "Start by generating all possible left rotations of the original string using substring slicing and concatenation.\nFor each rotated version of the string, compare it with the target (goal) string.\nIf a match is found at any point, return true immediately as the goal can be achieved.\nIf none of the rotations match the goal string after checking all possibilities, return false.",
+      "time_complexity": "O(N^2)",
+      "space_complexity": "O(N^2)",
+      "time_complexity_details": "Time Complexity: O(N^2) since generating N rotations and each comparison takes O(N) time.\nSpace Complexity: O(N) for the space needed to store each rotated string.",
+      "space_complexity_details": "Time Complexity: O(N^2) since generating N rotations and each comparison takes O(N) time.\nSpace Complexity: O(N) for the space needed to store each rotated string.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Check if 'goal' is a rotation of 's'\n    bool rotateString(string& s, string& goal) {\n        // Strings must be same length to be rotations of each other\n        if (s.length() != goal.length()) {\n            return false;\n        }\n        // Try all possible rotations of 's'\n        for (int i = 0; i < s.length(); i++) {\n            string rotated = s.substr(i) + s.substr(0, i);  \n            if (rotated == goal) {\n                return true;\n            }\n        }\n        return false;\n    }\n};\n\nint main() {\n    Solution sol;\n    string s = \"rotation\";\n    string goal = \"tionrota\";\n    \n    // Output the result\n    if (sol.rotateString(s, goal)) {\n        cout << \"true\" << endl;  \n    } else {\n        cout << \"false\" << endl;\n    }\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Brute force approach to check if goal is a rotation of s\n    public boolean rotateString(String s, String goal) {\n        // Strings must be same length to be rotations of each other\n        if (s.length() != goal.length()) {\n            return false;\n        }\n\n        // Try all possible rotations of s\n        for (int i = 0; i < s.length(); i++) {\n            String rotated = s.substring(i) + s.substring(0, i);\n            if (rotated.equals(goal)) {\n                // Return true if a match is found\n                return true;  \n            }\n        }\n\n        return false;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Solution sol = new Solution();\n\n        String s1 = \"rotation\";\n        String goal1 = \"tionrota\";\n        System.out.println(sol.rotateString(s1, goal1)); \n    }\n}",
+        "python": "class Solution:\n    def rotateString(self, s: str, goal: str) -> bool:\n        # Check if strings are of the same length\n        if len(s) != len(goal):\n            return False  \n\n        # Try all possible rotations of s\n        for i in range(len(s)):\n            # Generate a rotated version of s\n            rotated = s[i:] + s[:i]  \n            # If the rotated version matches goal, return True\n            if rotated == goal:\n                return True  \n\n        # If no rotation matches, return False\n        return False  \n\n# Test case\nsol = Solution()\n\nprint(sol.rotateString(\"rotation\", \"tionrota\"))",
+        "javascript": "class Solution {\n    // Method to check if 'goal' is a rotation of 's'\n    rotateString(s, goal) {\n        // If lengths differ, they can't be rotations\n        if (s.length !== goal.length) {\n            return false;  \n        }\n\n        // Try all possible rotations of 's'\n        for (let i = 0; i < s.length; i++) {\n            // Create rotated version by slicing and concatenating\n            let rotated = s.substring(i) + s.substring(0, i);  \n            \n            // Return true if rotated version matches goal\n            if (rotated === goal) {\n                return true;  \n            }\n        }\n\n        // If no match found, return false\n        return false;  \n    }\n}\n\n// Create instance of Solution class\nconst sol = new Solution();\n\nconsole.log(sol.rotateString(\"rotation\", \"tionrota\"));"
+      }
+    },
+    {
+      "approach_name": "Optimal Approach",
+      "algorithm": "Double the original string by joining it with itself, creating a new string like s + s.\nLook for the target string goalinside this new doubled string.\nIf goal exists within the doubled string, then it's a valid rotation, return true.\nIf it's not found, that means the original string cannot be rotated to match goal, return false",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(N)",
+      "time_complexity_details": "Time Complexity: O(N), because checking for a substring in s + s is linear in time. \nSpace Complexity: O(N) for the space needed to store the concatenated string s + s.",
+      "space_complexity_details": "Time Complexity: O(N), because checking for a substring in s + s is linear in time. \nSpace Complexity: O(N) for the space needed to store the concatenated string s + s.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nclass Solution {\npublic:\n    // Check if goal is a rotation of s using string doubling method\n    bool rotateString(string& s, string& goal) {\n        // Strings must be the same length to be rotations of each other\n        if (s.length() != goal.length()) return false;\n        \n        // Concatenate s with itself and check if goal exists in it\n        string doubledS = s + s;\n        return doubledS.find(goal) != string::npos;\n    }\n};\n\nint main() {\n    Solution sol;\n\n    string s = \"rotation\";\n    string goal = \"tionrota\";\n    cout << (sol.rotateString(s, goal) ? \"true\" : \"false\") << endl;\n\n    return 0;\n}",
+        "java": "class Solution {\n    // Method to check if one string is a rotation of another\n    public boolean rotateString(String s, String goal) {\n        // Check if lengths of both strings are unequal\n        if (s.length() != goal.length()) {\n            // Return false if lengths don't match\n            return false;\n        }\n        // Concatenate the string with itself\n        String doubledS = s + s;\n        // Check if the goal is a substring of the concatenated string\n        return doubledS.contains(goal);\n    }\n}\n\n// Main class to run the test cases\npublic class Main {\n    public static void main(String[] args) {\n        // Create instance of Solution\n        Solution sol = new Solution();\n\n        System.out.println(sol.rotateString(\"rotation\", \"tionrota\"));\n    }\n}",
+        "python": "class Solution:\n# Strings must be of the same length to be rotations of each other\n    def rotateString(self, s: str, goal: str) -> bool:\n        if len(s) != len(goal):\n            return False  \n        doubled_s = s + s  # Concatenate s with itself\n        return goal in doubled_s  # Check if goal is a substring of s + s\n        \nsol = Solution()\nprint(sol.rotateString(\"rotation\", \"tionrota\"))",
+        "javascript": "class Solution {\n // Strings must be of the same length to be rotations of each other\n    rotateString(s, goal) {\n        if (s.length !== goal.length) {\n            return false;  \n        }\n        let doubledS = s + s;  // Concatenate s with itself\n        return doubledS.includes(goal);  // Check if goal is a substring of s + s\n    }\n}\n\nconst sol = new Solution();\nconsole.log(sol.rotateString(\"rotation\", \"tionrota\"));"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:00Z"
+}

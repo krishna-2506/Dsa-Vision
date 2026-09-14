@@ -1,0 +1,18 @@
+{
+  "problem_id": "2401",
+  "problem_name": "Understand recursion by print something N times",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 6,
+  "substep_name": "Learn Basic Recursion",
+  "difficulty": "Easy",
+  "youtube_url": "https://www.youtube.com/watch?v=yVdKa8dnKiE&list=PLgUwDviBIf0rGlzIn_7rsaR2FQ5e6ZOL9",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/recursion/introduction-to-recursion-understand-recursion-by-printing-something-n-times/",
+  "plus_url": null,
+  "problem_statement": "Recursion is a programming technique where a function calls itself directly or indirectly to solve a problem, by breaking it down into smaller subproblems until it reaches a base case that stops further calls.\n\nLet’s understand recursion with the help of an illustration :",
+  "examples": [],
+  "total_approaches": 0,
+  "approaches": [],
+  "scraped_at": "2026-09-14T07:23:53Z"
+}

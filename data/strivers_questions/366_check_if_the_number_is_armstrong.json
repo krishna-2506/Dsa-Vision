@@ -1,0 +1,35 @@
+{
+  "problem_id": "366",
+  "problem_name": "Check if the Number is Armstrong",
+  "step_no": 1,
+  "step_name": "Learn the basics",
+  "substep_no": 5,
+  "substep_name": "Know Basic Maths",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/1xNbjMdbjug?t=1418",
+  "leetcode_url": "https://leetcode.com/problems/armstrong-number/",
+  "article_url": "https://takeuforward.org/maths/check-if-a-number-is-armstrong-number-or-not/",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/check-if-the-number-if-armstrong",
+  "problem_statement": "Given an integer N, return true it is an Armstrong number otherwise return false.",
+  "examples": [
+    "Example 1:\nInput:N = 153\nOutput:True\nExplanation: 1^3+5^3+3^3 = 1 + 125 + 27 = 153\n \nExample 2:\nInput:N = 371 \nOutput: True\nExplanation: 3^3+7^3+1^3 = 27 + 343 + 1 = 371"
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Calculate the number of digits in the input number and store it in k.\nInitialise a variable sum to 0. This variable will store the sum of each digit raised to the power of number of digits in number.\nMake a copy of the original number to store it in a temporary variable.\nRun a while loop with the condition n>0 and at each iteration:\n\nGet the last digit of n by using the modulus operator % with 10 and store it in a temporary variable ld.\nAdd the digit ld raised to the power of k of the sum.\nUpdate n by integer division with 10 effectively removing the last digit.\n\nAfter the loop, check if the original input number is equal to the sum of the digits raised to the power of the number of digits in the number.\n\nIf they are equal, return true indicating the number is an Armstrong number.\nIf they are not equal, return false indicating that the number is not an Armstrong number.",
+      "time_complexity": "O(log10N + 1)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "Time Complexity: O(log10N + 1) where N is the input number. The time complexity is determined by the number of digits in the input integer N. In the worst case when N is a multiple of 10 the number of digits in N is log10 N + 1.",
+      "space_complexity_details": "Space Complexity: O(1) as only a constant amount of additional memory for the reversed number regardless of size of the input number.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Class to check Armstrong number\nclass ArmstrongChecker {\npublic:\n    // Static method to check if a number is an Armstrong number\n    static bool isArmstrong(int num) {\n        int k = to_string(num).length(); // Get number of digits\n        int sum = 0;\n        int n = num;\n\n        while (n > 0) {\n            int ld = n % 10;            // Get last digit\n            sum += pow(ld, k);          // Add ld^k to sum\n            n /= 10;                    // Remove last digit\n        }\n\n        return sum == num; // Return true if sum equals original number\n    }\n};\n\nint main() {\n    int number = 153;\n\n    // Use class method to check\n    if (ArmstrongChecker::isArmstrong(number)) {\n        cout << number << \" is an Armstrong number.\" << endl;\n    } else {\n        cout << number << \" is not an Armstrong number.\" << endl;\n    }\n\n    return 0;\n}",
+        "java": "public class ArmstrongChecker {\n\n    // Static method to check if a number is an Armstrong number\n    public static boolean isArmstrong(int num) {\n        int k = String.valueOf(num).length(); // Get number of digits\n        int sum = 0;\n        int n = num;\n\n        while (n > 0) {\n            int ld = n % 10;             // Last digit\n            sum += Math.pow(ld, k);      // Add ld^k\n            n /= 10;                     // Remove digit\n        }\n\n        return sum == num;\n    }\n\n    public static void main(String[] args) {\n        int number = 153;\n\n        // Use class method to check\n        if (isArmstrong(number)) {\n            System.out.println(number + \" is an Armstrong number.\");\n        } else {\n            System.out.println(number + \" is not an Armstrong number.\");\n        }\n    }\n}",
+        "python": "# Define a class to check Armstrong numbers\nclass ArmstrongChecker:\n\n    @staticmethod\n    def is_armstrong(num):\n        k = len(str(num))  # Number of digits\n        sum = 0\n        n = num\n\n        while n > 0:\n            ld = n % 10             # Last digit\n            sum += ld ** k          # Add ld^k\n            n = n // 10             # Remove digit\n\n        return sum == num\n\n# Test the class method\nnumber = 153\n\nif ArmstrongChecker.is_armstrong(number):\n    print(f\"{number} is an Armstrong number.\")\nelse:\n    print(f\"{number} is not an Armstrong number.\")",
+        "javascript": "// Define a class to check Armstrong numbers\nclass ArmstrongChecker {\n    // Static method to check if a number is an Armstrong number\n    static isArmstrong(num) {\n        const k = num.toString().length; // Number of digits\n        let sum = 0;\n        let n = num;\n\n        while (n > 0) {\n            const ld = n % 10;               // Last digit\n            sum += Math.pow(ld, k);          // Add ld^k\n            n = Math.floor(n / 10);          // Remove digit\n        }\n\n        return sum === num;\n    }\n}\n\n// Test the class method\nconst number = 153;\n\nif (ArmstrongChecker.isArmstrong(number)) {\n    console.log(`${number} is an Armstrong number.`);\n} else {\n    console.log(`${number} is not an Armstrong number.`);\n}"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:23:53Z"
+}

@@ -1,0 +1,35 @@
+{
+  "problem_id": "848",
+  "problem_name": "Prefix to Infix Conversion",
+  "step_no": 9,
+  "step_name": "Stack and Queues [Learning, Pre-In-Post-fix, Monotonic Stack, Implementation]",
+  "substep_no": 2,
+  "substep_name": "Prefix, Infix, PostFix Conversion Problems",
+  "difficulty": "Medium",
+  "youtube_url": "https://youtu.be/4pIc9UBHJtk?si=ryeVvQWpCgwbTQrh",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/data-structure/prefix-to-infix-conversion",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/prefix-to-infix-conversion",
+  "problem_statement": "You are given a valid arithmetic expression in prefix notation. Your task is to convert it into a fully parenthesized infix expression.\n\nPrefix notation (also known as Polish notation) places the operator before its operands. In contrast, infix notation places the operator between operands.\n\nYour goal is to convert the prefix expression into a valid fully parenthesized infix expression.",
+  "examples": [
+    "Example 1:\nInput: expression = \"+ab\nOutput: (a+b)\n\nExample 2:\nInput: expression = \"*+ab-cd\nOutput: ((a+b)*(c-d))"
+  ],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Approach",
+      "algorithm": "Traverse the prefix expression from right to left.\nUse a stack to store operands.\nFor each operator, pop two operands from the stack, wrap them in parentheses, and push the resulting expression back.\nThe final item in the stack will be the infix expression.",
+      "time_complexity": "O(n)",
+      "space_complexity": "O(n)",
+      "time_complexity_details": "Time Complexity: O(n) where n is the length of the prefix expression (only one pass).\nSpace Complexity: O(n) for the stack used to store operands.",
+      "space_complexity_details": "Time Complexity: O(n) where n is the length of the prefix expression (only one pass).\nSpace Complexity: O(n) for the stack used to store operands.",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Function to convert prefix to infix\nstring prefixToInfix(string prefix) {\n    stack<string> s;\n    int n = prefix.size();\n\n    // Traverse the prefix expression from right to left\n    for (int i = n - 1; i >= 0; i--) {\n        char c = prefix[i];\n\n        // If the character is an operand, push it to the stack\n        if (isalnum(c)) {\n            s.push(string(1, c));\n        } else {\n            // Pop two operands from the stack\n            string op1 = s.top(); s.pop();\n            string op2 = s.top(); s.pop();\n\n            // Form the new infix expression and push back to stack\n            s.push(\"(\" + op1 + c + op2 + \")\");\n        }\n    }\n\n    // The final element in the stack is the result\n    return s.top();\n}\n\nint main() {\n    string prefix = \"*-A/BC-/AKL\";\n    cout << \"Infix Expression: \" << prefixToInfix(prefix) << endl;\n    return 0;\n}",
+        "java": "import java.util.*;\n\nclass PrefixToInfix {\n    // Function to convert prefix to infix\n    public String prefixToInfix(String prefix) {\n        Stack<String> s = new Stack<>();\n        int n = prefix.length();\n\n        // Traverse the prefix expression from right to left\n        for (int i = n - 1; i >= 0; i--) {\n            char c = prefix.charAt(i);\n\n            // If the character is an operand, push it to the stack\n            if (Character.isLetterOrDigit(c)) {\n                s.push(String.valueOf(c));\n            } else {\n                // Pop two operands from the stack\n                String op1 = s.pop();\n                String op2 = s.pop();\n\n                // Form the new infix expression and push back to stack\n                s.push(\"(\" + op1 + c + op2 + \")\");\n            }\n        }\n\n        // The final element in the stack is the result\n        return s.peek();\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        PrefixToInfix converter = new PrefixToInfix();\n        String prefix = \"*-A/BC-/AKL\";\n        System.out.println(\"Infix Expression: \" + converter.prefixToInfix(prefix));\n    }\n}",
+        "python": "# Function to convert prefix to infix\ndef prefix_to_infix(prefix):\n    stack = []\n    \n    # Traverse the prefix expression from right to left\n    for c in reversed(prefix):\n        # If the character is an operand, push it to the stack\n        if c.isalnum():\n            stack.append(c)\n        else:\n            # Pop two operands from the stack\n            op1 = stack.pop()\n            op2 = stack.pop()\n\n            # Form the new infix expression and push back to stack\n            stack.append(f\"({op1}{c}{op2})\")\n    \n    # The final element in the stack is the result\n    return stack[-1]\n\n# Main function for testing\ndef main():\n    prefix = \"*-A/BC-/AKL\"\n    print(\"Infix Expression:\", prefix_to_infix(prefix))\n\nif __name__ == \"__main__\":\n    main()",
+        "javascript": "// Function to convert prefix to infix\nfunction prefixToInfix(prefix) {\n    let stack = [];\n\n    // Traverse the prefix expression from right to left\n    for (let i = prefix.length - 1; i >= 0; i--) {\n        let c = prefix[i];\n\n        // If the character is an operand, push it to the stack\n        if (/[a-zA-Z0-9]/.test(c)) {\n            stack.push(c);\n        } else {\n            // Pop two operands from the stack\n            let op1 = stack.pop();\n            let op2 = stack.pop();\n\n            // Form the new infix expression and push back to stack\n            stack.push(`(${op1}${c}${op2})`);\n        }\n    }\n\n    // The final element in the stack is the result\n    return stack[0];\n}\n\n// Main function for testing\nfunction main() {\n    let prefix = \"*-A/BC-/AKL\";\n    console.log(\"Infix Expression:\", prefixToInfix(prefix));\n}\n\nmain();"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:08Z"
+}

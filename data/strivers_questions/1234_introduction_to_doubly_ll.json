@@ -1,0 +1,33 @@
+{
+  "problem_id": "1234",
+  "problem_name": "Introduction to Doubly LL",
+  "step_no": 6,
+  "step_name": "Learn LinkedList [Single LL, Double LL, Medium, Hard Problems]",
+  "substep_no": 2,
+  "substep_name": "Learn Doubly LinkedList",
+  "difficulty": "Easy",
+  "youtube_url": "https://youtu.be/0eKMU10uEDI?si=uDnoj_C5ghEpNLvP",
+  "leetcode_url": null,
+  "article_url": "https://takeuforward.org/linked-list/introduction-to-doubly-linked-list",
+  "plus_url": "https://takeuforward.org/plus/dsa/problems/introduction-to-doubly-ll",
+  "problem_statement": "Before exploring doubly linked lists, let's refresh our knowledge of linked lists. Linked lists are linear data structures consisting of nodes, each containing data and a reference (or pointer) to the next node. This setup allows for dynamic memory allocation and efficient insertions and deletions.\n\nA significant characteristic of singly linked lists is their unidirectional nature, allowing traversal in only one direction i.e forward. Moving backward, such as going from node at 3rd position to node at 1st position is not possible because each node in a singly linked list holds two pieces of information: the data (an integer value in this case) and a pointer that indicates the address of the next node. This structure enables efficient forward navigation, but the absence of a backward pointer restricts reverse traversal.",
+  "examples": [],
+  "total_approaches": 1,
+  "approaches": [
+    {
+      "approach_name": "Standard Solution",
+      "algorithm": "",
+      "time_complexity": "O(N)",
+      "space_complexity": "O(1)",
+      "time_complexity_details": "",
+      "space_complexity_details": "",
+      "codes": {
+        "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\n// Class representing a node in Doubly Linked List\nclass Node {\npublic:\n    // Stores data of the node\n    int data;\n\n    // Pointer to the next node\n    Node* next;\n\n    // Pointer to the previous node\n    Node* prev;\n\n    // Constructor when data, next and prev are provided\n    Node(int data1, Node* next1, Node* prev1) {\n        data = data1;\n        next = next1;\n        prev = prev1;\n    }\n\n    // Constructor when only data is provided\n    Node(int data1) {\n        data = data1;\n        next = nullptr;\n        prev = nullptr;\n    }\n};\n\nint main() {\n    // Initializing an array to create nodes\n    vector<int> arr = {2, 5, 8, 7};\n\n    // Creating the head node of the doubly linked list\n    Node* head = new Node(arr[0]);\n\n    // Printing the address of the head node\n    cout << head << '\\n';\n\n    // Printing the data stored in head node\n    cout << head->data << '\\n';\n\n    return 0;\n}",
+        "java": "import java.util.*;\n\n// Class representing a node in Doubly Linked List\nclass Node {\n    // Stores data of the node\n    int data;\n\n    // Pointer to the next node\n    Node next;\n\n    // Pointer to the previous node\n    Node prev;\n\n    // Constructor when data, next and prev are provided\n    Node(int data1, Node next1, Node prev1) {\n        data = data1;\n        next = next1;\n        prev = prev1;\n    }\n\n    // Constructor when only data is provided\n    Node(int data1) {\n        data = data1;\n        next = null;\n        prev = null;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        // Initializing an array to create nodes\n        int[] arr = {2, 5, 8, 7};\n\n        // Creating the head node of the doubly linked list\n        Node head = new Node(arr[0]);\n\n        // Printing the memory reference of head\n        System.out.println(head);\n\n        // Printing the data stored in head node\n        System.out.println(head.data);\n    }\n}",
+        "python": "# Class representing a node in Doubly Linked List\nclass Node:\n    # Constructor to initialize a node\n    def __init__(self, data, next=None, prev=None):\n        # Stores data of the node\n        self.data = data\n\n        # Pointer to the next node\n        self.next = next\n\n        # Pointer to the previous node\n        self.prev = prev\n\n# Initializing an array to create nodes\narr = [2, 5, 8, 7]\n\n# Creating the head node of the doubly linked list\nhead = Node(arr[0])\n\n# Printing the memory reference of head\nprint(head)\n\n# Printing the data stored in head node\nprint(head.data)",
+        "javascript": "// Class representing a node in Doubly Linked List\nclass Node {\n    // Constructor to initialize a node\n    constructor(data, next = null, prev = null) {\n        // Stores data of the node\n        this.data = data;\n\n        // Pointer to the next node\n        this.next = next;\n\n        // Pointer to the previous node\n        this.prev = prev;\n    }\n}\n\n// Initializing an array to create nodes\nlet arr = [2, 5, 8, 7];\n\n// Creating the head node of the doubly linked list\nlet head = new Node(arr[0]);\n\n// Printing the object representing head\nconsole.log(head);\n\n// Printing the data stored in head node\nconsole.log(head.data);"
+      }
+    }
+  ],
+  "scraped_at": "2026-09-14T07:24:01Z"
+}
