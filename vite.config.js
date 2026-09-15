@@ -7,6 +7,8 @@ import { algovisionApiPlugin } from './vite-plugin-api.js'
 export default defineConfig({
   plugins: [react(), tailwindcss(), algovisionApiPlugin()],
   server: {
+    host: true, // Listen on 0.0.0.0 to expose on Wi-Fi and local network
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:3001',

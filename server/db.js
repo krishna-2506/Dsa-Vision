@@ -204,6 +204,14 @@ try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN approaches_data TEXT");
 } catch (e) {}
 
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN youtube_videos TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN article_content TEXT");
+} catch (e) {}
+
 // Performance Indexes for high-speed queries
 sqlite.exec(`
   CREATE INDEX IF NOT EXISTS idx_code_solutions_qid_tier ON code_solutions(question_id, approach_tier);
@@ -686,11 +694,30 @@ export const dbService = {
           parsedApproaches = typeof r.approaches_data === 'string' ? JSON.parse(r.approaches_data) : r.approaches_data;
         } catch {}
       }
+      let parsedVideos = [];
+      if (r.youtube_videos) {
+        try {
+          parsedVideos = typeof r.youtube_videos === 'string' ? JSON.parse(r.youtube_videos) : r.youtube_videos;
+        } catch {}
+      }
+      if ((!parsedVideos || parsedVideos.length === 0) && r.youtube_url) {
+        parsedVideos = [
+          {
+            id: 'striver-primary',
+            title: "Striver's Solution",
+            url: r.youtube_url,
+            channel: 'take U forward',
+            is_primary: true
+          }
+        ];
+      }
       return {
         ...r,
         tags: Array.isArray(parsedTags) ? parsedTags : [],
         examples: Array.isArray(parsedExamples) ? parsedExamples : [],
         approaches_data: Array.isArray(parsedApproaches) ? parsedApproaches : [],
+        youtube_videos: Array.isArray(parsedVideos) ? parsedVideos : [],
+        article_content: r.article_content || '',
         is_favorite: Boolean(r.is_favorite)
       };
     });
@@ -725,11 +752,30 @@ export const dbService = {
         parsedApproaches = typeof row.approaches_data === 'string' ? JSON.parse(row.approaches_data) : row.approaches_data;
       } catch {}
     }
+    let parsedVideos = [];
+    if (row.youtube_videos) {
+      try {
+        parsedVideos = typeof row.youtube_videos === 'string' ? JSON.parse(row.youtube_videos) : row.youtube_videos;
+      } catch {}
+    }
+    if ((!parsedVideos || parsedVideos.length === 0) && row.youtube_url) {
+      parsedVideos = [
+        {
+          id: 'striver-primary',
+          title: "Striver's Solution",
+          url: row.youtube_url,
+          channel: 'take U forward',
+          is_primary: true
+        }
+      ];
+    }
     return {
       ...row,
       tags: Array.isArray(parsedTags) ? parsedTags : [],
       examples: Array.isArray(parsedExamples) ? parsedExamples : [],
       approaches_data: Array.isArray(parsedApproaches) ? parsedApproaches : [],
+      youtube_videos: Array.isArray(parsedVideos) ? parsedVideos : [],
+      article_content: row.article_content || '',
       is_favorite: Boolean(row.is_favorite)
     };
   },
@@ -999,8 +1045,20 @@ export const dbService = {
       'time_complexity',
       'space_complexity',
       'leetcode_url',
+      'youtube_url',
+      'youtube_videos',
+      'article_url',
+      'article_content',
+      'plus_url',
       'description',
+      'problem_statement',
       'approach',
+      'examples',
+      'approaches_data',
+      'step_no',
+      'step_name',
+      'substep_no',
+      'substep_name',
       'tags',
       'component_key'
     ];
@@ -1012,7 +1070,9 @@ export const dbService = {
         sets.push(`${k} = ?`);
         let val = v;
         if (k === 'is_favorite') val = v ? 1 : 0;
-        if (k === 'tags' && Array.isArray(v)) val = JSON.stringify(v);
+        if ((k === 'tags' || k === 'youtube_videos' || k === 'examples' || k === 'approaches_data') && Array.isArray(v)) {
+          val = JSON.stringify(v);
+        }
         values.push(val);
       }
     }
@@ -1046,12 +1106,18 @@ export const dbService = {
   addQuestion(q, solutions = {}) {
     const id = q.id || q.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const tagsJson = Array.isArray(q.tags) ? JSON.stringify(q.tags) : (q.tags || '[]');
+    const videosJson = Array.isArray(q.youtube_videos) ? JSON.stringify(q.youtube_videos) : (q.youtube_videos || null);
+    const examplesJson = Array.isArray(q.examples) ? JSON.stringify(q.examples) : (q.examples || null);
+    const approachesJson = Array.isArray(q.approaches_data) ? JSON.stringify(q.approaches_data) : (q.approaches_data || null);
+
     const stmt = sqlite.prepare(`
       INSERT OR REPLACE INTO questions (
         id, display_id, leetcode_id, title, slug, category, difficulty,
-        time_complexity, space_complexity, leetcode_url, description,
-        approach, tags, status, is_favorite, component_key, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        time_complexity, space_complexity, leetcode_url, youtube_url, youtube_videos,
+        article_url, article_content, plus_url, description, problem_statement,
+        approach, examples, approaches_data, step_no, step_name, substep_no, substep_name,
+        tags, status, is_favorite, component_key, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `);
     stmt.run(
       id,
@@ -1059,13 +1125,25 @@ export const dbService = {
       q.leetcode_id || null,
       q.title,
       q.slug || id,
-      q.category || 'General',
+      q.category || (q.step_name ? `Step ${q.step_no}: ${q.step_name}` : 'General'),
       q.difficulty || 'Medium',
       q.time_complexity || 'O(N)',
       q.space_complexity || 'O(1)',
       q.leetcode_url || '',
+      q.youtube_url || (Array.isArray(q.youtube_videos) && q.youtube_videos[0]?.url) || '',
+      videosJson,
+      q.article_url || '',
+      q.article_content || '',
+      q.plus_url || '',
       q.description || '',
+      q.problem_statement || '',
       q.approach || '',
+      examplesJson,
+      approachesJson,
+      q.step_no || null,
+      q.step_name || null,
+      q.substep_no || null,
+      q.substep_name || null,
       tagsJson,
       q.status || 'to_learn',
       q.is_favorite ? 1 : 0,

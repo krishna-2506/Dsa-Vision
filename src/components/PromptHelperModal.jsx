@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Copy, Check, Sparkles, Terminal, Lightbulb } from 'lucide-react';
+import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
 
 export default function PromptHelperModal({ isOpen, onClose }) {
   const [topic, setTopic] = useState('Invert Binary Tree');
@@ -8,170 +9,14 @@ export default function PromptHelperModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const componentKey = topic.replace(/[^a-zA-Z0-9]/g, '') + 'Visualizer';
-
-  const generatedPrompt = `Act as an expert algorithm educator and React visualization engineer for AlgoVision Studio.
-Create an interactive, animated React visualizer component for this DSA problem:
-
-Problem: "${topic}" (${category})
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. ALGOVISION STUDIO ARCHITECTURE & CONTEXT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-The Studio already provides:
-  • Approach tier tabs (Intuitive / Better / Optimal) above the stage
-  • Split-screen layout: your canvas LEFT, syntax-highlighted code viewer RIGHT
-  • Transport controls: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x
-  • Step title and Prev/Next navigation
-  • Educational Explanation & Live Variables Inspector Panel below the stage
-
-DO NOT render: outer card frames, "Step X of Y" counters, prev/next buttons, language tabs, or copy-code buttons. Just render the visualization canvas content.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2. AESTHETIC: APPLE macOS & HIG DESIGN SYSTEM
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-The visualizer must feel like an Apple native product (macOS Sequoia / iOS).
-Keep the visualizer theme and the site theme IDENTICAL:
-
-CSS VARIABLES (Mandatory — automatically supports Light & Dark themes):
-  Canvas / Stage bg:    var(--board)
-  Card / Node fill:     var(--board-raised)
-  Subtle container:     var(--board-raised-2)
-  Hairline border:      var(--line)
-  Primary text:         var(--chalk)
-  Secondary / dim text: var(--chalk-dim)
-  Faint index text:     var(--chalk-faint)
-
-AUTHENTIC APPLE ACCENT PALETTE:
-  Active Focus / Pointers:  var(--indigo) (#0a84ff - Apple System Blue)
-  Comparison / Scanning:    var(--amber)  (#ff9f0a - Apple System Orange)
-  Success / Matched / Done: var(--easy)   (#30d158 - Apple System Mint/Green)
-  Conflict / Eliminated:    var(--hard)   (#ff453a - Apple System Coral Red)
-  Secondary Pointer / Aux:  var(--teal)   (#64d2ff - Apple System Cyan)
-  Special Structure / Hash: var(--purple) (#bf5af2 - Apple System Purple)
-
-GEOMETRY & STYLING RULES:
-  • Rounded Squircles: Use rx="10" or rx="8" for array/node boxes.
-  • Glassmorphism: Frosted translucent fills, subtle drop shadows, and delicate 1px specular borders.
-  • Floating Pointers: Render pointers as floating Apple rounded pill badges with indicator arrows (↓ top, ↑ bottom), NOT hand-drawn scratchy text.
-  • Typography: font-family="'SF Mono', 'JetBrains Mono', monospace" for data values; "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" for badges.
-  • Prohibited: Do NOT use rough chalkboard filters (filter="url(#rough)"), dark chalkboard slate (#12181a), or Kalam cursive font.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-3. DEEP EDUCATIONAL EXPLANATION & PEDAGOGY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Every step object in the \`steps\` array MUST be rich, intuitive, and teach the algorithm with senior clarity:
-
-Each step MUST contain:
-  • title: Concise action title (e.g. "2. Inspect node (4) and swap left/right children")
-  • phase: Semantic phase badge (e.g. 'INITIALIZING' | 'SCANNING' | 'COMPARING' | 'SWAPPING' | 'PARTITIONING' | 'MATCH_FOUND' | 'PRUNING')
-  • explain: 2-3 clear educational sentences explaining WHAT happened, WHY this step is taken, and how it progresses the algorithm.
-  • intuition: A "Why this works / Key takeaway" note explaining how this decision prunes candidates or maintains the loop invariant.
-  • variables: An object of all live pointers and accumulators (e.g. { curr: 4, left: 2, right: 7 })
-  • codeLine: EXACT 1-indexed line number in the C++ solution corresponding to this execution step!
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-4. SUPERIOR ANIMATIONS & DYNAMIC MOTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  • Fluid transitions on moving elements: CSS transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1).
-  • Distinct Visual States:
-      - Unprocessed / Inactive: Subdued frosted opacity (0.5).
-      - Scanning / In-Focus: Apple System Blue glow halo with scale(1.03).
-      - Comparing: Apple Orange dual-focus with comparison badge or connecting arc.
-      - Matched / Solved: Apple Mint emerald glow halo with soft spring pop.
-      - Eliminated / Discarded: Muted strike or dimming.
-  • Data Structure Primitives:
-      - Arrays: Sleek squircle cells with indices below and floating pill pointers above.
-      - Linked Lists: Apple 3-compartment squircle nodes (prev | val | next) + bezier arrow curves.
-      - Trees: Apple frosted glass circles with glowing branch lines.
-      - DP Matrices: Heatmap grid with glowing active cell and reference source arrows.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-5. MULTI-LANGUAGE SOLUTIONS (3 TIERS × 3 LANGUAGES)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-For EACH approach tier (Intuitive, Better, Optimal), provide complete working code:
-  • C++    (Full function with line comments, codeLine sync basis)
-  • Java   (Full class Solution { public ... } wrapper)
-  • Python (Full function with type hints)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-6. COMPLETE COMPONENT SCAFFOLD (DROP-IN READY)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-\`\`\`jsx
-import React, { useMemo } from 'react';
-// Available primitives: ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView
-import ArrayView from '../components/primitives/ArrayView';
-
-export const approaches = {
-  intuitive: {
-    title: 'Intuitive: Brute Force / Recursive',
-    badge: 'Recursive',
-    complexity: { time: 'O(N)', space: 'O(H)' },
-    steps: [
-      {
-        title: '1. Inspect root node',
-        phase: 'INITIALIZING',
-        codeLine: 3,
-        variables: { node: 4 },
-        explain: 'Begin recursive traversal starting from the root of the tree.',
-        intuition: 'Every subtree root must swap its left and right subtrees recursively.',
-        activeIndex: 0,
-      }
-    ],
-    solutions: {
-      cpp: \`// C++ Solution\`,
-      java: \`// Java Solution\`,
-      python: \`# Python Solution\`
-    }
-  },
-  better: {
-    title: 'Better: Iterative BFS',
-    badge: 'Iterative BFS',
-    complexity: { time: 'O(N)', space: 'O(W)' },
-    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
-    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
-  },
-  optimal: {
-    title: 'Optimal: In-Place DFS / Pointer Inversion',
-    badge: 'Optimal',
-    complexity: { time: 'O(N)', space: 'O(1)' },
-    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
-    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
-  }
-};
-
-export const solutions = approaches.optimal.solutions;
-export const steps     = approaches.optimal.steps;
-export const meta = {
-  title:           "${topic}",
-  category:        "${category}",
-  difficulty:      "Medium",
-  timeComplexity:  "O(N)",
-  spaceComplexity: "O(1)",
-  description:     "Comprehensive step-by-step visualizer for ${topic}."
-};
-
-export default function ${componentKey}({
-  currentStep  = 0,
-  onStepChange,
-  customInput  = '',
-  customTarget = '',
-  approachTier = 'optimal'
-}) {
-  const activeApproach = approaches[approachTier] || approaches.optimal;
-  const activeSteps    = activeApproach.steps;
-  const stepIndex      = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
-  const stepData       = activeSteps[stepIndex] || activeSteps[0];
-
-  return (
-    <div className="w-full flex flex-col items-center justify-center p-4">
-      {/* Render Apple Visualizer Canvas */}
-    </div>
-  );
-}
-\`\`\`
-
-Return ONLY the complete, ready-to-run React JSX code block. No text outside the code block.`;
+  const generatedPrompt = generateMasterVisualizerPrompt({
+    title: topic,
+    category,
+    difficulty: 'Medium',
+    display_id: 'PROMPT-GEN',
+    description: `Problem: "${topic}". Provide comprehensive test cases and dynamic visualization.`,
+    approach: 'Demonstrate intuitive, better, and optimal approaches with simple plain-English steps.'
+  });
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedPrompt);

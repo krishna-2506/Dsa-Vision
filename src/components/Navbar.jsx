@@ -69,6 +69,29 @@ export default function Navbar({
             </div>
           </button>
 
+          {/* Admin Breadcrumb */}
+          {activeView === 'admin' && (
+            <div className="hidden md:flex items-center gap-2 pl-3 border-l border-[var(--line)]">
+              <span className="text-[var(--chalk-faint)] text-xs">/</span>
+              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400">
+                Admin Center
+              </span>
+            </div>
+          )}
+
+          {/* Article Breadcrumb */}
+          {activeView === 'article' && activeQuestion && (
+            <div className="hidden md:flex items-center gap-2 min-w-0 pl-3 border-l border-[var(--line)]">
+              <span className="text-[var(--chalk-faint)] text-xs">/</span>
+              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/25 text-teal-400 shrink-0">
+                Article Hub
+              </span>
+              <span className="text-[13px] font-sans font-medium text-[var(--chalk)] truncate max-w-[280px]">
+                {activeQuestion.title}
+              </span>
+            </div>
+          )}
+
           {/* Studio Breadcrumb */}
           {activeView === 'studio' && activeQuestion && (
             <div className="hidden md:flex items-center gap-2.5 min-w-0 pl-3 border-l border-[var(--line)]">
@@ -156,7 +179,11 @@ export default function Navbar({
           {/* Admin Console */}
           <button
             onClick={onOpenAdminModal}
-            className="w-8.5 h-8.5 rounded-full bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] flex items-center justify-center text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all cursor-pointer"
+            className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+              activeView === 'admin'
+                ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold shadow-[0_0_12px_rgba(245,158,11,0.25)]'
+                : 'bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+            }`}
             title="Database & Questions Admin"
           >
             <Shield className="w-4 h-4" />

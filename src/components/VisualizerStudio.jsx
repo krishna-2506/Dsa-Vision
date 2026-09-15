@@ -38,6 +38,7 @@ import ReportSolutionModal from './ReportSolutionModal';
 import AiQuestionEnhancerModal from './AiQuestionEnhancerModal';
 import VisualizerErrorBoundary from './VisualizerErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
+import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
 
 function formatComplexity(text) {
   if (!text) return '—';
@@ -52,6 +53,13 @@ function formatComplexity(text) {
     .replace(/^(?:time|space)\s*(?:complexity)?\s*[:=-]\s*/i, '')
     .trim();
   return cleaned.length <= 24 ? cleaned : cleaned.slice(0, 22) + '…';
+}
+
+function getYouTubeEmbedUrl(url) {
+  if (!url || typeof url !== 'string') return null;
+  const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/;
+  const match = url.match(regExp);
+  return match ? `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0&modestbranding=1` : null;
 }
 
 export default function VisualizerStudio({
@@ -69,6 +77,8 @@ export default function VisualizerStudio({
   const [activeTier, setActiveTier] = useState('optimal'); // 'intuitive' | 'better' | 'optimal'
   const [showReportModal, setShowReportModal] = useState(false);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const embedUrl = useMemo(() => getYouTubeEmbedUrl(question.youtube_url), [question.youtube_url]);
   const activeApproachData = visualizerEntry?.approaches?.[activeTier] || null;
   const currentApproachObj = useMemo(() => {
     const list = Array.isArray(question.approaches_data) ? question.approaches_data : [];
@@ -208,198 +218,9 @@ export default function VisualizerStudio({
 
 
   const handleDirectCopyPrompt = () => {
-    const key = question.component_key || toCamelCase(question.title) + 'Visualizer';
-    const cppCode = solutions.cpp || '// Provide full C++ solution here';
-    const timeC = question.time_complexity || 'O(N)';
-    const spaceC = question.space_complexity || 'O(1)';
-    const desc = JSON.stringify((question.description || '').slice(0, 160));
-
-    const promptText = `Act as an expert algorithm educator and React visualization engineer for AlgoVision Studio.
-Create an interactive, animated React visualizer component for this DSA problem:
-
-Problem ID: ${question.display_id || (question.leetcode_id ? '#' + question.leetcode_id : 'Q-001')}
-Problem: "${question.title}" (${question.category} - ${question.difficulty})
-
-Problem Statement & Examples:
-${question.description}
-
-Approach & Logic:
-${question.approach || 'Provide intuitive brute force, optimized intermediate, and optimal algorithm approaches.'}
-
-C++ Reference (basis for all solution code):
-\`\`\`cpp
-${cppCode}
-\`\`\`
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. ALGOVISION STUDIO ARCHITECTURE & CONTEXT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-The Studio already provides:
-  • Approach tier tabs (Intuitive / Better / Optimal) above the stage
-  • Split-screen layout: your canvas LEFT, syntax-highlighted code viewer RIGHT
-  • Transport controls: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x
-  • Step title and Prev/Next navigation
-  • Educational Explanation & Live Variables Inspector Panel below the stage
-
-DO NOT render: outer card frames, "Step X of Y" counters, prev/next buttons, language tabs, or copy-code buttons. Just render the visualization canvas content.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-2. AESTHETIC: APPLE macOS & HIG DESIGN SYSTEM
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-The visualizer must feel like an Apple native product (macOS Sequoia / iOS).
-Keep the visualizer theme and the site theme IDENTICAL:
-
-CSS VARIABLES (Mandatory — automatically supports Light & Dark themes):
-  Canvas / Stage bg:    var(--board)
-  Card / Node fill:     var(--board-raised)
-  Subtle container:     var(--board-raised-2)
-  Hairline border:      var(--line)
-  Primary text:         var(--chalk)
-  Secondary / dim text: var(--chalk-dim)
-  Faint index text:     var(--chalk-faint)
-
-AUTHENTIC APPLE ACCENT PALETTE:
-  Active Focus / Pointers:  var(--indigo) (#0a84ff - Apple System Blue)
-  Comparison / Scanning:    var(--amber)  (#ff9f0a - Apple System Orange)
-  Success / Matched / Done: var(--easy)   (#30d158 - Apple System Mint/Green)
-  Conflict / Eliminated:    var(--hard)   (#ff453a - Apple System Coral Red)
-  Secondary Pointer / Aux:  var(--teal)   (#64d2ff - Apple System Cyan)
-  Special Structure / Hash: var(--purple) (#bf5af2 - Apple System Purple)
-
-GEOMETRY & STYLING RULES:
-  • Rounded Squircles: Use rx="10" or rx="8" for array/node boxes.
-  • Glassmorphism: Frosted translucent fills, subtle drop shadows, and delicate 1px specular borders.
-  • Floating Pointers: Render pointers as floating Apple rounded pill badges with indicator arrows (↓ top, ↑ bottom), NOT hand-drawn scratchy text.
-  • Typography: font-family="'SF Mono', 'JetBrains Mono', monospace" for data values; "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" for badges.
-  • Prohibited: Do NOT use rough chalkboard filters (filter="url(#rough)"), dark chalkboard slate (#12181a), or Kalam cursive font.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-3. DEEP EDUCATIONAL EXPLANATION & PEDAGOGY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Every step object in the \`steps\` array MUST be rich, intuitive, and teach the algorithm with senior clarity:
-
-Each step MUST contain:
-  • title: Concise action title (e.g. "2. Compare nums[left] (2) + nums[right] (23) == 25")
-  • phase: Semantic phase badge (e.g. 'INITIALIZING' | 'SCANNING' | 'COMPARING' | 'SWAPPING' | 'PARTITIONING' | 'MATCH_FOUND' | 'PRUNING')
-  • explain: 2-3 clear educational sentences explaining WHAT happened, WHY this step is taken, and how it progresses the algorithm.
-  • intuition: A "Why this works / Key takeaway" note explaining how this decision prunes candidates or maintains the loop invariant.
-  • variables: An object of all live pointers and accumulators (e.g. { left: 0, right: 5, sum: 25, target: 26 })
-  • codeLine: EXACT 1-indexed line number in the C++ solution corresponding to this execution step!
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-4. SUPERIOR ANIMATIONS & DYNAMIC MOTION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  • Fluid transitions on moving elements: CSS transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1).
-  • Distinct Visual States:
-      - Unprocessed / Inactive: Subdued frosted opacity (0.5).
-      - Scanning / In-Focus: Apple System Blue glow halo with scale(1.03).
-      - Comparing: Apple Orange dual-focus with comparison badge or connecting arc.
-      - Matched / Solved: Apple Mint emerald glow halo with soft spring pop.
-      - Eliminated / Discarded: Muted strike or dimming.
-  • Data Structure Primitives:
-      - Arrays: Sleek squircle cells with indices below and floating pill pointers above.
-      - Linked Lists: Apple 3-compartment squircle nodes (prev | val | next) + bezier arrow curves.
-      - Trees: Apple frosted glass circles with glowing branch lines.
-      - DP Matrices: Heatmap grid with glowing active cell and reference source arrows.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-5. MULTI-LANGUAGE SOLUTIONS (3 TIERS × 3 LANGUAGES)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-For EACH approach tier (Intuitive, Better, Optimal), provide complete working code:
-  • C++    (Full function with line comments, codeLine sync basis)
-  • Java   (Full class Solution { public ... } wrapper)
-  • Python (Full function with type hints)
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-6. COMPLETE COMPONENT SCAFFOLD (DROP-IN READY)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-\`\`\`jsx
-import React, { useMemo } from 'react';
-// Available primitives: ArrayView, LinkedListView, TreeGraphView, MatrixView, StackQueueView
-import ArrayView from '../components/primitives/ArrayView';
-
-export const approaches = {
-  intuitive: {
-    title: 'Intuitive: Brute Force',
-    badge: 'Brute Force',
-    complexity: { time: 'O(N²)', space: 'O(1)' },
-    steps: [
-      {
-        title: '1. Initialize pointers',
-        phase: 'INITIALIZING',
-        codeLine: 3,
-        variables: { i: 0, j: 1 },
-        explain: 'Start at index 0 and inspect all pairs sequentially.',
-        intuition: 'Brute force checks every possible combination to guarantee finding a solution.',
-        activeIndex: 0,
-        compareIndex: 1,
-      }
-    ],
-    solutions: {
-      cpp: \`// C++ Brute Force — O(N²)\`,
-      java: \`// Java Brute Force — O(N²)\`,
-      python: \`# Python Brute Force — O(N²)\`
-    }
-  },
-  better: {
-    title: 'Better: Hash / Sub-Optimal',
-    badge: 'Sub-Optimal',
-    complexity: { time: 'O(N)', space: 'O(N)' },
-    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
-    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
-  },
-  optimal: {
-    title: 'Optimal: Optimal Two Pointers / Direct',
-    badge: 'Optimal',
-    complexity: { time: '${timeC}', space: '${spaceC}' },
-    steps: [ /* rich steps with phase, explain, intuition, variables, codeLine */ ],
-    solutions: { cpp: \`...\`, java: \`...\`, python: \`...\` }
-  }
-};
-
-export const solutions = approaches.optimal.solutions;
-export const steps     = approaches.optimal.steps;
-export const meta = {
-  display_id:      '${question.display_id || 'Q-001'}',
-  title:           "${question.title}",
-  category:        "${question.category}",
-  difficulty:      "${question.difficulty}",
-  timeComplexity:  "${timeC}",
-  spaceComplexity: "${spaceC}",
-  description:     ${desc}
-};
-
-export default function ${key}({
-  currentStep  = 0,
-  onStepChange,
-  customInput  = '',
-  customTarget = '',
-  approachTier = 'optimal'
-}) {
-  const activeApproach = approaches[approachTier] || approaches.optimal;
-  const activeSteps    = activeApproach.steps;
-  const stepIndex      = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
-  const stepData       = activeSteps[stepIndex] || activeSteps[0];
-
-  return (
-    <div className="w-full flex flex-col items-center justify-center p-4">
-      {/* Visual Canvas using Apple Design Primitives */}
-      <ArrayView
-        items={stepData.items || [2, 7, 11, 15]}
-        pointers={[
-          { index: stepData.activeIndex ?? 0, label: 'curr', color: 'blue' },
-          { index: stepData.compareIndex ?? 1, label: 'scan', color: 'amber' }
-        ]}
-      />
-    </div>
-  );
-}
-\`\`\`
-
-Return ONLY the complete, ready-to-run React JSX code block. No text outside the code block.`;
-
+    const promptText = generateMasterVisualizerPrompt(question, solutions);
     navigator.clipboard.writeText(promptText);
-    sound.playStep(640);
+    sound?.playStep?.(640);
     setCopiedDirect(true);
     setTimeout(() => setCopiedDirect(false), 2500);
   };
@@ -873,18 +694,32 @@ Return ONLY the complete, ready-to-run React JSX code block. No text outside the
               <Flag className="w-3.5 h-3.5" />
             </button>
 
-            {/* Striver YouTube Tutorial Link */}
+            {/* Striver YouTube Tutorial Link & Embed View Toggle */}
             {question.youtube_url && (
-              <a
-                href={question.youtube_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary h-8 px-2.5 text-xs text-rose-500 hover:text-rose-400 bg-rose-500/10 border border-rose-500/30 font-semibold"
-                title="Watch Striver's Video Editorial"
-              >
-                <Play className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
-                <span className="hidden sm:inline">Striver Video</span>
-              </a>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setShowVideo(!showVideo)}
+                  className={`btn-secondary h-8 px-2.5 text-xs font-semibold transition-all cursor-pointer ${
+                    showVideo
+                      ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
+                      : 'text-rose-500 hover:text-rose-400 bg-rose-500/10 border border-rose-500/30'
+                  }`}
+                  title={showVideo ? 'Hide embedded video player' : 'Watch video editorial embedded on page'}
+                >
+                  <Play className={`w-3.5 h-3.5 ${showVideo ? 'fill-white text-white' : 'fill-rose-500 text-rose-500'}`} />
+                  <span className="hidden sm:inline">{showVideo ? 'Hide Video' : 'Watch Video'}</span>
+                </button>
+
+                <a
+                  href={question.youtube_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary h-8 w-8 justify-center px-0 text-rose-500 hover:text-rose-400 bg-rose-500/10 border border-rose-500/30"
+                  title="Open video on YouTube in new tab"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
             )}
 
             {/* TakeUForward Article Link */}
@@ -1034,6 +869,90 @@ Return ONLY the complete, ready-to-run React JSX code block. No text outside the
                     {ex}
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Embedded YouTube Video Player View */}
+          {embedUrl && showVideo && (
+            <div className="rounded-2xl overflow-hidden border border-rose-500/25 bg-[var(--board-raised-2)] backdrop-blur-xl shadow-xl fade-in transition-all">
+              {/* Player Titlebar Chrome */}
+              <div className="flex items-center justify-between px-4 py-2.5 bg-rose-500/10 border-b border-rose-500/20">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+                  <span className="text-xs font-sans font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <Play className="w-3.5 h-3.5 fill-rose-500" />
+                    <span>Striver Video Editorial</span>
+                  </span>
+                  <span className="text-[var(--line-strong)] text-xs hidden sm:inline">·</span>
+                  <span className="text-xs font-sans text-[var(--chalk)] truncate max-w-sm hidden sm:inline font-medium">
+                    {question.title}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={question.youtube_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs font-sans text-rose-500 hover:text-rose-400 font-semibold px-2.5 py-1 rounded-md hover:bg-rose-500/15 border border-rose-500/20 transition-all"
+                    title="Open on YouTube in new tab"
+                  >
+                    <span>Watch on YouTube</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+
+                  <button
+                    onClick={() => setShowVideo(false)}
+                    className="p-1 rounded-md text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] transition-colors cursor-pointer"
+                    title="Close embedded video player"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* 16:9 Responsive Video Iframe */}
+              <div className="relative w-full aspect-video max-h-[480px] bg-black">
+                <iframe
+                  src={embedUrl}
+                  title={`Striver Video Tutorial - ${question.title}`}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Quick Embedded Video Launcher Banner when collapsed */}
+          {embedUrl && !showVideo && (
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 transition-all">
+              <div className="flex items-center gap-2.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
+                <div className="text-xs font-sans">
+                  <span className="font-bold text-rose-500 mr-1.5">Video Editorial Available</span>
+                  <span className="text-[var(--chalk-dim)] hidden sm:inline">Striver explains the intuition, step-by-step invariants, and edge cases.</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => setShowVideo(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500 text-white text-xs font-sans font-semibold hover:bg-rose-600 transition-all cursor-pointer shadow-xs"
+                >
+                  <Play className="w-3 h-3 fill-white" />
+                  <span>Watch Embedded</span>
+                </button>
+                <a
+                  href={question.youtube_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-sans text-rose-500 hover:bg-rose-500/15 border border-rose-500/25 transition-all"
+                  title="Open on YouTube in new tab"
+                >
+                  <span>YouTube</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
               </div>
             </div>
           )}

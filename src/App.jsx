@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import LibraryView from './components/LibraryView';
 import VisualizerStudio from './components/VisualizerStudio';
+import ProblemArticlePage from './components/ProblemArticlePage';
+import AdminPage from './components/AdminPage';
 import SkillExportModal from './components/SkillExportModal';
 import AuthModal from './components/AuthModal';
 import UserDashboardModal from './components/UserDashboardModal';
 import ImportQuestionModal from './components/ImportQuestionModal';
-import AdminPanelModal from './components/AdminPanelModal';
 import { api } from './services/api';
 import { db } from './services/db';
 import { authService } from './services/auth';
@@ -14,11 +15,10 @@ import { authService } from './services/auth';
 export default function App() {
   const [questions, setQuestions] = useState([]);
   const [stats, setStats] = useState(null);
-  const [activeView, setActiveView] = useState('library');
+  const [activeView, setActiveView] = useState('library'); // 'library' | 'article' | 'studio' | 'admin'
   const [activeQuestion, setActiveQuestion] = useState(null);
   const [skillModalOpen, setSkillModalOpen] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
-  const [adminModalOpen, setAdminModalOpen] = useState(false);
 
   // User auth & profile state
   const [currentUser, setCurrentUser] = useState(() => authService.getCurrentUser());
@@ -30,7 +30,7 @@ export default function App() {
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem('algovision_theme');
     if (saved === 'light' || saved === 'dark') return saved;
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    return 'dark'; // default to sleek obsidian dark
   });
 
   const handleToggleTheme = () => {
@@ -57,6 +57,38 @@ export default function App() {
     }
     const st = await api.getUserStats(user.id);
     if (st) setUserStats(st);
+  };
+
+  // Synchronize route from current URL hash or pathname
+  const syncRoute = (list = questions) => {
+    const hash = window.location.hash;
+    const pathname = window.location.pathname;
+
+    if (hash === '#admin' || pathname === '/admin') {
+      setActiveView('admin');
+      setActiveQuestion(null);
+    } else if (hash.startsWith('#article/') || pathname.startsWith('/article/')) {
+      const qId = hash.startsWith('#article/')
+        ? hash.replace('#article/', '')
+        : pathname.replace('/article/', '');
+      const matched = list.find((q) => q.id === qId || q.slug === qId);
+      if (matched) {
+        setActiveQuestion(matched);
+        setActiveView('article');
+      }
+    } else if (hash.startsWith('#studio/') || pathname.startsWith('/studio/')) {
+      const qId = hash.startsWith('#studio/')
+        ? hash.replace('#studio/', '')
+        : pathname.replace('/studio/', '');
+      const matched = list.find((q) => q.id === qId || q.slug === qId);
+      if (matched) {
+        setActiveQuestion(matched);
+        setActiveView('studio');
+      }
+    } else {
+      setActiveView('library');
+      setActiveQuestion(null);
+    }
   };
 
   // Load questions and apply user progress
@@ -87,49 +119,46 @@ export default function App() {
 
     setQuestions(list);
     setStats(st);
-
-    // Direct URL hash sync: #studio/{id} or #admin
-    const hash = window.location.hash;
-    if (hash === '#admin') {
-      setAdminModalOpen(true);
-    } else if (hash.startsWith('#studio/')) {
-      const qId = hash.replace('#studio/', '');
-      const matched = list.find((q) => q.id === qId);
-      if (matched) {
-        setActiveQuestion(matched);
-        setActiveView('studio');
-      }
-    }
+    syncRoute(list);
   };
 
   useEffect(() => {
     loadData();
 
     const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash === '#admin') {
-        setAdminModalOpen(true);
-      } else if (hash.startsWith('#studio/')) {
-        const qId = hash.replace('#studio/', '');
-        const matched = questions.find((q) => q.id === qId);
-        if (matched) {
-          setActiveQuestion(matched);
-          setActiveView('studio');
-        }
-      } else {
-        setActiveView('library');
-        setActiveQuestion(null);
-      }
+      syncRoute(questions);
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
   }, [questions.length]);
 
-  const handleOpenQuestion = (question) => {
+  // Navigation handlers
+  const handleOpenStudio = (question) => {
     setActiveQuestion(question);
     setActiveView('studio');
     window.location.hash = `#studio/${question.id}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenArticle = (question) => {
+    setActiveQuestion(question);
+    setActiveView('article');
+    window.location.hash = `#article/${question.id}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenAdmin = (questionId = null) => {
+    if (questionId) {
+      const q = questions.find((item) => item.id === questionId);
+      if (q) setActiveQuestion(q);
+    }
+    setActiveView('admin');
+    window.location.hash = '#admin';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -148,6 +177,9 @@ export default function App() {
       setQuestions((prev) =>
         prev.map((item) => (item.id === id ? { ...item, is_favorite: newFav } : item))
       );
+      if (activeQuestion && activeQuestion.id === id) {
+        setActiveQuestion((prev) => ({ ...prev, is_favorite: newFav }));
+      }
     }
   };
 
@@ -195,7 +227,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--board)] text-[var(--chalk)] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-[#0d0e12] text-[#f2f3f5] flex flex-col font-sans transition-colors duration-200">
       {/* Top Navbar */}
       <Navbar
         activeView={activeView}
@@ -207,25 +239,33 @@ export default function App() {
         userStats={userStats}
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenDashboardModal={() => setDashboardModalOpen(true)}
-        onOpenAdminModal={() => setAdminModalOpen(true)}
+        onOpenAdminModal={() => handleOpenAdmin(activeQuestion?.id)}
         questions={questions}
-        onNavigateQuestion={handleOpenQuestion}
+        onNavigateQuestion={handleOpenArticle}
         theme={theme}
         onToggleTheme={handleToggleTheme}
       />
 
       {/* Main Container */}
       <main className="flex-1">
-        {activeView === 'library' || !activeQuestion ? (
-          <LibraryView
-            questions={questions}
-            onOpenQuestion={handleOpenQuestion}
-            onToggleFavorite={handleToggleFavorite}
-            onStatusChange={handleStatusChange}
-            onOpenSkillModal={() => setSkillModalOpen(true)}
-            onOpenImportModal={() => setImportModalOpen(true)}
+        {activeView === 'admin' ? (
+          <AdminPage
+            onNavigateHome={handleBackToLibrary}
+            onNavigateQuestion={handleOpenStudio}
+            onNavigateArticle={handleOpenArticle}
+            initialQuestionId={activeQuestion?.id}
           />
-        ) : (
+        ) : activeView === 'article' && activeQuestion ? (
+          <ProblemArticlePage
+            question={activeQuestion}
+            onBack={handleBackToLibrary}
+            onLaunchStudio={handleOpenStudio}
+            onStatusChange={handleStatusChange}
+            onToggleFavorite={handleToggleFavorite}
+            onOpenAdmin={(qId) => handleOpenAdmin(qId)}
+            currentUser={currentUser}
+          />
+        ) : activeView === 'studio' && activeQuestion ? (
           <VisualizerStudio
             question={activeQuestion}
             onBack={handleBackToLibrary}
@@ -233,7 +273,17 @@ export default function App() {
             onUpdateQuestion={handleUpdateQuestion}
             currentUser={currentUser}
             questions={questions}
-            onNavigateQuestion={handleOpenQuestion}
+            onNavigateQuestion={handleOpenStudio}
+          />
+        ) : (
+          <LibraryView
+            questions={questions}
+            onOpenQuestion={handleOpenStudio}
+            onOpenArticle={handleOpenArticle}
+            onToggleFavorite={handleToggleFavorite}
+            onStatusChange={handleStatusChange}
+            onOpenImportModal={() => setImportModalOpen(true)}
+            onOpenAdmin={() => handleOpenAdmin()}
           />
         )}
       </main>
@@ -267,27 +317,14 @@ export default function App() {
         onLogout={handleLogout}
         onRefreshStats={() => refreshUserStats(currentUser)}
         onOpenQuestion={(qId) => {
-          const matched = questions.find(q => q.id === qId);
-          if (matched) handleOpenQuestion(matched);
+          const matched = questions.find((q) => q.id === qId);
+          if (matched) handleOpenArticle(matched);
         }}
       />
 
-      {/* Admin Panel & Database Operations Modal */}
-      <AdminPanelModal
-        isOpen={adminModalOpen}
-        onClose={() => {
-          setAdminModalOpen(false);
-          if (window.location.hash === '#admin') {
-            window.location.hash = '';
-          }
-        }}
-        onQuestionsUpdated={() => loadData()}
-        currentUser={currentUser}
-      />
-
-      {/* Footer */}
-      <footer className="border-t border-[var(--line)] bg-[var(--board-raised)] py-5 text-center text-xs font-mono text-slate-500 transition-colors">
-        <span>AlgoVision Studio Pro • Powered by Native SQLite & React</span>
+      {/* Clean Sleek Footer */}
+      <footer className="border-t border-[#1e2029] bg-[#111217] py-6 text-center text-xs font-mono text-[#5b5e6e]">
+        <span>AlgoVision Studio Pro • Powered by Native SQLite &amp; Striver A2Z Curriculum</span>
       </footer>
     </div>
   );

@@ -115,6 +115,35 @@ class SoundEffects {
       // ignore
     }
   }
+
+  // Success chime for saves, completions, and navigation
+  playSuccess() {
+    if (this.muted) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+
+      const notes = [587.33, 880.0]; // D5 -> A5 pleasing chime
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.08);
+
+        gain.gain.setValueAtTime(0.06, this.ctx.currentTime + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.08 + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(this.ctx.currentTime + idx * 0.08);
+        osc.stop(this.ctx.currentTime + idx * 0.08 + 0.26);
+      });
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export const sound = new SoundEffects();
