@@ -1,22 +1,122 @@
 import express from 'express';
 import cors from 'cors';
-import { dbService } from './db.js';
+import { dbService, verifySessionToken } from './db.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
-app.use(express.json());
+// ----------------------------------------------------
+// PRODUCTION SECURITY & RELIABILITY MIDDLEWARE
+// ----------------------------------------------------
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-// Healthcheck
+// Body parser with safe payload limits
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Security Headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
+// Production Request Logger
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (!req.path.startsWith('/assets') && req.path !== '/api/health') {
+      console.log(`[HTTP] ${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
+    }
+  });
+  next();
+});
+
+// In-Memory Rate Limiter Utility
+const rateLimitMap = new Map();
+
+function rateLimiter({ windowMs = 60 * 1000, maxRequests = 60, message = 'Too many requests, please slow down.' }) {
+  return (req, res, next) => {
+    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+    const now = Date.now();
+    const entry = rateLimitMap.get(ip) || { count: 0, resetTime: now + windowMs };
+
+    if (now > entry.resetTime) {
+      entry.count = 1;
+      entry.resetTime = now + windowMs;
+    } else {
+      entry.count += 1;
+    }
+    rateLimitMap.set(ip, entry);
+
+    if (entry.count > maxRequests) {
+      res.setHeader('Retry-After', Math.ceil((entry.resetTime - now) / 1000));
+      return res.status(429).json({ success: false, error: message });
+    }
+    next();
+  };
+}
+
+// Clean up expired rate-limit buckets periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap.entries()) {
+    if (now > entry.resetTime) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}, 5 * 60 * 1000).unref();
+
+const authLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000,
+  maxRequests: 30,
+  message: 'Too many authentication attempts. Please try again in a few minutes.'
+});
+
+// Session Token Verification Middleware
+function authenticateUser(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    req.user = null;
+    return next();
+  }
+  const token = authHeader.slice(7).trim();
+  req.user = verifySessionToken(token);
+  next();
+}
+
+function requireAuth(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ success: false, error: 'Authentication required. Please log in.' });
+  }
+  next();
+}
+
+app.use(authenticateUser);
+
+// Healthcheck & System Telemetry
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', engine: 'node:sqlite', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    engine: 'node:sqlite',
+    journalMode: 'WAL',
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: Math.floor(process.uptime())
+  });
 });
 
 // ----------------------------------------------------
 // AUTHENTICATION & USER PROFILE ROUTES
 // ----------------------------------------------------
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', authLimiter, (req, res) => {
   try {
     const { username, password, displayName, avatar } = req.body;
     const user = dbService.registerUser(username, password, displayName, avatar);
@@ -26,13 +126,49 @@ app.post('/api/auth/register', (req, res) => {
   }
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', authLimiter, (req, res) => {
   try {
     const { username, password } = req.body;
     const user = dbService.loginUser(username, password);
     res.json({ success: true, user });
   } catch (err) {
     res.status(401).json({ success: false, error: err.message });
+  }
+});
+
+// Update Profile (Authenticated)
+app.post('/api/auth/profile', requireAuth, (req, res) => {
+  try {
+    const { displayName, avatar } = req.body;
+    const updated = dbService.updateUserProfile(req.user.id, { displayName, avatar });
+    res.json({ success: true, user: updated });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+// Change Password (Authenticated)
+app.post('/api/auth/change-password', requireAuth, (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ success: false, error: 'Both old and new passwords are required' });
+    }
+    const result = dbService.changeUserPassword(req.user.id, oldPassword, newPassword);
+    res.json({ success: true, message: 'Password updated successfully' });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
+});
+
+// Global Leaderboard
+app.get('/api/leaderboard', (req, res) => {
+  try {
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 50));
+    const leaderboard = dbService.getLeaderboard(limit);
+    res.json({ success: true, data: leaderboard });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -78,6 +214,17 @@ app.patch('/api/users/:id/progress/:questionId', (req, res) => {
   try {
     const result = dbService.updateUserProgress(req.params.id, req.params.questionId, req.body);
     res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/users/:id/analytics - Detailed category and difficulty analytics
+app.get('/api/users/:id/analytics', (req, res) => {
+  try {
+    const analytics = dbService.getUserAnalytics(req.params.id);
+    if (!analytics) return res.status(404).json({ success: false, error: 'User not found' });
+    res.json({ success: true, data: analytics });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -234,6 +381,97 @@ app.post('/api/admin/import', (req, res) => {
     const result = dbService.importDatabaseDump(req.body.dump || req.body);
     res.json(result);
   } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/admin/bulk-update-research - Merge alternate videos, GFG links, and articles from Gemini research
+// GET /api/admin/visualizers - List all .jsx/.js files in src/visualizers/
+app.get('/api/admin/visualizers', async (req, res) => {
+  try {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const vizDir = path.resolve(process.cwd(), 'src', 'visualizers');
+    if (!fs.existsSync(vizDir)) {
+      return res.json({ success: true, files: [] });
+    }
+    const allFiles = fs.readdirSync(vizDir);
+    const files = allFiles.filter(f => f.endsWith('.jsx') || f.endsWith('.js'));
+    res.json({ success: true, files });
+  } catch (err) {
+    console.error('Error listing visualizers:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/admin/autolink - Auto-link visualizer components to questions by name matching
+app.post('/api/admin/autolink', async (req, res) => {
+  try {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const vizDir = path.resolve(process.cwd(), 'src', 'visualizers');
+    if (!fs.existsSync(vizDir)) {
+      return res.json({ success: true, linkedCount: 0 });
+    }
+    const allFiles = fs.readdirSync(vizDir);
+    const files = allFiles.filter(f => f.endsWith('.jsx') || f.endsWith('.js'));
+    const componentKeys = files.map(f => f.replace(/\.(jsx|js)$/, ''));
+
+    const questions = dbService.getAllQuestions();
+    let linkedCount = 0;
+
+    for (const q of questions) {
+      if (q.component_key) continue; // Already linked
+      // Try exact slug-based match
+      const titleSlug = q.title
+        ? q.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+        : '';
+      const idSlug = q.id.replace(/[^a-z0-9]+/g, '-');
+
+      const matchedKey = componentKeys.find(k => {
+        const kLow = k.toLowerCase();
+        return kLow === titleSlug + 'visualizer' ||
+          kLow === idSlug + 'visualizer' ||
+          kLow.includes(titleSlug.replace(/-/g, '').slice(0, 12));
+      });
+
+      if (matchedKey) {
+        dbService.updateQuestion(q.id, { component_key: matchedKey });
+        linkedCount++;
+      }
+    }
+
+    res.json({ success: true, linkedCount });
+  } catch (err) {
+    console.error('Error auto-linking visualizers:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/admin/check-display-id - Check if a display_id is unique
+app.get('/api/admin/check-display-id', (req, res) => {
+  try {
+    const { display_id, exclude_id } = req.query;
+    if (!display_id) {
+      return res.status(400).json({ success: false, error: 'display_id is required' });
+    }
+    const questions = dbService.getAllQuestions();
+    const conflict = questions.find(q =>
+      q.display_id === display_id && q.id !== exclude_id
+    );
+    res.json({ success: true, isUnique: !conflict, conflict: conflict ? { id: conflict.id, title: conflict.title } : null });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/bulk-update-research', (req, res) => {
+  try {
+    const items = Array.isArray(req.body) ? req.body : (req.body.items || req.body.data || []);
+    const result = dbService.bulkUpdateResearch(items);
+    res.json(result);
+  } catch (err) {
+    console.error('Failed bulk research update:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -651,6 +889,50 @@ ${solutions.typescript || '// No TypeScript solution'}
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`[AlgoVision API Server] Running on http://localhost:${PORT} (node:sqlite)`);
+// ----------------------------------------------------
+// 404 & CENTRALIZED ERROR HANDLING
+// ----------------------------------------------------
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, error: `API endpoint ${req.method} ${req.originalUrl} not found` });
 });
+
+app.use((err, req, res, next) => {
+  console.error(`[Unhandled Error] ${req.method} ${req.originalUrl}:`, err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(err.status || 500).json({
+    success: false,
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : (err.message || 'Unknown server error')
+  });
+});
+
+// ----------------------------------------------------
+// SERVER LIFECYCLE & GRACEFUL SHUTDOWN
+// ----------------------------------------------------
+const server = app.listen(PORT, () => {
+  console.log(`[AlgoVision API Server] Running on http://localhost:${PORT} (node:sqlite WAL mode)`);
+});
+
+function gracefulShutdown(signal) {
+  console.log(`\n[AlgoVision API Server] Received ${signal}. Initiating graceful shutdown...`);
+  server.close(() => {
+    console.log('[AlgoVision API Server] HTTP server closed.');
+    try {
+      dbService.close();
+      console.log('[AlgoVision API Server] SQLite database connection closed cleanly.');
+    } catch (err) {
+      console.error('[AlgoVision API Server] Error closing database:', err);
+    }
+    process.exit(0);
+  });
+
+  // Force close after 5 seconds if lingering connections exist
+  setTimeout(() => {
+    console.error('[AlgoVision API Server] Graceful shutdown timed out. Forcing process exit.');
+    process.exit(1);
+  }, 5000).unref();
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));

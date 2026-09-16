@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   Shield,
   ArrowLeft,
@@ -16,7 +16,13 @@ import {
   X,
   FileCode,
   Database,
-  AlertCircle
+  AlertCircle,
+  Copy,
+  Check,
+  Upload,
+  Code,
+  Tag,
+  AlertTriangle
 } from 'lucide-react';
 
 function YoutubeIcon({ className = "w-4 h-4" }) {
@@ -61,6 +67,19 @@ export default function AdminPage({
   const [editingTier, setEditingTier] = useState('optimal');
   const [savingQuestion, setSavingQuestion] = useState(false);
 
+  // Display ID uniqueness validation
+  const [displayIdConflict, setDisplayIdConflict] = useState(null); // { id, title } | null | 'checking'
+  const displayIdCheckTimer = useRef(null);
+
+  // Visualizer upload in customizer
+  const [vizUploadCode, setVizUploadCode] = useState('');
+  const [vizUploadKey, setVizUploadKey] = useState('');
+  const [vizUploading, setVizUploading] = useState(false);
+  const [vizUploadResult, setVizUploadResult] = useState(null);
+
+  // Tags editing
+  const [tagInput, setTagInput] = useState('');
+
   // New question form state
   const [newQuestion, setNewQuestion] = useState({
     title: '',
@@ -89,6 +108,13 @@ export default function AdminPage({
       }
     ]
   });
+
+  // Gemini Research Importer State
+  const [geminiJsonInput, setGeminiJsonInput] = useState('');
+  const [importingGemini, setImportingGemini] = useState(false);
+  const [geminiResult, setGeminiResult] = useState(null);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [selectedBatchNumber, setSelectedBatchNumber] = useState('1');
 
   // Load all admin data
   const loadAdminData = useCallback(async () => {
@@ -133,11 +159,19 @@ export default function AdminPage({
       youtube_videos: vids,
       article_content: q.article_content || '',
       article_url: q.article_url || '',
+      gfg_url: q.gfg_url || '',
       leetcode_url: q.leetcode_url || '',
       time_complexity: q.time_complexity || 'O(N)',
       space_complexity: q.space_complexity || 'O(1)',
       component_key: q.component_key || ''
     });
+
+    // Reset per-question editing state
+    setDisplayIdConflict(null);
+    setTagInput('');
+    setVizUploadCode('');
+    setVizUploadKey('');
+    setVizUploadResult(null);
 
     // Fetch solutions for this question
     const sols = await api.getCodeSolutions(q.id, 'optimal');
@@ -150,6 +184,7 @@ export default function AdminPage({
       });
     }
   };
+
 
   const handleSelectToEdit = (q) => {
     sound.playStep(600);
@@ -176,6 +211,53 @@ export default function AdminPage({
     }));
   };
 
+  // Validate display_id uniqueness (debounced)
+  const validateDisplayId = useCallback((display_id, exclude_id) => {
+    if (!display_id || !display_id.trim()) {
+      setDisplayIdConflict(null);
+      return;
+    }
+    clearTimeout(displayIdCheckTimer.current);
+    setDisplayIdConflict('checking');
+    displayIdCheckTimer.current = setTimeout(async () => {
+      const res = await api.checkDisplayId(display_id.trim(), exclude_id);
+      if (res.success) {
+        setDisplayIdConflict(res.isUnique ? null : res.conflict);
+      } else {
+        setDisplayIdConflict(null);
+      }
+    }, 600);
+  }, []);
+
+  // Handle visualizer upload for currently-editing question
+  const handleUploadVisualizer = async () => {
+    if (!editingData?.id || !vizUploadCode.trim()) {
+      setStatusMsg({ type: 'error', text: 'Please paste a visualizer component code first.' });
+      return;
+    }
+    setVizUploading(true);
+    setVizUploadResult(null);
+    const key = vizUploadKey.trim() || `${editingData.title?.replace(/[^a-zA-Z0-9]/g, '')}Visualizer`;
+    const res = await api.uploadVisualizer({
+      questionId: editingData.id,
+      componentKey: key,
+      code: vizUploadCode
+    });
+    if (res.success) {
+      sound?.playSuccess?.();
+      setVizUploadResult({ success: true, key: res.componentKey });
+      setEditingData(prev => ({ ...prev, component_key: res.componentKey }));
+      setStatusMsg({ type: 'success', text: `Visualizer "${res.componentKey}" saved and linked successfully!` });
+      loadAdminData();
+    } else {
+      setVizUploadResult({ success: false, error: res.error });
+      setStatusMsg({ type: 'error', text: res.error || 'Failed to save visualizer.' });
+    }
+    setVizUploading(false);
+    setTimeout(() => setStatusMsg(null), 4000);
+  };
+
+
   // Update a video row
   const handleUpdateVideoRow = (idx, field, val) => {
     if (!editingData) return;
@@ -195,6 +277,14 @@ export default function AdminPage({
   // Save changes to editing question
   const handleSaveQuestionChanges = async () => {
     if (!editingData || !editingData.id) return;
+
+    // Validate display_id uniqueness before saving
+    if (editingData.display_id && displayIdConflict && displayIdConflict !== 'checking') {
+      setStatusMsg({ type: 'error', text: `Display ID "${editingData.display_id}" is already used by "${displayIdConflict.title}". Please use a unique ID.` });
+      setTimeout(() => setStatusMsg(null), 4000);
+      return;
+    }
+
     setSavingQuestion(true);
     sound?.playSuccess?.();
 
@@ -216,6 +306,7 @@ export default function AdminPage({
       youtube_url: primaryYtUrl,
       youtube_videos: editingData.youtube_videos,
       article_url: editingData.article_url,
+      gfg_url: editingData.gfg_url,
       article_content: editingData.article_content,
       description: editingData.description,
       approach: editingData.approach,
@@ -313,6 +404,186 @@ export default function AdminPage({
       setStatusMsg({ type: 'error', text: 'Failed to autolink.' });
     }
     setTimeout(() => setStatusMsg(null), 3000);
+  };
+
+  // Download all 450 problems as JSON database
+  const handleDownloadMasterDB = () => {
+    sound?.playStep?.(640);
+    const cleanList = questions.map(q => ({
+      id: q.id,
+      display_id: q.display_id,
+      title: q.title,
+      step_no: q.step_no,
+      step_name: q.step_name,
+      substep_name: q.substep_name,
+      difficulty: q.difficulty,
+      leetcode_url: q.leetcode_url,
+      article_url: q.article_url,
+      gfg_url: q.gfg_url,
+      youtube_videos: q.youtube_videos
+    }));
+    const blob = new Blob([JSON.stringify(cleanList, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `algovision_all_problems_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatusMsg({ type: 'success', text: 'Master problems database downloaded!' });
+    setTimeout(() => setStatusMsg(null), 3000);
+  };
+
+  // Download all 450 problems as CSV
+  const handleDownloadCsv = () => {
+    sound?.playStep?.(640);
+    const escapeCsv = (str) => `"${String(str || '').replace(/"/g, '""')}"`;
+    const header = 'id,display_id,title,step_no,step_name,substep_name,difficulty,leetcode_url,article_url,gfg_url\n';
+    const rows = questions.map(q => [
+      escapeCsv(q.id),
+      escapeCsv(q.display_id),
+      escapeCsv(q.title),
+      q.step_no,
+      escapeCsv(q.step_name),
+      escapeCsv(q.substep_name),
+      escapeCsv(q.difficulty),
+      escapeCsv(q.leetcode_url),
+      escapeCsv(q.article_url),
+      escapeCsv(q.gfg_url)
+    ].join(',')).join('\n');
+
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `algovision_problems_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatusMsg({ type: 'success', text: 'Problems CSV downloaded!' });
+    setTimeout(() => setStatusMsg(null), 3000);
+  };
+
+  // Import Gemini Spark JSON research response
+  const handleImportGemini = async () => {
+    if (!geminiJsonInput.trim()) {
+      setStatusMsg({ type: 'error', text: 'Please paste Gemini JSON output first.' });
+      return;
+    }
+    sound?.playStep?.(640);
+    setImportingGemini(true);
+    setGeminiResult(null);
+
+    try {
+      let content = geminiJsonInput.trim();
+      if (content.startsWith('```json')) content = content.slice(7);
+      else if (content.startsWith('```')) content = content.slice(3);
+      if (content.endsWith('```')) content = content.slice(0, -3);
+      content = content.trim();
+
+      const firstBracket = content.indexOf('[');
+      const lastBracket = content.lastIndexOf(']');
+      if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+        content = content.substring(firstBracket, lastBracket + 1);
+      }
+
+      const items = JSON.parse(content);
+      if (!Array.isArray(items)) {
+        throw new Error('Input must be a valid JSON array of problems.');
+      }
+
+      const res = await api.bulkUpdateResearch(items);
+      if (res && res.success) {
+        setGeminiResult(res);
+        setStatusMsg({
+          type: 'success',
+          text: `Successfully merged research updates for ${res.updatedCount} problem(s)!`
+        });
+        sound?.playSuccess?.();
+        loadAdminData();
+      } else {
+        throw new Error(res?.error || 'Import failed');
+      }
+    } catch (err) {
+      setGeminiResult({ error: err.message });
+      setStatusMsg({ type: 'error', text: `Failed to import: ${err.message}` });
+    } finally {
+      setImportingGemini(false);
+    }
+  };
+
+  // Pre-load sample research JSON for Two Sum
+  const handleLoadSampleTwoSum = () => {
+    sound?.playStep?.(560);
+    setGeminiJsonInput(JSON.stringify([
+      {
+        "id": "two-sum",
+        "title": "Two Sum",
+        "gfg_url": "https://www.geeksforgeeks.org/check-if-pair-with-given-sum-exists-in-array/",
+        "alternate_articles": [
+          {
+            "title": "GeeksforGeeks - Key Pair (Two Sum Problem)",
+            "url": "https://www.geeksforgeeks.org/check-if-pair-with-given-sum-exists-in-array/",
+            "source": "GeeksforGeeks"
+          },
+          {
+            "title": "LeetCode Official Two Sum Editorial",
+            "url": "https://leetcode.com/problems/two-sum/editorial/",
+            "source": "LeetCode"
+          }
+        ],
+        "alternate_videos": [
+          {
+            "id": "neetcode-two-sum",
+            "title": "NeetCode - Two Sum - Leetcode 1",
+            "url": "https://www.youtube.com/watch?v=KLlXCFG5TnA",
+            "channel": "NeetCode",
+            "notes": "Optimal single-pass hash map explanation in Python & C++"
+          },
+          {
+            "id": "abdul-bari-two-sum",
+            "title": "Abdul Bari - Two Sum & Hash Table Walkthrough",
+            "url": "https://www.youtube.com/watch?v=sAQT4fl9V28",
+            "channel": "Abdul Bari",
+            "notes": "Diagrammatic algorithmic invariant walkthrough"
+          }
+        ]
+      }
+    ], null, 2));
+  };
+
+  // Copy Gemini Master System Prompt
+  const handleCopyMasterPrompt = async () => {
+    sound?.playStep?.(600);
+    const text = `You are an expert Data Structures & Algorithms (DSA) research assistant.
+Your task is to use Google Search and YouTube Search grounding to find high-quality alternate learning resources for the provided DSA problems.
+
+For each problem in the batch:
+1. Search YouTube for popular, top-rated explanations by trusted channels:
+   - NeetCode / NeetCodeIO
+   - Abdul Bari
+   - Aditya Verma (for DP, Recursion, Stack, Heap, Sliding Window)
+   - Take U forward / Striver
+   - CodeWithHarry / Love Babbar / Kunal Kushwaha / TechDose / Pepcoding
+   * CRITICAL: ONLY include REAL, VERIFIED YouTube URLs (https://www.youtube.com/watch?v=...). Never fabricate links.
+2. Search Google for official GeeksforGeeks article URL (https://www.geeksforgeeks.org/...) and practice link.
+3. Return STRICT JSON array matching this schema:
+[
+  {
+    "id": "problem-slug",
+    "title": "Problem Title",
+    "gfg_url": "https://www.geeksforgeeks.org/...",
+    "alternate_articles": [
+      { "title": "GeeksforGeeks - Problem Name", "url": "https://www.geeksforgeeks.org/...", "source": "GeeksforGeeks" }
+    ],
+    "alternate_videos": [
+      { "id": "channel-slug", "title": "Channel - Title", "url": "https://www.youtube.com/watch?v=...", "channel": "ChannelName", "notes": "Notes" }
+    ]
+  }
+]`;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedPrompt(true);
+      setTimeout(() => setCopiedPrompt(false), 2500);
+    } catch {}
   };
 
   // Filtered questions list
@@ -457,6 +728,18 @@ export default function AdminPage({
                 {editingData.title?.slice(0, 18)}…
               </span>
             )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('gemini')}
+            className={`px-4 py-3 text-xs font-semibold flex items-center gap-2 border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'gemini'
+                ? 'border-indigo-500 text-white'
+                : 'border-transparent text-[#8e92a4] hover:text-white'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span>⚡ Gemini Research Importer</span>
           </button>
 
           <button
@@ -766,14 +1049,31 @@ export default function AdminPage({
                     </div>
 
                     <div>
-                      <label className="block text-xs text-[#8e92a4] mb-1 font-medium">Display ID</label>
+                      <label className="block text-xs text-[#8e92a4] mb-1 font-medium flex items-center gap-1.5">
+                        Display ID
+                        {displayIdConflict === 'checking' && <span className="text-[10px] text-amber-400 font-mono">checking…</span>}
+                        {displayIdConflict && displayIdConflict !== 'checking' && <span className="text-[10px] text-rose-400 font-mono">⚠ conflict</span>}
+                        {displayIdConflict === null && editingData.display_id && <span className="text-[10px] text-emerald-400 font-mono">✓ unique</span>}
+                      </label>
                       <input
                         type="text"
                         value={editingData.display_id || ''}
-                        onChange={(e) => setEditingData({ ...editingData, display_id: e.target.value })}
+                        onChange={(e) => {
+                          setEditingData({ ...editingData, display_id: e.target.value });
+                          validateDisplayId(e.target.value, editingData.id);
+                        }}
                         placeholder="e.g. Q-1216"
-                        className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono"
+                        className={`w-full px-3 py-2 bg-[#111217] border focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono ${
+                          displayIdConflict && displayIdConflict !== 'checking'
+                            ? 'border-rose-500/60'
+                            : 'border-[#22242b]'
+                        }`}
                       />
+                      {displayIdConflict && displayIdConflict !== 'checking' && (
+                        <p className="text-[10px] text-rose-400 mt-1 font-mono">
+                          Already used by: {displayIdConflict.title}
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -842,6 +1142,71 @@ export default function AdminPage({
                         onChange={(e) => setEditingData({ ...editingData, leetcode_url: e.target.value })}
                         placeholder="https://leetcode.com/problems/..."
                         className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Complexities row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div>
+                      <label className="block text-xs text-[#8e92a4] mb-1 font-medium">Time Complexity</label>
+                      <input
+                        type="text"
+                        value={editingData.time_complexity || ''}
+                        onChange={(e) => setEditingData({ ...editingData, time_complexity: e.target.value })}
+                        placeholder="e.g. O(N log N)"
+                        className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-[#8e92a4] mb-1 font-medium">Space Complexity</label>
+                      <input
+                        type="text"
+                        value={editingData.space_complexity || ''}
+                        onChange={(e) => setEditingData({ ...editingData, space_complexity: e.target.value })}
+                        placeholder="e.g. O(1)"
+                        className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tags chip editor */}
+                  <div>
+                    <label className="block text-xs text-[#8e92a4] mb-1 font-medium flex items-center gap-1.5">
+                      <Tag className="w-3 h-3" />
+                      Tags (press Enter or comma to add)
+                    </label>
+                    <div className="flex items-center flex-wrap gap-2 p-3 bg-[#111217] border border-[#22242b] rounded-xl min-h-[42px] cursor-text">
+                      {(Array.isArray(editingData.tags) ? editingData.tags : []).map((tag, ti) => (
+                        <span key={ti} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-[11px] font-mono">
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => setEditingData(prev => ({ ...prev, tags: prev.tags.filter((_, i) => i !== ti) }))}
+                            className="text-indigo-400 hover:text-rose-400 ml-0.5 cursor-pointer"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                      <input
+                        type="text"
+                        value={tagInput}
+                        onChange={e => setTagInput(e.target.value)}
+                        onKeyDown={e => {
+                          if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
+                            e.preventDefault();
+                            const newTag = tagInput.trim().replace(/,$/, '');
+                            if (newTag && !(editingData.tags || []).includes(newTag)) {
+                              setEditingData(prev => ({ ...prev, tags: [...(prev.tags || []), newTag] }));
+                            }
+                            setTagInput('');
+                          } else if (e.key === 'Backspace' && !tagInput && editingData.tags?.length) {
+                            setEditingData(prev => ({ ...prev, tags: prev.tags.slice(0, -1) }));
+                          }
+                        }}
+                        placeholder="Add tag… (Enter or comma)"
+                        className="flex-1 min-w-[120px] bg-transparent text-xs text-white focus:outline-none placeholder-[#5b5e6e]"
                       />
                     </div>
                   </div>
@@ -974,15 +1339,31 @@ export default function AdminPage({
                   </div>
 
                   <div className="space-y-4">
-                    <div>
-                      <label className="block text-xs text-[#8e92a4] mb-1 font-medium">External Article URL (TakeUForward)</label>
-                      <input
-                        type="text"
-                        value={editingData.article_url || ''}
-                        onChange={(e) => setEditingData({ ...editingData, article_url: e.target.value })}
-                        placeholder="https://takeuforward.org/data-structure/..."
-                        className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono"
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-[#8e92a4] mb-1 font-medium">External Article URL (TakeUForward)</label>
+                        <input
+                          type="text"
+                          value={editingData.article_url || ''}
+                          onChange={(e) => setEditingData({ ...editingData, article_url: e.target.value })}
+                          placeholder="https://takeuforward.org/data-structure/..."
+                          className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-emerald-400 mb-1 font-medium flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                          <span>GeeksforGeeks Article URL</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={editingData.gfg_url || ''}
+                          onChange={(e) => setEditingData({ ...editingData, gfg_url: e.target.value })}
+                          placeholder="https://www.geeksforgeeks.org/..."
+                          className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-emerald-500 rounded-xl text-xs text-white focus:outline-none font-mono"
+                        />
+                      </div>
                     </div>
 
                     <div>
@@ -1065,6 +1446,107 @@ export default function AdminPage({
                         rows={7}
                         className="w-full p-3 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none font-mono"
                       />
+                    </div>
+                  </div>
+                </section>
+
+                {/* Section 5: Visualizer Upload */}
+                <section className="p-6 rounded-2xl bg-[#15161c] border border-[#22242b] space-y-4">
+                  <div className="flex items-center justify-between gap-3 pb-2 border-b border-[#20222a]">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                        <Code className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-bold text-white">Upload New Visualization Component</h3>
+                        <p className="text-xs text-[#8e92a4]">Paste your .jsx React component to create a new interactive visualizer for this problem.</p>
+                      </div>
+                    </div>
+                    {editingData.component_key && (
+                      <span className="text-[10px] font-mono px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Current: {editingData.component_key}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs text-[#8e92a4] mb-1 font-medium">Component Key / File Name (without .jsx)</label>
+                      <input
+                        type="text"
+                        value={vizUploadKey}
+                        onChange={e => setVizUploadKey(e.target.value)}
+                        placeholder={`e.g. ${editingData.title?.replace(/[^a-zA-Z0-9]/g, '')}Visualizer`}
+                        className="w-full px-3 py-2 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-indigo-400 focus:outline-none font-mono"
+                      />
+                      <p className="text-[10px] text-[#5b5e6e] mt-1">Leave blank to auto-generate from problem title. This becomes the filename: <code className="text-indigo-400">{vizUploadKey || `${editingData.title?.replace(/[^a-zA-Z0-9]/g, '') || 'MyProblem'}Visualizer`}.jsx</code></p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-[#8e92a4] mb-1 font-medium">Visualizer JSX Component Code</label>
+                      <textarea
+                        value={vizUploadCode}
+                        onChange={e => setVizUploadCode(e.target.value)}
+                        rows={12}
+                        placeholder={`Paste your complete React .jsx visualizer component here:\n\nexport default function MyVisualizer() {\n  return (\n    <div>...</div>\n  );\n}`}
+                        className="w-full p-4 bg-[#0d0e12] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-[#f2f3f5] focus:outline-none font-mono leading-relaxed"
+                        spellCheck={false}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-xs text-[#5b5e6e]">
+                        {vizUploadCode.trim() ? (
+                          <span className="text-emerald-400 font-mono">{vizUploadCode.trim().split('\n').length} lines ready to save</span>
+                        ) : (
+                          <span>Paste a JSX visualizer component above to upload it.</span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {vizUploadCode && (
+                          <button
+                            type="button"
+                            onClick={() => { setVizUploadCode(''); setVizUploadKey(''); setVizUploadResult(null); }}
+                            className="px-3 py-1.5 rounded-xl bg-[#111217] border border-[#22242b] text-xs text-[#8e92a4] hover:text-rose-400 transition-colors cursor-pointer"
+                          >
+                            Clear
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleUploadVisualizer}
+                          disabled={vizUploading || !vizUploadCode.trim()}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer"
+                        >
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>{vizUploading ? 'Saving Visualizer...' : 'Save & Link Visualizer'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Upload result */}
+                    {vizUploadResult && (
+                      <div className={`p-3 rounded-xl border text-xs font-mono ${
+                        vizUploadResult.success
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                          : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          {vizUploadResult.success
+                            ? <><CheckCircle2 className="w-4 h-4" /><span>Saved as <strong>{vizUploadResult.key}.jsx</strong> and linked to this problem.</span></>
+                            : <><AlertCircle className="w-4 h-4" /><span>Error: {vizUploadResult.error}</span></>
+                          }
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Info about existing visualizers */}
+                    <div className="p-3 rounded-xl bg-[#0d0e12] border border-[#1e2029] text-xs text-[#5b5e6e] space-y-1">
+                      <p className="font-mono text-[#8e92a4] font-semibold">Already have a component?</p>
+                      <p>If the visualizer file already exists in <code className="text-indigo-400">src/visualizers/</code>, just type its name in the <strong className="text-white">"Visualizer Component Key"</strong> field above (Section 1) and save — no upload needed.</p>
+                      <p className="pt-1">Current disk components: <strong className="text-white">{diskFiles.length}</strong> files. Go to the <button onClick={() => setActiveTab('visualizers')} className="text-indigo-400 hover:underline cursor-pointer">Visualizers tab</button> to see all.</p>
                     </div>
                   </div>
                 </section>
@@ -1301,6 +1783,192 @@ export default function AdminPage({
                   <Download className="w-4 h-4" />
                   <span>Download Backup JSON</span>
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ============================================================ */}
+        {/* TAB: GEMINI SPARK RESEARCH IMPORTER                          */}
+        {/* ============================================================ */}
+        {activeTab === 'gemini' && (
+          <div className="space-y-6 max-w-5xl">
+            {/* Header Banner */}
+            <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-[#15161c] to-[#121318] border border-indigo-500/30 space-y-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-indigo-400" />
+                    <h2 className="text-lg font-bold text-white">Gemini Spark DSA Research Center</h2>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
+                      Google Search &amp; YouTube Grounding
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#8e92a4] max-w-2xl leading-relaxed">
+                    Feed your problems database to Gemini Spark to discover verified alternate video solutions (NeetCode, Abdul Bari, Aditya Verma, CodeWithHarry) and GeeksforGeeks articles, then paste the output here to merge instantly into SQLite!
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap shrink-0">
+                  <button
+                    onClick={handleCopyMasterPrompt}
+                    className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                  >
+                    {copiedPrompt ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    <span>{copiedPrompt ? 'Prompt Copied!' : 'Copy Master Prompt'}</span>
+                  </button>
+
+                  <button
+                    onClick={handleDownloadMasterDB}
+                    className="px-3.5 py-2 rounded-xl bg-[#1c1d25] hover:bg-[#252834] border border-[#2e3140] text-[#c5c8d6] hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-indigo-400" />
+                    <span>Download Master DB (JSON)</span>
+                  </button>
+
+                  <button
+                    onClick={handleDownloadCsv}
+                    className="px-3.5 py-2 rounded-xl bg-[#1c1d25] hover:bg-[#252834] border border-[#2e3140] text-[#c5c8d6] hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Download className="w-4 h-4 text-emerald-400" />
+                    <span>Download CSV</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Research Pipeline Stepper */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-[#20222e]">
+                <div className="p-3 rounded-xl bg-[#101117] border border-[#1e202b] space-y-1">
+                  <span className="text-[10px] font-mono font-bold text-indigo-400">STEP 1: GET PROMPT</span>
+                  <div className="text-xs font-semibold text-white">Copy System Prompt &amp; Batch</div>
+                  <p className="text-[11px] text-[#5b5e6e]">Use pre-generated batch files in <code className="text-[#8e92a4]">data/gemini_research/prompts/</code></p>
+                </div>
+                <div className="p-3 rounded-xl bg-[#101117] border border-[#1e202b] space-y-1">
+                  <span className="text-[10px] font-mono font-bold text-teal-400">STEP 2: RUN IN GEMINI</span>
+                  <div className="text-xs font-semibold text-white">Gemini Spark Real-time Search</div>
+                  <p className="text-[11px] text-[#5b5e6e]">Searches YouTube &amp; Google to find verified links &amp; channels</p>
+                </div>
+                <div className="p-3 rounded-xl bg-[#101117] border border-[#1e202b] space-y-1">
+                  <span className="text-[10px] font-mono font-bold text-emerald-400">STEP 3: MERGE DATA</span>
+                  <div className="text-xs font-semibold text-white">Paste &amp; Instant Merge</div>
+                  <p className="text-[11px] text-[#5b5e6e]">Preserves Striver's primary video, adds alternates and GFG links</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Importer Form Card */}
+            <div className="p-6 rounded-2xl bg-[#15161c] border border-[#22242b] space-y-4">
+              <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#20222a]">
+                <div className="flex items-center gap-2">
+                  <FileCode className="w-4 h-4 text-indigo-400" />
+                  <h3 className="text-sm font-bold text-white">Paste Gemini Spark JSON Output</h3>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleLoadSampleTwoSum}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 font-medium cursor-pointer"
+                  >
+                    Load Sample (Two Sum)
+                  </button>
+                  {geminiJsonInput && (
+                    <button
+                      onClick={() => setGeminiJsonInput('')}
+                      className="text-xs text-[#8e92a4] hover:text-rose-400 font-medium cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <textarea
+                  value={geminiJsonInput}
+                  onChange={(e) => setGeminiJsonInput(e.target.value)}
+                  rows={12}
+                  placeholder={`Paste Gemini's JSON array response here, for example:
+[
+  {
+    "id": "two-sum",
+    "title": "Two Sum",
+    "gfg_url": "https://www.geeksforgeeks.org/check-if-pair-with-given-sum-exists-in-array/",
+    "alternate_videos": [
+      {
+        "id": "neetcode-two-sum",
+        "title": "NeetCode - Two Sum",
+        "url": "https://www.youtube.com/watch?v=KLlXCFG5TnA",
+        "channel": "NeetCode"
+      }
+    ]
+  }
+]`}
+                  className="w-full p-4 bg-[#101116] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-[#f2f3f5] focus:outline-none font-mono leading-relaxed"
+                />
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+                <div className="text-xs text-[#5b5e6e]">
+                  {geminiJsonInput.trim() ? (
+                    <span className="text-emerald-400 font-mono">
+                      Ready to parse ({geminiJsonInput.trim().length} characters)
+                    </span>
+                  ) : (
+                    <span>Waiting for input. You can test with the sample button above.</span>
+                  )}
+                </div>
+
+                <button
+                  onClick={handleImportGemini}
+                  disabled={importingGemini || !geminiJsonInput.trim()}
+                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold shadow-lg shadow-indigo-600/25 transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>{importingGemini ? 'Merging into SQLite...' : 'Merge Research into Database'}</span>
+                </button>
+              </div>
+
+              {/* Import Result Notification */}
+              {geminiResult && (
+                <div className={`p-4 rounded-xl border text-xs font-mono space-y-2 ${
+                  geminiResult.error
+                    ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                    : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                }`}>
+                  <div className="flex items-center gap-2 font-bold">
+                    {geminiResult.error ? <AlertCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                    <span>{geminiResult.error ? `Error: ${geminiResult.error}` : `Successfully updated ${geminiResult.updatedCount} problem(s)!`}</span>
+                  </div>
+
+                  {Array.isArray(geminiResult.results) && geminiResult.results.length > 0 && (
+                    <div className="max-h-48 overflow-y-auto space-y-1 pt-1 border-t border-emerald-500/20">
+                      {geminiResult.results.map((r, idx) => (
+                        <div key={idx} className="flex items-center justify-between text-[11px]">
+                          <span>{idx + 1}. [{r.id}] {r.title}</span>
+                          <span className="text-[#8e92a4]">updated: {r.updatedFields.join(', ')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Ready-Made Batch Guides Quick Reference */}
+            <div className="p-6 rounded-2xl bg-[#15161c] border border-[#22242b] space-y-4">
+              <div className="flex items-center justify-between gap-3 pb-2 border-b border-[#20222a]">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-teal-400" />
+                  <h3 className="text-sm font-bold text-white">Pre-Generated Research Batches</h3>
+                </div>
+                <span className="text-xs text-[#8e92a4]">20 Batches • 450 Problems Total</span>
+              </div>
+              <p className="text-xs text-[#8e92a4] leading-relaxed">
+                All 450 problems are pre-divided into 20 bite-sized prompt files in your project directory at <code className="text-indigo-400 font-mono">data/gemini_research/prompts/</code>.
+                You can also run the CLI importer anytime:
+              </p>
+              <div className="p-3 rounded-xl bg-[#101116] border border-[#20222b] font-mono text-xs text-indigo-300">
+                node scripts/import_gemini_research.mjs data/gemini_research/results/batch_01.json
               </div>
             </div>
           </div>

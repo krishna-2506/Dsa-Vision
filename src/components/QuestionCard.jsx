@@ -19,12 +19,12 @@ function cleanComplexity(text, fallback = 'O(1)') {
 const STATUS_CONFIG = {
   mastered: {
     label: 'Mastered',
-    badgeClass: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/25',
+    badgeClass: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
     dotClass: 'bg-emerald-500'
   },
   in_progress: {
     label: 'In Progress',
-    badgeClass: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/25',
+    badgeClass: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     dotClass: 'bg-amber-500'
   },
   to_learn: {
@@ -38,17 +38,17 @@ const DIFF_CONFIG = {
   easy: {
     label: 'Easy',
     dotClass: 'bg-emerald-500',
-    textClass: 'text-emerald-600 dark:text-emerald-400'
+    textClass: 'text-emerald-400'
   },
   medium: {
     label: 'Medium',
     dotClass: 'bg-amber-500',
-    textClass: 'text-amber-600 dark:text-amber-400'
+    textClass: 'text-amber-400'
   },
   hard: {
     label: 'Hard',
     dotClass: 'bg-rose-500',
-    textClass: 'text-rose-600 dark:text-rose-400'
+    textClass: 'text-rose-400'
   }
 };
 
@@ -81,22 +81,22 @@ export default function QuestionCard({
         sound.playStep(520);
         onOpen(question);
       }}
-      className="card card-lift group flex flex-col justify-between p-4.5 cursor-pointer bg-[var(--board-raised)] hover:bg-[var(--board-raised)] border border-[var(--line)] hover:border-[var(--line-strong)] rounded-2xl relative select-none transition-all duration-200 backdrop-blur-xl shadow-sm"
+      className="group flex flex-col justify-between p-4 cursor-pointer bg-[var(--board-raised)] hover:bg-[var(--board-raised-2)] border border-[var(--line)] hover:border-[var(--line-strong)] rounded-lg relative select-none transition-colors duration-150 shadow-none"
     >
       {/* ── Top Header Row: Difficulty, ID, Step Pill & Interactive Indicator ── */}
       <div>
-        <div className="flex items-center justify-between gap-2 mb-2.5">
-          <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-            {/* Minimalist Apple Difficulty Indicator */}
-            <div className={`flex items-center gap-1.5 text-[11px] font-sans font-semibold ${diffCfg.textClass}`}>
-              <span className={`w-2 h-2 rounded-full ${diffCfg.dotClass} shadow-sm`} />
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2 min-w-0 flex-wrap">
+            {/* Minimalist Difficulty Indicator */}
+            <div className={`flex items-center gap-1.5 text-[11px] font-mono font-medium ${diffCfg.textClass}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${diffCfg.dotClass}`} />
               <span>{diffCfg.label}</span>
             </div>
 
             <span className="text-[var(--line-strong)] text-xs">·</span>
 
             {/* Problem Display ID */}
-            <span className="text-[11px] font-mono text-[var(--chalk-faint)] font-medium">
+            <span className="text-[11px] font-mono text-[var(--chalk-dim)]">
               {displayId}
             </span>
 
@@ -104,7 +104,7 @@ export default function QuestionCard({
             {question.step_no && (
               <>
                 <span className="text-[var(--line-strong)] text-xs hidden sm:inline">·</span>
-                <span className="text-[10px] font-sans px-1.5 py-0.2 rounded bg-[var(--board-raised-2)] text-[var(--chalk-dim)] border border-[var(--line)] truncate max-w-[150px] hidden sm:inline" title={`${question.step_name || ''} - ${question.substep_name || ''}`}>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[var(--board-raised-2)] text-[var(--chalk-dim)] border border-[var(--line)] truncate max-w-[150px] hidden sm:inline" title={`${question.step_name || ''} - ${question.substep_name || ''}`}>
                   Step {question.step_no} {question.substep_name ? `· ${question.substep_name}` : ''}
                 </span>
               </>
@@ -112,14 +112,14 @@ export default function QuestionCard({
           </div>
 
           {/* Quick Actions (Interactive Badge + Bookmark) */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {hasVisualizer && (
               <span
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-sans font-semibold bg-[var(--indigo-dim)] border border-[var(--indigo)]/25 text-[var(--indigo)]"
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-indigo-500/10 border border-indigo-500/20 text-indigo-400"
                 title="Interactive algorithm visualizer available"
               >
-                <Layers className="w-2.5 h-2.5 text-[var(--indigo)]" />
-                <span>Interactive</span>
+                <Layers className="w-2.5 h-2.5" />
+                <span>Visualizer</span>
               </span>
             )}
 
@@ -129,7 +129,7 @@ export default function QuestionCard({
                 sound.playStep(720);
                 onToggleFavorite(question.id);
               }}
-              className={`p-1.5 rounded-full transition-all cursor-pointer ${
+              className={`p-1 rounded transition-colors cursor-pointer ${
                 question.is_favorite
                   ? 'bg-amber-500/15 text-amber-500'
                   : 'text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
@@ -146,13 +146,13 @@ export default function QuestionCard({
         </div>
 
         {/* ── Problem Title ── */}
-        <h3 className="font-sans font-semibold text-[14.5px] text-[var(--chalk)] group-hover:text-[var(--indigo)] transition-colors leading-snug mb-2.5 line-clamp-2">
+        <h3 className="font-sans font-medium text-[13.5px] text-[var(--chalk)] group-hover:text-[var(--indigo)] transition-colors leading-snug mb-2 line-clamp-2">
           {question.title}
         </h3>
 
-        {/* ── Topics / Tags (Apple Pills) ── */}
+        {/* ── Topics / Tags ── */}
         {tags.length > 0 && (
-          <div className="flex items-center gap-1.5 flex-wrap mb-3.5">
+          <div className="flex items-center gap-1 flex-wrap mb-3">
             {tags.slice(0, 3).map((tag) => (
               <button
                 key={tag}
@@ -160,10 +160,10 @@ export default function QuestionCard({
                   e.stopPropagation();
                   if (onSelectTag) onSelectTag(tag);
                 }}
-                className={`text-[10px] font-sans px-2 py-0.5 rounded-full border transition-all cursor-pointer ${
+                className={`text-[10px] font-mono px-1.5 py-0.2 rounded border transition-colors cursor-pointer ${
                   activeTag === tag
-                    ? 'bg-[var(--indigo-dim)] text-[var(--indigo)] border-[var(--indigo)]/30 font-semibold'
-                    : 'text-[var(--chalk-faint)] hover:text-[var(--chalk)] bg-[var(--board-raised-2)] border-[var(--line)] hover:border-[var(--line-strong)]'
+                    ? 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30 font-medium'
+                    : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] bg-[var(--board-raised-2)] border-[var(--line)] hover:border-[var(--line-strong)]'
                 }`}
               >
                 #{tag}
@@ -178,27 +178,27 @@ export default function QuestionCard({
         )}
 
         {/* ── Approaches & Languages Metadata ── */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <span className="text-[10px] font-sans font-medium px-2 py-0.5 rounded-full bg-[var(--board-raised-2)] text-[var(--chalk-dim)] border border-[var(--line)]">
-            {approachesCount} {approachesCount === 1 ? 'Approach' : 'Approaches'}
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <span className="text-[10px] font-mono text-[var(--chalk-dim)] px-1.5 py-0.2 rounded bg-[var(--board-raised-2)] border border-[var(--line)]">
+            {approachesCount} {approachesCount === 1 ? 'approach' : 'approaches'}
           </span>
           <div className="flex items-center gap-1 text-[9.5px] font-mono text-[var(--chalk-faint)]">
-            <span className="hover:text-[var(--chalk)]">C++</span>
+            <span>C++</span>
             <span>·</span>
-            <span className="hover:text-[var(--chalk)]">Java</span>
+            <span>Java</span>
             <span>·</span>
-            <span className="hover:text-[var(--chalk)]">Py</span>
+            <span>Py</span>
             <span>·</span>
-            <span className="hover:text-[var(--chalk)]">JS</span>
+            <span>JS</span>
           </div>
         </div>
       </div>
 
       {/* ── Card Footer: Complexity & Actions ── */}
-      <div className="pt-3 border-t border-[var(--line)]">
+      <div className="pt-2.5 border-t border-[var(--line)]">
         {/* Complexity & Resource Links Metadata Row */}
-        <div className="flex items-center justify-between gap-2 mb-2.5">
-          <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--chalk-dim)]">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2 text-[10.5px] font-mono text-[var(--chalk-dim)]">
             <span className="flex items-center gap-1" title="Time Complexity">
               <Clock className="w-3 h-3 text-[var(--amber)]" />
               <span>{cleanComplexity(question.time_complexity, 'O(N)')}</span>
@@ -210,15 +210,15 @@ export default function QuestionCard({
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             {question.youtube_url && (
               <a
                 href={question.youtube_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-rose-500/70 hover:text-rose-500 p-1 rounded-full hover:bg-rose-500/10 transition-colors"
-                title="Watch Striver's video tutorial"
+                className="text-[var(--chalk-faint)] hover:text-rose-400 p-1 rounded hover:bg-[var(--board-hover)] transition-colors"
+                title="Watch tutorial"
               >
                 <Play className="w-3 h-3 fill-current" />
               </a>
@@ -230,8 +230,8 @@ export default function QuestionCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-teal-500/70 hover:text-teal-400 p-1 rounded-full hover:bg-teal-500/10 transition-colors"
-                title="Read TakeUForward article"
+                className="text-[var(--chalk-faint)] hover:text-teal-400 p-1 rounded hover:bg-[var(--board-hover)] transition-colors"
+                title="Read article"
               >
                 <BookOpen className="w-3 h-3" />
               </a>
@@ -243,8 +243,8 @@ export default function QuestionCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[var(--chalk-faint)] hover:text-[var(--chalk)] p-1 rounded-full hover:bg-[var(--board-hover)] transition-colors"
-                title="Open problem on LeetCode"
+                className="text-[var(--chalk-faint)] hover:text-[var(--chalk)] p-1 rounded hover:bg-[var(--board-hover)] transition-colors"
+                title="Open on LeetCode"
               >
                 <ExternalLink className="w-3 h-3" />
               </a>
@@ -261,18 +261,18 @@ export default function QuestionCard({
                 e.stopPropagation();
                 setStatusMenuOpen(!statusMenuOpen);
               }}
-              className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-sans font-medium border transition-all cursor-pointer ${statusCfg.badgeClass}`}
+              className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-[10.5px] font-mono border transition-all cursor-pointer ${statusCfg.badgeClass}`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dotClass}`} />
               <span>{statusCfg.label}</span>
               <ChevronDown className="w-2.5 h-2.5 opacity-60 ml-0.5" />
             </button>
 
-            {/* Status Dropdown Menu (Apple frosted glass menu) */}
+            {/* Status Dropdown Menu */}
             {statusMenuOpen && (
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="absolute bottom-full left-0 mb-2 w-36 rounded-2xl bg-[var(--board-raised)] border border-[var(--line-strong)] backdrop-blur-2xl shadow-xl p-1.5 z-30 fade-in"
+                className="absolute bottom-full left-0 mb-1.5 w-32 rounded-md bg-[var(--board-raised)] border border-[var(--line)] shadow-lg p-1 z-30 fade-in"
               >
                 {['to_learn', 'in_progress', 'mastered'].map((stKey) => {
                   const itemCfg = STATUS_CONFIG[stKey];
@@ -284,17 +284,17 @@ export default function QuestionCard({
                         onStatusChange(question.id, stKey);
                         setStatusMenuOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-sans text-left transition-colors cursor-pointer ${
+                      className={`w-full flex items-center justify-between px-2 py-1 rounded text-[11px] font-mono text-left transition-colors cursor-pointer ${
                         isCur
-                          ? 'bg-[var(--indigo-dim)] text-[var(--indigo)] font-semibold'
+                          ? 'bg-indigo-500/15 text-indigo-400 font-medium'
                           : 'text-[var(--chalk-dim)] hover:bg-[var(--board-hover)] hover:text-[var(--chalk)]'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${itemCfg.dotClass}`} />
                         <span>{itemCfg.label}</span>
                       </div>
-                      {isCur && <CheckCircle2 className="w-3 h-3 text-[var(--indigo)]" />}
+                      {isCur && <CheckCircle2 className="w-3 h-3 text-indigo-400" />}
                     </button>
                   );
                 })}
@@ -303,9 +303,9 @@ export default function QuestionCard({
           </div>
 
           {/* Launch Studio Action */}
-          <div className="flex items-center gap-1 text-[11.5px] font-sans font-semibold text-[var(--indigo)] group-hover:translate-x-0.5 transition-all">
+          <div className="flex items-center gap-1 text-[11px] font-mono font-medium text-[var(--indigo)] group-hover:translate-x-0.5 transition-transform">
             <span>Explore</span>
-            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="w-3 h-3" />
           </div>
         </div>
       </div>

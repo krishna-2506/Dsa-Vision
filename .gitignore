@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# SQLite WAL temporary buffers
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal

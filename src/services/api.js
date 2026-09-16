@@ -1,5 +1,19 @@
 // Client API layer communicating with native SQLite backend via /api/*
 
+function getAuthHeaders(extra = {}) {
+  const headers = { 'Content-Type': 'application/json', ...extra };
+  try {
+    const token = localStorage.getItem('algovision_auth_token_v1') ||
+      JSON.parse(localStorage.getItem('algovision_active_user_v1') || '{}')?.token;
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+  } catch (e) {
+    // Ignore localStorage parse errors in non-browser environments
+  }
+  return headers;
+}
+
 export const api = {
   async getQuestions() {
     try {
@@ -211,6 +225,43 @@ export const api = {
     }
   },
 
+  async updateProfile({ displayName, avatar }) {
+    try {
+      const res = await fetch('/api/auth/profile', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ displayName, avatar })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async changePassword(oldPassword, newPassword) {
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ oldPassword, newPassword })
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async getLeaderboard(limit = 50) {
+    try {
+      const res = await fetch(`/api/leaderboard?limit=${encodeURIComponent(limit)}`);
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch leaderboard', e);
+    }
+    return [];
+  },
+
   async getCurrentUser(userId) {
     try {
       const res = await fetch(`/api/auth/me/${encodeURIComponent(userId)}`);
@@ -253,6 +304,17 @@ export const api = {
       console.warn('Failed to fetch user progress', e);
     }
     return {};
+  },
+
+  async getUserAnalytics(userId) {
+    try {
+      const res = await fetch(`/api/users/${encodeURIComponent(userId)}/analytics`);
+      const json = await res.json();
+      if (json.success) return json.data;
+    } catch (e) {
+      console.warn('Failed to fetch user analytics', e);
+    }
+    return null;
   },
 
   async updateUserProgress(userId, questionId, updates) {
@@ -480,6 +542,30 @@ export const api = {
     try {
       const res = await fetch('/api/admin/autolink', {
         method: 'POST'
+      });
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async checkDisplayId(display_id, exclude_id = null) {
+    try {
+      const params = new URLSearchParams({ display_id });
+      if (exclude_id) params.set('exclude_id', exclude_id);
+      const res = await fetch(`/api/admin/check-display-id?${params.toString()}`);
+      return await res.json();
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  },
+
+  async bulkUpdateResearch(items) {
+    try {
+      const res = await fetch('/api/admin/bulk-update-research', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items })
       });
       return await res.json();
     } catch (e) {

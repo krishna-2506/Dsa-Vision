@@ -516,114 +516,108 @@ export default function VisualizerStudio({
 
   return (
     <div className="max-w-[1360px] mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* ── ZONE 1: Problem Overview & Command Toolbar (Senior Workbench Card) ── */}
-      <div className="card specular-card shadow-sm p-5 sm:p-6 space-y-4 bg-[var(--board-raised)] border border-[var(--line)] rounded-lg">
-        {/* Top Header Row */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
+      {/* ── 1. Problem Header (Clean, Spacious Level 1 Hierarchy) ── */}
+      <header className="space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
             <button
               onClick={onBack}
-              className="p-2 rounded-md bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all shrink-0 cursor-pointer group"
+              className="p-2 rounded-md bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-colors shrink-0 cursor-pointer"
               title="Back to problem library (Esc)"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              <ArrowLeft className="w-4 h-4" />
             </button>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                {/* Difficulty Badge */}
-                <span className={`diff-badge ${
-                  question.difficulty === 'Hard' ? 'diff-badge-hard' :
-                  question.difficulty === 'Medium' ? 'diff-badge-medium' : 'diff-badge-easy'
-                }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${diffDotClass}`} />
-                  {question.difficulty}
-                </span>
-
-                {/* Display ID */}
-                <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/25 text-indigo-600 dark:text-indigo-300">
-                  {question.display_id || (question.leetcode_id ? `#${question.leetcode_id}` : 'DSA')}
-                </span>
-
-                {/* Step & Substep Badge */}
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                {/* Step & Substep Indicator */}
                 {question.step_no && (
-                  <span className="text-xs font-sans font-medium px-2 py-0.5 rounded-full bg-[var(--board-raised-2)] text-[var(--chalk-dim)] border border-[var(--line)]">
+                  <span className="text-xs font-mono text-[var(--chalk-faint)]">
                     Step {question.step_no}: {question.step_name} {question.substep_name ? `· ${question.substep_name}` : ''}
                   </span>
                 )}
+                <span className="text-[var(--line-strong)] text-xs">·</span>
+                {/* Problem ID */}
+                <span className="text-xs font-mono text-[var(--chalk-dim)] font-medium">
+                  {question.display_id || (question.leetcode_id ? `#${question.leetcode_id}` : 'DSA')}
+                </span>
+                <span className="text-[var(--line-strong)] text-xs">·</span>
+                {/* Difficulty Dot + Label */}
+                <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${
+                  question.difficulty === 'Hard' ? 'text-rose-400' :
+                  question.difficulty === 'Medium' ? 'text-amber-400' : 'text-emerald-400'
+                }`}>
+                  <span className={`w-2 h-2 rounded-full ${diffDotClass}`} />
+                  {question.difficulty}
+                </span>
               </div>
 
-              <h1 className="text-lg sm:text-xl font-bold font-sans text-[var(--chalk)] tracking-tight truncate">
+              <h1 className="text-xl sm:text-2xl font-bold font-sans text-[var(--chalk)] tracking-tight truncate">
                 {question.title}
               </h1>
             </div>
           </div>
 
           {/* Right Action Tools Toolbar */}
-          <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             {/* Dynamic Complexity Badges */}
             <div className="hidden xl:flex items-center gap-2.5 text-xs font-mono text-[var(--chalk-dim)] px-3 py-1.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)]">
               <span className="flex items-center gap-1.5" title="Time Complexity">
-                <Clock className="w-3.5 h-3.5 text-amber-500" />
+                <Clock className="w-3.5 h-3.5 text-amber-400" />
                 <span>{formatComplexity(currentApproachObj?.time_complexity || question.time_complexity)}</span>
               </span>
               <span className="text-[var(--line-strong)]">·</span>
               <span className="flex items-center gap-1.5" title="Space Complexity">
-                <Cpu className="w-3.5 h-3.5 text-cyan-500" />
+                <Cpu className="w-3.5 h-3.5 text-cyan-400" />
                 <span>{formatComplexity(currentApproachObj?.space_complexity || question.space_complexity)}</span>
               </span>
             </div>
 
-            {/* View Mode Segmented Control */}
-            <div className="segmented-control">
-              {[
-                ['visualizer_only', 'Visualizer'],
-                ['split', 'Split View'],
-                ['code_only', 'Code & Logic']
-              ].map(([mode, label]) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={`segmented-item ${viewMode === mode ? 'active' : ''}`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
             {/* Status Dropdown */}
-            <div className="relative">
-              <select
-                value={question.status || 'to_learn'}
-                onChange={(e) => onStatusChange(question.id, e.target.value)}
-                className="h-8 px-2.5 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono font-medium text-[var(--chalk)] cursor-pointer focus:outline-none focus:border-indigo-500"
+            <select
+              value={question.status || 'to_learn'}
+              onChange={(e) => onStatusChange(question.id, e.target.value)}
+              className="h-8 px-2.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-sans font-medium text-[var(--chalk)] cursor-pointer focus:outline-none focus:border-indigo-500"
+            >
+              <option value="to_learn">To learn</option>
+              <option value="in_progress">In progress</option>
+              <option value="mastered">Mastered</option>
+            </select>
+
+            {/* Export Study Sheet */}
+            <button
+              onClick={handleDownloadStudySheet}
+              className="btn-secondary h-8 px-2.5 text-xs"
+              title="Download Markdown Study Sheet"
+            >
+              <Download className="w-3.5 h-3.5 text-[var(--chalk-dim)]" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+
+            {/* LeetCode link */}
+            {question.leetcode_url && (
+              <a
+                href={question.leetcode_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary h-8 px-2.5 text-xs"
+                title="Open LeetCode problem in new tab"
               >
-                <option value="to_learn" className="bg-[var(--board-raised)] text-[var(--chalk)]">To learn</option>
-                <option value="in_progress" className="bg-[var(--board-raised)] text-amber-500">In progress</option>
-                <option value="mastered" className="bg-[var(--board-raised)] text-emerald-500">Mastered</option>
-              </select>
-            </div>
+                <ExternalLink className="w-3.5 h-3.5 text-[var(--chalk-dim)]" />
+                <span className="hidden sm:inline">LeetCode</span>
+              </a>
+            )}
 
             {/* Upload Button */}
             <button
               onClick={() => setShowUploader(!showUploader)}
               className={`btn-secondary h-8 px-2.5 text-xs ${
-                showUploader ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 font-semibold' : ''
+                showUploader ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-400 font-semibold' : ''
               }`}
               title="Upload custom .jsx visualizer component"
             >
-              <UploadCloud className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+              <UploadCloud className="w-3.5 h-3.5 text-indigo-400" />
               <span className="hidden sm:inline">Upload Viz</span>
-            </button>
-
-            {/* AI Enhance */}
-            <button
-              onClick={() => setShowEnhanceModal(true)}
-              className="btn-secondary h-8 px-2.5 text-xs text-amber-600 dark:text-amber-300 hover:text-amber-500"
-              title="Enhance problem statement with AI"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span className="hidden md:inline">AI Enhance</span>
             </button>
 
             {/* Quick Problem Jumper */}
@@ -666,16 +660,16 @@ export default function VisualizerStudio({
                           key={q.id}
                           onClick={() => { if (onNavigateQuestion) onNavigateQuestion(q); setShowJumper(false); }}
                           className={`px-3 py-2 flex items-center justify-between gap-2 cursor-pointer transition ${
-                            q.id === question.id ? 'bg-[var(--amber-dim)] text-[var(--amber)]' : 'hover:bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
+                            q.id === question.id ? 'bg-indigo-500/15 text-indigo-400 font-semibold' : 'hover:bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
                           }`}
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-[var(--amber)] shrink-0">#{q.display_id || q.leetcode_id}</span>
+                            <span className="text-indigo-400 shrink-0">#{q.display_id || q.leetcode_id}</span>
                             <span className="truncate">{q.title}</span>
                           </div>
                           <span className={`text-[10px] shrink-0 ${
-                            q.difficulty === 'Easy' ? 'text-[var(--easy)]' :
-                            q.difficulty === 'Medium' ? 'text-[var(--amber)]' : 'text-[var(--hard)]'
+                            q.difficulty === 'Easy' ? 'text-emerald-400' :
+                            q.difficulty === 'Medium' ? 'text-amber-400' : 'text-rose-400'
                           }`}>{q.difficulty}</span>
                         </div>
                       ))}
@@ -685,347 +679,70 @@ export default function VisualizerStudio({
               )}
             </div>
 
-            {/* Report Button */}
-            <button
-              onClick={() => setShowReportModal(true)}
-              className="btn-secondary h-8 w-8 justify-center px-0 text-slate-400 hover:text-rose-400"
-              title="Report an issue"
-            >
-              <Flag className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Striver YouTube Tutorial Link & Embed View Toggle */}
-            {question.youtube_url && (
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setShowVideo(!showVideo)}
-                  className={`btn-secondary h-8 px-2.5 text-xs font-semibold transition-all cursor-pointer ${
-                    showVideo
-                      ? 'bg-rose-500 text-white border-rose-500 shadow-sm'
-                      : 'text-rose-500 hover:text-rose-400 bg-rose-500/10 border border-rose-500/30'
-                  }`}
-                  title={showVideo ? 'Hide embedded video player' : 'Watch video editorial embedded on page'}
-                >
-                  <Play className={`w-3.5 h-3.5 ${showVideo ? 'fill-white text-white' : 'fill-rose-500 text-rose-500'}`} />
-                  <span className="hidden sm:inline">{showVideo ? 'Hide Video' : 'Watch Video'}</span>
-                </button>
-
-                <a
-                  href={question.youtube_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary h-8 w-8 justify-center px-0 text-rose-500 hover:text-rose-400 bg-rose-500/10 border border-rose-500/30"
-                  title="Open video on YouTube in new tab"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            )}
-
-            {/* TakeUForward Article Link */}
-            {question.article_url && (
-              <a
-                href={question.article_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary h-8 px-2.5 text-xs text-teal-600 dark:text-teal-300 hover:text-teal-200 bg-teal-500/10 border border-teal-500/30"
-                title="Read Editorial on TakeUForward"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Editorial</span>
-              </a>
-            )}
-
-            {/* LeetCode Link */}
-            {question.leetcode_url && (
-              <a
-                href={question.leetcode_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary h-8 px-2.5 text-xs text-indigo-400 hover:text-indigo-200"
-                title="Open on LeetCode"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">LeetCode</span>
-              </a>
-            )}
-
-            {/* TUF+ Link */}
-            {question.plus_url && (
-              <a
-                href={question.plus_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary h-8 px-2.5 text-xs text-[var(--chalk-dim)] hover:text-[var(--chalk)]"
-                title="Practice on TUF+"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">TUF+</span>
-              </a>
-            )}
-          </div>
-        </div>
-
-        {/* Navigation & Gamified Spaced Repetition Card */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
-          {/* Spaced Repetition Rater */}
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-mono text-slate-400 font-medium">Recall Confidence:</span>
-            <button
-              onClick={() => handleReviewConfidence('mastered')}
-              className="conf-btn mastered"
-              title="I remembered it instantly — interval extended (+4 days)"
-            >
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Mastered</span>
-              <span className="text-[10px] opacity-70">+4d</span>
-            </button>
-            <button
-              onClick={() => handleReviewConfidence('practicing')}
-              className="conf-btn practicing"
-              title="I needed slight hints — review again in 2 days"
-            >
-              <span className="text-amber-400 font-bold">~</span>
-              <span>Shaky</span>
-              <span className="text-[10px] opacity-70">+2d</span>
-            </button>
-            <button
-              onClick={() => handleReviewConfidence('struggling')}
-              className="conf-btn struggling"
-              title="I forgot the pattern — reset to tomorrow"
-            >
-              <span className="text-rose-400 font-bold">✗</span>
-              <span>Forgot</span>
-              <span className="text-[10px] opacity-70">1d</span>
-            </button>
-            {reviewSaved && (
-              <span className="text-emerald-400 text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 fade-in">
-                ✓ Recorded (+15 XP)
-              </span>
-            )}
-          </div>
-
-          {/* Prev / Next Problem Switcher */}
-          <div className="flex items-center gap-2">
-            {(() => {
-              const prevLabel = prevQuestion
-                ? prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')
-                : '';
-              return (
-                <button
-                  onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
-                  disabled={!prevQuestion}
-                  className="btn-secondary h-8 px-2.5 text-xs disabled:opacity-30 disabled:pointer-events-none"
-                  title={prevQuestion ? `Previous: ${prevLabel} ${prevQuestion.title}` : 'First problem'}
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{prevLabel || 'Prev'}</span>
-                </button>
-              );
-            })()}
-
-            <span className="text-xs font-mono text-slate-400 px-2">
-              {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
-            </span>
-
-            {(() => {
-              const nextLabel = nextQuestion
-                ? nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')
-                : '';
-              return (
-                <button
-                  onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
-                  disabled={!nextQuestion}
-                  className="btn-secondary h-8 px-2.5 text-xs disabled:opacity-30 disabled:pointer-events-none"
-                  title={nextQuestion ? `Next: ${nextLabel} ${nextQuestion.title}` : 'Last problem'}
-                >
-                  <span className="hidden sm:inline">{nextLabel || 'Next'}</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              );
-            })()}
-          </div>
-        </div>
-
-        {/* Problem Statement & Examples */}
-        <div className="space-y-3.5">
-          <div className="text-[13px] text-[var(--chalk)] leading-relaxed whitespace-pre-wrap font-sans bg-[var(--board)] p-4 rounded-xl border border-[var(--line)] max-h-60 overflow-y-auto">
-            <div className="font-semibold text-xs text-[var(--indigo)] uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Problem Statement</span>
-            </div>
-            {question.problem_statement || question.description || 'No description available for this problem.'}
-          </div>
-
-          {/* Examples & Test Cases */}
-          {Array.isArray(question.examples) && question.examples.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-sans font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">
-                <span>Examples & Test Cases</span>
-              </div>
-              <div className="grid grid-cols-1 gap-2.5">
-                {question.examples.map((ex, exIdx) => (
-                  <div key={exIdx} className="p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] font-mono text-xs whitespace-pre-wrap text-[var(--chalk)] leading-relaxed">
-                    {ex}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Embedded YouTube Video Player View */}
-          {embedUrl && showVideo && (
-            <div className="rounded-2xl overflow-hidden border border-rose-500/25 bg-[var(--board-raised-2)] backdrop-blur-xl shadow-xl fade-in transition-all">
-              {/* Player Titlebar Chrome */}
-              <div className="flex items-center justify-between px-4 py-2.5 bg-rose-500/10 border-b border-rose-500/20">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
-                  <span className="text-xs font-sans font-bold text-rose-500 uppercase tracking-wider flex items-center gap-1.5">
-                    <Play className="w-3.5 h-3.5 fill-rose-500" />
-                    <span>Striver Video Editorial</span>
-                  </span>
-                  <span className="text-[var(--line-strong)] text-xs hidden sm:inline">·</span>
-                  <span className="text-xs font-sans text-[var(--chalk)] truncate max-w-sm hidden sm:inline font-medium">
-                    {question.title}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href={question.youtube_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs font-sans text-rose-500 hover:text-rose-400 font-semibold px-2.5 py-1 rounded-md hover:bg-rose-500/15 border border-rose-500/20 transition-all"
-                    title="Open on YouTube in new tab"
-                  >
-                    <span>Watch on YouTube</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-
+            {/* Prev / Next Problem Switcher */}
+            <div className="flex items-center gap-1 pl-1">
+              {(() => {
+                const prevLabel = prevQuestion
+                  ? prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')
+                  : '';
+                return (
                   <button
-                    onClick={() => setShowVideo(false)}
-                    className="p-1 rounded-md text-[var(--chalk-faint)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] transition-colors cursor-pointer"
-                    title="Close embedded video player"
+                    onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
+                    disabled={!prevQuestion}
+                    className="btn-secondary h-8 px-2 text-xs disabled:opacity-30 disabled:pointer-events-none"
+                    title={prevQuestion ? `Previous: ${prevLabel} ${prevQuestion.title}` : 'First problem'}
                   >
-                    <X className="w-4 h-4" />
+                    <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
-                </div>
-              </div>
+                );
+              })()}
 
-              {/* 16:9 Responsive Video Iframe */}
-              <div className="relative w-full aspect-video max-h-[480px] bg-black">
-                <iframe
-                  src={embedUrl}
-                  title={`Striver Video Tutorial - ${question.title}`}
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                />
-              </div>
-            </div>
-          )}
+              <span className="text-xs font-mono text-[var(--chalk-faint)] px-1.5">
+                {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
+              </span>
 
-          {/* Quick Embedded Video Launcher Banner when collapsed */}
-          {embedUrl && !showVideo && (
-            <div className="flex items-center justify-between p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 transition-all">
-              <div className="flex items-center gap-2.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
-                <div className="text-xs font-sans">
-                  <span className="font-bold text-rose-500 mr-1.5">Video Editorial Available</span>
-                  <span className="text-[var(--chalk-dim)] hidden sm:inline">Striver explains the intuition, step-by-step invariants, and edge cases.</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => setShowVideo(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-500 text-white text-xs font-sans font-semibold hover:bg-rose-600 transition-all cursor-pointer shadow-xs"
-                >
-                  <Play className="w-3 h-3 fill-white" />
-                  <span>Watch Embedded</span>
-                </button>
-                <a
-                  href={question.youtube_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-sans text-rose-500 hover:bg-rose-500/15 border border-rose-500/25 transition-all"
-                  title="Open on YouTube in new tab"
-                >
-                  <span>YouTube</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
+              {(() => {
+                const nextLabel = nextQuestion
+                  ? nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')
+                  : '';
+                return (
+                  <button
+                    onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
+                    disabled={!nextQuestion}
+                    className="btn-secondary h-8 px-2 text-xs disabled:opacity-30 disabled:pointer-events-none"
+                    title={nextQuestion ? `Next: ${nextLabel} ${nextQuestion.title}` : 'Last problem'}
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                );
+              })()}
             </div>
-          )}
+          </div>
         </div>
+      </header>
 
-        {/* Collapsible Approach & Invariants Accordion */}
-        <div>
-          <button
-            onClick={() => setShowApproach(!showApproach)}
-            className="flex items-center gap-2 text-xs font-mono text-indigo-500 dark:text-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-200 transition-colors cursor-pointer group"
-          >
-            <span className="text-[11px] group-hover:translate-x-0.5 transition-transform">
-              {showApproach ? '▾' : '▸'}
+      {/* ── 2. THE HERO WORKSPACE: Interactive Algorithm Canvas & Synchronized Code ── */}
+      <section className="workspace-stage">
+        {/* Workspace Titlebar: Execution State, Approach Switcher, View Mode */}
+        <div className="workspace-titlebar flex-wrap gap-2">
+          {/* Execution State indicator */}
+          <div className="flex items-center gap-2.5">
+            <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-emerald-500 animate-pulse' : 'bg-indigo-500'}`} />
+            <span className="text-xs font-mono font-medium text-[var(--chalk)]">
+              {isPlaying ? 'Running' : 'Paused'} · Step {currentStep + 1} of {maxSteps}
             </span>
-            <span className="font-semibold underline decoration-indigo-500/40 underline-offset-4">
-              {showApproach
-                ? 'Hide algorithm breakdown & complexity details'
-                : `Show ${activeTier === 'intuitive' ? 'Brute Force' : activeTier === 'better' ? 'Better Approach' : 'Optimal Approach'} breakdown & complexity`}
-            </span>
-          </button>
-          {showApproach && (
-            <div className="approach-panel fade-in space-y-3 mt-2.5 p-4.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
-              <div>
-                <h4 className="text-xs font-bold text-[var(--indigo)] uppercase tracking-wider mb-1.5">
-                  {currentApproachObj?.approach_name || (activeTier === 'intuitive' ? 'Intuitive / Brute Force Approach' : activeTier === 'better' ? 'Better Approach' : 'Optimal Approach')}
-                </h4>
-                <p className="text-xs text-[var(--chalk)] leading-relaxed whitespace-pre-wrap font-sans">
-                  {currentApproachObj?.algorithm || question.approach || 'Detailed algorithm walkthrough.'}
-                </p>
-              </div>
-
-              {(currentApproachObj?.time_complexity_details || currentApproachObj?.space_complexity_details) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2.5 border-t border-[var(--line)] font-mono text-[11px]">
-                  {currentApproachObj?.time_complexity_details && (
-                    <div className="p-3 rounded-lg bg-[var(--board)] border border-[var(--line)]">
-                      <span className="font-bold text-[var(--amber)]">Time Complexity:</span>
-                      <p className="mt-1 text-[var(--chalk-dim)] leading-relaxed">{currentApproachObj.time_complexity_details}</p>
-                    </div>
-                  )}
-                  {currentApproachObj?.space_complexity_details && (
-                    <div className="p-3 rounded-lg bg-[var(--board)] border border-[var(--line)]">
-                      <span className="font-bold text-[var(--teal)]">Space Complexity:</span>
-                      <p className="mt-1 text-[var(--chalk-dim)] leading-relaxed">{currentApproachObj.space_complexity_details}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── ZONE 2: Interactive Visualizer Stage (macOS Window Frame) ── */}
-      <div className="macos-window mb-6">
-        {/* macOS Titlebar Chrome with Traffic Light Dots */}
-        <div className="macos-titlebar flex-wrap gap-2">
-          <div className="flex items-center gap-3">
-            <div className="traffic-lights">
-              <span className="traffic-light traffic-light-red" />
-              <span className="traffic-light traffic-light-yellow" />
-              <span className="traffic-light traffic-light-green" />
-            </div>
-            <span className="text-xs font-sans font-medium text-[var(--chalk-dim)] hidden sm:inline">
-              AlgoVision Studio — {activeApproachData?.title || question.title}
+            <span className="text-[var(--line-strong)] text-xs hidden sm:inline">|</span>
+            <span className="text-xs font-sans text-[var(--chalk-dim)] truncate max-w-[280px] hidden sm:inline">
+              {currentStepData?.title || `Execution Step ${currentStep + 1}`}
             </span>
           </div>
 
-          {/* Apple Segmented Approach Switcher */}
+          {/* Center: Clean Approach Selector Tabs */}
           <div className="segmented-control">
             {[
-              { id: 'intuitive', label: '1. Intuitive', sub: 'Brute Force' },
-              { id: 'better', label: '2. Better', sub: 'Sub-Optimal' },
-              { id: 'optimal', label: '3. Optimal', sub: 'Single Pass / Optimal' }
+              { id: 'intuitive', label: 'Brute Force' },
+              { id: 'better', label: 'Better' },
+              { id: 'optimal', label: 'Optimal' }
             ].map((tier) => {
               const isActive = activeTier === tier.id;
               const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
@@ -1037,15 +754,32 @@ export default function VisualizerStudio({
                 >
                   <span>{tier.label}</span>
                   {hasCustomAnimation && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--teal)]" title="Dedicated interactive visualizer available" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" title="Dedicated visualizer available" />
                   )}
                 </button>
               );
             })}
           </div>
+
+          {/* Right: View Mode Toggle (Split, Canvas, Code) */}
+          <div className="segmented-control">
+            {[
+              ['split', 'Split View'],
+              ['visualizer_only', 'Canvas'],
+              ['code_only', 'Code']
+            ].map(([mode, label]) => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`segmented-item ${viewMode === mode ? 'active' : ''}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Main Stage Grid */}
+        {/* Main Stage Grid (Canvas Viewport + Synchronized Code) */}
         <div
           className="stage"
           style={{
@@ -1058,8 +792,8 @@ export default function VisualizerStudio({
             <div className="canvas-col">
               <div className="flex items-center justify-between gap-3 mb-4 pb-2.5 border-b border-[var(--line)]">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2 h-2 rounded-full bg-[var(--indigo)] shrink-0 animate-pulse shadow-[0_0_8px_rgba(10,132,255,0.6)]" />
-                  <span className="text-xs font-sans font-bold text-[var(--indigo)] uppercase tracking-wider shrink-0">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
+                  <span className="text-xs font-mono font-semibold text-indigo-400 uppercase tracking-wider shrink-0">
                     Step {currentStep + 1} of {maxSteps}
                   </span>
                   <span className="text-[var(--chalk-faint)] shrink-0">·</span>
@@ -1094,10 +828,10 @@ export default function VisualizerStudio({
                   }}
                   onDrop={handleDirectFileDrop}
                   onClick={() => barFileInputRef.current?.click()}
-                  className={`flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer border border-dashed rounded-2xl transition-all duration-200 ${
+                  className={`flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer border border-dashed rounded-lg transition-colors ${
                     isBarDragging
-                      ? 'border-[var(--amber)] bg-[var(--amber-dim)]'
-                      : 'border-[var(--line-strong)] hover:border-[var(--amber)]'
+                      ? 'border-indigo-500 bg-indigo-500/10'
+                      : 'border-[var(--line-strong)] hover:border-indigo-500/60'
                   }`}
                 >
                   <input
@@ -1107,12 +841,12 @@ export default function VisualizerStudio({
                     accept=".jsx,.tsx,.js,.ts"
                     className="hidden"
                   />
-                  <UploadCloud className="w-8 h-8 text-[var(--amber)]" />
+                  <UploadCloud className="w-8 h-8 text-[var(--chalk-dim)]" />
                   <p className="text-[13px] font-sans font-medium text-[var(--chalk)]">
-                    {isBarDragging ? 'Drop your .jsx file now!' : 'No visualizer for this question yet'}
+                    {isBarDragging ? 'Drop your .jsx file now' : 'No visualizer for this question yet'}
                   </p>
                   <p className="text-[12px] text-[var(--chalk-dim)] max-w-sm font-sans">
-                    Drag &amp; drop your React visualizer <code className="text-[var(--amber)] font-mono">.jsx</code> file here, or click to browse.
+                    Drag &amp; drop your React visualizer <code className="text-indigo-400 font-mono">.jsx</code> file here, or click to browse.
                   </p>
                   <div className="pt-2 flex items-center gap-2">
                     <button
@@ -1124,7 +858,7 @@ export default function VisualizerStudio({
                       className="btn-primary"
                     >
                       <Sparkles className="w-3.5 h-3.5" />
-                      <span>{copiedDirect ? 'Copied Prompt!' : 'Copy AI Prompt'}</span>
+                      <span>{copiedDirect ? 'Copied Prompt' : 'Copy AI Prompt'}</span>
                     </button>
                     <button
                       type="button"
@@ -1141,32 +875,26 @@ export default function VisualizerStudio({
                 </div>
               )}
 
-              {/* Apple-Grade Educational Explanation & Invariant Panel */}
+              {/* Educational Explanation & Step Invariant Panel */}
               {currentStepData && (
-                <div className="mt-4 p-4 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] backdrop-blur-xl shadow-sm transition-all duration-300">
+                <div className="mt-4 p-4 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)] transition-all">
                   <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--indigo-dim)] border border-[var(--indigo)]/30 text-[var(--indigo)] text-[10.5px] font-sans font-bold uppercase tracking-wider">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--indigo)] animate-pulse" />
-                        {currentStepData.phase || 'Algorithmic Execution'}
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-400 text-[11px] font-mono font-semibold">
+                        Invariant
                       </span>
                       <span className="text-xs font-sans font-semibold text-[var(--chalk)]">
                         {currentStepData.title}
                       </span>
                     </div>
 
-                    {currentStepData.codeLine && (
-                      <span className="text-[11px] font-mono text-[var(--chalk-dim)] px-2.5 py-0.5 rounded-full bg-[var(--board-raised)] border border-[var(--line)]">
-                        Synced with C++ line <strong className="text-[var(--indigo)]">{currentStepData.codeLine}</strong>
+                    {currentStepData.action && (
+                      <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+                        {currentStepData.action}
                       </span>
                     )}
                   </div>
 
-                  {(currentStepData.explain || currentStepData.explanation) && (
-                    <p className="text-[13px] text-[var(--chalk-dim)] leading-relaxed font-sans mb-3">
-                      {currentStepData.explain || currentStepData.explanation}
-                    </p>
-                  )}
 
                   {currentStepData.intuition && (
                     <div className="p-3 rounded-xl bg-[var(--indigo-dim)]/40 border border-[var(--indigo)]/20 text-xs text-[var(--chalk)] mb-3 flex items-start gap-2.5">
@@ -1438,7 +1166,7 @@ export default function VisualizerStudio({
             <span>Keys: <kbd>Space</kbd> <kbd>←</kbd> <kbd>→</kbd> <kbd>R</kbd></span>
           </div>
         </div>
-      </div>
+      </section>
 
 
       {/* ── Uploader Modal Overlay ── */}

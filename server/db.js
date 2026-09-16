@@ -11,6 +11,15 @@ if (!fs.existsSync(dataDir)) {
 const dbPath = path.join(dataDir, 'algovision.sqlite');
 const sqlite = new DatabaseSync(dbPath);
 
+// High-Concurrency Production PRAGMA Configuration
+sqlite.exec(`
+  PRAGMA journal_mode = WAL;
+  PRAGMA synchronous = NORMAL;
+  PRAGMA busy_timeout = 5000;
+  PRAGMA foreign_keys = ON;
+  PRAGMA cache_size = -64000;
+`);
+
 // Initialize Tables
 sqlite.exec(`
   CREATE TABLE IF NOT EXISTS questions (
@@ -210,6 +219,14 @@ try {
 
 try {
   sqlite.exec("ALTER TABLE questions ADD COLUMN article_content TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN gfg_url TEXT");
+} catch (e) {}
+
+try {
+  sqlite.exec("ALTER TABLE questions ADD COLUMN alternate_articles TEXT");
 } catch (e) {}
 
 // Performance Indexes for high-speed queries
@@ -711,6 +728,12 @@ export const dbService = {
           }
         ];
       }
+      let parsedArticles = [];
+      if (r.alternate_articles) {
+        try {
+          parsedArticles = typeof r.alternate_articles === 'string' ? JSON.parse(r.alternate_articles) : r.alternate_articles;
+        } catch {}
+      }
       return {
         ...r,
         tags: Array.isArray(parsedTags) ? parsedTags : [],
@@ -718,6 +741,8 @@ export const dbService = {
         approaches_data: Array.isArray(parsedApproaches) ? parsedApproaches : [],
         youtube_videos: Array.isArray(parsedVideos) ? parsedVideos : [],
         article_content: r.article_content || '',
+        gfg_url: r.gfg_url || '',
+        alternate_articles: Array.isArray(parsedArticles) ? parsedArticles : [],
         is_favorite: Boolean(r.is_favorite)
       };
     });
@@ -769,6 +794,12 @@ export const dbService = {
         }
       ];
     }
+    let parsedArticles = [];
+    if (row.alternate_articles) {
+      try {
+        parsedArticles = typeof row.alternate_articles === 'string' ? JSON.parse(row.alternate_articles) : row.alternate_articles;
+      } catch {}
+    }
     return {
       ...row,
       tags: Array.isArray(parsedTags) ? parsedTags : [],
@@ -776,6 +807,8 @@ export const dbService = {
       approaches_data: Array.isArray(parsedApproaches) ? parsedApproaches : [],
       youtube_videos: Array.isArray(parsedVideos) ? parsedVideos : [],
       article_content: row.article_content || '',
+      gfg_url: row.gfg_url || '',
+      alternate_articles: Array.isArray(parsedArticles) ? parsedArticles : [],
       is_favorite: Boolean(row.is_favorite)
     };
   },
@@ -1060,7 +1093,9 @@ export const dbService = {
       'substep_no',
       'substep_name',
       'tags',
-      'component_key'
+      'component_key',
+      'gfg_url',
+      'alternate_articles'
     ];
     const sets = [];
     const values = [];
@@ -1070,7 +1105,7 @@ export const dbService = {
         sets.push(`${k} = ?`);
         let val = v;
         if (k === 'is_favorite') val = v ? 1 : 0;
-        if ((k === 'tags' || k === 'youtube_videos' || k === 'examples' || k === 'approaches_data') && Array.isArray(v)) {
+        if ((k === 'tags' || k === 'youtube_videos' || k === 'examples' || k === 'approaches_data' || k === 'alternate_articles') && Array.isArray(v)) {
           val = JSON.stringify(v);
         }
         values.push(val);
@@ -1089,6 +1124,97 @@ export const dbService = {
     }
 
     return this.getQuestion(id);
+  },
+
+  bulkUpdateResearch(items) {
+    if (!Array.isArray(items) || items.length === 0) {
+      return { success: false, error: 'Items array is required', updatedCount: 0 };
+    }
+
+    let updatedCount = 0;
+    const results = [];
+
+    sqlite.exec('BEGIN TRANSACTION');
+    try {
+      for (const item of items) {
+        const id = item.id || item.slug;
+        if (!id) continue;
+
+        const current = this.getQuestion(id);
+        if (!current) continue;
+
+        const updates = {};
+
+        // Merge youtube_videos
+        const newVideos = item.youtube_videos || item.alternate_videos || [];
+        if (Array.isArray(newVideos) && newVideos.length > 0) {
+          const currentVideos = Array.isArray(current.youtube_videos) ? [...current.youtube_videos] : [];
+          const existingUrls = new Set(currentVideos.map(v => (v.url || '').trim().toLowerCase()));
+
+          for (const newVid of newVideos) {
+            if (!newVid || !newVid.url) continue;
+            const normUrl = newVid.url.trim().toLowerCase();
+            if (!existingUrls.has(normUrl)) {
+              existingUrls.add(normUrl);
+              currentVideos.push({
+                id: newVid.id || `vid-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+                title: newVid.title || 'Video Solution',
+                url: newVid.url.trim(),
+                channel: newVid.channel || 'Educator',
+                is_primary: false,
+                ...(newVid.notes ? { notes: newVid.notes } : {})
+              });
+            }
+          }
+          updates.youtube_videos = currentVideos;
+        }
+
+        // Update gfg_url
+        if (item.gfg_url && typeof item.gfg_url === 'string' && item.gfg_url.trim()) {
+          updates.gfg_url = item.gfg_url.trim();
+        }
+
+        // Merge alternate_articles
+        const newArticles = item.alternate_articles || item.articles || [];
+        if (Array.isArray(newArticles) && newArticles.length > 0) {
+          const currentArticles = Array.isArray(current.alternate_articles) ? [...current.alternate_articles] : [];
+          const existingArtUrls = new Set(currentArticles.map(a => (a.url || '').trim().toLowerCase()));
+
+          for (const art of newArticles) {
+            if (!art || !art.url) continue;
+            const norm = art.url.trim().toLowerCase();
+            if (!existingArtUrls.has(norm)) {
+              existingArtUrls.add(norm);
+              currentArticles.push({
+                title: art.title || 'Editorial Article',
+                url: art.url.trim(),
+                source: art.source || 'GeeksforGeeks'
+              });
+            }
+          }
+          updates.alternate_articles = currentArticles;
+        }
+
+        // Update article_content if provided
+        if (item.article_content && typeof item.article_content === 'string' && item.article_content.trim()) {
+          if (!current.article_content || item.overwrite_article_content) {
+            updates.article_content = item.article_content.trim();
+          }
+        }
+
+        if (Object.keys(updates).length > 0) {
+          this.updateQuestion(id, updates);
+          updatedCount++;
+          results.push({ id, title: current.title, updatedFields: Object.keys(updates) });
+        }
+      }
+
+      sqlite.exec('COMMIT');
+      return { success: true, updatedCount, results };
+    } catch (err) {
+      sqlite.exec('ROLLBACK');
+      throw err;
+    }
   },
 
   saveNotes(questionId, content) {
@@ -1227,7 +1353,9 @@ export const dbService = {
     `);
     stmt.run(id, cleanUsername, passwordHash, displayName || username, avatar, today);
 
-    return this.getUser(id);
+    const fullUser = this.getUser(id);
+    const token = createSessionToken(fullUser);
+    return { ...fullUser, token };
   },
 
   loginUser(username, password) {
@@ -1243,14 +1371,120 @@ export const dbService = {
 
     // Update streak on login/activity
     this.updateUserStreak(user.id);
-    return this.getUser(user.id);
+    const fullUser = this.getUser(user.id);
+    const token = createSessionToken(fullUser);
+    return { ...fullUser, token };
   },
 
-  getUser(id) {
-    const user = sqlite.prepare(`
+  updateUserProfile(userId, { displayName, avatar }) {
+    const user = this.getUser(userId);
+    if (!user) throw new Error('User not found.');
+    const newName = displayName !== undefined ? displayName.trim() : user.display_name;
+    const newAvatar = avatar !== undefined ? avatar.trim() : user.avatar;
+    sqlite.prepare('UPDATE users SET display_name = ?, avatar = ? WHERE id = ?')
+      .run(newName, newAvatar, userId);
+    return this.getUser(userId);
+  },
+
+  changeUserPassword(userId, oldPassword, newPassword) {
+    const user = sqlite.prepare('SELECT password_hash FROM users WHERE id = ?').get(userId);
+    if (!user) throw new Error('User not found.');
+    if (!verifyPassword(oldPassword, user.password_hash)) {
+      throw new Error('Current password is incorrect.');
+    }
+    if (!newPassword || newPassword.length < 4) {
+      throw new Error('New password must be at least 4 characters.');
+    }
+    const newHash = hashPassword(newPassword);
+    sqlite.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newHash, userId);
+    return { success: true };
+  },
+
+  getLeaderboard(limit = 25) {
+    const rows = sqlite.prepare(`
+      SELECT u.id, u.username, u.display_name, u.avatar, u.level, u.xp, u.streak,
+        COUNT(CASE WHEN up.status = 'mastered' THEN 1 END) as solved_count
+      FROM users u
+      LEFT JOIN user_progress up ON u.id = up.user_id
+      GROUP BY u.id
+      ORDER BY u.xp DESC, solved_count DESC
+      LIMIT ?
+    `).all(limit);
+
+    return rows.map((u, idx) => ({
+      rank: idx + 1,
+      ...u,
+      ...calculateLevel(u.xp || 0)
+    }));
+  },
+
+  getUserAnalytics(idOrUsername) {
+    const user = this.getUser(idOrUsername);
+    if (!user) return null;
+    const userId = user.id;
+
+    const diffStats = sqlite.prepare(`
+      SELECT 
+        LOWER(q.difficulty) as difficulty,
+        COUNT(CASE WHEN up.status = 'mastered' THEN 1 END) as solved,
+        COUNT(q.id) as total
+      FROM questions q
+      LEFT JOIN user_progress up ON q.id = up.question_id AND up.user_id = ?
+      GROUP BY LOWER(q.difficulty)
+    `).all(userId);
+
+    const categoryStats = sqlite.prepare(`
+      SELECT 
+        q.step_no,
+        q.step_name,
+        COUNT(q.id) as total,
+        COUNT(CASE WHEN up.status = 'mastered' THEN 1 END) as solved
+      FROM questions q
+      LEFT JOIN user_progress up ON q.id = up.question_id AND up.user_id = ?
+      WHERE q.step_no IS NOT NULL
+      GROUP BY q.step_no, q.step_name
+      ORDER BY q.step_no ASC
+    `).all(userId);
+
+    const totalSolved = sqlite.prepare(`
+      SELECT COUNT(*) as count FROM user_progress WHERE user_id = ? AND status = 'mastered'
+    `).get(userId)?.count || 0;
+
+    const totalQuestions = sqlite.prepare('SELECT COUNT(*) as count FROM questions').get()?.count || 450;
+
+    return {
+      user,
+      totalSolved,
+      totalQuestions,
+      completionPercentage: Math.round((totalSolved / totalQuestions) * 100),
+      difficulties: diffStats,
+      categories: categoryStats
+    };
+  },
+
+  close() {
+    try {
+      sqlite.close();
+      console.log('[SQLite] Database connection closed cleanly.');
+    } catch (e) {
+      console.warn('[SQLite] Error closing database:', e);
+    }
+  },
+
+  getUser(idOrUsername) {
+    let user = sqlite.prepare(`
       SELECT id, username, display_name, avatar, level, xp, streak, last_active_date, created_at
       FROM users WHERE id = ?
-    `).get(id);
+    `).get(idOrUsername);
+
+    if (!user) {
+      const clean = idOrUsername.startsWith('usr_') ? idOrUsername.slice(4) : idOrUsername;
+      user = sqlite.prepare(`
+        SELECT id, username, display_name, avatar, level, xp, streak, last_active_date, created_at
+        FROM users WHERE username = ? OR username = ?
+      `).get(idOrUsername, clean);
+    }
+
     if (!user) return null;
     const levelInfo = calculateLevel(user.xp || 0);
     return { ...user, ...levelInfo };
@@ -1676,6 +1910,41 @@ export const dbService = {
   }
 };
 
+const JWT_SECRET = process.env.JWT_SECRET || 'algovision-studio-local-production-secret-key-2026';
+
+export function createSessionToken(user) {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const payload = Buffer.from(JSON.stringify({
+    id: user.id,
+    username: user.username,
+    level: user.level,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60) // 30 days
+  })).toString('base64url');
+  const signature = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${payload}`).digest('base64url');
+  return `${header}.${payload}.${signature}`;
+}
+
+export function verifySessionToken(token) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+  const [header, payload, signature] = parts;
+  try {
+    const expectedSig = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${payload}`).digest('base64url');
+    if (signature.length !== expectedSig.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig))) {
+      return null;
+    }
+    const data = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+    if (data.exp && data.exp < Math.floor(Date.now() / 1000)) {
+      return null;
+    }
+    return data;
+  } catch {
+    return null;
+  }
+}
+
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
   const hash = crypto.scryptSync(password, salt, 64).toString('hex');
@@ -1686,7 +1955,14 @@ function verifyPassword(password, storedHash) {
   if (!storedHash || !storedHash.includes(':')) return false;
   const [salt, key] = storedHash.split(':');
   const derived = crypto.scryptSync(password, salt, 64).toString('hex');
-  return key === derived;
+  try {
+    const keyBuf = Buffer.from(key, 'hex');
+    const derivedBuf = Buffer.from(derived, 'hex');
+    if (keyBuf.length !== derivedBuf.length) return false;
+    return crypto.timingSafeEqual(keyBuf, derivedBuf);
+  } catch {
+    return false;
+  }
 }
 
 function calculateLevel(xp) {

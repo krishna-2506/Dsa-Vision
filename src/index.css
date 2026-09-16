@@ -3,105 +3,108 @@
 
 @layer base {
   :root, [data-theme="dark"] {
-    /* ─── Obsidian Matte Dark Tokens (Matching Striver DSA Sheet Reference) ─── */
-    --board:          #0d0e12;
-    --board-canvas:   #121318;
-    --board-raised:   #16171d;
-    --board-raised-2: #1e2027;
-    --board-hover:    #252731;
+    /* ─── Premium Developer IDE Tokens (Linear / GitHub / VS Code) ─── */
+    --board:          #0d1117;
+    --board-canvas:   #0d1117;
+    --board-raised:   #161b22;
+    --board-raised-2: #21262d;
+    --board-hover:    #30363d;
 
-    /* Crisp Subtle Dividers */
-    --line:           #23252d;
-    --line-strong:    #2e313b;
+    /* Crisp Hairline Dividers */
+    --line:           #30363d;
+    --line-strong:    #484f58;
+    --line-faint:     #21262d;
 
-    /* Crisp Typography */
-    --chalk:          #f2f3f5;
-    --chalk-dim:      #8c909f;
-    --chalk-faint:    #5b5e6e;
+    /* Crisp Monospace & Sans Typography */
+    --chalk:          #f0f6fc;
+    --chalk-dim:      #8b949e;
+    --chalk-faint:    #6e7681;
 
-    /* Clean Accents */
-    --blue:           #3b82f6;
-    --indigo:         #6366f1;
-    --indigo-light:   #818cf8;
-    --indigo-dim:     rgba(99, 102, 241, 0.12);
-    --indigo-glow:    rgba(99, 102, 241, 0.2);
+    /* Single Primary Developer Accent: Electric Blue */
+    --blue:           #388bfd;
+    --indigo:         #1f6feb;
+    --indigo-light:   #388bfd;
+    --indigo-dim:     rgba(56, 139, 253, 0.12);
+    --indigo-glow:    rgba(56, 139, 253, 0.2);
 
-    --purple:         #a855f7;
-    --purple-dim:     rgba(168, 85, 247, 0.12);
+    --purple:         #a371f7;
+    --purple-dim:     rgba(163, 113, 247, 0.12);
 
-    --amber:          #f59e0b;
-    --amber-dim:      rgba(245, 158, 11, 0.12);
-    --amber-glow:     rgba(245, 158, 11, 0.2);
+    --amber:          #d29922;
+    --amber-dim:      rgba(210, 153, 34, 0.12);
+    --amber-glow:     rgba(210, 153, 34, 0.2);
 
-    --teal:           #14b8a6;
-    --teal-dim:       rgba(20, 184, 166, 0.12);
-    --teal-glow:      rgba(20, 184, 166, 0.2);
+    --teal:           #388bfd;
+    --teal-dim:       rgba(56, 139, 253, 0.12);
+    --teal-glow:      rgba(56, 139, 253, 0.2);
 
-    --easy:           #22c55e;
-    --easy-dim:       rgba(34, 197, 94, 0.12);
-    --medium:         #eab308;
-    --medium-dim:     rgba(234, 179, 8, 0.12);
-    --hard:           #ef4444;
-    --hard-dim:       rgba(239, 68, 68, 0.12);
+    /* Semantic Status Accents */
+    --easy:           #3fb950;
+    --easy-dim:       rgba(63, 185, 80, 0.12);
+    --medium:         #d29922;
+    --medium-dim:     rgba(210, 153, 34, 0.12);
+    --hard:           #f85149;
+    --hard-dim:       rgba(248, 81, 73, 0.12);
 
     /* Code Background */
-    --code-bg:        #121318;
+    --code-bg:        #0d1117;
 
-    /* Apple SF Typography Stack */
-    --font-sans:      -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Plus Jakarta Sans", system-ui, sans-serif;
-    --font-mono:      "SF Mono", "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+    /* Typography Stack */
+    --font-sans:      "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-mono:      "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
 
     /* Compatibility Aliases */
     --bg-canvas:      var(--board);
     --bg-surface:     var(--board-raised);
     --bg-elevated:    var(--board-raised-2);
-    --bg-overlay:     rgba(10, 11, 16, 0.85);
+    --bg-overlay:     rgba(13, 17, 23, 0.85);
     --border-subtle:  var(--line);
     --border-medium:  var(--line-strong);
     --accent:         var(--indigo);
   }
 
   [data-theme="light"] {
-    /* ─── Apple Light Mode Tokens (Cupertino Luminous Pearl & Crisp Aluminum) ─── */
-    --board:          #f5f5f7;
-    --board-canvas:   #fbfbfd;
-    --board-raised:   rgba(255, 255, 255, 0.88);
-    --board-raised-2: rgba(242, 242, 247, 0.82);
-    --board-hover:    rgba(230, 230, 238, 0.9);
+    /* ─── Light Mode Tokens (Crisp Clean GitHub/VS Code Light) ─── */
+    --board:          #f6f8fa;
+    --board-canvas:   #ffffff;
+    --board-raised:   #ffffff;
+    --board-raised-2: #f3f4f6;
+    --board-hover:    #eaeef2;
 
     /* Divider lines */
-    --line:           rgba(0, 0, 0, 0.08);
-    --line-strong:    rgba(0, 0, 0, 0.15);
+    --line:           #d0d7de;
+    --line-strong:    #afb8c1;
+    --line-faint:     #e1e4e8;
 
-    /* Apple Typography Text */
-    --chalk:          #1d1d1f;
-    --chalk-dim:      #6e6e73;
-    --chalk-faint:    #86868b;
+    /* Typography Text */
+    --chalk:          #1f2328;
+    --chalk-dim:      #656d76;
+    --chalk-faint:    #8c959f;
 
-    /* Apple HIG Accents */
-    --blue:           #0071e3;
-    --indigo:         #0071e3;  /* Apple Signature Blue */
-    --indigo-light:   #0077ed;
-    --indigo-dim:     rgba(0, 113, 227, 0.1);
-    --indigo-glow:    rgba(0, 113, 227, 0.22);
+    /* Primary Accent */
+    --blue:           #0969da;
+    --indigo:         #0969da;
+    --indigo-light:   #218bff;
+    --indigo-dim:     rgba(9, 105, 218, 0.1);
+    --indigo-glow:    rgba(9, 105, 218, 0.2);
 
-    --purple:         #af52de;
-    --purple-dim:     rgba(175, 82, 222, 0.1);
+    --purple:         #8250df;
+    --purple-dim:     rgba(130, 80, 223, 0.1);
 
-    --amber:          #ff9500;  /* Apple Orange */
-    --amber-dim:      rgba(255, 149, 0, 0.1);
-    --amber-glow:     rgba(255, 149, 0, 0.22);
+    --amber:          #9a6700;
+    --amber-dim:      rgba(154, 103, 0, 0.1);
+    --amber-glow:     rgba(154, 103, 0, 0.2);
 
-    --teal:           #30b0c7;  /* Apple Teal */
-    --teal-dim:       rgba(48, 176, 199, 0.1);
-    --teal-glow:      rgba(48, 176, 199, 0.22);
+    --teal:           #0969da;
+    --teal-dim:       rgba(9, 105, 218, 0.1);
+    --teal-glow:      rgba(9, 105, 218, 0.2);
 
-    --easy:           #34c759;  /* Apple Green */
-    --easy-dim:       rgba(52, 199, 89, 0.1);
-    --medium:         #ff9500;
-    --medium-dim:     rgba(255, 149, 0, 0.1);
-    --hard:           #ff3b30;  /* Apple Red */
-    --hard-dim:       rgba(255, 59, 48, 0.1);
+    --easy:           #1a7f37;
+    --easy-dim:       rgba(26, 127, 55, 0.1);
+    --medium:         #9a6700;
+    --medium-dim:     rgba(154, 103, 0, 0.1);
+    --hard:           #cf222e;
+    --hard-dim:       rgba(207, 34, 46, 0.1);
 
     /* Code Background */
     --code-bg:        #ffffff;
@@ -131,15 +134,13 @@
     font-size: 13.5px;
     line-height: 1.55;
     letter-spacing: -0.011em;
-    transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  /* Dark Theme Body Background: Clean obsidian slate matte */
   :root body, [data-theme="dark"] body {
     background-color: var(--board);
   }
 
-  /* Light Theme Body Background: Clean neutral */
   [data-theme="light"] body {
     background-color: var(--board);
   }
@@ -151,203 +152,143 @@
   }
 
   ::selection {
-    background: rgba(10, 132, 255, 0.25);
+    background: rgba(31, 111, 235, 0.3);
     color: inherit;
   }
 
-  /* Apple-style ultra-thin translucent scrollbars */
+  /* Thin developer scrollbars */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: rgba(130, 135, 150, 0.25);
-    border-radius: 9999px;
+    background: #30363d;
+    border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(130, 135, 150, 0.45);
+    background: #484f58;
   }
 
   :focus-visible {
     outline: 2px solid var(--indigo);
     outline-offset: 2px;
-    border-radius: 6px;
+    border-radius: 4px;
   }
 }
 
-/* ───────── macOS Window & Chrome ───────── */
-.macos-window {
+/* ───────── IDE Workspace Stage & Frame ───────── */
+.workspace-stage, .macos-window {
   position: relative;
   background: var(--board-raised);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
-.macos-titlebar {
+.workspace-titlebar, .macos-titlebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 8px 14px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--board-raised-2);
 }
 
-.traffic-lights {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.traffic-light {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  position: relative;
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-.traffic-light:hover { transform: scale(1.08); }
-
-.traffic-light-red {
-  background: #ff5f56;
-  border: 1px solid rgba(224, 68, 62, 0.75);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.traffic-light-yellow {
-  background: #ffbd2e;
-  border: 1px solid rgba(222, 161, 35, 0.75);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.traffic-light-green {
-  background: #27c93f;
-  border: 1px solid rgba(26, 171, 41, 0.75);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-/* ───────── Layout Utilities ───────── */
-.page-container {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 0 1.25rem;
-}
-
-.glass-panel {
-  background: var(--board-raised);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--line);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* ───────── Apple Squircle Cards ───────── */
+/* ───────── Clean Developer Surface Panels ───────── */
 .card, .chalk-card, .specular-card, .apple-card {
   position: relative;
   background: var(--board-raised);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  box-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 8px;
+  box-shadow: none;
+  transition: border-color 0.15s ease;
   overflow: hidden;
-}
-
-[data-theme="light"] .card, [data-theme="light"] .specular-card, [data-theme="light"] .apple-card {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .card:hover, .chalk-card:hover, .specular-card:hover, .apple-card:hover {
   border-color: var(--line-strong);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .card-lift {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.15s ease;
 }
 .card-lift:hover {
   border-color: var(--line-strong);
 }
 
-/* ───────── Difficulty Indicators ───────── */
+/* ───────── Status & Difficulty Badges ───────── */
 .diff-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4.5px;
+  gap: 5px;
   font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 9999px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
   line-height: 1.4;
   letter-spacing: -0.01em;
 }
 .diff-badge-easy {
   background: var(--easy-dim);
-  border: 1px solid rgba(48, 209, 88, 0.25);
+  border: 1px solid rgba(63, 185, 80, 0.25);
   color: var(--easy);
 }
 .diff-badge-medium {
   background: var(--medium-dim);
-  border: 1px solid rgba(255, 159, 10, 0.25);
-  color: var(--amber);
+  border: 1px solid rgba(210, 153, 34, 0.25);
+  color: var(--medium);
 }
 .diff-badge-hard {
   background: var(--hard-dim);
-  border: 1px solid rgba(255, 69, 58, 0.25);
+  border: 1px solid rgba(248, 81, 73, 0.25);
   color: var(--hard);
 }
 
 .dot-easy   { background: var(--easy); }
-.dot-medium { background: var(--amber); }
+.dot-medium { background: var(--medium); }
 .dot-hard   { background: var(--hard); }
 
-/* ───────── Apple Buttons ───────── */
+/* ───────── Clean Developer Buttons ───────── */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  height: 2.1rem;
-  padding: 0 1rem;
-  border-radius: 9999px;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 6px;
   font-family: var(--font-sans);
   font-size: 12.5px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.01em;
   background: var(--indigo);
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 2px 8px rgba(10, 132, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   cursor: pointer;
   white-space: nowrap;
 }
 .btn-primary:hover {
   background: var(--indigo-light);
-  transform: scale(1.02);
-  box-shadow: 0 4px 14px rgba(10, 132, 255, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transform: none;
+  box-shadow: none;
 }
 .btn-primary:active {
-  transform: scale(0.98);
+  opacity: 0.9;
 }
 .btn-primary:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  height: 2.1rem;
-  padding: 0 0.95rem;
-  border-radius: 9999px;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 11px;
+  border-radius: 6px;
   font-family: var(--font-sans);
   font-size: 12.5px;
   font-weight: 500;
@@ -355,18 +296,126 @@
   background: var(--board-raised-2);
   color: var(--chalk);
   border: 1px solid var(--line);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   cursor: pointer;
   white-space: nowrap;
 }
 .btn-secondary:hover {
   background: var(--board-hover);
   border-color: var(--line-strong);
-  transform: translateY(-1px);
+  transform: none;
 }
 .btn-secondary:active {
-  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--chalk-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+.btn-ghost:hover {
+  color: var(--chalk);
+  background: var(--board-hover);
+}
+
+.chalk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  background: var(--board-raised-2);
+  border: 1px solid var(--line);
+  color: var(--chalk-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.chalk-btn:hover {
+  color: var(--chalk);
+  border-color: var(--line-strong);
+  background: var(--board-hover);
+}
+
+.chalk-btn-amber {
+  background: var(--amber-dim);
+  border-color: rgba(210, 153, 34, 0.3);
+  color: var(--amber);
+}
+.chalk-btn-amber:hover {
+  background: rgba(210, 153, 34, 0.2);
+  border-color: var(--amber);
+  color: var(--chalk);
+}
+
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--line);
+  background: var(--board-raised-2);
+  color: var(--chalk-dim);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.nav-pill:hover {
+  background: var(--board-hover);
+  color: var(--chalk);
+  border-color: var(--line-strong);
+}
+
+/* ───────── IDE Segmented Controls & Tabs ───────── */
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 6px;
+  background: var(--board-raised);
+  border: 1px solid var(--line);
+}
+.segmented-item {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--chalk-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  background: transparent;
+  white-space: nowrap;
+}
+.segmented-item:hover { color: var(--chalk); }
+.segmented-item.active {
+  background: var(--board-raised-2);
+  color: var(--chalk);
+  border: 1px solid var(--line-strong);
+  font-weight: 600;
 }
 
 .chalk-btn {
@@ -451,36 +500,33 @@
   font-weight: 600;
 }
 
-/* Apple Segmented Control (macOS Pill Slider style) */
+/* ───────── IDE Segmented Controls & Tabs ───────── */
 .segmented-control {
   display: inline-flex;
   align-items: center;
-  padding: 3px;
-  border-radius: 12px;
-  background: var(--board-raised-2);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  padding: 2px;
+  border-radius: 6px;
+  background: var(--board-raised);
   border: 1px solid var(--line);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .segmented-item {
-  padding: 4px 11px;
-  border-radius: 9px;
+  padding: 4px 10px;
+  border-radius: 4px;
   font-size: 11.5px;
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--chalk-dim);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.15s ease;
   border: none;
   background: transparent;
   white-space: nowrap;
 }
 .segmented-item:hover { color: var(--chalk); }
 .segmented-item.active {
-  background: var(--board-raised);
+  background: var(--board-raised-2);
   color: var(--chalk);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--line-strong);
   font-weight: 600;
 }
 
@@ -517,19 +563,19 @@ pre.code {
 
 @keyframes lineExecutionPulse {
   0% {
-    background: rgba(99, 102, 241, 0.25);
-    box-shadow: inset 3px 0 0 var(--indigo);
+    background: rgba(56, 139, 253, 0.2);
+    box-shadow: inset 2px 0 0 var(--indigo);
   }
   100% {
-    background: rgba(99, 102, 241, 0.12);
+    background: rgba(56, 139, 253, 0.08);
     box-shadow: inset 2px 0 0 var(--indigo);
   }
 }
 
 .code .ln.current {
-  background: rgba(99, 102, 241, 0.12);
+  background: rgba(56, 139, 253, 0.08);
   border-left: 2px solid var(--indigo);
-  animation: lineExecutionPulse 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: lineExecutionPulse 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .code .ln.current .num {
   color: var(--indigo);
@@ -540,82 +586,74 @@ pre.code {
 }
 
 /* Token Styles — Dark Theme */
-:root .kw, [data-theme="dark"] .kw   { color: #c084fc; font-weight: 600; }
-:root .tp, [data-theme="dark"] .tp   { color: #38bdf8; font-weight: 500; }
-:root .cm, [data-theme="dark"] .cm   { color: #64748b; font-style: italic; }
-:root .str, [data-theme="dark"] .str { color: #34d399; }
-:root .num-tok, [data-theme="dark"] .num-tok { color: #fbbf24; }
-:root .fn, [data-theme="dark"] .fn   { color: #818cf8; }
-:root .op, [data-theme="dark"] .op   { color: #fb7185; }
+:root .kw, [data-theme="dark"] .kw   { color: #ff7b72; font-weight: 600; }
+:root .tp, [data-theme="dark"] .tp   { color: #79c0ff; font-weight: 500; }
+:root .cm, [data-theme="dark"] .cm   { color: #8b949e; font-style: italic; }
+:root .str, [data-theme="dark"] .str { color: #a5d6ff; }
+:root .num-tok, [data-theme="dark"] .num-tok { color: #d2a8ff; }
+:root .fn, [data-theme="dark"] .fn   { color: #d2a8ff; }
+:root .op, [data-theme="dark"] .op   { color: #ff7b72; }
 
 /* Token Styles — Light Theme */
-[data-theme="light"] .kw   { color: #9333ea; font-weight: 600; }
-[data-theme="light"] .tp   { color: #0284c7; font-weight: 500; }
-[data-theme="light"] .cm   { color: #64748b; font-style: italic; }
-[data-theme="light"] .str { color: #059669; }
-[data-theme="light"] .num-tok { color: #d97706; }
-[data-theme="light"] .fn   { color: #4f46e5; }
-[data-theme="light"] .op   { color: #e11d48; }
+[data-theme="light"] .kw   { color: #cf222e; font-weight: 600; }
+[data-theme="light"] .tp   { color: #0550ae; font-weight: 500; }
+[data-theme="light"] .cm   { color: #6e7781; font-style: italic; }
+[data-theme="light"] .str { color: #0a3069; }
+[data-theme="light"] .num-tok { color: #8250df; }
+[data-theme="light"] .fn   { color: #8250df; }
+[data-theme="light"] .op   { color: #cf222e; }
 
-/* ───────── Docked Transport HUD & Progress Ticks (macOS Dock style) ───────── */
+/* ───────── Docked Transport HUD & Timeline Scrubber (VS Code Debugger Style) ───────── */
 .transport-hud {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
+  padding: 8px 16px;
   border-top: 1px solid var(--line);
-  background: var(--board-raised);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: var(--board-raised-2);
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .step-progress-track {
-  height: 4px;
+  height: 2px;
   background: var(--line);
-  border-radius: 9999px;
   overflow: hidden;
 }
 .step-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--indigo), var(--teal));
-  border-radius: 9999px;
-  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 0 10px rgba(10, 132, 255, 0.4);
+  background: var(--indigo);
+  transition: width 0.2s ease-out;
 }
 
 .ticks {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
 }
 .tick {
-  width: 16px;
-  height: 6px;
+  width: 14px;
+  height: 4px;
   background: var(--line-strong);
-  border-radius: 9999px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 2px;
+  transition: all 0.15s ease;
   cursor: pointer;
 }
 .tick:hover {
   background: var(--chalk-dim);
-  transform: scaleY(1.3);
 }
 .tick.done {
   background: var(--indigo);
-  opacity: 0.55;
+  opacity: 0.6;
 }
 .tick.now {
   background: var(--indigo);
-  width: 28px;
-  box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
+  width: 24px;
 }
 
 @keyframes tickPulse {
-  0%, 100% { opacity: 1; transform: scaleY(1); }
-  50% { opacity: 0.6; transform: scaleY(0.85); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 .tick.now.playing {
   animation: tickPulse 0.8s ease-in-out infinite;
@@ -637,9 +675,9 @@ pre.code {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 12px;
-  border-radius: 9999px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 .navbtn:disabled {
   color: var(--chalk-faint);
@@ -649,23 +687,21 @@ pre.code {
 .navbtn:not(:disabled):hover {
   color: var(--chalk);
   background: var(--board-hover);
-  transform: translateY(-1px);
 }
 
-/* ───────── Apple Keyboard Badges ───────── */
+/* ───────── Keyboard Badges ───────── */
 kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5px 6px;
-  border-radius: 6px;
+  padding: 1.5px 5px;
+  border-radius: 4px;
   background: var(--board-raised-2);
   border: 1px solid var(--line);
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--chalk-dim);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.08);
   line-height: 1.4;
 }
 
@@ -674,11 +710,11 @@ kbd {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-family: var(--font-sans);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   border: 1px solid var(--line);
   background: var(--board-raised-2);
   color: var(--chalk-dim);
@@ -686,33 +722,30 @@ kbd {
   transition: all 0.15s ease;
 }
 .conf-btn.mastered {
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(63, 185, 80, 0.3);
   color: var(--easy);
 }
 .conf-btn.mastered:hover {
   background: var(--easy-dim);
   border-color: var(--easy);
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
 }
 
 .conf-btn.practicing {
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color: rgba(210, 153, 34, 0.3);
   color: var(--amber);
 }
 .conf-btn.practicing:hover {
   background: var(--amber-dim);
   border-color: var(--amber);
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
 }
 
 .conf-btn.struggling {
-  border-color: rgba(244, 63, 94, 0.3);
+  border-color: rgba(248, 81, 73, 0.3);
   color: var(--hard);
 }
 .conf-btn.struggling:hover {
   background: var(--hard-dim);
   border-color: var(--hard);
-  box-shadow: 0 0 12px rgba(244, 63, 94, 0.15);
 }
 
 /* ───────── Stage Grid & Panels ───────── */

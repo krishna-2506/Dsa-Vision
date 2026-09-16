@@ -10,7 +10,8 @@ import {
   Shield,
   Search,
   Sun,
-  Moon
+  Moon,
+  User
 } from 'lucide-react';
 import { sound } from '../services/audio';
 import AlgoVisionLogo from './AlgoVisionLogo';
@@ -45,27 +46,25 @@ export default function Navbar({
   const hasNext = currentIdx >= 0 && currentIdx < questions.length - 1;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--line)] bg-[var(--board)]/80 backdrop-blur-2xl transition-colors duration-200 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 w-full border-b border-[var(--line)] bg-[var(--board)]/90 backdrop-blur-md transition-colors duration-200">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-4">
 
         {/* ── Left: Brand & Studio Breadcrumb ── */}
-        <div className="flex items-center gap-4 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           {/* Logo & Brand */}
           <button
             onClick={onNavigateHome}
-            className="flex items-center gap-2.5 shrink-0 group cursor-pointer text-left focus:outline-none"
+            className="flex items-center gap-2 shrink-0 group cursor-pointer text-left focus:outline-none"
             aria-label="Go to AlgoVision Library"
           >
-            <AlgoVisionLogo size={30} />
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-sans font-bold text-[15px] text-[var(--chalk)] tracking-tight group-hover:text-[var(--indigo)] transition-colors">
-                  AlgoVision
-                </span>
-                <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded-full bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)] font-semibold tracking-wider uppercase">
-                  PRO
-                </span>
-              </div>
+            <AlgoVisionLogo size={26} />
+            <div className="flex items-center gap-1.5">
+              <span className="font-sans font-bold text-[14px] text-[var(--chalk)] tracking-tight group-hover:text-[var(--indigo)] transition-colors">
+                AlgoVision
+              </span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)] font-medium tracking-wider uppercase">
+                PRO
+              </span>
             </div>
           </button>
 
@@ -73,8 +72,8 @@ export default function Navbar({
           {activeView === 'admin' && (
             <div className="hidden md:flex items-center gap-2 pl-3 border-l border-[var(--line)]">
               <span className="text-[var(--chalk-faint)] text-xs">/</span>
-              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400">
-                Admin Center
+              <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                Admin Console
               </span>
             </div>
           )}
@@ -83,10 +82,10 @@ export default function Navbar({
           {activeView === 'article' && activeQuestion && (
             <div className="hidden md:flex items-center gap-2 min-w-0 pl-3 border-l border-[var(--line)]">
               <span className="text-[var(--chalk-faint)] text-xs">/</span>
-              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/25 text-teal-400 shrink-0">
-                Article Hub
+              <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 shrink-0">
+                Docs
               </span>
-              <span className="text-[13px] font-sans font-medium text-[var(--chalk)] truncate max-w-[280px]">
+              <span className="text-[12.5px] font-sans font-medium text-[var(--chalk)] truncate max-w-[280px]">
                 {activeQuestion.title}
               </span>
             </div>
@@ -98,31 +97,31 @@ export default function Navbar({
               <span className="text-[var(--chalk-faint)] text-xs">/</span>
               <div className="flex items-center gap-2 min-w-0">
                 {(activeQuestion.display_id || activeQuestion.leetcode_id) && (
-                  <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-[var(--indigo-dim)] border border-[var(--indigo)]/30 text-[var(--indigo)] shrink-0">
+                  <span className="text-[11px] font-mono font-medium px-1.5 py-0.5 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--indigo)] shrink-0">
                     {activeQuestion.display_id || `#${activeQuestion.leetcode_id}`}
                   </span>
                 )}
-                <span className="text-[13px] font-sans font-medium text-[var(--chalk)] truncate max-w-[280px]">
+                <span className="text-[12.5px] font-sans font-medium text-[var(--chalk)] truncate max-w-[320px]">
                   {activeQuestion.title}
                 </span>
               </div>
 
               {/* Prev / Next Problem Switcher */}
               {questions.length > 0 && (
-                <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded-full overflow-hidden shrink-0 ml-1">
+                <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded overflow-hidden shrink-0 ml-1">
                   <button
                     onClick={() => hasPrev && onNavigateQuestion && onNavigateQuestion(questions[currentIdx - 1])}
                     disabled={!hasPrev}
-                    className="p-1.5 text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] disabled:opacity-25 transition-all cursor-pointer"
+                    className="p-1 text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] disabled:opacity-25 transition-all cursor-pointer"
                     title={hasPrev ? `Previous: ${questions[currentIdx - 1]?.title}` : 'First problem'}
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
-                  <div className="w-px h-4 bg-[var(--line)]" />
+                  <div className="w-px h-3.5 bg-[var(--line)]" />
                   <button
                     onClick={() => hasNext && onNavigateQuestion && onNavigateQuestion(questions[currentIdx + 1])}
                     disabled={!hasNext}
-                    className="p-1.5 text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] disabled:opacity-25 transition-all cursor-pointer"
+                    className="p-1 text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] disabled:opacity-25 transition-all cursor-pointer"
                     title={hasNext ? `Next: ${questions[currentIdx + 1]?.title}` : 'Last problem'}
                   >
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -134,11 +133,11 @@ export default function Navbar({
 
           {/* Library Stats Sub-label */}
           {activeView === 'library' && stats && (
-            <div className="hidden lg:flex items-center gap-2 text-[12px] font-sans text-[var(--chalk-dim)] pl-3 border-l border-[var(--line)]">
-              <span>{stats.total || questions.length} challenges</span>
+            <div className="hidden lg:flex items-center gap-2 text-[11.5px] font-mono text-[var(--chalk-dim)] pl-3 border-l border-[var(--line)]">
+              <span>{stats.total || questions.length} problems</span>
               {stats.mastered > 0 && (
-                <span className="inline-flex items-center gap-1 text-[var(--easy)] font-medium">
-                  · {stats.mastered} mastered
+                <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
+                  · {stats.mastered} completed
                 </span>
               )}
             </div>
@@ -146,7 +145,7 @@ export default function Navbar({
         </div>
 
         {/* ── Right: Utilities & User Status ── */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
 
           {/* Quick Search Shortcut Pill (Library mode) */}
           {activeView === 'library' && (
@@ -155,12 +154,12 @@ export default function Navbar({
                 const searchEl = document.querySelector('input[type="text"]');
                 if (searchEl) searchEl.focus();
               }}
-              className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all text-xs font-sans cursor-pointer shadow-sm"
-              title="Search problems (type / to focus)"
+              className="hidden md:flex items-center gap-2 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all text-xs font-sans cursor-pointer"
+              title="Search problems (type / or ⌘K to focus)"
             >
-              <Search className="w-3.5 h-3.5 text-[var(--chalk-faint)]" />
+              <Search className="w-3 h-3 text-[var(--chalk-faint)]" />
               <span>Search</span>
-              <kbd className="text-[9.5px] px-1.5 py-0.2 rounded bg-[var(--board)] border border-[var(--line)] text-[var(--chalk-faint)] font-mono ml-0.5">⌘K</kbd>
+              <kbd className="text-[9px] px-1 py-0.2 rounded bg-[var(--board)] border border-[var(--line)] text-[var(--chalk-faint)] font-mono ml-1">⌘K</kbd>
             </button>
           )}
 
@@ -168,75 +167,75 @@ export default function Navbar({
           {activeView === 'library' && (
             <button
               onClick={onOpenSkillModal}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] hover:border-[var(--indigo)]/40 text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all text-xs font-medium cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all text-xs font-medium cursor-pointer"
               title="Export visualizer generator skill for Gemini / AI agents"
             >
-              <FileCode className="w-3.5 h-3.5 text-[var(--indigo)]" />
-              <span>Agent Skill</span>
+              <FileCode className="w-3 h-3 text-[var(--indigo)]" />
+              <span>Skill</span>
             </button>
           )}
 
           {/* Admin Console */}
           <button
             onClick={onOpenAdminModal}
-            className={`w-8.5 h-8.5 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+            className={`w-7.5 h-7.5 rounded border flex items-center justify-center transition-all cursor-pointer ${
               activeView === 'admin'
-                ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold shadow-[0_0_12px_rgba(245,158,11,0.25)]'
+                ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold'
                 : 'bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
             }`}
             title="Database & Questions Admin"
           >
-            <Shield className="w-4 h-4" />
+            <Shield className="w-3.5 h-3.5" />
           </button>
 
           {/* Sound Toggle */}
           <button
             onClick={handleToggleSound}
-            className="w-8.5 h-8.5 rounded-full bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] flex items-center justify-center text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all cursor-pointer"
+            className="w-7.5 h-7.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] flex items-center justify-center text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all cursor-pointer"
             title={isMuted ? 'Turn Sound On' : 'Mute Sound'}
           >
             {isMuted ? (
-              <VolumeX className="w-4 h-4 text-[var(--chalk-faint)]" />
+              <VolumeX className="w-3.5 h-3.5 text-[var(--chalk-faint)]" />
             ) : (
-              <Volume2 className="w-4 h-4 text-[var(--indigo)]" />
+              <Volume2 className="w-3.5 h-3.5 text-[var(--indigo)]" />
             )}
           </button>
 
           {/* Theme Switcher Toggle (Light / Dark) */}
           <button
             onClick={onToggleTheme}
-            className="w-8.5 h-8.5 rounded-full bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] flex items-center justify-center transition-all cursor-pointer"
+            className="w-7.5 h-7.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] flex items-center justify-center transition-all cursor-pointer"
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label="Toggle theme"
           >
             {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform" />
+              <Sun className="w-3.5 h-3.5 text-amber-400 hover:rotate-45 transition-transform" />
             ) : (
-              <Moon className="w-4 h-4 text-indigo-600 hover:-rotate-12 transition-transform" />
+              <Moon className="w-3.5 h-3.5 text-indigo-600 hover:-rotate-12 transition-transform" />
             )}
           </button>
 
           {/* Divider */}
-          <div className="w-px h-5 bg-[var(--line)] mx-0.5" />
+          <div className="w-px h-4 bg-[var(--line)] mx-1" />
 
           {/* User Account / Profile */}
           {currentUser ? (
             <button
               onClick={onOpenDashboardModal}
-              className="flex items-center gap-2 h-8.5 pl-2 pr-3.5 rounded-full bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] hover:border-[var(--indigo)]/30 transition-all cursor-pointer group shadow-sm"
+              className="flex items-center gap-2 h-7.5 px-2 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] hover:border-[var(--indigo)]/30 transition-all cursor-pointer group"
               title="Open Personal Learning Dashboard"
             >
-              <div className="w-5.5 h-5.5 rounded-full bg-gradient-to-tr from-amber-500/20 to-blue-500/20 border border-amber-500/30 flex items-center justify-center text-[11px] text-amber-500 dark:text-amber-300 font-bold group-hover:scale-105 transition-transform">
-                {currentUser.avatar || '⚡'}
+              <div className="w-4.5 h-4.5 rounded bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-[10px] text-indigo-400 font-mono font-bold">
+                {currentUser.username ? currentUser.username.charAt(0).toUpperCase() : <User className="w-3 h-3" />}
               </div>
-              <span className="text-[12.5px] font-sans font-semibold text-[var(--chalk)] max-w-[100px] truncate">
+              <span className="text-xs font-sans font-medium text-[var(--chalk)] max-w-[90px] truncate">
                 {currentUser.username}
               </span>
 
               {/* Streak Badge */}
               {userStats && (
-                <span className="hidden sm:flex items-center gap-1 text-[10.5px] font-mono font-medium px-2 py-0.2 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-600 dark:text-amber-300">
-                  <Flame className="w-3 h-3 text-amber-500 fill-amber-500" />
+                <span className="hidden sm:flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                  <Flame className="w-2.5 h-2.5 text-amber-500 fill-amber-500" />
                   {userStats.streak_days || 0}d
                 </span>
               )}
@@ -244,9 +243,9 @@ export default function Navbar({
           ) : (
             <button
               onClick={onOpenAuthModal}
-              className="btn-primary h-8.5 px-3.5 text-xs font-semibold"
+              className="btn-primary h-7.5 px-3 text-xs font-medium"
             >
-              <LogIn className="w-3.5 h-3.5" />
+              <LogIn className="w-3 h-3" />
               Sign in
             </button>
           )}
