@@ -35,7 +35,7 @@ export default function AdminPage({
   onNavigateArticle,
   initialQuestionId = null
 }) {
-  const [activeTab, setActiveTab] = useState('questions'); // 'questions' | 'customizer' | 'add' | 'visualizers' | 'database' | 'reports'
+  const [activeTab, setActiveTab] = useState(initialQuestionId ? 'customizer' : 'questions'); // 'questions' | 'customizer' | 'add' | 'visualizers' | 'database' | 'reports'
   const [questions, setQuestions] = useState([]);
   const [adminStats, setAdminStats] = useState(null);
   const [diskFiles, setDiskFiles] = useState([]);
@@ -695,34 +695,56 @@ export default function AdminPage({
               <div className="space-y-6">
                 
                 {/* Top Action Bar */}
-                <div className="p-4 rounded-2xl bg-[#15161c] border border-[#22242b] flex items-center justify-between gap-4 flex-wrap">
-                  <div>
-                    <h2 className="text-base font-bold text-white flex items-center gap-2">
-                      <span>Customizing:</span>
-                      <span className="text-indigo-400">{editingData.title}</span>
-                    </h2>
-                    <p className="text-xs text-[#8e92a4]">
-                      Edit multiple video links, custom article editorial, complexities, and code solutions.
-                    </p>
+                <div className="p-4 rounded-2xl bg-[#15161c] border border-[#22242b] space-y-3">
+                  <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                      <h2 className="text-base font-bold text-white flex items-center gap-2">
+                        <span>Customizing:</span>
+                        <span className="text-indigo-400">{editingData.title}</span>
+                      </h2>
+                      <p className="text-xs text-[#8e92a4]">
+                        Edit multiple video links, custom article editorial, complexities, and code solutions.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => onNavigateArticle(editingData)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#111217] hover:bg-[#1f202a] border border-[#272933] text-xs font-medium text-[#8e92a4] hover:text-white transition-colors cursor-pointer"
+                      >
+                        <BookOpen className="w-3.5 h-3.5" />
+                        <span>Preview Article Hub</span>
+                      </button>
+
+                      <button
+                        onClick={handleSaveQuestionChanges}
+                        disabled={savingQuestion}
+                        className="btn-primary text-xs flex items-center gap-2 cursor-pointer shadow-md shadow-indigo-600/25"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>{savingQuestion ? 'Saving Changes...' : 'Save All Changes'}</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => onNavigateArticle(editingData)}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#111217] hover:bg-[#1f202a] border border-[#272933] text-xs font-medium text-[#8e92a4] hover:text-white transition-colors cursor-pointer"
+                  {/* ── Problem Quick-Navigate Dropdown ── */}
+                  <div className="flex items-center gap-2 pt-1 border-t border-[#20222a]">
+                    <span className="text-[11px] font-mono text-[#5b5e6e] shrink-0">Jump to problem:</span>
+                    <select
+                      value={editingData?.id || ''}
+                      onChange={(e) => {
+                        const found = questions.find((q) => q.id === e.target.value);
+                        if (found) handleSelectToEdit(found);
+                      }}
+                      className="flex-1 max-w-lg px-3 py-1.5 bg-[#111217] border border-[#22242b] focus:border-indigo-500 rounded-xl text-xs text-white focus:outline-none cursor-pointer"
                     >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>Preview Article Hub</span>
-                    </button>
-
-                    <button
-                      onClick={handleSaveQuestionChanges}
-                      disabled={savingQuestion}
-                      className="btn-primary text-xs flex items-center gap-2 cursor-pointer shadow-md shadow-indigo-600/25"
-                    >
-                      <Save className="w-4 h-4" />
-                      <span>{savingQuestion ? 'Saving Changes...' : 'Save All Changes'}</span>
-                    </button>
+                      {questions.map((q) => (
+                        <option key={q.id} value={q.id}>
+                          [{q.display_id || q.id.slice(0,8)}] {q.title} (Step {q.step_no})
+                        </option>
+                      ))}
+                    </select>
+                    <span className="text-[11px] font-mono text-[#5b5e6e] shrink-0">{questions.length} problems</span>
                   </div>
                 </div>
 

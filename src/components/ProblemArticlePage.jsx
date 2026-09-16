@@ -364,12 +364,12 @@ export default function ProblemArticlePage({
                 href={question.article_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#181920] hover:bg-[#22242d] border border-[#272933] text-xs text-teal-400/90 hover:text-teal-300 transition-colors"
-                title="Open original TakeUForward Article"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-xs text-teal-300 hover:text-teal-200 font-semibold transition-colors"
+                title="Open original Striver TakeUForward Article"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span className="hidden md:inline">TUF Article</span>
-                <ExternalLink className="w-3 h-3 text-teal-500/70" />
+                <ExternalLink className="w-3 h-3 opacity-70" />
               </a>
             )}
 
@@ -474,7 +474,60 @@ export default function ProblemArticlePage({
           )}
         </div>
 
-        {/* ── 1. Interactive Algorithm Visualizer Section (PRIMARY LEARNING CANVAS) ── */}
+        {/* ── 2. Problem Statement Card (shown FIRST so user knows the problem context) ── */}
+        <div className="rounded-2xl bg-[#15161c] border border-[#22242b] overflow-hidden">
+          {/* Header */}
+          <div className="px-5 py-3.5 border-b border-[#20222a] bg-[#13141a] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/25 flex items-center justify-center">
+                <FileText className="w-3.5 h-3.5 text-amber-400" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-white">Problem Statement</h2>
+                <p className="text-[11px] text-[#5b5e6e]">Read the problem before exploring the visualizer</p>
+              </div>
+            </div>
+            {question.article_url && (
+              <a
+                href={question.article_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-[11px] font-semibold text-teal-300 hover:text-teal-200 transition-colors shrink-0"
+              >
+                <BookOpen className="w-3 h-3" />
+                <span>Striver's TUF Article</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-70" />
+              </a>
+            )}
+          </div>
+
+          {/* Problem text body */}
+          <div className="p-5 sm:p-6 space-y-4">
+            <div className="text-sm text-[#c5c8d6] leading-relaxed whitespace-pre-line font-sans">
+              {question.problem_statement || question.description ||
+                'Problem statement details available in the TakeUForward (Striver) article above.'}
+            </div>
+
+            {/* Examples */}
+            {Array.isArray(question.examples) && question.examples.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-[#20222a]">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-[#8e92a4]">Examples</h3>
+                <div className="space-y-2">
+                  {question.examples.map((ex, i) => (
+                    <div
+                      key={i}
+                      className="p-4 rounded-xl bg-[#111217] border border-[#20222a] font-mono text-xs text-[#c5c8d6] whitespace-pre-wrap leading-relaxed"
+                    >
+                      {typeof ex === 'string' ? ex : JSON.stringify(ex, null, 2)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── 3. Interactive Algorithm Visualizer Section (PRIMARY LEARNING CANVAS) ── */}
         <div className="rounded-2xl bg-[#15161c] border border-[#22242b] overflow-hidden shadow-sm">
           {/* Visualizer Header Bar */}
           <div className="p-4 sm:p-5 border-b border-[#20222a] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#13141a]">
@@ -1243,34 +1296,7 @@ export default function ProblemArticlePage({
         {activeTab === 'article' && (
           <div className="space-y-6">
             
-            {/* 1. Problem Statement */}
-            <section className="p-6 rounded-2xl bg-[#15161c] border border-[#22242b] space-y-3">
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <span>Problem Statement</span>
-              </h2>
-              <div className="text-sm text-[#c5c8d6] leading-relaxed whitespace-pre-line font-sans">
-                {question.problem_statement || question.description || 'Problem statement details available in TakeUForward article.'}
-              </div>
-            </section>
-
-            {/* 2. Examples */}
-            {Array.isArray(question.examples) && question.examples.length > 0 && (
-              <section className="p-6 rounded-2xl bg-[#15161c] border border-[#22242b] space-y-4">
-                <h2 className="text-base font-bold text-white">Examples</h2>
-                <div className="space-y-3">
-                  {question.examples.map((ex, i) => (
-                    <div
-                      key={i}
-                      className="p-4 rounded-xl bg-[#111217] border border-[#20222a] font-mono text-xs text-[#c5c8d6] whitespace-pre-wrap leading-relaxed"
-                    >
-                      {typeof ex === 'string' ? ex : JSON.stringify(ex, null, 2)}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* 3. Custom Rich Article / Editorial Notes written by Admin */}
+            {/* 1. Custom Rich Article / Editorial Notes written by Admin */}
             {question.article_content && (
               <section className="p-6 rounded-2xl bg-[#15161c] border border-[#22242b] space-y-3">
                 <div className="flex items-center gap-2">
