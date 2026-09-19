@@ -4,6 +4,7 @@ import LibraryView from './components/LibraryView';
 import VisualizerStudio from './components/VisualizerStudio';
 import ProblemArticlePage from './components/ProblemArticlePage';
 import AdminPage from './components/AdminPage';
+import SandboxWorkbench from './components/sandbox/SandboxWorkbench';
 import SkillExportModal from './components/SkillExportModal';
 import AuthModal from './components/AuthModal';
 import UserDashboardModal from './components/UserDashboardModal';
@@ -66,6 +67,9 @@ export default function App() {
 
     if (hash === '#admin' || pathname === '/admin') {
       setActiveView('admin');
+      setActiveQuestion(null);
+    } else if (hash === '#sandbox' || pathname === '/sandbox') {
+      setActiveView('sandbox');
       setActiveQuestion(null);
     } else if (hash.startsWith('#article/') || pathname.startsWith('/article/')) {
       const qId = hash.startsWith('#article/')
@@ -162,6 +166,13 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenSandbox = () => {
+    setActiveView('sandbox');
+    setActiveQuestion(null);
+    window.location.hash = '#sandbox';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleBackToLibrary = () => {
     setActiveView('library');
     setActiveQuestion(null);
@@ -240,6 +251,7 @@ export default function App() {
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenDashboardModal={() => setDashboardModalOpen(true)}
         onOpenAdminModal={() => handleOpenAdmin(activeQuestion?.id)}
+        onNavigateSandbox={handleOpenSandbox}
         questions={questions}
         onNavigateQuestion={handleOpenArticle}
         theme={theme}
@@ -255,6 +267,8 @@ export default function App() {
             onNavigateArticle={handleOpenArticle}
             initialQuestionId={activeQuestion?.id}
           />
+        ) : activeView === 'sandbox' ? (
+          <SandboxWorkbench />
         ) : activeView === 'article' && activeQuestion ? (
           <ProblemArticlePage
             question={activeQuestion}
@@ -284,6 +298,7 @@ export default function App() {
             onStatusChange={handleStatusChange}
             onOpenImportModal={() => setImportModalOpen(true)}
             onOpenAdmin={() => handleOpenAdmin()}
+            onOpenSandbox={handleOpenSandbox}
           />
         )}
       </main>

@@ -39,6 +39,35 @@ import AiQuestionEnhancerModal from './AiQuestionEnhancerModal';
 import VisualizerErrorBoundary from './VisualizerErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
+import BetaCodeVisualizer from './sandbox/BetaCodeVisualizer';
+
+function isArrayQuestion(q) {
+  if (!q) return false;
+  const cat = (q.category || '').toLowerCase();
+  const title = (q.title || '').toLowerCase();
+  const step = (q.step_name || '').toLowerCase();
+  const substep = (q.substep_name || '').toLowerCase();
+  const comp = (q.component_key || q.componentKey || '').toLowerCase();
+  const slug = (q.slug || '').toLowerCase();
+  const tags = Array.isArray(q.tags) ? q.tags.map((t) => String(t).toLowerCase()) : [];
+
+  return (
+    cat.includes('array') ||
+    cat.includes('sorting') ||
+    cat.includes('two pointer') ||
+    step.includes('array') ||
+    substep.includes('array') ||
+    title.includes('array') ||
+    title.includes('sum') ||
+    title.includes('sort') ||
+    title.includes('element') ||
+    comp.includes('array') ||
+    slug.includes('array') ||
+    tags.some((t) => t.includes('array')) ||
+    q.step_no === 3 ||
+    q.step_no === 2
+  );
+}
 
 function formatComplexity(text) {
   if (!text) return '—';
@@ -742,7 +771,8 @@ export default function VisualizerStudio({
             {[
               { id: 'intuitive', label: 'Brute Force' },
               { id: 'better', label: 'Better' },
-              { id: 'optimal', label: 'Optimal' }
+              { id: 'optimal', label: 'Optimal' },
+              ...(isArrayQuestion(question) ? [{ id: 'beta', label: '⚡ Beta Mode', isBeta: true }] : [])
             ].map((tier) => {
               const isActive = activeTier === tier.id;
               const hasCustomAnimation = Boolean(visualizerEntry?.approaches?.[tier.id]);
@@ -750,12 +780,22 @@ export default function VisualizerStudio({
                 <button
                   key={tier.id}
                   onClick={() => handleSelectTier(tier.id)}
-                  className={`segmented-item flex items-center gap-1.5 ${isActive ? 'active' : ''}`}
+                  className={`segmented-item flex items-center gap-1.5 ${isActive ? 'active' : ''} ${
+                    tier.isBeta
+                      ? (isActive
+                          ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                          : 'text-indigo-400 hover:text-indigo-300 font-semibold')
+                      : ''
+                  }`}
                 >
                   <span>{tier.label}</span>
-                  {hasCustomAnimation && (
+                  {tier.isBeta ? (
+                    <span className="text-[8px] font-mono uppercase px-1 py-0.2 rounded bg-indigo-500/25 border border-indigo-400/40 text-indigo-200">
+                      Live
+                    </span>
+                  ) : hasCustomAnimation ? (
                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" title="Dedicated visualizer available" />
-                  )}
+                  ) : null}
                 </button>
               );
             })}
@@ -779,14 +819,21 @@ export default function VisualizerStudio({
           </div>
         </div>
 
-        {/* Main Stage Grid (Canvas Viewport + Synchronized Code) */}
-        <div
-          className="stage"
-          style={{
-            gridTemplateColumns:
-              viewMode === 'split' ? '1.15fr 0.95fr' : '1fr'
-          }}
-        >
+        {/* Main Stage Grid or Beta Mode Component */}
+        {activeTier === 'beta' ? (
+          <div className="p-4 bg-[var(--board)]">
+            <BetaCodeVisualizer question={question} />
+          </div>
+        ) : (
+          <>
+            {/* Main Stage Grid (Canvas Viewport + Synchronized Code) */}
+            <div
+              className="stage"
+              style={{
+                gridTemplateColumns:
+                  viewMode === 'split' ? '1.15fr 0.95fr' : '1fr'
+              }}
+            >
           {/* Canvas Column */}
           {viewMode !== 'code_only' && (
             <div className="canvas-col">
@@ -1166,6 +1213,8 @@ export default function VisualizerStudio({
             <span>Keys: <kbd>Space</kbd> <kbd>←</kbd> <kbd>→</kbd> <kbd>R</kbd></span>
           </div>
         </div>
+          </>
+        )}
       </section>
 
 

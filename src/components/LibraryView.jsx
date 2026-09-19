@@ -15,7 +15,8 @@ import {
   Check,
   LayoutGrid,
   List,
-  Shield
+  Shield,
+  Code2
 } from 'lucide-react';
 
 function YoutubeIcon({ className = "w-3.5 h-3.5" }) {
@@ -43,7 +44,8 @@ export default function LibraryView({
   onToggleFavorite,
   onStatusChange,
   onOpenImportModal,
-  onOpenAdmin
+  onOpenAdmin,
+  onOpenSandbox
 }) {
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'revision'
   const [searchQuery, setSearchQuery] = useState('');
@@ -256,48 +258,41 @@ export default function LibraryView({
   return (
     <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-6 space-y-6">
       
-      {/* ── 1. Page Header: Developer Learning Journey ── */}
-      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--line)]">
-        <div className="space-y-1 max-w-2xl">
-          <div className="flex items-center gap-2">
+      {/* ── 1. Page Header: Striver's A2Z Sheet ── */}
+      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+        <div className="space-y-1 max-w-3xl">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--chalk)] font-sans">
-              Algorithm Laboratory
+              Striver's A2Z Sheet - Learn DSA from A to Z
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)] font-medium">
-              A2Z Roadmap · {totalCount} Problems
-            </span>
           </div>
           <p className="text-xs sm:text-[13px] text-[var(--chalk-dim)] leading-relaxed">
-            Systematic algorithm curriculum with interactive step-by-step visual debugging, invariant tracking, and LeetCode problem mappings.
+            This course is made for people who want to learn DSA from A to Z for free in a well-organised and structured manner.{' '}
+            <span className="text-amber-400 font-medium cursor-pointer hover:underline">Know more</span>
           </p>
         </div>
 
         {/* Top Right Header Action Buttons */}
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {/* Next Recommended Problem */}
-          {nextRecommended && (
-            <button
-              onClick={() => {
-                sound?.playSuccess?.();
-                if (onOpenArticle) onOpenArticle(nextRecommended);
-                else onOpenQuestion(nextRecommended);
-              }}
-              className="btn-primary h-7.5 px-3 text-xs font-medium"
-              title={`Next up: ${nextRecommended.title}`}
-            >
-              <Play className="w-3 h-3 fill-current" />
-              <span>Resume ({nextRecommended.display_id || 'Next'})</span>
-            </button>
-          )}
-
-          {/* Random Challenge */}
+          {/* Code Lab Sandbox Action */}
           <button
-            onClick={handlePickRandomProblem}
-            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-medium text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-colors cursor-pointer"
-            title="Pick a random problem to solve"
+            onClick={onOpenSandbox}
+            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--indigo)]/10 hover:bg-[var(--indigo)]/20 border border-[var(--indigo)]/30 text-xs font-semibold text-[var(--indigo)] transition-colors cursor-pointer"
+            title="Open Code-to-Visualizer Studio (C++, Python, JS in-browser compiler)"
           >
-            <Shuffle className="w-3 h-3" />
-            <span>Random</span>
+            <Code2 className="w-3.5 h-3.5" />
+            <span>Code Lab</span>
+            <span className="text-[9px] font-mono px-1 rounded-xs bg-[var(--indigo)]/20 uppercase">New</span>
+          </button>
+
+          {/* Reset Progress */}
+          <button
+            onClick={handleResetProgress}
+            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-medium text-[var(--chalk-dim)] hover:text-amber-400 transition-colors cursor-pointer"
+            title="Reset all progress back to zero"
+          >
+            <RotateCcw className="w-3 h-3 text-amber-500/80" />
+            <span>Reset</span>
           </button>
 
           {/* Import / Export */}
@@ -307,125 +302,20 @@ export default function LibraryView({
             title="Import or Export Question Sheet Data"
           >
             <ClipboardCopy className="w-3 h-3" />
-            <span>Sync</span>
+            <span>Import</span>
           </button>
 
-          {/* Reset Progress */}
-          <button
-            onClick={handleResetProgress}
-            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-medium text-[var(--chalk-faint)] hover:text-amber-400 transition-colors cursor-pointer"
-            title="Reset all progress back to zero"
-          >
-            <RotateCcw className="w-3 h-3" />
-          </button>
-        </div>
-      </section>
-
-      {/* ── 2. Progress Telemetry Workspace Bar (Linear/GitHub developer metrics) ── */}
-      <section className="p-4 rounded-lg bg-[var(--board-raised)] border border-[var(--line)] flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Left: Overall Completion Metric */}
-        <div className="flex items-center gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-[var(--chalk-dim)] uppercase tracking-wider font-mono">Curriculum Progress</span>
-              <span className="text-xs font-mono font-bold text-[var(--chalk)]">{overallProgressPct}%</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-36 sm:w-48 h-2 rounded bg-[var(--board-raised-2)] overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 transition-all duration-500 rounded"
-                  style={{ width: `${overallProgressPct}%` }}
-                />
-              </div>
-              <span className="text-xs font-mono text-[var(--chalk-dim)]">
-                <strong className="text-[var(--chalk)]">{masteredCount}</strong> / {totalCount}
-              </span>
-            </div>
+          {/* Last updated badge */}
+          <div className="hidden lg:flex items-center h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[11px] font-mono text-[var(--chalk-dim)]">
+            Last updated : December 13, 2025
           </div>
         </div>
-
-        {/* Right: Difficulty Breakdown Filters (Easy, Medium, Hard) */}
-        <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
-          {/* Easy Filter */}
-          <button
-            onClick={() => {
-              sound?.playStep?.(580);
-              setDifficultyFilter((prev) => (prev.toLowerCase() === 'easy' ? 'all' : 'Easy'));
-            }}
-            className={`flex items-center gap-2 h-7.5 px-2.5 rounded border transition-colors cursor-pointer ${
-              difficultyFilter.toLowerCase() === 'easy'
-                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400'
-                : 'bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
-            }`}
-            title="Filter by Easy"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Easy</span>
-            <span className="font-semibold text-[var(--chalk)]">
-              {easyMastered}<span className="text-[var(--chalk-faint)] font-normal">/{easyTotal}</span>
-            </span>
-          </button>
-
-          {/* Medium Filter */}
-          <button
-            onClick={() => {
-              sound?.playStep?.(580);
-              setDifficultyFilter((prev) => (prev.toLowerCase() === 'medium' ? 'all' : 'Medium'));
-            }}
-            className={`flex items-center gap-2 h-7.5 px-2.5 rounded border transition-colors cursor-pointer ${
-              difficultyFilter.toLowerCase() === 'medium'
-                ? 'bg-amber-500/15 border-amber-500/40 text-amber-400'
-                : 'bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
-            }`}
-            title="Filter by Medium"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-            <span>Medium</span>
-            <span className="font-semibold text-[var(--chalk)]">
-              {mediumMastered}<span className="text-[var(--chalk-faint)] font-normal">/{mediumTotal}</span>
-            </span>
-          </button>
-
-          {/* Hard Filter */}
-          <button
-            onClick={() => {
-              sound?.playStep?.(580);
-              setDifficultyFilter((prev) => (prev.toLowerCase() === 'hard' ? 'all' : 'Hard'));
-            }}
-            className={`flex items-center gap-2 h-7.5 px-2.5 rounded border transition-colors cursor-pointer ${
-              difficultyFilter.toLowerCase() === 'hard'
-                ? 'bg-rose-500/15 border-rose-500/40 text-rose-400'
-                : 'bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
-            }`}
-            title="Filter by Hard"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
-            <span>Hard</span>
-            <span className="font-semibold text-[var(--chalk)]">
-              {hardMastered}<span className="text-[var(--chalk-faint)] font-normal">/{hardTotal}</span>
-            </span>
-          </button>
-
-          {/* Clear filter button */}
-          {difficultyFilter !== 'all' && (
-            <button
-              onClick={() => {
-                sound?.playStep?.(520);
-                setDifficultyFilter('all');
-              }}
-              className="text-[11px] font-mono px-2 py-1 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] cursor-pointer"
-            >
-              Reset
-            </button>
-          )}
-        </div>
       </section>
 
-      {/* ── 3. Search & Filter Bar ── */}
+      {/* ── 2. Filters & Actions Row (Matching Sheet Toolbar) ── */}
       <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-wrap">
-        
-        {/* Left: Tab Segmented Control (All / Revision) */}
-        <div className="flex items-center bg-[var(--board-raised)] p-0.5 rounded border border-[var(--line)] self-start">
+        {/* Left: Tab Segmented Control (All Problems / Revision) */}
+        <div className="flex items-center bg-[var(--board-raised)] p-0.5 rounded border border-[var(--line)]">
           <button
             onClick={() => {
               sound.playStep(600);
@@ -451,11 +341,11 @@ export default function LibraryView({
                 : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
             }`}
           >
-            Bookmarked
+            Revision
           </button>
         </div>
 
-        {/* Right: Search Input, Status Filter, View Mode Toggle */}
+        {/* Right: Search Input, Status Filter, Difficulty Filter, Random Problem */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Search Input */}
           <div className="relative">
@@ -465,8 +355,8 @@ export default function LibraryView({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search problems, topics, IDs..."
-              className="w-48 sm:w-64 pl-8 pr-7 py-1 bg-[var(--board-raised)] border border-[var(--line)] focus:border-[var(--indigo)] rounded text-xs text-[var(--chalk)] placeholder-[var(--chalk-faint)] focus:outline-none"
+              placeholder="Search..."
+              className="w-36 sm:w-48 pl-8 pr-7 py-1 bg-[var(--board-raised)] border border-[var(--line)] focus:border-[var(--indigo)] rounded text-xs text-[var(--chalk)] placeholder-[var(--chalk-faint)] focus:outline-none"
             />
             {searchQuery && (
               <button
@@ -484,13 +374,35 @@ export default function LibraryView({
             onChange={(e) => setProblemStatusFilter(e.target.value)}
             className="px-2.5 py-1 bg-[var(--board-raised)] border border-[var(--line)] rounded text-xs text-[var(--chalk-dim)] focus:outline-none cursor-pointer"
           >
-            <option value="all">All Status</option>
+            <option value="all">All problems</option>
             <option value="unsolved">Unsolved</option>
-            <option value="solved">Completed</option>
+            <option value="solved">Solved</option>
           </select>
 
+          {/* Difficulty filter dropdown */}
+          <select
+            value={difficultyFilter}
+            onChange={(e) => setDifficultyFilter(e.target.value)}
+            className="px-2.5 py-1 bg-[var(--board-raised)] border border-[var(--line)] rounded text-xs text-[var(--chalk-dim)] focus:outline-none cursor-pointer"
+          >
+            <option value="all">Difficulty</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+
+          {/* Random Challenge */}
+          <button
+            onClick={handlePickRandomProblem}
+            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-medium text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-colors cursor-pointer"
+            title="Pick a random problem to solve"
+          >
+            <Shuffle className="w-3 h-3" />
+            <span>Random Problem</span>
+          </button>
+
           {/* View mode toggle (Accordion vs Cards) */}
-          <div className="flex items-center bg-[var(--board-raised)] p-0.5 rounded border border-[var(--line)]">
+          <div className="flex items-center bg-[var(--board-raised)] p-0.5 rounded border border-[var(--line)] ml-1">
             <button
               onClick={() => setViewMode('accordion')}
               className={`p-1 rounded transition-colors cursor-pointer ${
@@ -509,6 +421,77 @@ export default function LibraryView({
             >
               <LayoutGrid className="w-3.5 h-3.5" />
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. Hero Progress Card (With Circular Ring Gauge & Difficulty Badges) ── */}
+      <section className="p-4 rounded-lg bg-[#14151a] border border-[#262833] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+        {/* Left: Circular Ring & Overall Progress */}
+        <div className="flex items-center gap-4">
+          {/* Circular Progress Gauge */}
+          <div className="relative w-14 h-14 flex items-center justify-center shrink-0">
+            <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
+              <circle
+                cx="28"
+                cy="28"
+                r="22"
+                className="stroke-[#22242e]"
+                strokeWidth="4"
+                fill="transparent"
+              />
+              <circle
+                cx="28"
+                cy="28"
+                r="22"
+                className="stroke-emerald-500 transition-all duration-500"
+                strokeWidth="4"
+                fill="transparent"
+                strokeDasharray={2 * Math.PI * 22}
+                strokeDashoffset={2 * Math.PI * 22 - (overallProgressPct / 100) * (2 * Math.PI * 22)}
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="absolute font-mono font-bold text-xs text-[var(--chalk)]">
+              {overallProgressPct}%
+            </span>
+          </div>
+
+          <div className="space-y-0.5">
+            <h2 className="text-xs font-semibold text-[var(--chalk)]">Overall Progress</h2>
+            <div className="text-xs font-mono text-[var(--chalk-dim)]">
+              <strong className="text-[var(--chalk)]">{masteredCount}</strong> / {totalCount || 474}
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Difficulty Badges (Easy, Medium, Hard) */}
+        <div className="flex items-center gap-4 sm:gap-6 flex-wrap text-xs font-mono">
+          {/* Easy */}
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span className="text-[var(--chalk-dim)]">Easy</span>
+            <span className="font-semibold text-[var(--chalk)]">
+              {easyMastered}<span className="text-[var(--chalk-faint)] font-normal">/{easyTotal || 151}</span>
+            </span>
+          </div>
+
+          {/* Medium */}
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
+            <span className="text-[var(--chalk-dim)]">Medium</span>
+            <span className="font-semibold text-[var(--chalk)]">
+              {mediumMastered}<span className="text-[var(--chalk-faint)] font-normal">/{mediumTotal || 187}</span>
+            </span>
+          </div>
+
+          {/* Hard */}
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-rose-400" />
+            <span className="text-[var(--chalk-dim)]">Hard</span>
+            <span className="font-semibold text-[var(--chalk)]">
+              {hardMastered}<span className="text-[var(--chalk-faint)] font-normal">/{hardTotal || 136}</span>
+            </span>
           </div>
         </div>
       </section>

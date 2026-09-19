@@ -36,6 +36,35 @@ import { visualizersRegistry } from '../visualizers';
 import VisualizerErrorBoundary from './VisualizerErrorBoundary';
 import CodeViewer from './CodeViewer';
 import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
+import BetaCodeVisualizer from './sandbox/BetaCodeVisualizer';
+
+function isArrayQuestion(q) {
+  if (!q) return false;
+  const cat = (q.category || '').toLowerCase();
+  const title = (q.title || '').toLowerCase();
+  const step = (q.step_name || '').toLowerCase();
+  const substep = (q.substep_name || '').toLowerCase();
+  const comp = (q.component_key || q.componentKey || '').toLowerCase();
+  const slug = (q.slug || '').toLowerCase();
+  const tags = Array.isArray(q.tags) ? q.tags.map((t) => String(t).toLowerCase()) : [];
+
+  return (
+    cat.includes('array') ||
+    cat.includes('sorting') ||
+    cat.includes('two pointer') ||
+    step.includes('array') ||
+    substep.includes('array') ||
+    title.includes('array') ||
+    title.includes('sum') ||
+    title.includes('sort') ||
+    title.includes('element') ||
+    comp.includes('array') ||
+    slug.includes('array') ||
+    tags.some((t) => t.includes('array')) ||
+    q.step_no === 3 ||
+    q.step_no === 2
+  );
+}
 
 function toCamelCase(str) {
   if (!str) return 'AlgorithmVisualizer';
@@ -599,7 +628,8 @@ export default function ProblemArticlePage({
                 {[
                   { id: 'intuitive', label: 'Brute Force' },
                   { id: 'better', label: 'Better' },
-                  { id: 'optimal', label: 'Optimal' }
+                  { id: 'optimal', label: 'Optimal' },
+                  ...(isArrayQuestion(question) ? [{ id: 'beta', label: '⚡ Beta Mode', isBeta: true }] : [])
                 ].map((tier) => (
                   <button
                     key={tier.id}
@@ -611,6 +641,8 @@ export default function ProblemArticlePage({
                     className={`px-2.5 py-1 rounded text-xs font-mono font-medium transition-all cursor-pointer ${
                       selectedTier === tier.id
                         ? 'bg-[var(--indigo)] text-white font-semibold shadow-xs'
+                        : tier.isBeta
+                        ? 'text-indigo-400 hover:text-indigo-300 font-semibold'
                         : 'text-[var(--ink-muted)] hover:text-[var(--ink)]'
                     }`}
                   >
@@ -637,7 +669,9 @@ export default function ProblemArticlePage({
 
           {/* Visualizer Canvas Body */}
           <div className="p-5 sm:p-6 bg-[var(--board)] min-h-[280px]">
-            {hasVisualizer && VisualizerComponent ? (
+            {selectedTier === 'beta' ? (
+              <BetaCodeVisualizer question={question} />
+            ) : hasVisualizer && VisualizerComponent ? (
               <div>
                 {/* ── 1. Split View Mode (Visualizer Left, Live Synced Code Right) ── */}
                 {visViewMode === 'split' && (

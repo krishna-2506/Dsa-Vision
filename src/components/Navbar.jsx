@@ -11,7 +11,8 @@ import {
   Search,
   Sun,
   Moon,
-  User
+  User,
+  Code2
 } from 'lucide-react';
 import { sound } from '../services/audio';
 import AlgoVisionLogo from './AlgoVisionLogo';
@@ -27,6 +28,7 @@ export default function Navbar({
   onOpenAuthModal,
   onOpenDashboardModal,
   onOpenAdminModal,
+  onNavigateSandbox,
   questions = [],
   onNavigateQuestion,
   theme = 'dark',
@@ -74,6 +76,16 @@ export default function Navbar({
               <span className="text-[var(--chalk-faint)] text-xs">/</span>
               <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400">
                 Admin Console
+              </span>
+            </div>
+          )}
+
+          {/* Sandbox Breadcrumb */}
+          {activeView === 'sandbox' && (
+            <div className="hidden md:flex items-center gap-2 pl-3 border-l border-[var(--line)]">
+              <span className="text-[var(--chalk-faint)] text-xs">/</span>
+              <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-[var(--indigo)]/10 border border-[var(--indigo)]/20 text-[var(--indigo)]">
+                Code-to-Visualizer Studio
               </span>
             </div>
           )}
@@ -174,6 +186,21 @@ export default function Navbar({
               <span>Skill</span>
             </button>
           )}
+
+          {/* Code Lab Workbench */}
+          <button
+            onClick={onNavigateSandbox}
+            className={`flex items-center gap-1.5 h-7.5 px-2.5 rounded border transition-all cursor-pointer text-xs font-medium ${
+              activeView === 'sandbox'
+                ? 'bg-[var(--indigo)]/20 border-[var(--indigo)]/40 text-[var(--indigo)] font-semibold shadow-xs'
+                : 'bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+            }`}
+            title="Open Code-to-Visualizer Studio (C++, Python, JS in-browser compiler)"
+          >
+            <Code2 className="w-3.5 h-3.5 text-[var(--indigo)]" />
+            <span className="hidden sm:inline">Code Lab</span>
+            <span className="text-[9px] font-mono uppercase px-1 rounded-xs bg-[var(--indigo)]/15 text-[var(--indigo)] font-bold">New</span>
+          </button>
 
           {/* Admin Console */}
           <button
