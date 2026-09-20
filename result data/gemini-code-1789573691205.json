@@ -1,0 +1,827 @@
+[
+  {
+    "id": "union-of-two-sorted-arrays",
+    "title": "Union of two sorted arrays",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/union-of-two-sorted-arrays-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Union of 2 Sorted Arrays",
+        "url": "https://www.geeksforgeeks.org/problems/union-of-two-sorted-arrays-1587115621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Union of Two Sorted Arrays",
+        "url": "https://takeuforward.org/data-structure/union-of-two-sorted-arrays/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-union-sorted-arrays",
+        "title": "take U forward - Union of Two Sorted Arrays",
+        "url": "https://www.youtube.com/watch?v=wvcQg43_V8U",
+        "channel": "take U forward",
+        "notes": "Two-pointer linear scan adding distinct elements into the merged result in O(N + M) time."
+      },
+      {
+        "id": "codehelp-babbar-union-arrays",
+        "title": "CodeHelp by Babbar - Finding Union and Intersection of Two Sorted Arrays",
+        "url": "https://www.youtube.com/watch?v=oPn4wgMYdc8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Step-by-step walkthrough of two pointers and duplicate elimination."
+      }
+    ]
+  },
+  {
+    "id": "count-subarrays-with-given-sum",
+    "title": "Count subarrays with given sum",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/number-subarrays-sum-exactly-equal-k/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Number of Subarrays Having Sum Exactly Equal to K",
+        "url": "https://www.geeksforgeeks.org/dsa/number-subarrays-sum-exactly-equal-k/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Subarray Sum Equals K",
+        "url": "https://leetcode.com/problems/subarray-sum-equals-k/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-subarray-sum-equals-k",
+        "title": "NeetCode - Subarray Sum Equals K - Prefix Sums - Leetcode 560 - Python",
+        "url": "https://www.youtube.com/watch?v=fFVZt-6sgyo",
+        "channel": "NeetCode",
+        "notes": "Optimal O(N) hash map solution tracking prefix sum frequencies to count target subarrays."
+      },
+      {
+        "id": "take-u-forward-count-subarray-sum",
+        "title": "take U forward - Count Subarray Sum Equals K | Brute - Better - Optimal",
+        "url": "https://www.youtube.com/watch?v=xvNwoz-ufXA",
+        "channel": "take U forward",
+        "notes": "Prefix sum hash map intuition handling zero, positive, and negative numbers."
+      }
+    ]
+  },
+  {
+    "id": "kadane-s-algorithm",
+    "title": "Kadane's Algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/kadanes-algorithm-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Kadane's Algorithm",
+        "url": "https://www.geeksforgeeks.org/problems/kadanes-algorithm-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Maximum Subarray",
+        "url": "https://leetcode.com/problems/maximum-subarray/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-maximum-subarray",
+        "title": "NeetCode - Maximum Subarray - Amazon Coding Interview Question - Leetcode 53 - Python",
+        "url": "https://www.youtube.com/watch?v=5WZl3MMT0Eg",
+        "channel": "NeetCode",
+        "notes": "Linear scan discarding negative prefix sums to maintain maximal running window."
+      },
+      {
+        "id": "take-u-forward-kadanes-algorithm",
+        "title": "take U forward - Kadane's Algorithm | Maximum Subarray Sum",
+        "url": "https://www.youtube.com/watch?v=AHZpyENo7k4",
+        "channel": "take U forward",
+        "notes": "In-depth mathematical proof and extension to track starting and ending subarray indices."
+      }
+    ]
+  },
+  {
+    "id": "leaders-in-an-array",
+    "title": "Leaders in an Array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/leaders-in-an-array-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Array Leaders",
+        "url": "https://www.geeksforgeeks.org/problems/leaders-in-an-array-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Leaders in an Array",
+        "url": "https://takeuforward.org/data-structure/leaders-in-an-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-leaders-in-array",
+        "title": "take U forward - Leaders in an Array | Superior Elements",
+        "url": "https://www.youtube.com/watch?v=cHrH9CQ8pmY",
+        "channel": "take U forward",
+        "notes": "Optimal right-to-left backward traversal tracking running maximum in O(N) time."
+      },
+      {
+        "id": "codehelp-babbar-leaders-array",
+        "title": "CodeHelp by Babbar - Leaders in an Array Problem Explanation",
+        "url": "https://www.youtube.com/watch?v=sNrLlmOIn-c",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Linear scan backwards to capture all suffix maxima."
+      }
+    ]
+  },
+  {
+    "id": "longest-consecutive-sequence-in-an-array",
+    "title": "Longest Consecutive Sequence in an Array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-consecutive-subsequence2449/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Longest Consecutive Subsequence",
+        "url": "https://www.geeksforgeeks.org/problems/longest-consecutive-subsequence2449/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Longest Consecutive Sequence",
+        "url": "https://leetcode.com/problems/longest-consecutive-sequence/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-longest-consecutive-sequence",
+        "title": "NeetCode - Leetcode 128 - LONGEST CONSECUTIVE SEQUENCE",
+        "url": "https://www.youtube.com/watch?v=P6RZZMu_maU",
+        "channel": "NeetCode",
+        "notes": "Hash set technique checking (num - 1) existence to start sequences only from base values in O(N)."
+      },
+      {
+        "id": "take-u-forward-longest-consecutive-sequence",
+        "title": "take U forward - Longest Consecutive Sequence in an Array",
+        "url": "https://www.youtube.com/watch?v=oO5uLE7EUlM",
+        "channel": "take U forward",
+        "notes": "Comparing sorting in O(N log N) with hash set lookup in O(N) linear time."
+      }
+    ]
+  },
+  {
+    "id": "majority-element-i",
+    "title": "Majority Element-I",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/majority-element-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Majority Element",
+        "url": "https://www.geeksforgeeks.org/problems/majority-element-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Majority Element",
+        "url": "https://leetcode.com/problems/majority-element/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-majority-element",
+        "title": "NeetCode - Majority Element - Leetcode 169 - Python",
+        "url": "https://www.youtube.com/watch?v=7pnhv842keE",
+        "channel": "NeetCode",
+        "notes": "Boyer-Moore Voting Algorithm explanation achieving O(N) time and O(1) auxiliary space."
+      },
+      {
+        "id": "take-u-forward-majority-element-i",
+        "title": "take U forward - Find the Majority Element that occurs more than N/2 times",
+        "url": "https://www.youtube.com/watch?v=nP_ns3uSh80",
+        "channel": "take U forward",
+        "notes": "Full breakdown from brute force count to hash map frequency and Boyer-Moore voting logic."
+      }
+    ]
+  },
+  {
+    "id": "next-permutation",
+    "title": "Next Permutation",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/next-permutation5226/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Next Permutation",
+        "url": "https://www.geeksforgeeks.org/problems/next-permutation5226/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Next Permutation",
+        "url": "https://leetcode.com/problems/next-permutation/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-next-permutation",
+        "title": "take U forward - Next Permutation - Intuition in Detail | Brute to Optimal",
+        "url": "https://www.youtube.com/watch?v=JDOXKqF60RQ",
+        "channel": "take U forward",
+        "notes": "Step-by-step algorithm: locate breakpoint, find next greater element to swap, and reverse suffix."
+      },
+      {
+        "id": "backtobackswe-next-permutation",
+        "title": "Back To Back SWE - Compute The Next Permutation of A Numeric Sequence",
+        "url": "https://www.youtube.com/watch?v=quAS1iydq7U",
+        "channel": "Back To Back SWE",
+        "notes": "Case analysis and dictionary ordering transition explained with visual diagrams."
+      }
+    ]
+  },
+  {
+    "id": "print-subarray-with-maximum-subarray-sum-extended-version-of-above-problem",
+    "title": "Print subarray with maximum subarray sum (extended version of above problem)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/kadanes-algorithm-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Kadane's Algorithm",
+        "url": "https://www.geeksforgeeks.org/problems/kadanes-algorithm-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Kadane's Algorithm: Maximum Subarray Sum and Printing Subarray",
+        "url": "https://takeuforward.org/data-structure/kadanes-algorithm-maximum-subarray-sum-in-an-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-print-max-subarray",
+        "title": "take U forward - Kadane's Algorithm | Maximum Subarray Sum | Finding and Printing",
+        "url": "https://www.youtube.com/watch?v=AHZpyENo7k4",
+        "channel": "take U forward",
+        "notes": "Demonstrates tracking startIndex, tempStart, and endIndex pointers during Kadane's loop."
+      },
+      {
+        "id": "neetcode-print-max-subarray",
+        "title": "NeetCode - Maximum Subarray - Kadane's Algorithm - Leetcode 53",
+        "url": "https://www.youtube.com/watch?v=5WZl3MMT0Eg",
+        "channel": "NeetCode",
+        "notes": "Tracing pointer boundaries to extract and print the exact maximum subarray window."
+      }
+    ]
+  },
+  {
+    "id": "print-the-matrix-in-spiral-manner",
+    "title": "Print the matrix in spiral manner",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/spirally-traversing-a-matrix-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Spirally Traversing a Matrix",
+        "url": "https://www.geeksforgeeks.org/problems/spirally-traversing-a-matrix-1587115621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Spiral Matrix",
+        "url": "https://leetcode.com/problems/spiral-matrix/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-spiral-matrix",
+        "title": "NeetCode - Spiral Matrix - Microsoft Interview Question - Leetcode 54",
+        "url": "https://www.youtube.com/watch?v=BJnMZNwUk1M",
+        "channel": "NeetCode",
+        "notes": "Boundary manipulation using top, bottom, left, and right pointers to traverse perimeter inward."
+      },
+      {
+        "id": "take-u-forward-spiral-matrix",
+        "title": "take U forward - Spiral Traversal of a Matrix | Spiral Matrix",
+        "url": "https://www.youtube.com/watch?v=3Zv-s9UUrFM",
+        "channel": "take U forward",
+        "notes": "Handles edge cases for non-square matrices where single row or column remains."
+      }
+    ]
+  },
+  {
+    "id": "rearrange-array-elements-by-sign",
+    "title": "Rearrange array elements by sign",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/array-of-alternate-ve-and-ve-nos1401/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Alternate Positive Negative",
+        "url": "https://www.geeksforgeeks.org/problems/array-of-alternate-ve-and-ve-nos1401/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Rearrange Array Elements by Sign",
+        "url": "https://leetcode.com/problems/rearrange-array-elements-by-sign/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-rearrange-by-sign",
+        "title": "NeetCodeIO - Rearrange Array Elements by Sign - Leetcode 2149 - Python",
+        "url": "https://www.youtube.com/watch?v=SoPmcGzz9-E",
+        "channel": "NeetCodeIO",
+        "notes": "Single-pass algorithm placing positive elements at even indices and negative elements at odd indices."
+      },
+      {
+        "id": "take-u-forward-rearrange-by-sign",
+        "title": "take U forward - Rearrange Array Elements by Sign | Variety 1 & Variety 2",
+        "url": "https://www.youtube.com/watch?v=h4aBagy4Uok",
+        "channel": "take U forward",
+        "notes": "Solves both equal positive/negative counts in O(N) and unequal counts preserving relative order."
+      }
+    ]
+  },
+  {
+    "id": "rotate-matrix-by-90-degrees",
+    "title": "Rotate matrix by 90 degrees",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/rotate-by-90-degree-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Rotate by 90 degree",
+        "url": "https://www.geeksforgeeks.org/problems/rotate-by-90-degree-1587115621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Rotate Image",
+        "url": "https://leetcode.com/problems/rotate-image/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-rotate-image",
+        "title": "NeetCode - Rotate Image - Matrix - Leetcode 48",
+        "url": "https://www.youtube.com/watch?v=fMSJSS7eO1w",
+        "channel": "NeetCode",
+        "notes": "In-place matrix rotation via four-way pixel swap per concentric layer."
+      },
+      {
+        "id": "nikhil-lohia-rotate-image",
+        "title": "Nikhil Lohia - Rotate Image (Leetcode 48) | Transpose and Reverse Technique",
+        "url": "https://www.youtube.com/watch?v=Ux058jpRB9Y",
+        "channel": "Nikhil Lohia",
+        "notes": "Intuitive 2-step solution: transpose the matrix across main diagonal, then reverse each row."
+      }
+    ]
+  },
+  {
+    "id": "set-matrix-zeroes",
+    "title": "Set Matrix Zeroes",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/boolean-matrix-problem-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Boolean Matrix",
+        "url": "https://www.geeksforgeeks.org/problems/boolean-matrix-problem-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Set Matrix Zeroes",
+        "url": "https://leetcode.com/problems/set-matrix-zeroes/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-set-matrix-zeroes",
+        "title": "NeetCode - Set Matrix Zeroes - In-place - Leetcode 73",
+        "url": "https://www.youtube.com/watch?v=T41rL0L3Pnw",
+        "channel": "NeetCode",
+        "notes": "Optimal O(1) extra space method using the matrix's first row and column as marker storage."
+      },
+      {
+        "id": "take-u-forward-set-matrix-zeroes",
+        "title": "take U forward - Set Matrix Zeroes | O(1) Space Approach",
+        "url": "https://www.youtube.com/watch?v=N0MgLvceX7M",
+        "channel": "take U forward",
+        "notes": "Addresses overlap of matrix[0][0] using a dedicated col0 variable to avoid state corruption."
+      }
+    ]
+  },
+  {
+    "id": "sort-an-array-of-0-s-1-s-and-2-s",
+    "title": "Sort an array of 0's 1's and 2's",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/sort-an-array-of-0s-1s-and-2s4231/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Sort 0s, 1s and 2s",
+        "url": "https://www.geeksforgeeks.org/problems/sort-an-array-of-0s-1s-and-2s4231/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Sort Colors",
+        "url": "https://leetcode.com/problems/sort-colors/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-sort-colors",
+        "title": "NeetCode - Sort Colors - Quicksort Partition - Leetcode 75 - Python",
+        "url": "https://www.youtube.com/watch?v=4xbWSRZHqac",
+        "channel": "NeetCode",
+        "notes": "Dutch National Flag three-pointer partitioning (low, mid, high) in a single O(N) pass."
+      },
+      {
+        "id": "nikhil-lohia-sort-colors",
+        "title": "Nikhil Lohia - Sort Colors (LeetCode 75) | Dutch National Flag Problem",
+        "url": "https://www.youtube.com/watch?v=6sMssUHgaBs",
+        "channel": "Nikhil Lohia",
+        "notes": "Visual proof and invariant maintenance across three partitions."
+      }
+    ]
+  },
+  {
+    "id": "stock-buy-and-sell",
+    "title": "Stock Buy and Sell",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/stock-buy-and-sell-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Stock Buy and Sell",
+        "url": "https://www.geeksforgeeks.org/problems/stock-buy-and-sell-1587115621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Best Time to Buy and Sell Stock",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-best-time-to-buy-and-sell-stock",
+        "title": "NeetCode - Sliding Window: Best Time to Buy and Sell Stock - Leetcode 121 - Python",
+        "url": "https://www.youtube.com/watch?v=1pkOgXD63yU",
+        "channel": "NeetCode",
+        "notes": "Two-pointer / sliding window technique finding optimal buy and sell timestamps in O(N)."
+      },
+      {
+        "id": "nikhil-lohia-stock-buy-sell",
+        "title": "Nikhil Lohia - Best Time To Buy & Sell Stock 1 (LeetCode 121)",
+        "url": "https://www.youtube.com/watch?v=E2-heUEnZKU",
+        "channel": "Nikhil Lohia",
+        "notes": "Single pass maintaining running min_price and max_profit."
+      }
+    ]
+  },
+  {
+    "id": "3-sum",
+    "title": "3 Sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/triplet-sum-in-array-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Triplet Sum in Array",
+        "url": "https://www.geeksforgeeks.org/problems/triplet-sum-in-array-1587115621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - 3Sum",
+        "url": "https://leetcode.com/problems/3sum/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-3sum",
+        "title": "NeetCode - 3Sum - Leetcode 15 - Python",
+        "url": "https://www.youtube.com/watch?v=jzZsG8n2R9A",
+        "channel": "NeetCode",
+        "notes": "Sorting followed by fixing first element and using two-pointer search with duplicate skips in O(N^2)."
+      },
+      {
+        "id": "nikhil-lohia-3sum",
+        "title": "Nikhil Lohia - 3 Sum (LeetCode 15) | Full solution with examples and visuals",
+        "url": "https://www.youtube.com/watch?v=cRBSOz49fQk",
+        "channel": "Nikhil Lohia",
+        "notes": "Comprehensive handling of pointer advancement past identical values."
+      }
+    ]
+  },
+  {
+    "id": "4-sum",
+    "title": "4 Sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-all-four-sum-numbers1732/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - 4 Sum - All Quadruples",
+        "url": "https://www.geeksforgeeks.org/problems/find-all-four-sum-numbers1732/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - 4Sum",
+        "url": "https://leetcode.com/problems/4sum/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-4sum",
+        "title": "NeetCode - 4Sum - Leetcode 18 - Python",
+        "url": "https://www.youtube.com/watch?v=EYeR-_1NRlQ",
+        "channel": "NeetCode",
+        "notes": "General k-Sum recursive reduction with sorting and two-pointer base case in O(N^3)."
+      },
+      {
+        "id": "take-u-forward-4sum",
+        "title": "take U forward - 4 Sum | Find Quads that add up to a Target Value",
+        "url": "https://www.youtube.com/watch?v=eD95WRBh41c",
+        "channel": "take U forward",
+        "notes": "Iterative nested loop with dual-pointer inner scan avoiding duplicate quadruples."
+      }
+    ]
+  },
+  {
+    "id": "count-inversions",
+    "title": "Count Inversions",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/inversion-of-array-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Count Inversions",
+        "url": "https://www.geeksforgeeks.org/problems/inversion-of-array-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Count Inversions in an Array",
+        "url": "https://takeuforward.org/data-structure/count-inversions-in-an-array",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-count-inversions",
+        "title": "take U forward - Count Inversions in an Array | Brute and Optimal",
+        "url": "https://www.youtube.com/watch?v=AseUmwVNaoY",
+        "channel": "take U forward",
+        "notes": "Modified merge sort algorithm counting inversions during merge step in O(N log N) time."
+      },
+      {
+        "id": "apna-college-count-inversions",
+        "title": "Apna College - Count Inversion - Merge Sort",
+        "url": "https://www.youtube.com/watch?v=sV4RhDIIKO0",
+        "channel": "Apna College",
+        "notes": "Diagrammatic proof of (mid - i + 1) inversion increments when right element is smaller."
+      }
+    ]
+  },
+  {
+    "id": "count-subarrays-with-given-xor-k",
+    "title": "Count subarrays with given xor K",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-subarray-with-given-xor/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Count Subarrays with given XOR",
+        "url": "https://www.geeksforgeeks.org/problems/count-subarray-with-given-xor/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Count the Number of Subarrays with Given XOR K",
+        "url": "https://takeuforward.org/data-structure/count-the-number-of-subarrays-with-given-xor-k/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-subarrays-xor-k",
+        "title": "take U forward - Number of Subarrays with xor K | Brute - Better - Optimal",
+        "url": "https://www.youtube.com/watch?v=eZr-6p0B7ME",
+        "channel": "take U forward",
+        "notes": "Prefix XOR property: if xr ^ k exists in prefix map, it forms a valid subarray in O(N) time."
+      },
+      {
+        "id": "take-u-forward-subarrays-xor-k-classic",
+        "title": "take U forward - Count Subarrays with Xor as K",
+        "url": "https://www.youtube.com/watch?v=lO9R5CaGRPY",
+        "channel": "take U forward",
+        "notes": "Mathematical derivation using XOR cancellation and hash map counting."
+      }
+    ]
+  },
+  {
+    "id": "find-the-repeating-and-missing-number",
+    "title": "Find the repeating and missing number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-missing-and-repeating2512/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Missing And Repeating",
+        "url": "https://www.geeksforgeeks.org/problems/find-missing-and-repeating2512/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Find the Repeating and Missing Numbers",
+        "url": "https://takeuforward.org/data-structure/find-the-repeating-and-missing-numbers/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-repeating-missing",
+        "title": "take U forward - Find the Missing and Repeating Number | 4 Approaches",
+        "url": "https://www.youtube.com/watch?v=2D0D8HE6uak",
+        "channel": "take U forward",
+        "notes": "Solves via algebraic sum/sum-of-squares equations and optimal XOR bit-grouping."
+      },
+      {
+        "id": "take-u-forward-repeating-missing-classic",
+        "title": "take U forward - Find the Missing and Repeating Number | GFG | C++ and Java",
+        "url": "https://www.youtube.com/watch?v=5nMGY4VUoRY",
+        "channel": "take U forward",
+        "notes": "Array index negation trick in O(N) time and O(1) extra space."
+      }
+    ]
+  },
+  {
+    "id": "largest-subarray-with-sum-0",
+    "title": "Largest Subarray with Sum 0",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/largest-subarray-with-0-sum/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Largest subarray with 0 sum",
+        "url": "https://www.geeksforgeeks.org/problems/largest-subarray-with-0-sum/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Length of the Longest Subarray with Zero Sum",
+        "url": "https://takeuforward.org/data-structure/length-of-the-longest-subarray-with-zero-sum/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-largest-subarray-zero-sum",
+        "title": "take U forward - Largest Subarray with Zero Sum | Amazon | MMT",
+        "url": "https://www.youtube.com/watch?v=xmguZ6GbatA",
+        "channel": "take U forward",
+        "notes": "Stores first occurrence of each prefix sum in a hash map to maximize subarray distance."
+      },
+      {
+        "id": "pepcoding-largest-subarray-zero-sum",
+        "title": "Pepcoding - Largest Subarray with 0 Sum | Hashmap & Heaps",
+        "url": "https://www.youtube.com/watch?v=_yGf2rxwZlA",
+        "channel": "Pepcoding",
+        "notes": "Intuition on why subarray sum is zero between two identical prefix sum indices."
+      }
+    ]
+  },
+  {
+    "id": "majority-element-ii",
+    "title": "Majority Element-II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/majority-vote/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Majority Element - More Than n/3",
+        "url": "https://www.geeksforgeeks.org/problems/majority-vote/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Majority Element II",
+        "url": "https://leetcode.com/problems/majority-element-ii/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-majority-element-ii",
+        "title": "NeetCodeIO - Majority Element II - Leetcode 229 - Python",
+        "url": "https://www.youtube.com/watch?v=Eua-UrQ_ANo",
+        "channel": "NeetCodeIO",
+        "notes": "Extended Boyer-Moore Voting Algorithm tracking up to two candidates with manual verification pass."
+      },
+      {
+        "id": "take-u-forward-majority-element-ii",
+        "title": "take U forward - Majority Element II | Brute-Better-Optimal",
+        "url": "https://www.youtube.com/watch?v=vwZj1K0e9U8",
+        "channel": "take U forward",
+        "notes": "Proof showing at most 2 elements can occur strictly more than floor(N/3) times."
+      }
+    ]
+  },
+  {
+    "id": "maximum-product-subarray-in-an-array",
+    "title": "Maximum Product Subarray in an Array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-product-subarray3604/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Maximum Product Subarray",
+        "url": "https://www.geeksforgeeks.org/problems/maximum-product-subarray3604/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Maximum Product Subarray",
+        "url": "https://leetcode.com/problems/maximum-product-subarray/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-maximum-product-subarray",
+        "title": "NeetCode - Maximum Product Subarray - Dynamic Programming - Leetcode 152",
+        "url": "https://www.youtube.com/watch?v=lXVy6YWFcRM",
+        "channel": "NeetCode",
+        "notes": "Tracks both running maximum and minimum products to handle sign flips on negative integers."
+      },
+      {
+        "id": "take-u-forward-maximum-product-subarray",
+        "title": "take U forward - Maximum Product Subarray - Best Intuitive Approach Discussed",
+        "url": "https://www.youtube.com/watch?v=hnswaLJvr6g",
+        "channel": "take U forward",
+        "notes": "Two-pass prefix and suffix product traversal resetting running product on zero in O(N)."
+      }
+    ]
+  },
+  {
+    "id": "merge-overlapping-subintervals",
+    "title": "Merge Overlapping Subintervals",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/overlapping-intervals--170633/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Overlapping Intervals",
+        "url": "https://www.geeksforgeeks.org/problems/overlapping-intervals--170633/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Merge Intervals",
+        "url": "https://leetcode.com/problems/merge-intervals/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-merge-intervals",
+        "title": "NeetCode - Merge Intervals - Sorting - Leetcode 56",
+        "url": "https://www.youtube.com/watch?v=44H3cEC2fFM",
+        "channel": "NeetCode",
+        "notes": "Sort by starting time and iteratively merge overlapping intervals by updating end bound."
+      },
+      {
+        "id": "take-u-forward-merge-intervals",
+        "title": "take U forward - Merge Overlapping Intervals | Brute, Optimal",
+        "url": "https://www.youtube.com/watch?v=IexN60k62jo",
+        "channel": "take U forward",
+        "notes": "Single pass over sorted intervals merging with the last interval in the result list in O(N log N)."
+      }
+    ]
+  },
+  {
+    "id": "merge-two-sorted-arrays-without-extra-space",
+    "title": "Merge two sorted arrays without extra space",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/merge-two-sorted-arrays-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Merge Without Extra Space",
+        "url": "https://www.geeksforgeeks.org/problems/merge-two-sorted-arrays-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Merge Sorted Array",
+        "url": "https://leetcode.com/problems/merge-sorted-array/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-merge-sorted-array",
+        "title": "NeetCode - Merge Sorted Array - Leetcode 88 - Python",
+        "url": "https://www.youtube.com/watch?v=P1Ic85RarKY",
+        "channel": "NeetCode",
+        "notes": "Three-pointer backwards placement filling array from the end without overwriting uninspected data."
+      },
+      {
+        "id": "take-u-forward-merge-sorted-arrays",
+        "title": "take U forward - Merge Sorted Arrays Without Extra Space | 2 Optimal Solution",
+        "url": "https://www.youtube.com/watch?v=n7uwj04E0I4",
+        "channel": "take U forward",
+        "notes": "Swap-from-ends method and Shell sort gap method in O((N + M) log(N + M)) time."
+      }
+    ]
+  },
+  {
+    "id": "pascal-s-triangle-i",
+    "title": "Pascal's Triangle I",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/pascal-triangle0652/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Pascal Triangle",
+        "url": "https://www.geeksforgeeks.org/problems/pascal-triangle0652/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Pascal's Triangle",
+        "url": "https://leetcode.com/problems/pascals-triangle/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-pascals-triangle",
+        "title": "NeetCode - Pascal's Triangle - Leetcode 118 - Python",
+        "url": "https://www.youtube.com/watch?v=nPVEaB3AjUM",
+        "channel": "NeetCode",
+        "notes": "Row-by-row generation with zero padding to construct subsequent rows dynamically."
+      },
+      {
+        "id": "take-u-forward-pascals-triangle",
+        "title": "take U forward - Pascal Triangle | Finding nCr in minimal time",
+        "url": "https://www.youtube.com/watch?v=bR7mQgwQ_o8",
+        "channel": "take U forward",
+        "notes": "Covers all 3 variations: finding element at (r, c), printing nth row, and generating full triangle."
+      }
+    ]
+  }
+]

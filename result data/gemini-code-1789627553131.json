@@ -1,0 +1,827 @@
+[
+  {
+    "id": "reverse-pairs",
+    "title": "Reverse Pairs",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-reverse-pairs/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Count Reverse Pairs",
+        "url": "https://www.geeksforgeeks.org/problems/count-reverse-pairs/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Reverse Pairs",
+        "url": "https://leetcode.com/problems/reverse-pairs/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-reverse-pairs",
+        "title": "take U forward - Reverse Pairs | Hard Interview Question",
+        "url": "https://www.youtube.com/watch?v=0e4bZaP3MDI",
+        "channel": "take U forward",
+        "notes": "Modified merge sort algorithm counting reverse pairs arr[i] > 2 * arr[j] in O(2N log N) time."
+      },
+      {
+        "id": "larry-reverse-pairs",
+        "title": "Programming Live with Larry - 493. Reverse Pairs (Leetcode Hard)",
+        "url": "https://www.youtube.com/watch?v=Y_Z4COnhf70",
+        "channel": "Programming Live with Larry",
+        "notes": "Walkthrough comparing merge sort divide-and-conquer with binary indexed tree methods."
+      }
+    ]
+  },
+  {
+    "id": "count-occurrences-in-a-sorted-array",
+    "title": "Count Occurrences in a Sorted Array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-occurrence2259/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Number of Occurrence",
+        "url": "https://www.geeksforgeeks.org/problems/number-of-occurrence2259/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Count Occurrences in Sorted Array",
+        "url": "https://takeuforward.org/data-structure/count-occurrences-in-sorted-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-count-occurrences",
+        "title": "take U forward - Count Occurrences in Sorted Array",
+        "url": "https://www.youtube.com/watch?v=hjR1IYVx9lY",
+        "channel": "take U forward",
+        "notes": "Computes count using two binary searches: (lastOccurrence - firstOccurrence + 1) in O(log N)."
+      },
+      {
+        "id": "codehelp-babbar-occurrences",
+        "title": "CodeHelp by Babbar - First and Last Position & Total Occurrences",
+        "url": "https://www.youtube.com/watch?v=zD2Jg3alZV8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Binary search boundaries to extract total frequency of duplicates."
+      }
+    ]
+  },
+  {
+    "id": "find-minimum-in-rotated-sorted-array",
+    "title": "Find minimum in Rotated Sorted Array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-element-in-a-sorted-and-rotated-array3611/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Sorted and Rotated Minimum",
+        "url": "https://www.geeksforgeeks.org/problems/minimum-element-in-a-sorted-and-rotated-array3611/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Find Minimum in Rotated Sorted Array",
+        "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-find-minimum-rotated",
+        "title": "NeetCode - Find Minimum in Rotated Sorted Array - Binary Search - Leetcode 153 - Python",
+        "url": "https://www.youtube.com/watch?v=nIVW4P8b1VA",
+        "channel": "NeetCode",
+        "notes": "Binary search checking middle against right boundary to zoom into unsorted portion in O(log N)."
+      },
+      {
+        "id": "take-u-forward-min-rotated",
+        "title": "take U forward - BS-6. Minimum in Rotated Sorted Array",
+        "url": "https://www.youtube.com/watch?v=nhEMDKMB44g",
+        "channel": "take U forward",
+        "notes": "Identifies sorted half, picks minimum element from it, and eliminates that half."
+      }
+    ]
+  },
+  {
+    "id": "find-out-how-many-times-the-array-is-rotated",
+    "title": "Find out how many times the array is rotated",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/rotation4723/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Find Kth Rotation",
+        "url": "https://www.geeksforgeeks.org/problems/rotation4723/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Find Out How Many Times the Array Has Been Rotated",
+        "url": "https://takeuforward.org/arrays/find-out-how-many-times-the-array-has-been-rotated/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-rotation-count",
+        "title": "take U forward - BS-7. Find out how many times array has been rotated",
+        "url": "https://www.youtube.com/watch?v=jtSiWTPLwd0",
+        "channel": "take U forward",
+        "notes": "The rotation count equals the index of the minimum element found via binary search."
+      },
+      {
+        "id": "codehelp-babbar-pivot-rotation",
+        "title": "CodeHelp by Babbar - Search in Rotated Array & Pivot Element",
+        "url": "https://www.youtube.com/watch?v=6z2HK4o8qGQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Using pivot element position to deduce rotation offset."
+      }
+    ]
+  },
+  {
+    "id": "find-peak-element",
+    "title": "Find peak element",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/peak-element/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Peak element",
+        "url": "https://www.geeksforgeeks.org/problems/peak-element/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Find Peak Element",
+        "url": "https://leetcode.com/problems/find-peak-element/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-find-peak-element",
+        "title": "NeetCodeIO - Find Peak Element - Leetcode 162 - Python",
+        "url": "https://www.youtube.com/watch?v=kMzJy9es7Hc",
+        "channel": "NeetCodeIO",
+        "notes": "Binary search walking along upward slope where a peak is guaranteed to exist."
+      },
+      {
+        "id": "take-u-forward-find-peak",
+        "title": "take U forward - BS-9. Find Peak Element",
+        "url": "https://www.youtube.com/watch?v=cXxmbemS6XM",
+        "channel": "take U forward",
+        "notes": "Boundary handling for first and last elements followed by slope-based elimination."
+      }
+    ]
+  },
+  {
+    "id": "first-and-last-occurrence",
+    "title": "First and last occurrence",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/first-and-last-occurrences-of-x3116/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - First and Last in Sorted",
+        "url": "https://www.geeksforgeeks.org/problems/first-and-last-occurrences-of-x3116/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Find First and Last Position of Element in Sorted Array",
+        "url": "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-first-and-last-position",
+        "title": "NeetCode - First and Last Position of Element in Sorted Array - Leetcode 34",
+        "url": "https://www.youtube.com/watch?v=4sQL7R5ySUU",
+        "channel": "NeetCode",
+        "notes": "Two separate binary searches with biased search directions for lower and upper boundaries."
+      },
+      {
+        "id": "nikhil-lohia-first-last-position",
+        "title": "Nikhil Lohia - First and Last Position of Element Sorted Array (LeetCode 34)",
+        "url": "https://www.youtube.com/watch?v=bvaYNDKp830",
+        "channel": "Nikhil Lohia",
+        "notes": "Visual walkthrough of binary search pointer adjustments upon target match."
+      }
+    ]
+  },
+  {
+    "id": "floor-and-ceil-in-sorted-array",
+    "title": "Floor and Ceil in Sorted Array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/floor-in-a-sorted-array-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Floor in a Sorted Array",
+        "url": "https://www.geeksforgeeks.org/problems/floor-in-a-sorted-array-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Floor and Ceil in Sorted Array",
+        "url": "https://takeuforward.org/arrays/floor-and-ceil-in-sorted-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-floor-ceil",
+        "title": "take U forward - BS-2. Implement Lower Bound and Upper Bound | Floor and Ceil",
+        "url": "https://www.youtube.com/watch?v=6zhGS79oQ4k",
+        "channel": "take U forward",
+        "notes": "Floor is largest element <= x and Ceil is smallest element >= x solved in O(log N)."
+      },
+      {
+        "id": "luv-floor-ceil-stl",
+        "title": "Luv - Upper Bound and Lower Bound in C++ STL | CP Course | EP 35",
+        "url": "https://www.youtube.com/watch?v=Cg7SI0WtmXY",
+        "channel": "Luv",
+        "notes": "Applying STL lower_bound and upper_bound for range queries."
+      }
+    ]
+  },
+  {
+    "id": "lower-bound",
+    "title": "Lower Bound",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/floor-in-a-sorted-array-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Floor in a Sorted Array",
+        "url": "https://www.geeksforgeeks.org/problems/floor-in-a-sorted-array-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Implement Lower Bound",
+        "url": "https://takeuforward.org/arrays/implement-lower-bound-bs-2/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-lower-bound",
+        "title": "take U forward - BS-2. Implement Lower Bound",
+        "url": "https://www.youtube.com/watch?v=6zhGS79oQ4k",
+        "channel": "take U forward",
+        "notes": "Finds smallest index idx such that arr[idx] >= target using binary search."
+      },
+      {
+        "id": "luv-lower-bound",
+        "title": "Luv - Lower Bound Implementation and Dry Run",
+        "url": "https://www.youtube.com/watch?v=Cg7SI0WtmXY",
+        "channel": "Luv",
+        "notes": "Understanding lower bound search condition and edge cases when all elements are smaller."
+      }
+    ]
+  },
+  {
+    "id": "search-in-rotated-sorted-array-i",
+    "title": "Search in rotated sorted array-I",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/search-in-a-rotated-array4618/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Search in Rotated Sorted Array",
+        "url": "https://www.geeksforgeeks.org/problems/search-in-a-rotated-array4618/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Search in Rotated Sorted Array",
+        "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-search-rotated-i",
+        "title": "NeetCode - Search in rotated sorted array - Leetcode 33 - Python",
+        "url": "https://www.youtube.com/watch?v=U8XENwh8Oy8",
+        "channel": "NeetCode",
+        "notes": "Identifies which half is sorted, checks if target lies in that range, and discards other half."
+      },
+      {
+        "id": "take-u-forward-search-rotated-i",
+        "title": "take U forward - BS-4. Search Element in a Rotated Sorted Array",
+        "url": "https://www.youtube.com/watch?v=5qGrJbHhqFs",
+        "channel": "take U forward",
+        "notes": "Detailed condition checks for target containment in left vs right sorted halves."
+      }
+    ]
+  },
+  {
+    "id": "search-in-rotated-sorted-array-ii",
+    "title": "Search in rotated sorted array-II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/search-in-rotated-array-2/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Search in Rotated Array 2",
+        "url": "https://www.geeksforgeeks.org/problems/search-in-rotated-array-2/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Search in Rotated Sorted Array II",
+        "url": "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-search-rotated-ii",
+        "title": "NeetCodeIO - Search in Rotated Sorted Array II - Leetcode 81 - Python",
+        "url": "https://www.youtube.com/watch?v=oUnF7o88_Xc",
+        "channel": "NeetCodeIO",
+        "notes": "Handles duplicates when arr[low] == arr[mid] == arr[high] by shrinking search space with low++ and high--."
+      },
+      {
+        "id": "take-u-forward-search-rotated-ii",
+        "title": "take U forward - BS-5. Search in Rotated Sorted Array II | With Duplicate Elements",
+        "url": "https://www.youtube.com/watch?v=w2G2W8l__pc",
+        "channel": "take U forward",
+        "notes": "Edge case analysis explaining worst-case O(N/2) time degradation caused by duplicate values."
+      }
+    ]
+  },
+  {
+    "id": "search-insert-position",
+    "title": "Search insert position",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/search-insert-position-of-k-in-a-sorted-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Sorted Insert Position",
+        "url": "https://www.geeksforgeeks.org/problems/search-insert-position-of-k-in-a-sorted-array/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Search Insert Position",
+        "url": "https://leetcode.com/problems/search-insert-position/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-search-insert-position",
+        "title": "NeetCode - Search Insert Position - Binary Search - Leetcode 35 - Python",
+        "url": "https://www.youtube.com/watch?v=K-RYzDZkzCI",
+        "channel": "NeetCode",
+        "notes": "Binary search returning the final low pointer as insertion index upon search termination."
+      },
+      {
+        "id": "take-u-forward-search-insert",
+        "title": "take U forward - BS-2. Search Insert Position",
+        "url": "https://www.youtube.com/watch?v=6zhGS79oQ4k",
+        "channel": "take U forward",
+        "notes": "Equivalence with lower bound problem finding position to preserve sorted order."
+      }
+    ]
+  },
+  {
+    "id": "search-x-in-sorted-array",
+    "title": "Search X in sorted array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/binary-search-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - First Occurrence in Sorted",
+        "url": "https://www.geeksforgeeks.org/problems/binary-search-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Binary Search",
+        "url": "https://leetcode.com/problems/binary-search/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-binary-search",
+        "title": "NeetCode - Binary Search - Leetcode 704 - Python",
+        "url": "https://www.youtube.com/watch?v=s4DPM8ct1pI",
+        "channel": "NeetCode",
+        "notes": "Canonical binary search implementation avoiding integer overflow using low + (high - low) // 2."
+      },
+      {
+        "id": "take-u-forward-binary-search",
+        "title": "take U forward - BS-1. Binary Search Explained | Iterative and Recursive",
+        "url": "https://www.youtube.com/watch?v=MHf6a39b380",
+        "channel": "take U forward",
+        "notes": "Foundational binary search mechanics with loop invariants and search space halving."
+      }
+    ]
+  },
+  {
+    "id": "single-element-in-a-sorted-array",
+    "title": "Single element in a Sorted Array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-the-element-that-appears-once-in-sorted-array0624/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Single Among Doubles in a Sorted",
+        "url": "https://www.geeksforgeeks.org/problems/find-the-element-that-appears-once-in-sorted-array0624/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Single Element in a Sorted Array",
+        "url": "https://leetcode.com/problems/single-element-in-a-sorted-array/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-single-element-sorted",
+        "title": "NeetCodeIO - Single Element in a Sorted Array - Leetcode 540 - Python",
+        "url": "https://www.youtube.com/watch?v=HGtqdzyUJ3k",
+        "channel": "NeetCodeIO",
+        "notes": "Binary search on index parity: (even, odd) index pairs precede unique element; (odd, even) follow."
+      },
+      {
+        "id": "take-u-forward-single-element-sorted",
+        "title": "take U forward - BS-8. Single Element in Sorted Array",
+        "url": "https://www.youtube.com/watch?v=AZOmHuHadxQ",
+        "channel": "take U forward",
+        "notes": "Index parity logic and boundary condition checks for edge elements."
+      }
+    ]
+  },
+  {
+    "id": "upper-bound",
+    "title": "Upper Bound",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/ceil-the-floor2802/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Floor and Ceil in Unsorted",
+        "url": "https://www.geeksforgeeks.org/problems/ceil-the-floor2802/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Implement Upper Bound",
+        "url": "https://takeuforward.org/arrays/implement-upper-bound/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-upper-bound",
+        "title": "take U forward - BS-2. Implement Upper Bound",
+        "url": "https://www.youtube.com/watch?v=6zhGS79oQ4k",
+        "channel": "take U forward",
+        "notes": "Finds smallest index idx such that arr[idx] > target using binary search in O(log N)."
+      },
+      {
+        "id": "luv-upper-bound",
+        "title": "Luv - Upper Bound Implementation and STL Comparison",
+        "url": "https://www.youtube.com/watch?v=Cg7SI0WtmXY",
+        "channel": "Luv",
+        "notes": "Difference between lower_bound (>=) and upper_bound (>) behavior in C++."
+      }
+    ]
+  },
+  {
+    "id": "aggressive-cows",
+    "title": "Aggressive Cows",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/aggressive-cows/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Aggressive Cows",
+        "url": "https://www.geeksforgeeks.org/problems/aggressive-cows/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Aggressive Cows Detailed Solution",
+        "url": "https://takeuforward.org/data-structure/aggressive-cows-detailed-solution/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-aggressive-cows",
+        "title": "take U forward - BS-17. Aggressive Cows | Binary Search Hard",
+        "url": "https://www.youtube.com/watch?v=R_Mfw4ew-Vo",
+        "channel": "take U forward",
+        "notes": "Binary search on answers maximizing minimum stall distance with greedy placement check."
+      },
+      {
+        "id": "apna-college-aggressive-cows",
+        "title": "Apna College - Aggressive Cows Problem | DSA Placement Series - Binary Search",
+        "url": "https://www.youtube.com/watch?v=7wOzDqsfXy0",
+        "channel": "Apna College",
+        "notes": "Greedy feasibility function isPossible() and monotonic predicate behavior."
+      }
+    ]
+  },
+  {
+    "id": "book-allocation-problem",
+    "title": "Book Allocation Problem",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/allocate-minimum-number-of-pages0937/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Allocate Minimum Pages",
+        "url": "https://www.geeksforgeeks.org/problems/allocate-minimum-number-of-pages0937/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Allocate Minimum Number of Pages",
+        "url": "https://takeuforward.org/data-structure/allocate-minimum-number-of-pages/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-book-allocation",
+        "title": "take U forward - BS-18. Allocate Books or Book Allocation | Hard Binary Search",
+        "url": "https://www.youtube.com/watch?v=Z0hwjftStI4",
+        "channel": "take U forward",
+        "notes": "Minimizing maximum pages per student using binary search over search range [max(arr), sum(arr)]."
+      },
+      {
+        "id": "keerti-purswani-book-allocation",
+        "title": "Code From Scratch - Keerti Purswani - Book Allocation CONCEPT and WHY is it a Binary Search Question",
+        "url": "https://www.youtube.com/watch?v=OHUtHn-sdBc",
+        "channel": "Code From Scratch - Keerti Purswani",
+        "notes": "Intuition on turning constraint verification into a binary search search space."
+      }
+    ]
+  },
+  {
+    "id": "capacity-to-ship-packages-within-d-days",
+    "title": "Capacity to Ship Packages Within D Days",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/capacity-to-ship-packages-within-d-days/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Capacity To Ship Packages Within d Days",
+        "url": "https://www.geeksforgeeks.org/problems/capacity-to-ship-packages-within-d-days/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Capacity to Ship Packages Within D Days",
+        "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-capacity-to-ship",
+        "title": "NeetCodeIO - Capacity to Ship Packages - Leetcode 1011 - Python",
+        "url": "https://www.youtube.com/watch?v=ER_oLmdc-nw",
+        "channel": "NeetCodeIO",
+        "notes": "Binary search on ship capacity between max(weights) and sum(weights) with linear validation pass."
+      },
+      {
+        "id": "take-u-forward-capacity-ship",
+        "title": "take U forward - BS-15. Capacity to Ship Packages within D Days",
+        "url": "https://www.youtube.com/watch?v=MG-Ac4TAvTY",
+        "channel": "take U forward",
+        "notes": "Calculates required days for a candidate capacity and adjusts binary search window."
+      }
+    ]
+  },
+  {
+    "id": "find-nth-root-of-a-number",
+    "title": "Find Nth root of a number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-nth-root-of-m5843/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Nth Root of M",
+        "url": "https://www.geeksforgeeks.org/problems/find-nth-root-of-m5843/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Nth Root of a Number using Binary Search",
+        "url": "https://takeuforward.org/data-structure/nth-root-of-a-number-using-binary-search/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-nth-root",
+        "title": "take U forward - BS-11. Find the Nth root of an Integer",
+        "url": "https://www.youtube.com/watch?v=rjEJeYCasHs",
+        "channel": "take U forward",
+        "notes": "Binary search over [1, m] with power calculation helper that prevents integer overflow."
+      },
+      {
+        "id": "take-u-forward-nth-root-classic",
+        "title": "take U forward - Nth Root of a Number Using Binary Search",
+        "url": "https://www.youtube.com/watch?v=WjpswYrS2nY",
+        "channel": "take U forward",
+        "notes": "Step-by-step mathematical derivation and binary search bounds."
+      }
+    ]
+  },
+  {
+    "id": "find-square-root-of-a-number",
+    "title": "Find square root of a number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/square-root/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Square Root",
+        "url": "https://www.geeksforgeeks.org/problems/square-root/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Finding Sqrt of a number using Binary Search",
+        "url": "https://takeuforward.org/binary-search/finding-sqrt-of-a-number-using-binary-search/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-sqrt",
+        "title": "take U forward - BS-10. Finding Sqrt of a number using Binary Search",
+        "url": "https://www.youtube.com/watch?v=Bsv3FPUX_BA",
+        "channel": "take U forward",
+        "notes": "Binary search in range [1, n] comparing mid * mid with n to find integer floor root in O(log N)."
+      },
+      {
+        "id": "nikhil-lohia-sqrt",
+        "title": "Nikhil Lohia - Sqrt(x) (LeetCode 69) | Binary Search on Answer",
+        "url": "https://www.youtube.com/watch?v=6hszkH0c07M",
+        "channel": "Nikhil Lohia",
+        "notes": "Detailed integer overflow avoidance and boundary pointer termination."
+      }
+    ]
+  },
+  {
+    "id": "find-the-smallest-divisor",
+    "title": "Find the smallest divisor",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/smallest-divisor/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Smallest Divisor",
+        "url": "https://www.geeksforgeeks.org/problems/smallest-divisor/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Find the Smallest Divisor Given a Threshold",
+        "url": "https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-smallest-divisor",
+        "title": "take U forward - BS-14. Find the Smallest Divisor Given a Threshold | Binary Search",
+        "url": "https://www.youtube.com/watch?v=UvBKTVaG6U8",
+        "channel": "take U forward",
+        "notes": "Binary search on divisor values in [1, max(nums)] summing ceil(num / divisor) in O(N log(max))."
+      },
+      {
+        "id": "knowledge-center-smallest-divisor",
+        "title": "Knowledge Center - Find the Smallest Divisor Given a Threshold | LeetCode 1283",
+        "url": "https://www.youtube.com/watch?v=6b_YFPOYJEk",
+        "channel": "Knowledge Center",
+        "notes": "Monotonicity of division sum allowing binary search on divisor value."
+      }
+    ]
+  },
+  {
+    "id": "koko-eating-bananas",
+    "title": "Koko eating bananas",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/koko-eating-bananas/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Koko Eating Bananas",
+        "url": "https://www.geeksforgeeks.org/problems/koko-eating-bananas/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Koko Eating Bananas",
+        "url": "https://leetcode.com/problems/koko-eating-bananas/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-koko-eating-bananas",
+        "title": "NeetCode - Koko Eating Bananas - Binary Search - Leetcode 875 - Python",
+        "url": "https://www.youtube.com/watch?v=U2SozAs9RzA",
+        "channel": "NeetCode",
+        "notes": "Binary search on eating speed rate k in [1, max(piles)] verifying total hours spent <= h."
+      },
+      {
+        "id": "take-u-forward-koko-bananas",
+        "title": "take U forward - BS-12. Koko Eating Bananas | Binary Search on Answer",
+        "url": "https://www.youtube.com/watch?v=qyfekrNni90",
+        "channel": "take U forward",
+        "notes": "Formulates the eating rate search space and ceiling division sum."
+      }
+    ]
+  },
+  {
+    "id": "kth-element-of-2-sorted-arrays",
+    "title": "Kth element of 2 sorted arrays",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/k-th-element-of-two-sorted-array1317/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - K-th of Two Sorted Arrays",
+        "url": "https://www.geeksforgeeks.org/problems/k-th-element-of-two-sorted-array1317/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - K-th Element of Two Sorted Arrays",
+        "url": "https://takeuforward.org/data-structure/k-th-element-of-two-sorted-arrays/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-kth-element-two-arrays",
+        "title": "take U forward - Bs-22. K-th element of two sorted arrays | Binary Search Approach",
+        "url": "https://www.youtube.com/watch?v=D1oDwWCq50g",
+        "channel": "take U forward",
+        "notes": "Optimal binary search partitioning smaller array to ensure exactly k elements in left partition in O(log(min(N, M)))."
+      },
+      {
+        "id": "take-u-forward-kth-element-detailed",
+        "title": "take U forward - O(log(min(n,m))) approach | K-th element of two sorted arrays",
+        "url": "https://www.youtube.com/watch?v=nv7F4PiLUzo",
+        "channel": "take U forward",
+        "notes": "Boundary conditions for cut1: low = max(0, k - m) and high = min(k, n)."
+      }
+    ]
+  },
+  {
+    "id": "kth-missing-positive-number",
+    "title": "Kth Missing Positive Number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/kth-missing-positive-number-in-a-sorted-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Kth Missing Positive Number in a Sorted Array",
+        "url": "https://www.geeksforgeeks.org/problems/kth-missing-positive-number-in-a-sorted-array/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Kth Missing Positive Number",
+        "url": "https://leetcode.com/problems/kth-missing-positive-number/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-kth-missing-positive",
+        "title": "take U forward - BS-16. Kth Missing Positive Number | Maths + Binary Search",
+        "url": "https://www.youtube.com/watch?v=uZ0N_hZpyps",
+        "channel": "take U forward",
+        "notes": "Calculates missing count at mid using (arr[mid] - (mid + 1)) to achieve O(log N) runtime."
+      },
+      {
+        "id": "nikhil-lohia-kth-missing-positive",
+        "title": "Nikhil Lohia - Kth Missing Positive Number (LeetCode 1539) | Full Solution",
+        "url": "https://www.youtube.com/watch?v=NObPmjZIh8Y",
+        "channel": "Nikhil Lohia",
+        "notes": "Mathematical offset derivation showing final missing value equals (low + k)."
+      }
+    ]
+  },
+  {
+    "id": "minimize-max-distance-to-gas-station",
+    "title": "Minimize Max Distance to Gas Station",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimize-max-distance-to-gas-station/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Minimize Max Distance of Adjacent Gas Stations",
+        "url": "https://www.geeksforgeeks.org/problems/minimize-max-distance-to-gas-station/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Minimise Maximum Distance Between Gas Stations",
+        "url": "https://takeuforward.org/arrays/minimise-maximum-distance-between-gas-stations/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-gas-stations",
+        "title": "take U forward - BS-20. Minimise Maximum Distance between Gas Stations",
+        "url": "https://www.youtube.com/watch?v=kMSBvlZ-_HA",
+        "channel": "take U forward",
+        "notes": "Continuous binary search on distance with precision threshold (1e-6) counting required stations in O(N log(range))."
+      },
+      {
+        "id": "letscode-gas-stations",
+        "title": "LetsCode - Leetcode 774. Minimize Max Distance to Gas Station",
+        "url": "https://www.youtube.com/watch?v=cazt1jcuBmE",
+        "channel": "LetsCode",
+        "notes": "Binary search on floating point values and greedy station allocation per segment."
+      }
+    ]
+  },
+  {
+    "id": "minimum-days-to-make-m-bouquets",
+    "title": "Minimum days to make M bouquets",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-days-to-make-m-bouquets/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Minimum Days to Make m Bouquets",
+        "url": "https://www.geeksforgeeks.org/problems/minimum-days-to-make-m-bouquets/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Minimum Number of Days to Make m Bouquets",
+        "url": "https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-bouquets",
+        "title": "take U forward - BS-13. Minimum days to make M bouquets | Binary Search",
+        "url": "https://www.youtube.com/watch?v=TXAuxeYBTdg",
+        "channel": "take U forward",
+        "notes": "Binary search over days range [min(bloomDay), max(bloomDay)] with consecutive flowers greedy counter."
+      },
+      {
+        "id": "codestorywithmik-bouquets",
+        "title": "codestorywithMIK - Minimum Number of Days to Make m Bouquets | Leetcode 1482",
+        "url": "https://www.youtube.com/watch?v=erWfh_hBF80",
+        "channel": "codestorywithMIK",
+        "notes": "Clear problem formulation and adjacent flower grouping logic."
+      }
+    ]
+  }
+]

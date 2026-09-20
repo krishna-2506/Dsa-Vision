@@ -163,9 +163,10 @@ function runFastPythonInterpreter(code, maxSteps = 400) {
     // Handle 'import ...' and 'from ... import ...' cleanly
     .replace(/^[ \t]*(?:import\s+[^\r\n]+|from\s+[\w.]+\s+import\s+[^\r\n]+)/gm, '// $&')
     // Integer division // -> Math.floor(/) BEFORE converting # to //
-    .replace(/([a-zA-Z0-9_().]+)\s*\/\/\s*([a-zA-Z0-9_().]+)/g, 'Math.floor($1 / $2)')
+    .replace(/(\([^)\r\n]+\)|[a-zA-Z0-9_.]+)\s*\/\/\s*(\([^)\r\n]+\)|[a-zA-Z0-9_.]+)/g, 'Math.floor($1 / $2)')
     // Python comments
     .replace(/^([ \t]*)#(.*)$/gm, '$1//$2')
+    .replace(/([^\S\r\n]+)#(.*)$/gm, ' //$2')
     // Python print() -> console.log()
     .replace(/\bprint\s*\((.*?)\)/g, 'console.log($1)')
     // append -> push
@@ -270,7 +271,9 @@ function runFastPythonInterpreter(code, maxSteps = 400) {
 
     let count = 0;
     const step = (line, locals) => {
-      if (count++ >= maxSteps) return;
+      if (count++ >= maxSteps) {
+        throw new Error(`Maximum step limit (${maxSteps}) exceeded (infinite loop protection)`);
+      }
       const cleanLocals = {};
       for (const [k, v] of Object.entries(locals)) {
         if (v !== undefined) cleanLocals[k] = v;

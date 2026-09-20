@@ -3,119 +3,148 @@
 
 @layer base {
   :root, [data-theme="dark"] {
-    /* ─── Premium Developer IDE Tokens (Linear / GitHub / VS Code) ─── */
-    --board:          #0d1117;
-    --board-canvas:   #0d1117;
-    --board-raised:   #161b22;
-    --board-raised-2: #21262d;
-    --board-hover:    #30363d;
+    /* ─── Dark Luxury Design System Tokens (design/DESIGN.md & SKILL.md) ─── */
+    --bg-base:       #0a0907;
+    --bg-surface:    #100f0d;
+    --bg-card:       #161412;
+    --bg-footer:     #141210;
 
-    /* Crisp Hairline Dividers */
-    --line:           #30363d;
-    --line-strong:    #484f58;
-    --line-faint:     #21262d;
+    --border-subtle: rgba(255, 248, 230, 0.07);
+    --border-medium: rgba(255, 248, 230, 0.13);
+    --border-accent: rgba(212, 160, 60, 0.55);
 
-    /* Crisp Monospace & Sans Typography */
-    --chalk:          #f0f6fc;
-    --chalk-dim:      #8b949e;
-    --chalk-faint:    #6e7681;
+    --text-primary:  #f0ebe0;
+    --text-muted:    #5a544a;
+    --text-body:     #8a8070;
+    --text-tertiary: #524c42;
 
-    /* Single Primary Developer Accent: Electric Blue */
-    --blue:           #388bfd;
-    --indigo:         #1f6feb;
-    --indigo-light:   #388bfd;
-    --indigo-dim:     rgba(56, 139, 253, 0.12);
-    --indigo-glow:    rgba(56, 139, 253, 0.2);
+    --font-mono:     'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+    --font-sans:     'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-    --purple:         #a371f7;
-    --purple-dim:     rgba(163, 113, 247, 0.12);
+    --accent:        #d4a03c;
+    --accent-bright: #e8b84e;
+    --accent-glow:   rgba(212, 160, 60, 0.18);
+    --accent-subtle: rgba(212, 160, 60, 0.08);
 
-    --amber:          #d29922;
-    --amber-dim:      rgba(210, 153, 34, 0.12);
-    --amber-glow:     rgba(210, 153, 34, 0.2);
+    --success:       #3d9e5c;
+    --error:         #b83c38;
+    --grain-opacity: 0.04;
 
-    --teal:           #388bfd;
-    --teal-dim:       rgba(56, 139, 253, 0.12);
-    --teal-glow:      rgba(56, 139, 253, 0.2);
+    --r-md:          10px;
+    --r-lg:          16px;
+    --r-xl:          20px;
+    --r-pill:        999px;
 
-    /* Semantic Status Accents */
-    --easy:           #3fb950;
-    --easy-dim:       rgba(63, 185, 80, 0.12);
-    --medium:         #d29922;
-    --medium-dim:     rgba(210, 153, 34, 0.12);
-    --hard:           #f85149;
-    --hard-dim:       rgba(248, 81, 73, 0.12);
+    --ease-out:      cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast:      150ms;
+    --dur-base:      220ms;
+    --dur-enter:     600ms;
 
-    /* Code Background */
-    --code-bg:        #0d1117;
+    /* ─── Backward & Visualizer Compatibility Aliases ─── */
+    --board:          var(--bg-base);
+    --board-canvas:   var(--bg-base);
+    --board-raised:   var(--bg-surface);
+    --board-raised-2: var(--bg-card);
+    --board-hover:    #1c1a17;
 
-    /* Typography Stack */
-    --font-sans:      "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    --font-mono:      "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    --line:           var(--border-subtle);
+    --line-strong:    var(--border-medium);
+    --line-faint:     rgba(255, 248, 230, 0.04);
 
-    /* Compatibility Aliases */
-    --bg-canvas:      var(--board);
-    --bg-surface:     var(--board-raised);
-    --bg-elevated:    var(--board-raised-2);
-    --bg-overlay:     rgba(13, 17, 23, 0.85);
-    --border-subtle:  var(--line);
-    --border-medium:  var(--line-strong);
-    --accent:         var(--indigo);
+    --chalk:          var(--text-primary);
+    --chalk-dim:      var(--text-body);
+    --chalk-faint:    var(--text-muted);
+
+    --indigo:         var(--accent);
+    --indigo-light:   var(--accent-bright);
+    --indigo-dim:     var(--accent-subtle);
+    --indigo-glow:    var(--accent-glow);
+
+    --blue:           var(--accent);
+    --purple:         #c88b48;
+    --purple-dim:     rgba(200, 139, 72, 0.12);
+
+    --amber:          var(--accent);
+    --amber-dim:      var(--accent-subtle);
+    --amber-glow:     var(--accent-glow);
+
+    --teal:           var(--accent);
+    --teal-dim:       var(--accent-subtle);
+    --teal-glow:      var(--accent-glow);
+
+    --easy:           var(--success);
+    --easy-dim:       rgba(61, 158, 92, 0.14);
+    --medium:         var(--accent);
+    --medium-dim:     var(--accent-subtle);
+    --hard:           var(--error);
+    --hard-dim:       rgba(184, 60, 56, 0.14);
+
+    --code-bg:        #0e0c0a;
+
+    --bg-canvas:      var(--bg-base);
+    --bg-overlay:     rgba(10, 9, 7, 0.92);
   }
 
   [data-theme="light"] {
-    /* ─── Light Mode Tokens (Crisp Clean GitHub/VS Code Light) ─── */
-    --board:          #f6f8fa;
-    --board-canvas:   #ffffff;
-    --board-raised:   #ffffff;
-    --board-raised-2: #f3f4f6;
-    --board-hover:    #eaeef2;
+    --bg-base:       #f7f5f0;
+    --bg-surface:    #ede9df;
+    --bg-card:       #ffffff;
+    --bg-footer:     #f2eee4;
 
-    /* Divider lines */
-    --line:           #d0d7de;
-    --line-strong:    #afb8c1;
-    --line-faint:     #e1e4e8;
+    --border-subtle: rgba(40, 30, 20, 0.08);
+    --border-medium: rgba(40, 30, 20, 0.15);
+    --border-accent: rgba(184, 126, 20, 0.65);
 
-    /* Typography Text */
-    --chalk:          #1f2328;
-    --chalk-dim:      #656d76;
-    --chalk-faint:    #8c959f;
+    --text-primary:  #1a1714;
+    --text-muted:    #82786a;
+    --text-body:     #574f44;
+    --text-tertiary: #9c9183;
 
-    /* Primary Accent */
-    --blue:           #0969da;
-    --indigo:         #0969da;
-    --indigo-light:   #218bff;
-    --indigo-dim:     rgba(9, 105, 218, 0.1);
-    --indigo-glow:    rgba(9, 105, 218, 0.2);
+    --font-mono:     'JetBrains Mono', monospace;
+    --font-sans:     'Inter', system-ui, sans-serif;
 
-    --purple:         #8250df;
-    --purple-dim:     rgba(130, 80, 223, 0.1);
+    --accent:        #b87e14;
+    --accent-bright: #9e690a;
+    --accent-glow:   rgba(184, 126, 20, 0.15);
+    --accent-subtle: rgba(184, 126, 20, 0.08);
 
-    --amber:          #9a6700;
-    --amber-dim:      rgba(154, 103, 0, 0.1);
-    --amber-glow:     rgba(154, 103, 0, 0.2);
+    --success:       #2d7a46;
+    --error:         #a63330;
+    --grain-opacity: 0.02;
 
-    --teal:           #0969da;
-    --teal-dim:       rgba(9, 105, 218, 0.1);
-    --teal-glow:      rgba(9, 105, 218, 0.2);
+    --board:          var(--bg-base);
+    --board-canvas:   var(--bg-card);
+    --board-raised:   var(--bg-surface);
+    --board-raised-2: var(--bg-card);
+    --board-hover:    #e5dfd3;
 
-    --easy:           #1a7f37;
-    --easy-dim:       rgba(26, 127, 55, 0.1);
-    --medium:         #9a6700;
-    --medium-dim:     rgba(154, 103, 0, 0.1);
-    --hard:           #cf222e;
-    --hard-dim:       rgba(207, 34, 46, 0.1);
+    --line:           var(--border-subtle);
+    --line-strong:    var(--border-medium);
+    --line-faint:     rgba(40, 30, 20, 0.05);
 
-    /* Code Background */
+    --chalk:          var(--text-primary);
+    --chalk-dim:      var(--text-body);
+    --chalk-faint:    var(--text-muted);
+
+    --indigo:         var(--accent);
+    --indigo-light:   var(--accent-bright);
+    --indigo-dim:     var(--accent-subtle);
+    --indigo-glow:    var(--accent-glow);
+
+    --amber:          var(--accent);
+    --amber-dim:      var(--accent-subtle);
+    --amber-glow:     var(--accent-glow);
+
+    --easy:           var(--success);
+    --easy-dim:       rgba(45, 122, 70, 0.12);
+    --medium:         var(--accent);
+    --medium-dim:     var(--accent-subtle);
+    --hard:           var(--error);
+    --hard-dim:       rgba(166, 51, 48, 0.12);
+
     --code-bg:        #ffffff;
-
-    --bg-canvas:      var(--board);
-    --bg-surface:     var(--board-raised);
-    --bg-elevated:    var(--board-raised-2);
-    --bg-overlay:     rgba(255, 255, 255, 0.95);
-    --border-subtle:  var(--line);
-    --border-medium:  var(--line-strong);
-    --accent:         var(--indigo);
+    --bg-canvas:      var(--bg-base);
+    --bg-overlay:     rgba(247, 245, 240, 0.95);
   }
 
   *, *::before, *::after {
@@ -126,23 +155,29 @@
     margin: 0;
     padding: 0;
     color: var(--chalk);
+    background-color: var(--bg-base);
     font-family: var(--font-sans);
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-size: 13.5px;
-    line-height: 1.55;
-    letter-spacing: -0.011em;
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: -0.015em;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  :root body, [data-theme="dark"] body {
-    background-color: var(--board);
-  }
-
-  [data-theme="light"] body {
-    background-color: var(--board);
+  /* Non-negotiable SVG fractalNoise grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: overlay;
+    background-size: 128px;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   }
 
   #root {
@@ -174,45 +209,52 @@
   }
 }
 
-/* ───────── IDE Workspace Stage & Frame ───────── */
+/* ───────── Dark Luxury IDE Workspace Stage & Frame ───────── */
 .workspace-stage, .macos-window {
   position: relative;
-  background: var(--board-raised);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.08), 0 8px 32px rgba(0, 0, 0, 0.55);
 }
 
 .workspace-titlebar, .macos-titlebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 14px;
-  border-bottom: 1px solid var(--line);
-  background: var(--board-raised-2);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
 }
 
-/* ───────── Clean Developer Surface Panels ───────── */
+/* ───────── Dark Luxury Cards & Panels (No border, elevation via inset top highlight) ───────── */
 .card, .chalk-card, .specular-card, .apple-card {
   position: relative;
-  background: var(--board-raised);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: none;
-  transition: border-color 0.15s ease;
+  background: var(--bg-card);
+  border: none;
+  border-radius: var(--r-lg);
+  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.08), 0 4px 24px rgba(0, 0, 0, 0.45);
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease;
   overflow: hidden;
 }
 
 .card:hover, .chalk-card:hover, .specular-card:hover, .apple-card:hover {
-  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.10), 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+
+.card.featured {
+  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.10), 0 4px 24px rgba(0, 0, 0, 0.45),
+    0 0 0 1px var(--border-accent), 0 0 30px rgba(212, 160, 60, 0.12);
 }
 
 .card-lift {
-  transition: border-color 0.15s ease;
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease;
 }
 .card-lift:hover {
-  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.10), 0 12px 40px rgba(0, 0, 0, 0.55);
 }
 
 /* ───────── Status & Difficulty Badges ───────── */
@@ -221,25 +263,25 @@
   align-items: center;
   gap: 5px;
   font-size: 11px;
-  font-weight: 500;
-  padding: 2px 7px;
-  border-radius: 4px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--r-pill);
   line-height: 1.4;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
 }
 .diff-badge-easy {
   background: var(--easy-dim);
-  border: 1px solid rgba(63, 185, 80, 0.25);
+  border: 1px solid rgba(61, 158, 92, 0.3);
   color: var(--easy);
 }
 .diff-badge-medium {
   background: var(--medium-dim);
-  border: 1px solid rgba(210, 153, 34, 0.25);
+  border: 1px solid rgba(212, 160, 60, 0.3);
   color: var(--medium);
 }
 .diff-badge-hard {
   background: var(--hard-dim);
-  border: 1px solid rgba(248, 81, 73, 0.25);
+  border: 1px solid rgba(184, 60, 56, 0.3);
   color: var(--hard);
 }
 
@@ -247,67 +289,100 @@
 .dot-medium { background: var(--medium); }
 .dot-hard   { background: var(--hard); }
 
-/* ───────── Clean Developer Buttons ───────── */
+/* ───────── Dark Luxury Buttons (Dark bg + Amber border + Multi-layer glow) ───────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: box-shadow var(--dur-base) ease, border-color var(--dur-base) ease, transform var(--dur-fast) var(--ease-out);
+}
+
+/* Primary: Glow is ALWAYS visible, gently pulsing between moderate & strong */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 6px;
+  gap: 0.5rem;
+  height: 34px;
+  padding: 0 16px;
   font-family: var(--font-sans);
-  font-size: 12.5px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   letter-spacing: -0.01em;
-  background: var(--indigo);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--r-md);
+  box-shadow: 0 0 8px rgba(212, 160, 60, 0.55), 0 0 20px rgba(212, 160, 60, 0.25), 0 0 40px rgba(212, 160, 60, 0.10);
+  animation: btn-pulse 2.8s ease-in-out infinite;
   cursor: pointer;
   white-space: nowrap;
+  transition: box-shadow var(--dur-base) ease, border-color var(--dur-base) ease, transform var(--dur-fast) var(--ease-out);
 }
 .btn-primary:hover {
-  background: var(--indigo-light);
-  transform: none;
-  box-shadow: none;
+  animation: none;
+  border-color: var(--accent-bright);
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(212, 160, 60, 0.75), 0 0 28px rgba(212, 160, 60, 0.40), 0 0 55px rgba(212, 160, 60, 0.18);
 }
 .btn-primary:active {
-  opacity: 0.9;
+  opacity: 0.95;
+  transform: translateY(0);
 }
 .btn-primary:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  animation: none;
+  box-shadow: none;
 }
 
+@keyframes btn-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(212, 160, 60, 0.55), 0 0 20px rgba(212, 160, 60, 0.25), 0 0 40px rgba(212, 160, 60, 0.10);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(212, 160, 60, 0.70), 0 0 28px rgba(212, 160, 60, 0.35), 0 0 52px rgba(212, 160, 60, 0.16);
+  }
+}
+
+/* Secondary: dark bg + subtle grey border, no glow */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  height: 32px;
-  padding: 0 11px;
-  border-radius: 6px;
+  gap: 0.5rem;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--r-md);
   font-family: var(--font-sans);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  background: var(--board-raised-2);
-  color: var(--chalk);
-  border: 1px solid var(--line);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
   box-shadow: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform var(--dur-fast) var(--ease-out);
   cursor: pointer;
   white-space: nowrap;
 }
 .btn-secondary:hover {
-  background: var(--board-hover);
-  border-color: var(--line-strong);
-  transform: none;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 248, 230, 0.28);
+  transform: translateY(-1px);
 }
 .btn-secondary:active {
   opacity: 0.9;
+  transform: translateY(0);
 }
 
 .btn-ghost {
@@ -315,38 +390,137 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--r-md);
   font-family: var(--font-sans);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--chalk-dim);
+  color: var(--text-body);
   background: transparent;
   border: 1px solid transparent;
   transition: all 0.15s ease;
   cursor: pointer;
 }
 .btn-ghost:hover {
-  color: var(--chalk);
-  background: var(--board-hover);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  height: 28px;
+  font-size: 12px;
 }
 
 .chalk-btn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 28px;
-  padding: 0 9px;
-  border-radius: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: var(--r-md);
   font-family: var(--font-mono);
   font-size: 11.5px;
   font-weight: 500;
-  background: var(--board-raised-2);
-  border: 1px solid var(--line);
-  color: var(--chalk-dim);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-body);
   cursor: pointer;
   transition: all 0.15s ease;
+}
+
+/* ───────── Dark Luxury Section Labels [Label] bracket notation only ───────── */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 12px;
+}
+
+/* ───────── Dark Luxury Headlines: COLOR contrast, not weight contrast ───────── */
+.display-headline {
+  font-size: clamp(34px, 5.2vw, 62px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+.hl-muted  { color: var(--text-muted); }
+.hl-bright { color: var(--text-primary); }
+.hl-highlight {
+  background: rgba(212, 160, 60, 0.18);
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+/* ───────── Hero Single Ambient Breathing Orb & Badge ───────── */
+.hero-orb {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(48px);
+  pointer-events: none;
+  background: radial-gradient(ellipse at center bottom, rgba(212, 160, 60, 0.22) 0%, rgba(180, 100, 15, 0.10) 35%, transparent 70%);
+  animation: orb-breathe 8s ease-in-out infinite alternate;
+}
+@keyframes orb-breathe {
+  from { opacity: 0.75; transform: translateX(-50%) scale(1); }
+  to   { opacity: 1;    transform: translateX(-50%) scale(1.08); }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-pill);
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  color: var(--text-body);
+  margin-bottom: 20px;
+}
+
+/* ───────── Architecture & Technical Metadata Line Pattern ───────── */
+.arch-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 4px 0 16px;
+}
+
+/* ───────── Dark Luxury Footer Panel ───────── */
+.footer-wrapper {
+  padding: 0 24px 28px;
+  background: var(--bg-base);
+}
+.footer-panel {
+  background: var(--bg-footer);
+  border-radius: var(--r-xl);
+  box-shadow: inset 0 1px 0 rgba(255, 248, 230, 0.06);
+  padding: 40px 36px 24px;
+}
+
+/* ───────── Scroll Reveal & Micro-Animations ───────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--dur-enter) var(--ease-out), transform var(--dur-enter) var(--ease-out);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 .chalk-btn:hover {
   color: var(--chalk);

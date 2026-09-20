@@ -48,26 +48,21 @@ export default function Navbar({
   const hasNext = currentIdx >= 0 && currentIdx < questions.length - 1;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--line)] bg-[var(--board)]/90 backdrop-blur-md transition-colors duration-200">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-12 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-50 w-full border-b border-[var(--border-subtle)] bg-[#0a0907]/85 backdrop-blur-md transition-colors duration-200">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-13 flex items-center justify-between gap-4">
 
         {/* ── Left: Brand & Studio Breadcrumb ── */}
         <div className="flex items-center gap-3 min-w-0">
           {/* Logo & Brand */}
           <button
             onClick={onNavigateHome}
-            className="flex items-center gap-2 shrink-0 group cursor-pointer text-left focus:outline-none"
+            className="flex items-center gap-2.5 shrink-0 group cursor-pointer text-left focus:outline-none"
             aria-label="Go to AlgoVision Library"
           >
             <AlgoVisionLogo size={26} />
-            <div className="flex items-center gap-1.5">
-              <span className="font-sans font-bold text-[14px] text-[var(--chalk)] tracking-tight group-hover:text-[var(--indigo)] transition-colors">
-                AlgoVision
-              </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)] font-medium tracking-wider uppercase">
-                PRO
-              </span>
-            </div>
+            <span className="font-sans font-bold text-[14.5px] text-[var(--text-primary)] tracking-tight group-hover:text-[var(--accent)] transition-colors">
+              AlgoVision
+            </span>
           </button>
 
           {/* Admin Breadcrumb */}
@@ -86,6 +81,16 @@ export default function Navbar({
               <span className="text-[var(--chalk-faint)] text-xs">/</span>
               <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-[var(--indigo)]/10 border border-[var(--indigo)]/20 text-[var(--indigo)]">
                 Code-to-Visualizer Studio
+              </span>
+            </div>
+          )}
+
+          {/* Theory Breadcrumb */}
+          {activeView === 'theory' && (
+            <div className="hidden md:flex items-center gap-2 pl-3 border-l border-[var(--border-subtle)]">
+              <span className="text-[var(--text-tertiary)] text-xs">/</span>
+              <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded bg-[rgba(212,160,60,0.1)] border border-[var(--border-accent)]/30 text-[var(--accent)]">
+                Theory Hub
               </span>
             </div>
           )}

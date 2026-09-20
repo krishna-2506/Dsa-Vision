@@ -1,0 +1,827 @@
+[
+  {
+    "id": "sum-of-first-n-numbers",
+    "title": "Sum of First N Numbers",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/sum-of-first-n-terms5843/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Sum of First N Terms",
+        "url": "https://www.geeksforgeeks.org/problems/sum-of-first-n-terms5843/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Sum of First N Natural Numbers",
+        "url": "https://takeuforward.org/data-structure/sum-of-first-n-natural-numbers/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-sum-of-n",
+        "title": "take U forward - Recursion Lecture 3: Parameterized and Functional Recursion",
+        "url": "https://www.youtube.com/watch?v=69ZCDFy-OUo",
+        "channel": "take U forward",
+        "notes": "Covers parameterized state passing vs functional return value unwinding in call stacks."
+      },
+      {
+        "id": "kunal-kushwaha-recursion-sum",
+        "title": "Kunal Kushwaha - Introduction to Recursion",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Walkthrough of recurrence relations and call stack frames for summation."
+      }
+    ]
+  },
+  {
+    "id": "understand-recursion-by-print-something-n-times",
+    "title": "Understand recursion by print something N times",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/print-gfg-n-times/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Print GFG n times",
+        "url": "https://www.geeksforgeeks.org/problems/print-gfg-n-times/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Introduction to Recursion",
+        "url": "https://takeuforward.org/recursion/introduction-to-recursion-understand-recursion-by-printing-something-n-times/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-recursion-intro",
+        "title": "take U forward - Recursion Lecture 1: Call Stack & Base Condition",
+        "url": "https://www.youtube.com/watch?v=yVdKa8dnKiE",
+        "channel": "take U forward",
+        "notes": "Diagrammatic explanation of memory stack overflow and base case design."
+      },
+      {
+        "id": "kunal-kushwaha-recursion-basics",
+        "title": "Kunal Kushwaha - Recursion Basics and Memory Tree",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Step-by-step trace of function calls and return pointer behavior."
+      }
+    ]
+  },
+  {
+    "id": "basic-hashing",
+    "title": "Basic Hashing",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/hashing-data-structure/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Hashing Data Structure",
+        "url": "https://www.geeksforgeeks.org/dsa/hashing-data-structure/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Hashing: Maps, Collisions, Division Rule",
+        "url": "https://takeuforward.org/hashing/hashing-maps-time-complexity-collisions-division-rule-of-hashing-strivers-a2z-dsa-course/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-hashing-theory",
+        "title": "take U forward - Hashing Basics: Pre-storing & Fetching",
+        "url": "https://www.youtube.com/watch?v=KEs5UyBJ39g",
+        "channel": "take U forward",
+        "notes": "Explains hash functions, collision handling, and unordered_map vs map complexities."
+      },
+      {
+        "id": "love-babbar-hashmaps",
+        "title": "CodeHelp by Babbar - Lecture 78: Hashmaps in C++",
+        "url": "https://www.youtube.com/watch?v=7mUKGHznpfg",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Internal implementation of hash tables, buckets, and load factor in C++."
+      }
+    ]
+  },
+  {
+    "id": "counting-frequencies-of-array-elements",
+    "title": "Counting Frequencies of Array Elements",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/frequency-of-elements--111353/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Frequency of Elements",
+        "url": "https://www.geeksforgeeks.org/problems/frequency-of-elements--111353/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Count Frequency of Each Element in the Array",
+        "url": "https://takeuforward.org/data-structure/count-frequency-of-each-element-in-the-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-count-frequencies",
+        "title": "take U forward - Counting Frequencies using Hash Arrays and Maps",
+        "url": "https://www.youtube.com/watch?v=KEs5UyBJ39g",
+        "channel": "take U forward",
+        "notes": "Comparing direct index frequency arrays with hash maps for unbounded values."
+      },
+      {
+        "id": "kunal-kushwaha-frequency-counting",
+        "title": "Kunal Kushwaha - Frequency Counting and Hash Tables",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Time and space tradeoffs when collecting element occurrences."
+      }
+    ]
+  },
+  {
+    "id": "highest-occurring-element-in-an-array",
+    "title": "Highest Occurring Element in an Array",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/frequent-element-array/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Most Frequent Element in an Array",
+        "url": "https://www.geeksforgeeks.org/dsa/frequent-element-array/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Find the Highest/Lowest Frequency Element",
+        "url": "https://takeuforward.org/arrays/find-the-highest-lowest-frequency-element/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-highest-frequency",
+        "title": "take U forward - Find Highest and Lowest Frequency Elements",
+        "url": "https://www.youtube.com/watch?v=KEs5UyBJ39g",
+        "channel": "take U forward",
+        "notes": "Single pass over frequency map to identify maximum and minimum frequency values."
+      },
+      {
+        "id": "love-babbar-mode-element",
+        "title": "CodeHelp by Babbar - Tracking Mode Elements using Frequency Tables",
+        "url": "https://www.youtube.com/watch?v=7mUKGHznpfg",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Traversing key-value pairs to find the element with peak count."
+      }
+    ]
+  },
+  {
+    "id": "bubble-sort",
+    "title": "Bubble Sort",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/bubble-sort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Bubble Sort",
+        "url": "https://www.geeksforgeeks.org/problems/bubble-sort/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Bubble Sort Algorithm",
+        "url": "https://takeuforward.org/data-structure/bubble-sort-algorithm/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-bubble-sort",
+        "title": "take U forward - Bubble Sort Algorithm with Optimization",
+        "url": "https://www.youtube.com/watch?v=HGk_ypEuS24",
+        "channel": "take U forward",
+        "notes": "Covers adjacent element swapping, bubbling largest values, and early exit flag for O(N) best case."
+      },
+      {
+        "id": "abdul-bari-bubble-sort",
+        "title": "Abdul Bari - Bubble Sort Analysis and Comparisons",
+        "url": "https://www.youtube.com/watch?v=oTICKmJhLXI",
+        "channel": "Abdul Bari",
+        "notes": "Detailed count of passes and comparisons in quadratic sorting routines."
+      }
+    ]
+  },
+  {
+    "id": "insertion-sorting",
+    "title": "Insertion Sorting",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/insertion-sort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Insertion Sort",
+        "url": "https://www.geeksforgeeks.org/problems/insertion-sort/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Insertion Sort Algorithm",
+        "url": "https://takeuforward.org/data-structure/insertion-sort-algorithm/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-insertion-sort",
+        "title": "take U forward - Insertion Sort Algorithm",
+        "url": "https://www.youtube.com/watch?v=HGk_ypEuS24",
+        "channel": "take U forward",
+        "notes": "Building the sorted array slice step-by-step by shifting elements to the right."
+      },
+      {
+        "id": "abdul-bari-insertion-sort",
+        "title": "Abdul Bari - Insertion Sort Algorithm Walkthrough",
+        "url": "https://www.youtube.com/watch?v=oTICKmJhLXI",
+        "channel": "Abdul Bari",
+        "notes": "Explains stability, in-place behavior, and adaptive nature on partially sorted arrays."
+      }
+    ]
+  },
+  {
+    "id": "selection-sort",
+    "title": "Selection Sort",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/selection-sort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Selection Sort",
+        "url": "https://www.geeksforgeeks.org/problems/selection-sort/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Selection Sort Algorithm",
+        "url": "https://takeuforward.org/sorting/selection-sort-algorithm/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-selection-sort",
+        "title": "take U forward - Selection Sort Algorithm",
+        "url": "https://www.youtube.com/watch?v=HGk_ypEuS24",
+        "channel": "take U forward",
+        "notes": "Finding minimum in the unsorted partition and placing it at the front in each pass."
+      },
+      {
+        "id": "abdul-bari-selection-sort",
+        "title": "Abdul Bari - Selection Sort Passes and Swapping",
+        "url": "https://www.youtube.com/watch?v=oTICKmJhLXI",
+        "channel": "Abdul Bari",
+        "notes": "Mathematical comparison of selection sort against bubble sort with minimal swaps."
+      }
+    ]
+  },
+  {
+    "id": "merge-sorting",
+    "title": "Merge Sorting",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/merge-sort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Merge Sort",
+        "url": "https://www.geeksforgeeks.org/problems/merge-sort/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Merge Sort Algorithm",
+        "url": "https://takeuforward.org/data-structure/merge-sort-algorithm/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "abdul-bari-merge-sort",
+        "title": "Abdul Bari - 2.7.2. Merge Sort Algorithm",
+        "url": "https://www.youtube.com/watch?v=mB5HXBb_HY8",
+        "channel": "Abdul Bari",
+        "notes": "Classic divide-and-conquer recurrence relation T(n) = 2T(n/2) + O(n) and merge step."
+      },
+      {
+        "id": "take-u-forward-merge-sort",
+        "title": "take U forward - Merge Sort Algorithm | Step-by-Step",
+        "url": "https://www.youtube.com/watch?v=ogjf7ORKfd8",
+        "channel": "take U forward",
+        "notes": "Implementation with temporary arrays, two pointers, and recursion tree breakdown."
+      }
+    ]
+  },
+  {
+    "id": "quick-sorting",
+    "title": "Quick Sorting",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/quick-sort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Quick Sort",
+        "url": "https://www.geeksforgeeks.org/problems/quick-sort/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Quick Sort Algorithm",
+        "url": "https://takeuforward.org/data-structure/quick-sort-algorithm/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "abdul-bari-quicksort",
+        "title": "Abdul Bari - 2.8.1 QuickSort Algorithm",
+        "url": "https://www.youtube.com/watch?v=7h1s2SojIRw",
+        "channel": "Abdul Bari",
+        "notes": "Partitioning algorithm intuition, pivot placement, and best/worst case recursion trees."
+      },
+      {
+        "id": "take-u-forward-quicksort",
+        "title": "take U forward - Quick Sort Algorithm Explained",
+        "url": "https://www.youtube.com/watch?v=WIrA4YexLRQ",
+        "channel": "take U forward",
+        "notes": "In-place partitioning with dual pointers and sorting around pivot."
+      }
+    ]
+  },
+  {
+    "id": "recursive-bubble-sort",
+    "title": "Recursive Bubble Sort",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/recursive-bubble-sort/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Recursive Bubble Sort",
+        "url": "https://www.geeksforgeeks.org/dsa/recursive-bubble-sort/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Recursive Bubble Sort Algorithm",
+        "url": "https://takeuforward.org/arrays/recursive-bubble-sort-algorithm/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-rec-bubble-sort",
+        "title": "take U forward - Recursive Bubble Sort Walkthrough",
+        "url": "https://www.youtube.com/watch?v=HGk_ypEuS24",
+        "channel": "take U forward",
+        "notes": "Replacing the outer loop with recursive call passing reduced array size n-1."
+      },
+      {
+        "id": "kunal-kushwaha-rec-bubble-sort",
+        "title": "Kunal Kushwaha - Recursive Sorting Techniques",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Understanding pass execution via stack frame unwinding."
+      }
+    ]
+  },
+  {
+    "id": "recursive-insertion-sort",
+    "title": "Recursive Insertion Sort",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/recursive-insertion-sort/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Recursive Insertion Sort",
+        "url": "https://www.geeksforgeeks.org/dsa/recursive-insertion-sort/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Recursive Insertion Sort Algorithm",
+        "url": "https://takeuforward.org/arrays/recursive-insertion-sort-algorithm/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-rec-insertion-sort",
+        "title": "take U forward - Recursive Insertion Sort Walkthrough",
+        "url": "https://www.youtube.com/watch?v=HGk_ypEuS24",
+        "channel": "take U forward",
+        "notes": "Recursive induction: sort prefix of size n-1 and insert nth element into position."
+      },
+      {
+        "id": "kunal-kushwaha-rec-insertion-sort",
+        "title": "Kunal Kushwaha - Recursive Insertion and Array Slicing",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Step-by-step element insertion on recursive returns."
+      }
+    ]
+  },
+  {
+    "id": "check-if-the-array-is-sorted-ii",
+    "title": "Check if the Array is Sorted II",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/program-check-array-sorted-not-iterative-recursive/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Check if Array is Sorted",
+        "url": "https://www.geeksforgeeks.org/dsa/program-check-array-sorted-not-iterative-recursive/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Check if Array Is Sorted and Rotated",
+        "url": "https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-check-sorted-rotated",
+        "title": "take U forward - Check if Array is Sorted and Rotated",
+        "url": "https://www.youtube.com/watch?v=37E9ckMDdTk",
+        "channel": "take U forward",
+        "notes": "Counts inversion breakpoints with circular modulo check (nums[i] > nums[(i+1)%n] <= 1)."
+      },
+      {
+        "id": "love-babbar-check-sorted-rotated",
+        "title": "CodeHelp by Babbar - Lecture 21: Check if Array Is Sorted & Rotated",
+        "url": "https://www.youtube.com/watch?v=Z7_nMTHROZo",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Walkthrough of LeetCode 1752 with edge cases for duplicate elements."
+      }
+    ]
+  },
+  {
+    "id": "find-missing-number",
+    "title": "Find missing number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/missing-number-in-array1416/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Missing in Array",
+        "url": "https://www.geeksforgeeks.org/problems/missing-number-in-array1416/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Missing Number",
+        "url": "https://leetcode.com/problems/missing-number/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-missing-number",
+        "title": "NeetCode - Missing Number - Blind 75 - Leetcode 268 - Python",
+        "url": "https://www.youtube.com/watch?v=WnPLSRLSANE",
+        "channel": "NeetCode",
+        "notes": "Compares Gauss summation formula with bitwise XOR operation to avoid integer overflow."
+      },
+      {
+        "id": "take-u-forward-missing-number",
+        "title": "take U forward - Find Missing Number in Array",
+        "url": "https://www.youtube.com/watch?v=bYWLJb3vCWY",
+        "channel": "take U forward",
+        "notes": "Hashing, summation formula, and optimal XOR methods."
+      }
+    ]
+  },
+  {
+    "id": "find-the-number-that-appears-once-and-other-numbers-twice",
+    "title": "Find the number that appears once, and other numbers twice.",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/find-the-number-occurring-odd-number-of-times/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Find the Number Occurring Odd Number of Times",
+        "url": "https://www.geeksforgeeks.org/dsa/find-the-number-occurring-odd-number-of-times/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Single Number",
+        "url": "https://leetcode.com/problems/single-number/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-single-number",
+        "title": "NeetCode - Single Number - Leetcode 136 - Python",
+        "url": "https://www.youtube.com/watch?v=qMPX1AOa83k",
+        "channel": "NeetCode",
+        "notes": "Optimal O(N) time and O(1) space solution using XOR properties: a ^ a = 0 and a ^ 0 = a."
+      },
+      {
+        "id": "take-u-forward-single-number",
+        "title": "take U forward - Find the Number that Appears Once",
+        "url": "https://www.youtube.com/watch?v=bYWLJb3vCWY",
+        "channel": "take U forward",
+        "notes": "Progresses from brute force to map frequency and optimal XOR reduction."
+      }
+    ]
+  },
+  {
+    "id": "largest-element",
+    "title": "Largest Element",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/c-program-find-largest-element-array/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Program to Find Largest Element in Array",
+        "url": "https://www.geeksforgeeks.org/dsa/c-program-find-largest-element-array/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Find the Largest Element in an Array",
+        "url": "https://takeuforward.org/data-structure/find-the-largest-element-in-an-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-largest-element",
+        "title": "take U forward - Largest Element in Array",
+        "url": "https://www.youtube.com/watch?v=37E9ckMDdTk",
+        "channel": "take U forward",
+        "notes": "Linear scan maintaining running maximum in O(N) time vs sorting in O(N log N)."
+      },
+      {
+        "id": "love-babbar-largest-element",
+        "title": "CodeHelp by Babbar - Finding Max & Min in an Array",
+        "url": "https://www.youtube.com/watch?v=sNrLlmOIn-c",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Array traversal using INT_MIN baseline."
+      }
+    ]
+  },
+  {
+    "id": "left-rotate-array-by-k-places",
+    "title": "Left Rotate Array by K Places",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/rotate-array-by-n-elements-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Rotate Array",
+        "url": "https://www.geeksforgeeks.org/problems/rotate-array-by-n-elements-1587115621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Rotate Array",
+        "url": "https://leetcode.com/problems/rotate-array/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-rotate-array",
+        "title": "NeetCode - Rotate Array - Leetcode 189 - Python",
+        "url": "https://www.youtube.com/watch?v=BHr381Guz3Y",
+        "channel": "NeetCode",
+        "notes": "In-place 3-step reversal algorithm: reverse all, reverse first k, reverse remainder."
+      },
+      {
+        "id": "take-u-forward-rotate-array-k",
+        "title": "take U forward - Rotate Array by K Elements",
+        "url": "https://www.youtube.com/watch?v=wvcQg43_V8U",
+        "channel": "take U forward",
+        "notes": "Handles k > n using k = k % n with optimal O(1) extra space."
+      }
+    ]
+  },
+  {
+    "id": "left-rotate-array-by-one",
+    "title": "Left Rotate Array by One",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/cyclically-rotate-an-array-by-one2614/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Rotate Array by One",
+        "url": "https://www.geeksforgeeks.org/problems/cyclically-rotate-an-array-by-one2614/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Left Rotate the Array by One",
+        "url": "https://takeuforward.org/data-structure/left-rotate-the-array-by-one/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-rotate-one",
+        "title": "take U forward - Left Rotate Array by One Place",
+        "url": "https://www.youtube.com/watch?v=wvcQg43_V8U",
+        "channel": "take U forward",
+        "notes": "Shifting elements arr[i] = arr[i+1] and placing saved first element at arr[n-1]."
+      },
+      {
+        "id": "love-babbar-rotate-one",
+        "title": "CodeHelp by Babbar - Cyclically Rotate an Array",
+        "url": "https://www.youtube.com/watch?v=Z7_nMTHROZo",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Single-position array shifting and boundary placement."
+      }
+    ]
+  },
+  {
+    "id": "linear-search",
+    "title": "Linear Search",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/linear-search/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Linear Search Algorithm",
+        "url": "https://www.geeksforgeeks.org/dsa/linear-search/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Linear Search in C++",
+        "url": "https://takeuforward.org/data-structure/linear-search-in-c/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-linear-search",
+        "title": "take U forward - Linear Search in Arrays",
+        "url": "https://www.youtube.com/watch?v=wvcQg43_V8U",
+        "channel": "take U forward",
+        "notes": "Sequential search traversal with early termination upon element match."
+      },
+      {
+        "id": "love-babbar-linear-search",
+        "title": "CodeHelp by Babbar - Linear Search Implementation",
+        "url": "https://www.youtube.com/watch?v=sNrLlmOIn-c",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Dry run of linear search and comparison with binary search prerequisites."
+      }
+    ]
+  },
+  {
+    "id": "longest-subarray-with-given-sum-k-positives",
+    "title": "Longest subarray with given sum K(positives)",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/longest-sub-array-with-sum-k/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Subarray with Given Sum K",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-sub-array-with-sum-k/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Longest Subarray with Given Sum K (Positives)",
+        "url": "https://takeuforward.org/data-structure/longest-subarray-with-given-sum-k/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-longest-subarray-positives",
+        "title": "take U forward - Longest Subarray with Sum K (Positives)",
+        "url": "https://www.youtube.com/watch?v=frf7qxiN2qU",
+        "channel": "take U forward",
+        "notes": "Optimal two-pointer / sliding window method achieving O(2N) time and O(1) space."
+      },
+      {
+        "id": "aditya-verma-longest-subarray-positives",
+        "title": "Aditya Verma - Variable Size Sliding Window: Largest Subarray of sum K",
+        "url": "https://www.youtube.com/watch?v=cyu_nuW5utA",
+        "channel": "Aditya Verma",
+        "notes": "Window expansion and contraction framework for positive array elements."
+      }
+    ]
+  },
+  {
+    "id": "longest-subarray-with-sum-k",
+    "title": "Longest subarray with sum K",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/longest-sub-array-with-sum-k/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Subarray with Sum K (Positives and Negatives)",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-sub-array-with-sum-k/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Longest Subarray with Sum K (Positives and Negatives)",
+        "url": "https://takeuforward.org/arrays/longest-subarray-with-sum-k-postives-and-negatives",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-longest-subarray-hashmap",
+        "title": "take U forward - Longest Subarray with Sum K (Positives, Zeros & Negatives)",
+        "url": "https://www.youtube.com/watch?v=frf7qxiN2qU",
+        "channel": "take U forward",
+        "notes": "Optimal prefix-sum hash map approach checking if (sum - k) exists in history."
+      },
+      {
+        "id": "aditya-verma-prefix-sum",
+        "title": "Aditya Verma - Prefix Sum and Hash Map Pattern",
+        "url": "https://www.youtube.com/watch?v=TfQPoaRDeMQ",
+        "channel": "Aditya Verma",
+        "notes": "Subarray sum logic when array contains both positive and negative integers."
+      }
+    ]
+  },
+  {
+    "id": "maximum-consecutive-ones",
+    "title": "Maximum Consecutive Ones",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/maximum-consecutive-ones-or-zeros-in-a-binary-array/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Consecutive Ones in a Binary Array",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-consecutive-ones-or-zeros-in-a-binary-array/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Max Consecutive Ones",
+        "url": "https://leetcode.com/problems/max-consecutive-ones/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-max-consecutive-ones",
+        "title": "take U forward - Max Consecutive Ones Walkthrough",
+        "url": "https://www.youtube.com/watch?v=bYWLJb3vCWY",
+        "channel": "take U forward",
+        "notes": "Single-pass linear scan with running counter reset on encountering zero."
+      },
+      {
+        "id": "love-babbar-consecutive-ones",
+        "title": "CodeHelp by Babbar - Consecutive Runs in Arrays",
+        "url": "https://www.youtube.com/watch?v=sNrLlmOIn-c",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Tracking current and global maxima across boolean arrays."
+      }
+    ]
+  },
+  {
+    "id": "move-zeros-to-end",
+    "title": "Move Zeros to End",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/move-all-zeroes-to-end-of-array0751/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Move All Zeroes to End",
+        "url": "https://www.geeksforgeeks.org/problems/move-all-zeroes-to-end-of-array0751/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Move Zeroes",
+        "url": "https://leetcode.com/problems/move-zeroes/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-move-zeroes",
+        "title": "NeetCode - Move Zeroes - Leetcode 283 - Python",
+        "url": "https://www.youtube.com/watch?v=aayNRwUN3Do",
+        "channel": "NeetCode",
+        "notes": "Two-pointer in-place swap pushing non-zero values forward in O(N) time."
+      },
+      {
+        "id": "take-u-forward-move-zeros",
+        "title": "take U forward - Move All Zeros to End of Array",
+        "url": "https://www.youtube.com/watch?v=wvcQg43_V8U",
+        "channel": "take U forward",
+        "notes": "Finds index of first zero and swaps with subsequent non-zero elements."
+      }
+    ]
+  },
+  {
+    "id": "remove-duplicates-from-sorted-array",
+    "title": "Remove duplicates from Sorted array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/remove-duplicate-elements-from-sorted-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Remove Duplicates Sorted Array",
+        "url": "https://www.geeksforgeeks.org/problems/remove-duplicate-elements-from-sorted-array/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Remove Duplicates from Sorted Array",
+        "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-remove-duplicates",
+        "title": "NeetCode - Remove Duplicates from Sorted Array - Leetcode 26 - Python",
+        "url": "https://www.youtube.com/watch?v=DEJAZBq0FDA",
+        "channel": "NeetCode",
+        "notes": "Two-pointer in-place overwrite preserving unique sorted order in O(1) extra memory."
+      },
+      {
+        "id": "take-u-forward-remove-duplicates",
+        "title": "take U forward - Remove Duplicates in-place from Sorted Array",
+        "url": "https://www.youtube.com/watch?v=37E9ckMDdTk",
+        "channel": "take U forward",
+        "notes": "Slow and fast pointer technique (i advances only on unique value discovery)."
+      }
+    ]
+  },
+  {
+    "id": "second-largest-element",
+    "title": "Second Largest Element",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/second-largest3735/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Second Largest",
+        "url": "https://www.geeksforgeeks.org/problems/second-largest3735/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Find Second Smallest and Second Largest Element in an Array",
+        "url": "https://takeuforward.org/data-structure/find-second-smallest-and-second-largest-element-in-an-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-second-largest",
+        "title": "take U forward - Second Largest Element in Array",
+        "url": "https://www.youtube.com/watch?v=37E9ckMDdTk",
+        "channel": "take U forward",
+        "notes": "Single-pass linear scan updating largest and second_largest in O(N) time."
+      },
+      {
+        "id": "love-babbar-second-largest",
+        "title": "CodeHelp by Babbar - Tracking First and Second Maximum Elements",
+        "url": "https://www.youtube.com/watch?v=sNrLlmOIn-c",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Optimal two-variable condition check handling duplicate largest entries."
+      }
+    ]
+  }
+]

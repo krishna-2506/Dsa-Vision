@@ -150,23 +150,79 @@ export default function ProblemArticlePage({
   const [savingNotes, setSavingNotes] = useState(false);
   const [notesSavedAlert, setNotesSavedAlert] = useState(false);
 
-  // Normalize YouTube videos array
+  // Normalize YouTube videos array with strict deduplication
   const videoList = useMemo(() => {
+    const list = [];
+    const seenIds = new Set();
+    const seenUrls = new Set();
+
+    const getVidId = (u) => {
+      if (!u || typeof u !== 'string') return null;
+      const m = u.match(/(?:v=|\/embed\/|youtu\.be\/|\/v\/|watch\?v=)([\w-]{11})/);
+      return m ? m[1] : null;
+    };
+    const norm = (u) => (u || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+
+    // 1. If database has youtube_videos array, use it as baseline
     if (Array.isArray(question?.youtube_videos) && question.youtube_videos.length > 0) {
-      return question.youtube_videos;
+      for (const v of question.youtube_videos) {
+        if (!v || !v.url) continue;
+        const vId = getVidId(v.url);
+        const uNorm = norm(v.url);
+        if (vId && seenIds.has(vId)) continue;
+        if (uNorm && seenUrls.has(uNorm)) continue;
+        if (vId) seenIds.add(vId);
+        if (uNorm) seenUrls.add(uNorm);
+        list.push(v);
+      }
     }
+
+    // 2. If question.youtube_url exists and wasn't included yet, prepend as primary
     if (question?.youtube_url) {
-      return [
-        {
+      const pId = getVidId(question.youtube_url);
+      const pNorm = norm(question.youtube_url);
+      if ((!pId || !seenIds.has(pId)) && !seenUrls.has(pNorm)) {
+        if (pId) seenIds.add(pId);
+        seenUrls.add(pNorm);
+        list.unshift({
           id: 'striver-main',
           title: "Striver's Tutorial",
           url: question.youtube_url,
           channel: 'take U forward',
           is_primary: true
-        }
-      ];
+        });
+      }
     }
-    return [];
+
+    return list;
+  }, [question]);
+
+  // Curated alternate articles with strict TUF & GFG deduplication
+  const displayAlternateArticles = useMemo(() => {
+    if (!Array.isArray(question?.alternate_articles)) return [];
+    const norm = (u) => (u || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+    const artNorm = norm(question?.article_url);
+    const gfgNorm = norm(question?.gfg_url);
+    const seen = new Set();
+    if (artNorm) seen.add(artNorm);
+    if (gfgNorm) seen.add(gfgNorm);
+
+    return question.alternate_articles.filter((art) => {
+      if (!art || !art.url) return false;
+      const uNorm = norm(art.url);
+      const src = (art.source || '').toLowerCase();
+      // Skip TUF articles (since Take U Forward button already exists)
+      if (src.includes('take u forward') || src.includes('striver') || uNorm.includes('takeuforward.org')) {
+        return false;
+      }
+      // Skip GFG if identical to dedicated gfg_url button
+      if (gfgNorm && (uNorm === gfgNorm || uNorm.includes(gfgNorm) || gfgNorm.includes(uNorm))) {
+        return false;
+      }
+      if (seen.has(uNorm)) return false;
+      seen.add(uNorm);
+      return true;
+    });
   }, [question]);
 
   const activeVideo = videoList[activeVideoIdx] || videoList[0];
@@ -366,10 +422,10 @@ export default function ProblemArticlePage({
                   onLaunchStudio(question);
                 }}
                 className="btn-primary flex items-center gap-1.5 px-3 py-1 text-xs font-medium cursor-pointer"
-                title="Launch Step-by-Step Algorithm Visualizer Studio"
+                title="Open interactive visualizer"
               >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Launch Visualizer</span>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Visualizer</span>
               </button>
             )}
 
@@ -477,12 +533,6 @@ export default function ProblemArticlePage({
                   <span className={`w-1.5 h-1.5 rounded-full ${diffCfg.dotClass}`} />
                   <span>{diffCfg.label}</span>
                 </span>
-                {hasVisualizer && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-mono bg-blue-500/10 border border-blue-500/25 text-blue-400 font-medium">
-                    <Sparkles className="w-3 h-3 text-blue-400" />
-                    <span>Interactive Visualizer Ready</span>
-                  </span>
-                )}
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold font-sans tracking-tight text-[var(--ink)] pt-1">
                 {question.title}
@@ -574,28 +624,12 @@ export default function ProblemArticlePage({
         {/* ── 3. Interactive Algorithm Visualizer Section (PRIMARY LEARNING CANVAS) ── */}
         <div className="rounded-lg bg-[var(--board-raised)] border border-[var(--line)] overflow-hidden shadow-xs">
           {/* Visualizer Header Bar */}
-          <div className="px-4 py-3 border-b border-[var(--line)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[var(--board)]">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-md bg-blue-500/10 border border-blue-500/25 flex items-center justify-center text-blue-400">
-                <Layers className="w-4 h-4" />
-              </div>
-              <div>
-                <h2 className="text-sm font-semibold text-[var(--ink)] flex items-center gap-2">
-                  <span>Interactive Algorithm Canvas</span>
-                  {hasVisualizer ? (
-                    <span className="text-[10px] font-mono px-2 py-0.2 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 font-semibold">
-                      Live Component Mounted
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-mono px-2 py-0.2 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/25 font-semibold">
-                      AI Generator Ready
-                    </span>
-                  )}
-                </h2>
-                <p className="text-xs text-[var(--ink-muted)]">
-                  Step-by-step interactive algorithm animation with live pointers, states &amp; intuition
-                </p>
-              </div>
+          <div className="px-4 py-2.5 border-b border-[var(--line)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[var(--board)]">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[var(--accent)]" />
+              <h2 className="text-sm font-semibold text-[var(--ink)]">
+                Algorithm Visualizer
+              </h2>
             </div>
 
             {/* Approach Tier Switcher, View Mode & Studio Fullscreen Button */}
@@ -1359,7 +1393,7 @@ export default function ProblemArticlePage({
             )}
 
             {/* 2. Curated Alternate Articles & Authoritative Resource Hub */}
-            {(question.article_url || question.gfg_url || (Array.isArray(question.alternate_articles) && question.alternate_articles.length > 0)) && (
+            {(question.article_url || question.gfg_url || displayAlternateArticles.length > 0) && (
               <section className="p-5 rounded-lg bg-[var(--board-raised)] border border-[var(--line)] space-y-4">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-teal-400" />
@@ -1406,7 +1440,7 @@ export default function ProblemArticlePage({
                     </a>
                   )}
 
-                  {Array.isArray(question.alternate_articles) && question.alternate_articles.map((art, aIdx) => (
+                  {displayAlternateArticles.map((art, aIdx) => (
                     <a
                       key={aIdx}
                       href={art.url}
@@ -1572,30 +1606,6 @@ export default function ProblemArticlePage({
               rows={8}
               className="w-full p-3.5 rounded-md bg-[var(--board)] border border-[var(--line)] focus:border-[var(--indigo)] text-sm text-[var(--ink)] placeholder-[var(--ink-muted)] focus:outline-none font-mono resize-y"
             />
-          </div>
-        )}
-
-        {/* ── Bottom Interactive Visualizer Callout Banner ── */}
-        {hasVisualizer && (
-          <div className="p-5 rounded-lg bg-[var(--board-raised)] border border-[var(--line)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-400">
-                <Layers className="w-4 h-4" />
-                <span>Interactive Algorithm Canvas Available</span>
-              </div>
-              <p className="text-sm font-medium text-[var(--ink)]">
-                Visualize <strong className="text-[var(--ink)]">{question.title}</strong> step-by-step with live pointers, arrays &amp; code highlights
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                sound?.playSuccess?.();
-                onLaunchStudio(question);
-              }}
-              className="btn-primary flex items-center gap-2 px-4 py-2 text-xs font-semibold shrink-0 cursor-pointer"
-            >
-              <span>Launch Visualizer Studio →</span>
-            </button>
           </div>
         )}
       </div>

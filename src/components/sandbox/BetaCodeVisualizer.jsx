@@ -33,19 +33,87 @@ const LANGUAGES = [
   { id: 'javascript', label: 'JavaScript', ext: '.js', badge: 'Client V8' }
 ];
 
+/**
+ * Robustly injects test parameter values into Python, C++, and JavaScript source code.
+ * Handles arrays, numbers (including negative numbers), strings, and multiple variable names.
+ */
+function injectInputsIntoCode(sourceCode, lang, inputValues) {
+  let updated = sourceCode;
+  for (const [key, rawVal] of Object.entries(inputValues)) {
+    if (rawVal === undefined || rawVal === null || rawVal === '') continue;
+    let cleanVal = rawVal;
+    if (typeof rawVal === 'string') {
+      const trimmed = rawVal.trim();
+      if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+        try {
+          cleanVal = JSON.parse(trimmed);
+        } catch (_) {
+          cleanVal = trimmed;
+        }
+      } else {
+        cleanVal = trimmed;
+      }
+    }
+
+    if (lang === 'python') {
+      if (Array.isArray(cleanVal)) {
+        const arrRegex = new RegExp(`\\b${key}\\s*=\\s*\\[[^\\]]*\\]`);
+        if (arrRegex.test(updated)) {
+          updated = updated.replace(arrRegex, `${key} = ${JSON.stringify(cleanVal)}`);
+        }
+      } else {
+        const numRegex = new RegExp(`\\b${key}\\s*=\\s*[-+]?\\d+`);
+        if (numRegex.test(updated)) {
+          updated = updated.replace(numRegex, `${key} = ${cleanVal}`);
+        }
+      }
+    } else if (lang === 'cpp') {
+      if (Array.isArray(cleanVal)) {
+        const cppVecStr = `{${cleanVal.join(', ')}}`;
+        const vecRegex = new RegExp(`((?:(?:std::)?vector<int>|auto)\\s+${key}\\s*=\\s*)\\{[^}]*\\}`);
+        if (vecRegex.test(updated)) {
+          updated = updated.replace(vecRegex, `$1${cppVecStr}`);
+        }
+      } else {
+        const numRegex = new RegExp(`(int\\s+${key}\\s*=\\s*)[-+]?\\d+`);
+        if (numRegex.test(updated)) {
+          updated = updated.replace(numRegex, `$1${cleanVal}`);
+        }
+      }
+    } else {
+      // JavaScript
+      if (Array.isArray(cleanVal)) {
+        const arrRegex = new RegExp(`((?:const|let|var)\\s+${key}\\s*=\\s*)\\[[^\\]]*\\]`);
+        if (arrRegex.test(updated)) {
+          updated = updated.replace(arrRegex, `$1${JSON.stringify(cleanVal)}`);
+        }
+      } else {
+        const numRegex = new RegExp(`((?:const|let|var)\\s+${key}\\s*=\\s*)[-+]?\\d+`);
+        if (numRegex.test(updated)) {
+          updated = updated.replace(numRegex, `$1${cleanVal}`);
+        }
+      }
+    }
+  }
+  return updated;
+}
+
 export default function BetaCodeVisualizer({
   question = null,
+  solutions = null,
   initialLanguage = 'python',
   className = ''
 }) {
   const matchedTemplate = useMemo(() => {
-    return getTemplateForQuestion(question);
-  }, [question]);
+    return getTemplateForQuestion(question, solutions || question?.solutions);
+  }, [question, solutions]);
 
   const [selectedLang, setSelectedLang] = useState(initialLanguage);
   const [code, setCode] = useState('');
-  const [customArrayText, setCustomArrayText] = useState('');
-  const [customTargetText, setCustomTargetText] = useState('');
+  
+  // Test Bench State
+  const [activeCaseIdx, setActiveCaseIdx] = useState(0); // 0, 1, 2, ... or 'custom'
+  const [paramValues, setParamValues] = useState({});
 
   // Execution & Visualization State
   const [isExecuting, setIsExecuting] = useState(false);
@@ -69,7 +137,7 @@ export default function BetaCodeVisualizer({
   const [isFormatting, setIsFormatting] = useState(false);
   const [prettierStatus, setPrettierStatus] = useState('idle'); // 'idle' | 'formatted' | 'error'
   const [prettierMessage, setPrettierMessage] = useState('');
-  const [formatOnRun, setFormatOnRun] = useState(false);
+  const [formatOnRun, setFormatOnRun] = useState(true);
 
   // Format Code via Prettier Engine (Shift + Alt + F)
   const handleFormatCode = useCallback(async (codeToFormat = null) => {
@@ -189,71 +257,70 @@ export default function BetaCodeVisualizer({
   }, []);
 
   // Initialize code whenever question, matchedTemplate, or selected language changes
+  // Initialize code whenever question, matchedTemplate, or selected language changes
   useEffect(() => {
     let initialSource = '';
     if (matchedTemplate?.code?.[selectedLang]) {
       initialSource = matchedTemplate.code[selectedLang];
     } else {
-      initialSource = getRunnableCodeForQuestion(question, selectedLang);
+      initialSource = getRunnableCodeForQuestion(question, selectedLang, solutions);
     }
 
-    setCode(initialSource);
+    const testCases = matchedTemplate?.testCases || [];
+    const firstCase = testCases[0]?.input || matchedTemplate?.defaultInput || {};
+    setActiveCaseIdx(0);
 
-    // Populate custom inputs from template default
-    if (matchedTemplate?.defaultInput?.nums) {
-      setCustomArrayText(JSON.stringify(matchedTemplate.defaultInput.nums));
+    const initParams = {};
+    if (matchedTemplate?.inputs && matchedTemplate.inputs.length > 0) {
+      matchedTemplate.inputs.forEach((inp) => {
+        const v = firstCase[inp.name] !== undefined ? firstCase[inp.name] : inp.default;
+        initParams[inp.name] = typeof v === 'object' ? JSON.stringify(v) : String(v !== undefined ? v : '');
+      });
     } else {
-      setCustomArrayText('[1, 2, 3, 4, 5]');
+      if (firstCase.nums) initParams.nums = JSON.stringify(firstCase.nums);
+      if (firstCase.target !== undefined) initParams.target = String(firstCase.target);
     }
+    setParamValues(initParams);
 
-    if (matchedTemplate?.defaultInput?.target !== undefined && matchedTemplate.defaultInput.target !== null) {
-      setCustomTargetText(String(matchedTemplate.defaultInput.target));
-    } else {
-      setCustomTargetText('');
-    }
-
-    // Auto-run for immediate visual preview
-    executeCode(initialSource, selectedLang);
+    const injected = injectInputsIntoCode(initialSource, selectedLang, initParams);
+    setCode(injected);
+    executeCode(injected, selectedLang);
   }, [matchedTemplate, selectedLang, question]);
+
+  // Handle selecting a preset test case tab
+  const handleSelectTestCase = (idx) => {
+    setActiveCaseIdx(idx);
+    const tc = matchedTemplate?.testCases?.[idx];
+    if (!tc || !tc.input) return;
+
+    const newParams = {};
+    for (const [k, v] of Object.entries(tc.input)) {
+      newParams[k] = typeof v === 'object' ? JSON.stringify(v) : String(v);
+    }
+    setParamValues(newParams);
+
+    const baseCode = matchedTemplate?.code?.[selectedLang] || getRunnableCodeForQuestion(question, selectedLang, solutions);
+    const updated = injectInputsIntoCode(baseCode, selectedLang, newParams);
+    setCode(updated);
+    executeCode(updated, selectedLang);
+    sound?.playStep?.(580);
+  };
+
+  // Handle custom input parameter change
+  const handleParamChange = (name, value) => {
+    setActiveCaseIdx('custom');
+    setParamValues((prev) => ({ ...prev, [name]: value }));
+  };
 
   // Handle Apply Custom Inputs into Code
   const handleApplyCustomInput = () => {
     try {
-      const parsedArray = JSON.parse(customArrayText.trim());
-      if (!Array.isArray(parsedArray)) {
-        setError('Custom input must be a valid JSON array of numbers, e.g. [1, 2, 3, 4]');
-        setErrorType('ValueError');
-        setErrorLine(1);
-        setActiveConsoleTab('diagnostics');
-        return;
-      }
-
-      let updatedCode = code;
-      const arrayStr = JSON.stringify(parsedArray);
-
-      if (selectedLang === 'python') {
-        updatedCode = updatedCode.replace(/(?:nums|arr)\s*=\s*\[[^\]]*\]/, `nums = ${arrayStr}`);
-        if (customTargetText.trim() !== '') {
-          updatedCode = updatedCode.replace(/target\s*=\s*\d+/, `target = ${customTargetText.trim()}`);
-        }
-      } else if (selectedLang === 'cpp') {
-        const cppVecStr = `{${parsedArray.join(', ')}}`;
-        updatedCode = updatedCode.replace(/(?:(?:std::)?vector<int>\s+(?:nums|arr)\s*=\s*)\{[^}]*\}/, `std::vector<int> nums = ${cppVecStr}`);
-        if (customTargetText.trim() !== '') {
-          updatedCode = updatedCode.replace(/int\s+target\s*=\s*\d+/, `int target = ${customTargetText.trim()}`);
-        }
-      } else {
-        updatedCode = updatedCode.replace(/(?:const|let|var)\s+(?:nums|arr)\s*=\s*\[[^\]]*\]/, `const nums = ${arrayStr}`);
-        if (customTargetText.trim() !== '') {
-          updatedCode = updatedCode.replace(/(?:const|let|var)\s+target\s*=\s*\d+/, `const target = ${customTargetText.trim()}`);
-        }
-      }
-
+      const updatedCode = injectInputsIntoCode(code, selectedLang, paramValues);
       setCode(updatedCode);
       executeCode(updatedCode, selectedLang);
       sound?.playStep?.(600);
     } catch (_) {
-      setError('Invalid input format. Use valid array syntax like [3, 1, 4, 1, 5]');
+      setError('Invalid input format.');
       setErrorType('SyntaxError');
       setErrorLine(1);
       setActiveConsoleTab('diagnostics');
@@ -262,12 +329,23 @@ export default function BetaCodeVisualizer({
 
   // Reset to original algorithm starter code
   const handleResetCode = () => {
-    const defaultCode = matchedTemplate?.code?.[selectedLang] || getRunnableCodeForQuestion(question, selectedLang);
-    setCode(defaultCode);
-    if (matchedTemplate?.defaultInput?.nums) {
-      setCustomArrayText(JSON.stringify(matchedTemplate.defaultInput.nums));
+    const defaultCode = matchedTemplate?.code?.[selectedLang] || getRunnableCodeForQuestion(question, selectedLang, solutions);
+    const testCases = matchedTemplate?.testCases || [];
+    const firstCase = testCases[0]?.input || matchedTemplate?.defaultInput || {};
+    setActiveCaseIdx(0);
+
+    const initParams = {};
+    if (matchedTemplate?.inputs && matchedTemplate.inputs.length > 0) {
+      matchedTemplate.inputs.forEach((inp) => {
+        const v = firstCase[inp.name] !== undefined ? firstCase[inp.name] : inp.default;
+        initParams[inp.name] = typeof v === 'object' ? JSON.stringify(v) : String(v !== undefined ? v : '');
+      });
     }
-    executeCode(defaultCode, selectedLang);
+    setParamValues(initParams);
+
+    const injected = injectInputsIntoCode(defaultCode, selectedLang, initParams);
+    setCode(injected);
+    executeCode(injected, selectedLang);
     sound?.playStep?.(520);
   };
 
@@ -361,26 +439,21 @@ export default function BetaCodeVisualizer({
   const activeLine = currentStepData.line || null;
 
   return (
-    <div className={`flex flex-col rounded-xl border border-[var(--line)] bg-[var(--board)] overflow-hidden shadow-lg ${className}`}>
+    <div className={`flex flex-col rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] overflow-hidden shadow-2xl ${className}`}>
       
-      {/* ── 1. Beta Mode Hero Banner & Control Bar ── */}
-      <div className="px-5 py-3 bg-[var(--board-raised)] border-b border-[var(--line)] flex flex-wrap items-center justify-between gap-3">
-        {/* Left: Mode Title & Engine Badge */}
+      {/* ── 1. Clean Header & Control Bar ── */}
+      <div className="px-5 py-3.5 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4">
+        {/* Left: Simple Title */}
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-            <Zap className="w-4 h-4 fill-current" />
+          <div className="w-8 h-8 rounded-lg bg-[rgba(212,160,60,0.1)] border border-[var(--border-accent)]/30 flex items-center justify-center text-[var(--accent)]">
+            <Zap className="w-4 h-4" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold tracking-tight text-[var(--chalk)]">
-                Beta Mode · In-Browser Compiler &amp; Visualizer
-              </h2>
-              <span className="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-bold tracking-wider">
-                CPython 3.12 WASM + AST
-              </span>
-            </div>
-            <p className="text-[11px] text-[var(--chalk-dim)]">
-              Full Python library support (<code className="text-indigo-400">collections</code>, <code className="text-indigo-400">heapq</code>, <code className="text-indigo-400">math</code>). Live syntax error detection &amp; variable tracing.
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">
+              Interactive Code Runner
+            </h2>
+            <p className="text-xs text-[var(--text-muted)]">
+              Edit algorithm code, test cases, and step through execution
             </p>
           </div>
         </div>
@@ -388,7 +461,7 @@ export default function BetaCodeVisualizer({
         {/* Right: Language Selector & Run Action */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Language Selector Pills */}
-          <div className="flex items-center bg-[var(--board)] border border-[var(--line)] rounded-lg p-0.5">
+          <div className="flex items-center bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg p-0.5">
             {LANGUAGES.map((lang) => {
               const isSelected = selectedLang === lang.id;
               return (
@@ -400,8 +473,8 @@ export default function BetaCodeVisualizer({
                   }}
                   className={`px-2.5 py-1 text-xs font-mono font-medium rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
                     isSelected
-                      ? 'bg-indigo-600 text-white shadow-xs font-semibold'
-                      : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-raised)]'
+                      ? 'bg-[var(--accent)]/20 text-[var(--accent-bright)] border border-[var(--accent)]/50 font-bold shadow-xs'
+                      : 'text-[var(--text-body)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
                   }`}
                 >
                   <span>{lang.label}</span>
@@ -414,39 +487,11 @@ export default function BetaCodeVisualizer({
           <button
             onClick={handleResetCode}
             title="Reset code to original template"
-            className="btn-secondary h-8 px-2 text-xs flex items-center gap-1 cursor-pointer"
+            className="btn-secondary h-8 px-2.5 text-xs flex items-center gap-1.5 cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Reset</span>
           </button>
-
-          {/* Prettier Format Document */}
-          <button
-            onClick={() => handleFormatCode()}
-            disabled={isFormatting || isExecuting}
-            title="Format Document with Prettier (Shift + Alt + F)"
-            className="btn-secondary h-8 px-2.5 text-xs flex items-center gap-1.5 cursor-pointer text-cyan-300 hover:text-cyan-200 border-cyan-500/30 hover:border-cyan-500/50 transition-colors"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="font-semibold">Prettier</span>
-            <kbd className="hidden md:inline-block text-[9px] font-mono px-1 py-0.2 rounded bg-black/40 text-[var(--chalk-dim)]">
-              ⇧⌥F
-            </kbd>
-          </button>
-
-          {/* Format on Run Toggle */}
-          <label
-            className="hidden xl:flex items-center gap-1.5 text-[11px] font-mono text-[var(--chalk-dim)] cursor-pointer select-none bg-[var(--board)] px-2 py-1 rounded-md border border-[var(--line)]"
-            title="Automatically format code with Prettier before running (like VS Code Format on Save)"
-          >
-            <input
-              type="checkbox"
-              checked={formatOnRun}
-              onChange={(e) => setFormatOnRun(e.target.checked)}
-              className="rounded accent-cyan-500 cursor-pointer"
-            />
-            <span className="text-[10px]">Format on Run</span>
-          </label>
 
           {/* Run & Visualize Action */}
           <button
@@ -462,8 +507,8 @@ export default function BetaCodeVisualizer({
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Compile &amp; Run</span>
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Run Code</span>
                 <kbd className="hidden sm:inline-block ml-1 text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/20 text-white/90 font-bold">
                   Ctrl ↵
                 </kbd>
@@ -473,66 +518,113 @@ export default function BetaCodeVisualizer({
         </div>
       </div>
 
-      {/* ── 2. Custom Input Bar & Compiler Status Bar ── */}
-      <div className="px-5 py-2.5 bg-[var(--board-raised-2)]/60 border-b border-[var(--line)] flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2 flex-1 min-w-[280px]">
-          <span className="font-mono text-[11px] font-semibold text-indigo-400 shrink-0">
-            nums =
-          </span>
-          <input
-            type="text"
-            value={customArrayText}
-            onChange={(e) => setCustomArrayText(e.target.value)}
-            placeholder="[1, 2, 3, 4, 5]"
-            className="font-mono text-xs px-2.5 py-1 rounded bg-[var(--board)] border border-[var(--line)] text-[var(--chalk)] focus:outline-none focus:border-indigo-500 w-full max-w-xs"
-          />
+      {/* ── 2. Dark Luxury Test Bench & Dynamic Parameter Inputs Bar ── */}
+      <div className="px-5 py-3 bg-[var(--bg-surface)] border-b border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-4 text-xs">
+        {/* Left: Test Case Tabs & Dynamic Parameter Inputs */}
+        <div className="flex flex-wrap items-center gap-3 flex-1 min-w-[320px]">
+          {/* Test Case Selector Tabs */}
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--bg-card)] border border-[var(--border-subtle)]">
+            {(matchedTemplate?.testCases || [
+              { name: 'Case 1' },
+              { name: 'Case 2' }
+            ]).map((tc, idx) => {
+              const isSelected = activeCaseIdx === idx;
+              const cleanLabel = tc.name ? tc.name.split('(')[0].trim() : `Case ${idx + 1}`;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => handleSelectTestCase(idx)}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-all cursor-pointer ${
+                    isSelected
+                      ? 'bg-[var(--accent)]/20 text-[var(--accent-bright)] border border-[var(--accent)]/50 font-bold shadow-xs'
+                      : 'text-[var(--text-body)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
+                  }`}
+                  title={tc.name || `Test Case ${idx + 1}`}
+                >
+                  {cleanLabel}
+                </button>
+              );
+            })}
 
-          {customTargetText !== '' && (
-            <>
-              <span className="font-mono text-[11px] font-semibold text-amber-400 shrink-0 ml-2">
-                target =
-              </span>
-              <input
-                type="text"
-                value={customTargetText}
-                onChange={(e) => setCustomTargetText(e.target.value)}
-                placeholder="9"
-                className="font-mono text-xs px-2.5 py-1 rounded bg-[var(--board)] border border-[var(--line)] text-[var(--chalk)] focus:outline-none focus:border-indigo-500 w-16 text-center"
-              />
-            </>
-          )}
+            {/* Custom Case Tab */}
+            <button
+              onClick={() => setActiveCaseIdx('custom')}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-mono transition-all cursor-pointer ${
+                activeCaseIdx === 'custom'
+                  ? 'bg-[var(--accent)]/20 text-[var(--accent-bright)] border border-[var(--accent)]/50 font-bold shadow-xs'
+                  : 'text-[var(--text-body)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface)]'
+              }`}
+            >
+              Custom
+            </button>
+          </div>
 
-          <button
-            onClick={handleApplyCustomInput}
-            className="btn-secondary h-7 px-2.5 text-[11px] font-mono shrink-0 cursor-pointer text-indigo-400 hover:text-indigo-300"
-          >
-            Apply &amp; Run
-          </button>
+          <span className="text-[var(--border-medium)] hidden sm:inline">|</span>
+
+          {/* Dynamic Inputs derived from Template Schema */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {(matchedTemplate?.inputs && matchedTemplate.inputs.length > 0
+              ? matchedTemplate.inputs
+              : Object.keys(paramValues).map((k) => ({
+                  name: k,
+                  label: `${k} =`,
+                  type: k === 'nums' || k === 'arr' ? 'array' : 'number'
+                }))
+            ).map((inp) => {
+              const val = paramValues[inp.name] !== undefined ? paramValues[inp.name] : '';
+              const isArr = inp.type === 'array' || (typeof val === 'string' && val.trim().startsWith('['));
+              return (
+                <div key={inp.name} className="flex items-center gap-1.5">
+                  <span className="font-mono text-[11px] font-semibold text-[var(--accent)] shrink-0">
+                    {inp.label || `${inp.name} =`}
+                  </span>
+                  <input
+                    type="text"
+                    value={val}
+                    onChange={(e) => handleParamChange(inp.name, e.target.value)}
+                    placeholder={isArr ? '[1, 2, 3]' : '0'}
+                    className={`font-mono text-xs px-2.5 py-1 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] ${
+                      isArr ? 'w-48 sm:w-64' : 'w-20 text-center'
+                    }`}
+                  />
+                </div>
+              );
+            })}
+
+            {/* Apply & Run Button */}
+            <button
+              onClick={handleApplyCustomInput}
+              className="btn-secondary h-7.5 px-3 text-[11px] font-mono font-semibold text-[var(--accent)] hover:text-[var(--accent-bright)] cursor-pointer shrink-0"
+              title="Apply inputs into code and execute"
+            >
+              Apply &amp; Run
+            </button>
+          </div>
         </div>
 
-        {/* Compiler Status Feedback */}
+        {/* Right: Compiler Telemetry & Status Feedback */}
         <div className="flex items-center gap-3 text-[11px] font-mono">
           {error ? (
             <button
               onClick={() => setActiveConsoleTab('diagnostics')}
-              className="flex items-center gap-1.5 text-rose-400 font-semibold bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-0.5 rounded-full border border-rose-500/30 animate-pulse cursor-pointer transition-colors"
+              className="flex items-center gap-1.5 text-rose-400 font-semibold bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1 rounded-full border border-rose-500/30 animate-pulse cursor-pointer transition-colors"
             >
               <AlertTriangle className="w-3 h-3" />
-              <span>{errorType || 'Error'} on Line {errorLine || 1} (Click to inspect)</span>
+              <span>{errorType || 'Error'} on Line {errorLine || 1} (Inspect)</span>
             </button>
           ) : isExecuting ? (
-            <span className="flex items-center gap-1.5 text-amber-400 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/25">
-              <div className="w-2.5 h-2.5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+            <span className="flex items-center gap-1.5 text-[var(--accent)] font-semibold bg-[var(--accent)]/10 px-2.5 py-1 rounded-full border border-[var(--accent)]/25">
+              <div className="w-2.5 h-2.5 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
               <span>Compiling &amp; Tracing...</span>
             </span>
           ) : metrics ? (
-            <div className="flex items-center gap-3 text-[var(--chalk-dim)]">
-              <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+            <div className="flex items-center gap-3 text-[var(--text-body)]">
+              <span className="flex items-center gap-1 text-[#3d9e5c] font-semibold">
                 <CheckCircle2 className="w-3 h-3" />
                 <span>Build Succeeded</span>
               </span>
-              <span>Steps: <strong className="text-[var(--chalk)]">{metrics.stepsCount}</strong></span>
-              <span>Time: <strong className="text-[var(--chalk)]">{metrics.durationMs}ms</strong></span>
+              <span>Steps: <strong className="text-[var(--text-primary)]">{metrics.stepsCount}</strong></span>
+              <span>Time: <strong className="text-[var(--text-primary)]">{metrics.durationMs}ms</strong></span>
             </div>
           ) : null}
         </div>
@@ -673,8 +765,8 @@ export default function BetaCodeVisualizer({
             </div>
           )}
 
-          {/* Live Code Editor with Error Highlighting & Prettier Status Bar */}
-          <div className="p-2 flex-1 min-h-[360px] bg-[var(--board)]">
+          {/* Live Code Editor */}
+          <div className="p-2 flex-1 min-h-[360px] bg-[var(--bg-card)]">
             <LiveCodeEditor
               code={code}
               onChange={(newCode) => {
@@ -685,10 +777,6 @@ export default function BetaCodeVisualizer({
                 }
               }}
               onRun={() => executeCode(code, selectedLang)}
-              onFormat={() => handleFormatCode()}
-              isFormatting={isFormatting}
-              prettierStatus={prettierStatus}
-              prettierMessage={prettierMessage}
               activeLine={error ? null : activeLine}
               errorLine={errorLine}
               errorMessage={error ? `${errorType}: on line ${errorLine}` : null}
@@ -732,18 +820,6 @@ export default function BetaCodeVisualizer({
                       1
                     </span>
                   )}
-                </button>
-
-                <button
-                  onClick={() => setActiveConsoleTab('libraries')}
-                  className={`px-2.5 py-1.5 font-medium border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
-                    activeConsoleTab === 'libraries'
-                      ? 'border-indigo-500 text-indigo-300 font-bold bg-[var(--board)]'
-                      : 'border-transparent text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
-                  }`}
-                >
-                  <BookOpen className="w-3 h-3 text-cyan-400" />
-                  <span>Libraries &amp; WASM</span>
                 </button>
               </div>
 
@@ -812,46 +888,6 @@ export default function BetaCodeVisualizer({
                 </div>
               )}
 
-              {activeConsoleTab === 'libraries' && (
-                <div className="space-y-2 text-[11px]">
-                  <div className="text-[var(--chalk)] font-semibold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span>CPython 3.12 WebAssembly Runtime Status: Online</span>
-                  </div>
-                  <p className="text-[var(--chalk-dim)] leading-relaxed">
-                    The following Python standard libraries are pre-configured and ready to import:
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-[10.5px]">
-                    <div className="p-1.5 rounded bg-[var(--board)] border border-[var(--line)]">
-                      <strong className="text-indigo-400 font-mono">collections</strong>
-                      <div className="text-[var(--chalk-faint)] text-[9.5px]">deque, Counter, defaultdict</div>
-                    </div>
-                    <div className="p-1.5 rounded bg-[var(--board)] border border-[var(--line)]">
-                      <strong className="text-indigo-400 font-mono">heapq</strong>
-                      <div className="text-[var(--chalk-faint)] text-[9.5px]">heappush, heappop, heapify</div>
-                    </div>
-                    <div className="p-1.5 rounded bg-[var(--board)] border border-[var(--line)]">
-                      <strong className="text-indigo-400 font-mono">bisect</strong>
-                      <div className="text-[var(--chalk-faint)] text-[9.5px]">bisect_left, bisect_right</div>
-                    </div>
-                    <div className="p-1.5 rounded bg-[var(--board)] border border-[var(--line)]">
-                      <strong className="text-indigo-400 font-mono">math</strong>
-                      <div className="text-[var(--chalk-faint)] text-[9.5px]">floor, ceil, sqrt, inf</div>
-                    </div>
-                    <div className="p-1.5 rounded bg-[var(--board)] border border-[var(--line)]">
-                      <strong className="text-indigo-400 font-mono">itertools</strong>
-                      <div className="text-[var(--chalk-faint)] text-[9.5px]">accumulate, permutations</div>
-                    </div>
-                    <div className="p-1.5 rounded bg-[var(--board)] border border-[var(--line)]">
-                      <strong className="text-indigo-400 font-mono">typing</strong>
-                      <div className="text-[var(--chalk-faint)] text-[9.5px]">List, Dict, Optional, Tuple</div>
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-[var(--chalk-faint)]">
-                    External packages (<code className="text-indigo-400">numpy</code>, etc.) are automatically installed on import via Pyodide's package loader.
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -1047,13 +1083,36 @@ export default function BetaCodeVisualizer({
             </div>
           </div>
 
-          {/* Variable & Invariant Watcher */}
-          <div className="p-3 bg-[var(--board)]">
-            <VariableInspector
-              variables={currentStepData.variables || {}}
-              stepData={currentStepData}
-              title="Memory &amp; Pointer Telemetry"
-            />
+          {/* Active Variable Watcher */}
+          <div className="p-3.5 bg-[var(--bg-surface)] border-t border-[var(--border-subtle)]">
+            <div className="flex items-center justify-between text-xs font-mono mb-2">
+              <span className="font-semibold text-[var(--text-primary)]">
+                Variables &amp; State
+              </span>
+              <span className="text-[var(--text-tertiary)] text-[11px]">
+                {Object.keys(currentStepData.variables || {}).length} Active
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap min-h-[30px]">
+              {Object.keys(currentStepData.variables || {}).length > 0 ? (
+                Object.entries(currentStepData.variables).map(([k, v]) => (
+                  <span
+                    key={k}
+                    className="px-2.5 py-1 rounded-md bg-[var(--bg-card)] border border-[var(--border-subtle)] font-mono text-xs flex items-center gap-1.5"
+                  >
+                    <span className="text-[var(--text-muted)]">{k}:</span>
+                    <span className="text-[var(--accent)] font-semibold">
+                      {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                    </span>
+                  </span>
+                ))
+              ) : (
+                <span className="font-mono text-xs text-[var(--text-muted)]">
+                  Step through execution to inspect live variable values.
+                </span>
+              )}
+            </div>
           </div>
 
         </div>

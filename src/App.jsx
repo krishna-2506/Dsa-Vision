@@ -5,6 +5,7 @@ import VisualizerStudio from './components/VisualizerStudio';
 import ProblemArticlePage from './components/ProblemArticlePage';
 import AdminPage from './components/AdminPage';
 import SandboxWorkbench from './components/sandbox/SandboxWorkbench';
+import StepTheoryPage from './components/StepTheoryPage';
 import SkillExportModal from './components/SkillExportModal';
 import AuthModal from './components/AuthModal';
 import UserDashboardModal from './components/UserDashboardModal';
@@ -16,8 +17,9 @@ import { authService } from './services/auth';
 export default function App() {
   const [questions, setQuestions] = useState([]);
   const [stats, setStats] = useState(null);
-  const [activeView, setActiveView] = useState('library'); // 'library' | 'article' | 'studio' | 'admin'
+  const [activeView, setActiveView] = useState('library'); // 'library' | 'article' | 'studio' | 'admin' | 'sandbox' | 'theory'
   const [activeQuestion, setActiveQuestion] = useState(null);
+  const [activeTheoryStep, setActiveTheoryStep] = useState(1);
   const [skillModalOpen, setSkillModalOpen] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
 
@@ -89,6 +91,14 @@ export default function App() {
         setActiveQuestion(matched);
         setActiveView('studio');
       }
+    } else if (hash.startsWith('#theory/') || pathname.startsWith('/theory/')) {
+      const stepStr = hash.startsWith('#theory/')
+        ? hash.replace('#theory/', '')
+        : pathname.replace('/theory/', '');
+      const stepNo = parseInt(stepStr, 10) || 1;
+      setActiveTheoryStep(stepNo);
+      setActiveView('theory');
+      setActiveQuestion(null);
     } else {
       setActiveView('library');
       setActiveQuestion(null);
@@ -180,6 +190,14 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleOpenStepTheory = (stepNo) => {
+    setActiveTheoryStep(stepNo);
+    setActiveView('theory');
+    setActiveQuestion(null);
+    window.location.hash = `#theory/${stepNo}`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleToggleFavorite = async (id) => {
     const q = questions.find((item) => item.id === id);
     if (q) {
@@ -237,8 +255,34 @@ export default function App() {
     setUserStats(null);
   };
 
+  // Initialize Scroll Reveal Intersection Observer for Dark Luxury micro-animations
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((x) => {
+          if (!x.isIntersecting) return;
+          const delay = Number(x.target.dataset.delay) || 0;
+          setTimeout(() => x.target.classList.add('visible'), delay);
+          obs.unobserve(x.target);
+        });
+      },
+      { threshold: 0.08 }
+    );
+
+    const elements = document.querySelectorAll('.reveal:not(.visible)');
+    elements.forEach((el) => {
+      if (el.parentElement) {
+        const siblings = Array.from(el.parentElement.querySelectorAll('.reveal'));
+        if (!el.dataset.delay) el.dataset.delay = String(siblings.indexOf(el) * 90);
+      }
+      obs.observe(el);
+    });
+
+    return () => obs.disconnect();
+  }, [activeView, activeQuestion]);
+
   return (
-    <div className="min-h-screen bg-[#0d0e12] text-[#f2f3f5] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col font-sans transition-colors duration-200 selection:bg-[#d4a03c]/20 selection:text-[#f0ebe0]">
       {/* Top Navbar */}
       <Navbar
         activeView={activeView}
@@ -289,6 +333,15 @@ export default function App() {
             questions={questions}
             onNavigateQuestion={handleOpenStudio}
           />
+        ) : activeView === 'theory' ? (
+          <StepTheoryPage
+            stepNo={activeTheoryStep}
+            questions={questions}
+            onBack={handleBackToLibrary}
+            onOpenQuestion={handleOpenArticle}
+            onLaunchStudio={handleOpenStudio}
+            onSelectStep={(nextStepNo) => handleOpenStepTheory(nextStepNo)}
+          />
         ) : (
           <LibraryView
             questions={questions}
@@ -299,6 +352,7 @@ export default function App() {
             onOpenImportModal={() => setImportModalOpen(true)}
             onOpenAdmin={() => handleOpenAdmin()}
             onOpenSandbox={handleOpenSandbox}
+            onOpenStepTheory={handleOpenStepTheory}
           />
         )}
       </main>
@@ -337,9 +391,40 @@ export default function App() {
         }}
       />
 
-      {/* Clean Sleek Footer */}
-      <footer className="border-t border-[#1e2029] bg-[#111217] py-6 text-center text-xs font-mono text-[#5b5e6e]">
-        <span>AlgoVision Studio Pro • Powered by Native SQLite &amp; Striver A2Z Curriculum</span>
+      {/* ── Normal, Clean Footer ── */}
+      <footer className="mt-16 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] py-8 px-4 sm:px-6">
+        <div className="max-w-[1300px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-tertiary)]">
+          <div className="flex items-center gap-3">
+            <span className="font-semibold text-[var(--text-primary)] text-sm">AlgoVision</span>
+            <span className="text-[var(--border-medium)]">·</span>
+            <span>Interactive Data Structure &amp; Algorithm Visualizer</span>
+          </div>
+
+          <div className="flex items-center gap-6 font-mono text-xs">
+            <button
+              onClick={handleBackToLibrary}
+              className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+            >
+              Curriculum
+            </button>
+            <button
+              onClick={handleOpenSandbox}
+              className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+            >
+              Code Lab
+            </button>
+            <button
+              onClick={() => setSkillModalOpen(true)}
+              className="hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+            >
+              Skill Export
+            </button>
+          </div>
+
+          <div>
+            &copy; {new Date().getFullYear()} AlgoVision
+          </div>
+        </div>
       </footer>
     </div>
   );

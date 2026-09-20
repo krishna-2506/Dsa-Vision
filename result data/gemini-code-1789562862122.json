@@ -1,0 +1,832 @@
+[
+  {
+    "id": "cpp-basics",
+    "title": "Cpp Basics",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-cheatsheet/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Cheatsheet",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-cheatsheet/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - C++ Programming Examples",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-programming-examples/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "codewithharry-cpp-basics",
+        "title": "CodeWithHarry - C++ Tutorial For Beginners",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Comprehensive Hindi crash course covering basic syntax, compilation flow, and core constructs."
+      },
+      {
+        "id": "love-babbar-cpp-basics",
+        "title": "CodeHelp by Babbar - Complete C++ Tutorial in 1 Video",
+        "url": "https://www.youtube.com/watch?v=Z2oxGj36vZk",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Full foundational walkthrough of C++ mechanics with practical examples."
+      }
+    ]
+  },
+  {
+    "id": "for-loops",
+    "title": "For loops",
+    "gfg_url": "https://www.geeksforgeeks.org/c/c-loops/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Loops in C and C++",
+        "url": "https://www.geeksforgeeks.org/c/c-loops/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks Practice - Print GFG n times",
+        "url": "https://www.geeksforgeeks.org/problems/print-gfg-n-times/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "love-babbar-for-loops",
+        "title": "CodeHelp by Babbar - If-Else, Loops & Pattern Basics",
+        "url": "https://www.youtube.com/watch?v=WR31ByTzAVQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Detailed explanation of for-loop initialization, condition checking, and step updating."
+      },
+      {
+        "id": "codewithharry-for-loops",
+        "title": "CodeWithHarry - For Loops and Loop Mechanics in C++",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Practical demonstration of counter variables, loop conditions, and nested for-loops."
+      }
+    ]
+  },
+  {
+    "id": "functions-pass-by-reference-and-value",
+    "title": "Functions (Pass by Reference and Value)",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-functions-pass-by-reference/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Functions: Pass By Reference",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-functions-pass-by-reference/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Passing by Pointer vs Passing by Reference in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/passing-by-pointer-vs-passing-by-reference-in-cpp/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "love-babbar-pass-by-reference",
+        "title": "CodeHelp by Babbar - Functions & Memory Allocation",
+        "url": "https://www.youtube.com/watch?v=Z2oxGj36vZk",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Diagrammatic explanation of stack frames, memory addresses, and aliasing in pass-by-reference."
+      },
+      {
+        "id": "codewithharry-call-by-reference",
+        "title": "CodeWithHarry - Call by Value & Call by Reference in C++",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Clear side-by-side comparison of value copying versus reference manipulation."
+      }
+    ]
+  },
+  {
+    "id": "if-elseif",
+    "title": "If ElseIf",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/c-c-if-statement-with-examples/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ if Statement",
+        "url": "https://www.geeksforgeeks.org/cpp/c-c-if-statement-with-examples/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks Practice - C++ if-else (Decision Making)",
+        "url": "https://www.geeksforgeeks.org/problems/c-if-else-decision-making4138/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "love-babbar-if-else",
+        "title": "CodeHelp by Babbar - Lecture 3: Conditionals and Logic",
+        "url": "https://www.youtube.com/watch?v=WR31ByTzAVQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Explains truth tables, nested conditionals, and branching in competitive programming."
+      },
+      {
+        "id": "codewithharry-if-else",
+        "title": "CodeWithHarry - Control Structures: If-Else Ladder",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Covers boolean expressions and multi-branch decision trees."
+      }
+    ]
+  },
+  {
+    "id": "input-output",
+    "title": "Input Output",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/managing-console-i-o-operations-in-cpp/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Managing Console I/O Operations in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/managing-console-i-o-operations-in-cpp/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Basic Input in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/input-in-cpp/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "codewithharry-io-streams",
+        "title": "CodeWithHarry - C++ Basic Input/Output (cin & cout)",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Walkthrough of standard I/O streams and stream extraction/insertion operators."
+      },
+      {
+        "id": "love-babbar-cpp-io",
+        "title": "CodeHelp by Babbar - C++ Input, Output and Fast I/O",
+        "url": "https://www.youtube.com/watch?v=Z2oxGj36vZk",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Covers cin buffering, handling whitespaces with getline, and standard output formatting."
+      }
+    ]
+  },
+  {
+    "id": "switch-case",
+    "title": "Switch Case",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/nested-switch-statement-in-c/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Nested Switch Statement in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/nested-switch-statement-in-c/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks Practice - C++ Switch Case Statement",
+        "url": "https://www.geeksforgeeks.org/problems/c-switch-case-statement5900/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "codewithharry-switch-case",
+        "title": "CodeWithHarry - Switch Case Control Structure in C++",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Explains fall-through behavior, default labels, and proper break statement usage."
+      },
+      {
+        "id": "love-babbar-switch-case",
+        "title": "CodeHelp by Babbar - Switch Statement & Functions",
+        "url": "https://www.youtube.com/watch?v=Z2oxGj36vZk",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Deep dive into switch tables, jump tables, and clean menu-driven code structures."
+      }
+    ]
+  },
+  {
+    "id": "theory-with-examples",
+    "title": "Theory with examples",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/time-complexity-and-space-complexity/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Time and Space Complexity",
+        "url": "https://www.geeksforgeeks.org/dsa/time-complexity-and-space-complexity/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Practice Questions on Time Complexity Analysis",
+        "url": "https://www.geeksforgeeks.org/dsa/practice-questions-time-complexity-analysis/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "abdul-bari-time-complexity",
+        "title": "Abdul Bari - 1.5.1 Time Complexity #1",
+        "url": "https://www.youtube.com/watch?v=9TlHvipP5yA",
+        "channel": "Abdul Bari",
+        "notes": "Classic intuitive breakdown of counting step frequencies, Big-O, and asymptotic upper bounds."
+      },
+      {
+        "id": "take-u-forward-time-complexity",
+        "title": "take U forward - Time and Space Complexity Analysis for Beginners",
+        "url": "https://www.youtube.com/watch?v=FPu9Uld7W-E",
+        "channel": "take U forward",
+        "notes": "Step-by-step calculation of worst, average, and best-case complexities with real code examples."
+      }
+    ]
+  },
+  {
+    "id": "two-sum",
+    "title": "Two Sum",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/2-sum-print-pair-with-given-sum/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - 2 Sum: Find a pair with given sum",
+        "url": "https://www.geeksforgeeks.org/dsa/2-sum-print-pair-with-given-sum/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks Practice - Two Sum (Key Pair)",
+        "url": "https://www.geeksforgeeks.org/problems/key-pair5616/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Two Sum",
+        "url": "https://leetcode.com/problems/two-sum/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-two-sum",
+        "title": "NeetCode - Two Sum - Leetcode 1 - HashMap - Python",
+        "url": "https://www.youtube.com/watch?v=KLlXCFG5TnA",
+        "channel": "NeetCode",
+        "notes": "Clean one-pass hash map solution with constant lookup time."
+      },
+      {
+        "id": "take-u-forward-two-sum",
+        "title": "take U forward - 2 Sum Problem | Brute-Better-Optimal",
+        "url": "https://www.youtube.com/watch?v=UXDSeD9mN-k",
+        "channel": "take U forward",
+        "notes": "Covers both returning indices (hashing) and existence checks (two-pointer on sorted array)."
+      }
+    ]
+  },
+  {
+    "id": "what-are-arrays-strings",
+    "title": "What are arrays, strings?",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/arrays-and-strings-in-c/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Arrays and Strings in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/arrays-and-strings-in-c/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - C++ String Class and its Applications",
+        "url": "https://www.geeksforgeeks.org/cpp/c-string-class-and-its-applications/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "love-babbar-arrays-strings",
+        "title": "CodeHelp by Babbar - Introduction to Arrays and Character Arrays",
+        "url": "https://www.youtube.com/watch?v=Z2oxGj36vZk",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "In-depth overview of contiguous memory indexing, null termination, and std::string methods."
+      },
+      {
+        "id": "codewithharry-arrays-strings",
+        "title": "CodeWithHarry - Arrays and Pointer Arithmetic in C++",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Explains 1D/2D arrays, indexing from 0, and string manipulation functions."
+      }
+    ]
+  },
+  {
+    "id": "while-loops",
+    "title": "While loops",
+    "gfg_url": "https://www.geeksforgeeks.org/computer-science-fundamentals/while-loop-syntax/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - While loop Syntax",
+        "url": "https://www.geeksforgeeks.org/computer-science-fundamentals/while-loop-syntax/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks Practice - While Loop",
+        "url": "https://www.geeksforgeeks.org/problems/while-loop/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "love-babbar-while-loops",
+        "title": "CodeHelp by Babbar - While Loops & Problem Solving",
+        "url": "https://www.youtube.com/watch?v=WR31ByTzAVQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Covers entry-controlled loop mechanics and writing robust loop termination conditions."
+      },
+      {
+        "id": "codewithharry-while-loops",
+        "title": "CodeWithHarry - While and Do-While Loops in C++",
+        "url": "https://www.youtube.com/watch?v=yGB9jhsEsr8",
+        "channel": "CodeWithHarry",
+        "notes": "Contrasts while with for loops for indeterminate iteration counts."
+      }
+    ]
+  },
+  {
+    "id": "easy-and-medium",
+    "title": "Easy and Medium",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Pyramid Patterns",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Number Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-patterns-master",
+        "title": "take U forward - Must Do Pattern Problems Before Starting DSA",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Universal 4-step framework for mapping rows, columns, spaces, and values across nested loops."
+      },
+      {
+        "id": "kunal-kushwaha-patterns-trick",
+        "title": "Kunal Kushwaha - Solve Any Pattern Question With This Trick!",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Formula-based visual intuition for deriving nested loop bounds."
+      }
+    ]
+  },
+  {
+    "id": "hard",
+    "title": "Hard",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Character Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks Practice - Number Bridge Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/double-triangle-pattern-1662664259/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-hard-patterns",
+        "title": "take U forward - Advanced Symmetric & Hollow Patterns Walkthrough",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Techniques for multi-quadrant symmetry, diamond voids, and concentric square distance matrices."
+      },
+      {
+        "id": "love-babbar-patterns-part2",
+        "title": "CodeHelp by Babbar - Lecture 4: Solving Pattern Questions (Part-2)",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Detailed walkthrough of complex triangular spacing, character ramps, and numeric bridges."
+      }
+    ]
+  },
+  {
+    "id": "pattern-1",
+    "title": "Pattern 1",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Pyramid Patterns",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 1 (Square Pattern)",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-1",
+        "title": "take U forward - Pattern 1: Solid Rectangular/Square Star Grid",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Introduction to outer loop for row index and inner loop for columns of uniform stars."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-1",
+        "title": "Kunal Kushwaha - Square Matrix Pattern Fundamentals",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Foundational pattern showing nested loop execution order."
+      }
+    ]
+  },
+  {
+    "id": "pattern-10",
+    "title": "Pattern 10",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/triangle-pattern-1661718013/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Half Diamond Star Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/triangle-pattern-1661718013/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 10: Half Diamond Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-10",
+        "title": "take U forward - Pattern 10: Half Diamond Star Pattern",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Covers computing column count dynamically with min(row, 2*n - row) in a single loop structure."
+      },
+      {
+        "id": "love-babbar-pattern-10",
+        "title": "CodeHelp by Babbar - Half Diamond Pattern Walkthrough",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Two-phase row decomposition strategy for ascending and descending star counts."
+      }
+    ]
+  },
+  {
+    "id": "pattern-11",
+    "title": "Pattern 11",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Number Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 11: Binary Number Triangle",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-11",
+        "title": "take U forward - Pattern 11: Binary Number Triangle (0/1 Toggle)",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Demonstrates initializing the starting value by checking (row % 2) and toggling 1 - start."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-11",
+        "title": "Kunal Kushwaha - Alternating Parity Patterns in Grids",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Mathematical coordinate check (row + col) % 2 for checkerboard binary patterns."
+      }
+    ]
+  },
+  {
+    "id": "pattern-12",
+    "title": "Pattern 12",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/double-triangle-pattern-1662664259/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Number Bridge Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/double-triangle-pattern-1662664259/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 12: Number Crown Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-12",
+        "title": "take U forward - Pattern 12: Number Crown / Bridge Pattern",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Deconstructs the row into ascending numbers, shrinking middle spaces (2*(n-i)), and descending numbers."
+      },
+      {
+        "id": "love-babbar-pattern-12",
+        "title": "CodeHelp by Babbar - Mirrored Number Bridge Walkthrough",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Explains handling tripartite inner loop printing for numbers and interstitial spacing."
+      }
+    ]
+  },
+  {
+    "id": "pattern-13",
+    "title": "Pattern 13",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Number Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 13: Increasing Number Triangle",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-13",
+        "title": "take U forward - Pattern 13: Continuous Number Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Demonstrates maintaining a global incrementing counter outside the row iteration loop."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-13",
+        "title": "Kunal Kushwaha - Floyd's Triangle Pattern and Counters",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Clear intuition on persisting state across rows in triangle configurations."
+      }
+    ]
+  },
+  {
+    "id": "pattern-14",
+    "title": "Pattern 14",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Character Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 14: Increasing Letter Triangle",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-14",
+        "title": "take U forward - Pattern 14: Alphabet Right Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Shows casting char ('A' + col) to print sequential letters starting fresh on each row."
+      },
+      {
+        "id": "love-babbar-pattern-14",
+        "title": "CodeHelp by Babbar - Character Patterns Using ASCII Math",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Explains character arithmetic and type casting in C++ pattern generation."
+      }
+    ]
+  },
+  {
+    "id": "pattern-15",
+    "title": "Pattern 15",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Character Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 15: Reverse Letter Triangle",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-15",
+        "title": "take U forward - Pattern 15: Inverted Alphabet Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Inverted column bounds (n - i) combined with forward alphabet character iteration."
+      },
+      {
+        "id": "love-babbar-pattern-15",
+        "title": "CodeHelp by Babbar - Inverted Character Triangles",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Outer loop decrement strategies for shrinking character rows."
+      }
+    ]
+  },
+  {
+    "id": "pattern-16",
+    "title": "Pattern 16",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Character Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 16: Alpha-Ramp Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-16",
+        "title": "take U forward - Pattern 16: Alpha-Ramp Pattern",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Pins character value to outer loop row index ('A' + row) to print identical characters across columns."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-16",
+        "title": "Kunal Kushwaha - Character Broadcasting in Triangle Patterns",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Highlights the distinction between row-dependent values and column-dependent values."
+      }
+    ]
+  },
+  {
+    "id": "pattern-17",
+    "title": "Pattern 17",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Character Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 17: Alpha-Hill Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-17",
+        "title": "take U forward - Pattern 17: Palindromic Alpha-Hill Pyramid",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Tripartite loop combining leading spaces, incrementing characters to midpoint, and decrementing to 'A'."
+      },
+      {
+        "id": "love-babbar-pattern-17",
+        "title": "CodeHelp by Babbar - Palindromic Pyramids & Middle Breakpoint",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Breakpoint condition (col <= midpoint) logic for palindromic pattern symmetry."
+      }
+    ]
+  },
+  {
+    "id": "pattern-18",
+    "title": "Pattern 18",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Character Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-character-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 18: Alpha-Triangle Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-18",
+        "title": "take U forward - Pattern 18: Reverse Alphabet Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Starting character anchored at ('A' + n - 1 - row) and incrementing up to ('A' + n - 1)."
+      },
+      {
+        "id": "love-babbar-pattern-18",
+        "title": "CodeHelp by Babbar - Reverse Offset Character Triangles",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Formula derivation for reverse letter offsets in nested row iterations."
+      }
+    ]
+  },
+  {
+    "id": "pattern-19",
+    "title": "Pattern 19",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/pattern/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Diamond Shape / Hollow Diamond Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/pattern/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 19: Symmetric Void Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-19",
+        "title": "take U forward - Pattern 19: Symmetric Void Star Pattern",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Top half and bottom half decomposition with expanding inner void space followed by contracting void."
+      },
+      {
+        "id": "love-babbar-pattern-19",
+        "title": "CodeHelp by Babbar - Symmetric Void Boundary Problems",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Step-by-step space multiplier calculation (2*i) for hollow symmetric quadrants."
+      }
+    ]
+  },
+  {
+    "id": "pattern-2",
+    "title": "Pattern 2",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-right-half-pyramid-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Right Half Pyramid Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-right-half-pyramid-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 2: Right-Angled Triangle Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-2",
+        "title": "take U forward - Pattern 2: Right-Angled Star Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Inner loop condition bound to the current row index (col <= row)."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-2",
+        "title": "Kunal Kushwaha - Triangle Patterns and Row Dependent Iteration",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Basic triangular logic showing direct linear proportionality between row number and character count."
+      }
+    ]
+  },
+  {
+    "id": "pattern-20",
+    "title": "Pattern 20",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/butterfly-pattern/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Butterfly Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/butterfly-pattern/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 20: Symmetric Butterfly Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-20",
+        "title": "take U forward - Pattern 20: Symmetric Butterfly Pattern Walkthrough",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Dynamic star and space tracking across total rows 2*n - 1 with space decrement/increment phases."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-20",
+        "title": "Kunal Kushwaha - Butterfly Pattern Logic & Space Math",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Explains mapping the symmetric upper and lower halves in a unified iteration index."
+      }
+    ]
+  }
+]

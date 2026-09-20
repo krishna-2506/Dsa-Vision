@@ -3,29 +3,24 @@ import { X, Copy, Check, Download, FileCode, Code2, BookOpen, Layers } from 'luc
 
 const SKILL_MD = `---
 name: dsa-visualizer
-description: Apple HIG-grade Gemini Skill for generating interactive React algorithm animations, fluid sliding pointer visualizers, thoroughly commented multi-language code solutions, and SQLite database entries for AlgoVision Studio.
+description: Skill for generating interactive React algorithm visualizers, step animations, multi-language code solutions, and database records for AlgoVision.
 ---
 
-# DSA Visualizer Skill for AlgoVision Studio (Apple HIG Architecture)
+# DSA Visualizer Skill for AlgoVision
 
-Use this skill whenever asked to visualize any Data Structures & Algorithms problem, Striver's A2Z DSA Sheet question, or LeetCode challenge for AlgoVision Studio.
+Use this skill when developing visualizers for Data Structures & Algorithms problems, Striver's A2Z DSA Sheet questions, or LeetCode challenges.
 
-## 1. AlgoVision Studio Architecture & Context
-The AlgoVision Studio provides an Apple macOS-grade interactive environment:
-- Approach Tier Switcher: Segmented control pill (Intuitive / Better / Optimal) above the stage.
-- Split-Screen Layout: Interactive visualizer canvas on the LEFT, syntax-highlighted multi-language code viewer on the RIGHT.
-- macOS Floating Dock Transport HUD: Play/Pause, step ticks bar, Reset, Speed 0.5x-2x, and keyboard shortcuts.
-- Apple Invariant & Memory Inspector: Automatically renders below the stage displaying:
-  - Semantic Phase Pill (INITIALIZING, SCANNING, COMPARING, SWAPPING, MATCH_FOUND, etc.)
-  - Synchronized C++ Line Indicator (codeLine: N)
-  - Multi-Sentence Educational Reasoning (explain)
-  - Algorithmic Loop Invariant & Pruning Takeaway (intuition)
-  - Real-Time Live Memory Badges (variables: { left: 0, right: 5, sum: 25 })
+## 1. Architecture & Context
+AlgoVision provides an interactive visualizer environment:
+- Approach Tier Switcher: Segmented control (Intuitive / Better / Optimal)
+- Split-Screen Layout: Interactive visualizer canvas on the left, syntax-highlighted code viewer on the right
+- Transport Controls: Play/Pause, step slider, Reset, and playback speed (0.5x–2x)
+- State & Invariant Inspector: Displays current step intuition, code line pointers, and variable memory badges
 
-CRITICAL RULE: Do NOT render card frames, outer borders, "Step X of Y" counters, prev/next buttons, language switchers, or copy-code buttons inside your visualizer component. Just render the internal visual canvas and primitives.
+CRITICAL RULE: Do NOT render card frames, outer borders, step counters, or copy-code buttons inside your visualizer component. Just render the internal visual canvas and primitives.
 
-## 2. Design System: Apple macOS & HIG Dual-Theme
-Your visualizer must feel like a native Apple product (macOS Sequoia / iOS). The visualizer canvas theme and the application theme are 100% IDENTICAL.
+## 2. Design System
+The visualizer component uses the platform's theme tokens:
 
 CSS Variables (Supports Light & Dark Modes Automatically):
 - Stage Background: var(--board)
@@ -298,11 +293,10 @@ export default function SkillExportModal({ isOpen, onClose }) {
           {activeTab === 'template' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-[var(--chalk)]">Standard Apple HIG Visualizer Template</span>
-                <span className="font-mono text-[var(--easy)] text-[11px] font-semibold">Ready to Mount</span>
+                <span className="font-semibold text-[var(--chalk)]">Visualizer Component Scaffold</span>
               </div>
               <p className="text-xs text-[var(--chalk-dim)]">
-                Gemini uses this scaffold to output ready-to-run React components matching AlgoVision Studio's exact Apple HIG theme, squircle primitives, and deep educational explanation panel.
+                React component scaffold containing state models, step transitions, and synchronized code line tracking.
               </p>
               <pre className="w-full p-4 bg-[var(--board)] border border-[var(--line)] rounded-xl text-xs text-[var(--chalk-dim)] font-mono whitespace-pre-wrap leading-relaxed max-h-[340px] overflow-y-auto selection:bg-[var(--indigo)] select-all">
                 {TEMPLATE_CODE}
@@ -331,9 +325,9 @@ export default function SkillExportModal({ isOpen, onClose }) {
               </div>
 
               <div className="p-4 bg-[var(--board-raised-2)]/50 border border-[var(--line)] rounded-xl space-y-2">
-                <span className="text-[var(--easy)] font-semibold block text-sm">Option C: 1-Click Studio Prompt (Easiest)</span>
+                <span className="text-[var(--easy)] font-semibold block text-sm">Option C: Problem Context Prompt</span>
                 <p className="text-[var(--chalk-dim)]">
-                  In AlgoVision Studio, open any problem and click <strong>"AI Prompt"</strong> or <strong>"Copy Gemini Prompt"</strong>. It automatically generates the prompt with the exact Apple HIG design specification, test cases, and problem statement into your clipboard!
+                  In AlgoVision, open any problem and click <strong>"AI Prompt"</strong> to copy the problem specification, test cases, and template prompt.
                 </p>
               </div>
             </div>

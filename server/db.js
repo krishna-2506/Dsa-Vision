@@ -677,6 +677,17 @@ public:
   );
 }
 
+function getYoutubeVideoId(url) {
+  if (!url || typeof url !== 'string') return null;
+  const m = url.match(/(?:v=|\/embed\/|youtu\.be\/|\/v\/|watch\?v=)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+function normalizeWebUrl(u) {
+  if (!u || typeof u !== 'string') return '';
+  return u.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+}
+
 // Export queries
 export const dbService = {
   getAllQuestions() {
@@ -1145,57 +1156,141 @@ export const dbService = {
 
         const updates = {};
 
-        // Merge youtube_videos
+        // 1. Update gfg_url
+        const candidateGfg = item.gfg_url || (item.alternate_articles?.find(a => (a.url || '').toLowerCase().includes('geeksforgeeks'))?.url);
+        if (candidateGfg && typeof candidateGfg === 'string' && candidateGfg.trim()) {
+          if (!current.gfg_url || candidateGfg.trim() !== current.gfg_url) {
+            updates.gfg_url = candidateGfg.trim();
+          }
+        }
+        const effectiveGfgNorm = normalizeWebUrl(updates.gfg_url || current.gfg_url);
+        const effectiveArtNorm = normalizeWebUrl(current.article_url);
+
+        // 2. Merge youtube_videos with strict TUF deduplication
         const newVideos = item.youtube_videos || item.alternate_videos || [];
         if (Array.isArray(newVideos) && newVideos.length > 0) {
           const currentVideos = Array.isArray(current.youtube_videos) ? [...current.youtube_videos] : [];
-          const existingUrls = new Set(currentVideos.map(v => (v.url || '').trim().toLowerCase()));
+          const primaryYtUrl = current.youtube_url || item.youtube_url || '';
+          const primaryYtId = getYoutubeVideoId(primaryYtUrl);
+
+          const seenVideoIds = new Set();
+          const seenVideoUrls = new Set();
+          const cleanedCurrentVideos = [];
+
+          // Clean up existing current videos, deduplicating any legacy entries
+          for (const v of currentVideos) {
+            if (!v || !v.url) continue;
+            const vId = getYoutubeVideoId(v.url);
+            const normUrl = normalizeWebUrl(v.url);
+            if (vId && seenVideoIds.has(vId)) continue;
+            if (normUrl && seenVideoUrls.has(normUrl)) continue;
+            if (vId) seenVideoIds.add(vId);
+            if (normUrl) seenVideoUrls.add(normUrl);
+            cleanedCurrentVideos.push(v);
+          }
+
+          // If no primary video exists yet in cleaned list but question has youtube_url, prepend it
+          if (cleanedCurrentVideos.length === 0 && primaryYtUrl) {
+            if (primaryYtId) seenVideoIds.add(primaryYtId);
+            seenVideoUrls.add(normalizeWebUrl(primaryYtUrl));
+            cleanedCurrentVideos.push({
+              id: 'striver-primary',
+              title: "Striver's Tutorial",
+              url: primaryYtUrl,
+              channel: 'take U forward',
+              is_primary: true
+            });
+          }
+
+          if (primaryYtId) seenVideoIds.add(primaryYtId);
 
           for (const newVid of newVideos) {
             if (!newVid || !newVid.url) continue;
-            const normUrl = newVid.url.trim().toLowerCase();
-            if (!existingUrls.has(normUrl)) {
-              existingUrls.add(normUrl);
-              currentVideos.push({
-                id: newVid.id || `vid-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                title: newVid.title || 'Video Solution',
+            const vId = getYoutubeVideoId(newVid.url);
+            const normUrl = normalizeWebUrl(newVid.url);
+            const ch = (newVid.channel || '').toLowerCase();
+            const isTuf = ch.includes('take u forward') || ch.includes('striver') || (newVid.url && newVid.url.toLowerCase().includes('takeuforward'));
+
+            // Deduplicate if video ID or normalized URL already exists
+            if (vId && seenVideoIds.has(vId)) continue;
+            if (normUrl && seenVideoUrls.has(normUrl)) continue;
+
+            // Strict TUF deduplication: if primary TUF video is already in place, skip additional TUF video
+            if (isTuf && cleanedCurrentVideos.length > 0) continue;
+
+            if (isTuf && cleanedCurrentVideos.length === 0) {
+              if (vId) seenVideoIds.add(vId);
+              if (normUrl) seenVideoUrls.add(normUrl);
+              cleanedCurrentVideos.push({
+                id: 'striver-primary',
+                title: newVid.title || "Striver's Tutorial",
                 url: newVid.url.trim(),
-                channel: newVid.channel || 'Educator',
-                is_primary: false,
+                channel: 'take U forward',
+                is_primary: true,
                 ...(newVid.notes ? { notes: newVid.notes } : {})
               });
+              if (!current.youtube_url) {
+                updates.youtube_url = newVid.url.trim();
+              }
+              continue;
             }
+
+            // Alternate educator video (NeetCode, Abdul Bari, etc.)
+            if (vId) seenVideoIds.add(vId);
+            if (normUrl) seenVideoUrls.add(normUrl);
+            cleanedCurrentVideos.push({
+              id: newVid.id || (vId ? `vid-${vId}` : `vid-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`),
+              title: newVid.title || 'Video Solution',
+              url: newVid.url.trim(),
+              channel: newVid.channel || 'Educator',
+              is_primary: false,
+              ...(newVid.notes ? { notes: newVid.notes } : {})
+            });
           }
-          updates.youtube_videos = currentVideos;
+          updates.youtube_videos = cleanedCurrentVideos;
         }
 
-        // Update gfg_url
-        if (item.gfg_url && typeof item.gfg_url === 'string' && item.gfg_url.trim()) {
-          updates.gfg_url = item.gfg_url.trim();
-        }
-
-        // Merge alternate_articles
+        // 3. Merge alternate_articles with strict TUF & GFG deduplication
         const newArticles = item.alternate_articles || item.articles || [];
         if (Array.isArray(newArticles) && newArticles.length > 0) {
           const currentArticles = Array.isArray(current.alternate_articles) ? [...current.alternate_articles] : [];
-          const existingArtUrls = new Set(currentArticles.map(a => (a.url || '').trim().toLowerCase()));
+          const seenArtUrls = new Set();
+          if (effectiveArtNorm) seenArtUrls.add(effectiveArtNorm);
+          if (effectiveGfgNorm) seenArtUrls.add(effectiveGfgNorm);
+
+          const cleanedArticles = [];
+          for (const a of currentArticles) {
+            if (!a || !a.url) continue;
+            const norm = normalizeWebUrl(a.url);
+            const src = (a.source || '').toLowerCase();
+            const isTuf = src.includes('take u forward') || src.includes('striver') || norm.includes('takeuforward.org');
+            if (isTuf) continue; // TUF already has primary button
+            if (effectiveGfgNorm && (norm === effectiveGfgNorm || norm.includes(effectiveGfgNorm) || effectiveGfgNorm.includes(norm))) continue;
+            if (seenArtUrls.has(norm)) continue;
+            seenArtUrls.add(norm);
+            cleanedArticles.push(a);
+          }
 
           for (const art of newArticles) {
             if (!art || !art.url) continue;
-            const norm = art.url.trim().toLowerCase();
-            if (!existingArtUrls.has(norm)) {
-              existingArtUrls.add(norm);
-              currentArticles.push({
-                title: art.title || 'Editorial Article',
-                url: art.url.trim(),
-                source: art.source || 'GeeksforGeeks'
-              });
-            }
+            const norm = normalizeWebUrl(art.url);
+            const src = (art.source || '').toLowerCase();
+            const isTuf = src.includes('take u forward') || src.includes('striver') || norm.includes('takeuforward.org');
+            if (isTuf) continue; // Skip duplicate TUF articles
+            if (effectiveGfgNorm && (norm === effectiveGfgNorm || norm.includes(effectiveGfgNorm) || effectiveGfgNorm.includes(norm))) continue;
+            if (seenArtUrls.has(norm)) continue;
+
+            seenArtUrls.add(norm);
+            cleanedArticles.push({
+              title: art.title || 'Editorial Article',
+              url: art.url.trim(),
+              source: art.source || 'Editorial'
+            });
           }
-          updates.alternate_articles = currentArticles;
+          updates.alternate_articles = cleanedArticles;
         }
 
-        // Update article_content if provided
+        // 4. Update article_content if provided
         if (item.article_content && typeof item.article_content === 'string' && item.article_content.trim()) {
           if (!current.article_content || item.overwrite_article_content) {
             updates.article_content = item.article_content.trim();

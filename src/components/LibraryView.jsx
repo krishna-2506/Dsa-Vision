@@ -10,6 +10,7 @@ import {
   Play,
   BookOpen,
   ExternalLink,
+  Sparkles,
   Layers,
   Shuffle,
   Check,
@@ -45,7 +46,8 @@ export default function LibraryView({
   onStatusChange,
   onOpenImportModal,
   onOpenAdmin,
-  onOpenSandbox
+  onOpenSandbox,
+  onOpenStepTheory
 }) {
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'revision'
   const [searchQuery, setSearchQuery] = useState('');
@@ -198,6 +200,19 @@ export default function LibraryView({
     });
   }, [questions, activeTab, problemStatusFilter, difficultyFilter, searchQuery]);
 
+  // Auto-expand steps when difficulty filter or search query is active
+  useEffect(() => {
+    if (difficultyFilter !== 'all' || searchQuery.trim() !== '') {
+      const activeStepNos = new Set();
+      for (const q of filtered) {
+        if (q.step_no) activeStepNos.add(q.step_no);
+      }
+      if (activeStepNos.size > 0) {
+        setOpenSteps(activeStepNos);
+      }
+    }
+  }, [difficultyFilter, searchQuery, filtered]);
+
   // Group questions by Step -> Subcategory for the accordion sheet view
   const hierarchicalSteps = useMemo(() => {
     const map = new Map();
@@ -256,75 +271,78 @@ export default function LibraryView({
   }, [questions]);
 
   return (
-    <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-6 space-y-6">
-      
-      {/* ── 1. Page Header: Striver's A2Z Sheet ── */}
-      <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
-        <div className="space-y-1 max-w-3xl">
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--chalk)] font-sans">
-              Striver's A2Z Sheet - Learn DSA from A to Z
+    <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-8 space-y-8 relative overflow-hidden">
+      {/* ── Dark Luxury Ambient Breathing Orb ── */}
+      <div className="hero-orb" />
+
+      {/* ── 1. Dark Luxury Hero Section ── */}
+      <section className="relative z-10 pt-4 pb-2 reveal">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3 max-w-3xl">
+            {/* Curriculum Badge */}
+            <div className="hero-badge">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+              <span>Striver's A2Z DSA Sheet</span>
+            </div>
+
+            {/* Clean Title & Description */}
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
+              Data Structures &amp; Algorithms
             </h1>
+
+            <p className="text-sm sm:text-base text-[var(--text-body)] leading-relaxed max-w-2xl pt-0.5">
+              Interactive visualizers, solution notes, and multi-language code implementations across all 455 problems.
+            </p>
           </div>
-          <p className="text-xs sm:text-[13px] text-[var(--chalk-dim)] leading-relaxed">
-            This course is made for people who want to learn DSA from A to Z for free in a well-organised and structured manner.{' '}
-            <span className="text-amber-400 font-medium cursor-pointer hover:underline">Know more</span>
-          </p>
-        </div>
 
-        {/* Top Right Header Action Buttons */}
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {/* Code Lab Sandbox Action */}
-          <button
-            onClick={onOpenSandbox}
-            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--indigo)]/10 hover:bg-[var(--indigo)]/20 border border-[var(--indigo)]/30 text-xs font-semibold text-[var(--indigo)] transition-colors cursor-pointer"
-            title="Open Code-to-Visualizer Studio (C++, Python, JS in-browser compiler)"
-          >
-            <Code2 className="w-3.5 h-3.5" />
-            <span>Code Lab</span>
-            <span className="text-[9px] font-mono px-1 rounded-xs bg-[var(--indigo)]/20 uppercase">New</span>
-          </button>
+          {/* Top Right Header Action Buttons */}
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+            {/* Code Lab Sandbox Action */}
+            <button
+              onClick={onOpenSandbox}
+              className="btn-primary h-9 px-4 text-xs font-semibold"
+              title="Open Code-to-Visualizer Studio (C++, Python, JS in-browser compiler)"
+            >
+              <Code2 className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <span>Code Lab</span>
+            </button>
 
-          {/* Reset Progress */}
-          <button
-            onClick={handleResetProgress}
-            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-medium text-[var(--chalk-dim)] hover:text-amber-400 transition-colors cursor-pointer"
-            title="Reset all progress back to zero"
-          >
-            <RotateCcw className="w-3 h-3 text-amber-500/80" />
-            <span>Reset</span>
-          </button>
+            {/* Reset Progress */}
+            <button
+              onClick={handleResetProgress}
+              className="btn-secondary h-9 px-3 text-xs"
+              title="Reset all progress back to zero"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-[var(--accent)]" />
+              <span>Reset</span>
+            </button>
 
-          {/* Import / Export */}
-          <button
-            onClick={onOpenImportModal}
-            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-medium text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-colors cursor-pointer"
-            title="Import or Export Question Sheet Data"
-          >
-            <ClipboardCopy className="w-3 h-3" />
-            <span>Import</span>
-          </button>
-
-          {/* Last updated badge */}
-          <div className="hidden lg:flex items-center h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-[11px] font-mono text-[var(--chalk-dim)]">
-            Last updated : December 13, 2025
+            {/* Import / Export */}
+            <button
+              onClick={onOpenImportModal}
+              className="btn-secondary h-9 px-3 text-xs"
+              title="Import or Export Question Sheet Data"
+            >
+              <ClipboardCopy className="w-3.5 h-3.5 text-[var(--text-body)]" />
+              <span>Import</span>
+            </button>
           </div>
         </div>
       </section>
 
-      {/* ── 2. Filters & Actions Row (Matching Sheet Toolbar) ── */}
+      {/* ── 2. Filters & Actions Row (Dark Luxury Toolbar) ── */}
       <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-wrap">
         {/* Left: Tab Segmented Control (All Problems / Revision) */}
-        <div className="flex items-center bg-[var(--board-raised)] p-0.5 rounded border border-[var(--line)]">
+        <div className="flex items-center bg-[var(--bg-card)] p-1 rounded-xl border border-[var(--border-subtle)]">
           <button
             onClick={() => {
               sound.playStep(600);
               setActiveTab('all');
             }}
-            className={`px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
               activeTab === 'all'
-                ? 'bg-[var(--board-raised-2)] text-[var(--chalk)] font-semibold border border-[var(--line)]'
-                : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+                ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] font-semibold border border-[var(--border-medium)] shadow-sm'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-body)]'
             }`}
           >
             All Problems
@@ -335,10 +353,10 @@ export default function LibraryView({
               sound.playStep(600);
               setActiveTab('revision');
             }}
-            className={`px-3 py-1 rounded text-xs font-medium transition-colors cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
               activeTab === 'revision'
-                ? 'bg-[var(--board-raised-2)] text-[var(--chalk)] font-semibold border border-[var(--line)]'
-                : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+                ? 'bg-[var(--bg-surface)] text-[var(--text-primary)] font-semibold border border-[var(--border-medium)] shadow-sm'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-body)]'
             }`}
           >
             Revision
@@ -349,19 +367,19 @@ export default function LibraryView({
         <div className="flex items-center gap-2 flex-wrap">
           {/* Search Input */}
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--chalk-faint)]" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-tertiary)]" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-36 sm:w-48 pl-8 pr-7 py-1 bg-[var(--board-raised)] border border-[var(--line)] focus:border-[var(--indigo)] rounded text-xs text-[var(--chalk)] placeholder-[var(--chalk-faint)] focus:outline-none"
+              placeholder="Search problems... (/)"
+              className="w-40 sm:w-56 pl-8 pr-7 py-1.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] focus:border-[var(--border-accent)] rounded-lg text-xs text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--chalk-faint)] hover:text-[var(--chalk)] p-0.5"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] p-0.5"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -372,9 +390,9 @@ export default function LibraryView({
           <select
             value={problemStatusFilter}
             onChange={(e) => setProblemStatusFilter(e.target.value)}
-            className="px-2.5 py-1 bg-[var(--board-raised)] border border-[var(--line)] rounded text-xs text-[var(--chalk-dim)] focus:outline-none cursor-pointer"
+            className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-body)] focus:border-[var(--border-accent)] focus:outline-none cursor-pointer transition-colors"
           >
-            <option value="all">All problems</option>
+            <option value="all">All Status</option>
             <option value="unsolved">Unsolved</option>
             <option value="solved">Solved</option>
           </select>
@@ -383,9 +401,9 @@ export default function LibraryView({
           <select
             value={difficultyFilter}
             onChange={(e) => setDifficultyFilter(e.target.value)}
-            className="px-2.5 py-1 bg-[var(--board-raised)] border border-[var(--line)] rounded text-xs text-[var(--chalk-dim)] focus:outline-none cursor-pointer"
+            className="px-3 py-1.5 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-lg text-xs text-[var(--text-body)] focus:border-[var(--border-accent)] focus:outline-none cursor-pointer transition-colors"
           >
-            <option value="all">Difficulty</option>
+            <option value="all">All Difficulties</option>
             <option value="Easy">Easy</option>
             <option value="Medium">Medium</option>
             <option value="Hard">Hard</option>
@@ -394,19 +412,19 @@ export default function LibraryView({
           {/* Random Challenge */}
           <button
             onClick={handlePickRandomProblem}
-            className="flex items-center gap-1.5 h-7.5 px-2.5 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-medium text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-colors cursor-pointer"
+            className="btn-secondary h-8 px-3 text-xs rounded-lg flex items-center gap-1.5"
             title="Pick a random problem to solve"
           >
-            <Shuffle className="w-3 h-3" />
+            <Shuffle className="w-3.5 h-3.5 text-[var(--accent)]" />
             <span>Random Problem</span>
           </button>
 
           {/* View mode toggle (Accordion vs Cards) */}
-          <div className="flex items-center bg-[var(--board-raised)] p-0.5 rounded border border-[var(--line)] ml-1">
+          <div className="flex items-center bg-[var(--bg-card)] p-1 rounded-xl border border-[var(--border-subtle)] ml-1">
             <button
               onClick={() => setViewMode('accordion')}
-              className={`p-1 rounded transition-colors cursor-pointer ${
-                viewMode === 'accordion' ? 'bg-[var(--board-raised-2)] text-[var(--chalk)]' : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+              className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                viewMode === 'accordion' ? 'bg-[var(--bg-surface)] text-[var(--accent)] border border-[var(--border-medium)]' : 'text-[var(--text-muted)] hover:text-[var(--text-body)]'
               }`}
               title="Sheet Accordion View"
             >
@@ -414,8 +432,8 @@ export default function LibraryView({
             </button>
             <button
               onClick={() => setViewMode('cards')}
-              className={`p-1 rounded transition-colors cursor-pointer ${
-                viewMode === 'cards' ? 'bg-[var(--board-raised-2)] text-[var(--chalk)]' : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
+              className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                viewMode === 'cards' ? 'bg-[var(--bg-surface)] text-[var(--accent)] border border-[var(--border-medium)]' : 'text-[var(--text-muted)] hover:text-[var(--text-body)]'
               }`}
               title="Card Grid View"
             >
@@ -425,130 +443,185 @@ export default function LibraryView({
         </div>
       </section>
 
-      {/* ── 3. Hero Progress Card (With Circular Ring Gauge & Difficulty Badges) ── */}
-      <section className="p-4 rounded-lg bg-[#14151a] border border-[#262833] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+      {/* ── 3. Dark Luxury Progress Card (Elevated borderless panel with inset top highlight) ── */}
+      <section className="card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6 reveal">
         {/* Left: Circular Ring & Overall Progress */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-5">
           {/* Circular Progress Gauge */}
-          <div className="relative w-14 h-14 flex items-center justify-center shrink-0">
-            <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
+          <div className="relative w-16 h-16 flex items-center justify-center shrink-0">
+            <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
               <circle
-                cx="28"
-                cy="28"
-                r="22"
-                className="stroke-[#22242e]"
-                strokeWidth="4"
+                cx="32"
+                cy="32"
+                r="26"
+                className="stroke-[var(--bg-surface)]"
+                strokeWidth="5"
                 fill="transparent"
               />
               <circle
-                cx="28"
-                cy="28"
-                r="22"
-                className="stroke-emerald-500 transition-all duration-500"
-                strokeWidth="4"
+                cx="32"
+                cy="32"
+                r="26"
+                className="stroke-[var(--accent)] transition-all duration-700"
+                strokeWidth="5"
                 fill="transparent"
-                strokeDasharray={2 * Math.PI * 22}
-                strokeDashoffset={2 * Math.PI * 22 - (overallProgressPct / 100) * (2 * Math.PI * 22)}
+                strokeDasharray={2 * Math.PI * 26}
+                strokeDashoffset={2 * Math.PI * 26 - (overallProgressPct / 100) * (2 * Math.PI * 26)}
                 strokeLinecap="round"
               />
             </svg>
-            <span className="absolute font-mono font-bold text-xs text-[var(--chalk)]">
+            <span className="absolute font-mono font-bold text-sm text-[var(--text-primary)]">
               {overallProgressPct}%
             </span>
           </div>
 
-          <div className="space-y-0.5">
-            <h2 className="text-xs font-semibold text-[var(--chalk)]">Overall Progress</h2>
-            <div className="text-xs font-mono text-[var(--chalk-dim)]">
-              <strong className="text-[var(--chalk)]">{masteredCount}</strong> / {totalCount || 474}
+          <div className="space-y-1">
+            <span className="section-label !mb-1">[Curriculum Mastery]</span>
+            <div className="text-base font-bold text-[var(--text-primary)]">
+              {masteredCount} <span className="text-xs font-normal text-[var(--text-muted)] font-mono">/ {totalCount || 474} Completed</span>
+            </div>
+            <div className="text-xs font-mono text-[var(--text-tertiary)]">
+              {totalCount - masteredCount} problems remaining to achieve master tier
             </div>
           </div>
         </div>
 
-        {/* Right: Difficulty Badges (Easy, Medium, Hard) */}
-        <div className="flex items-center gap-4 sm:gap-6 flex-wrap text-xs font-mono">
+        {/* Right: Interactive Difficulty Filters (Easy, Medium, Hard) */}
+        <div className="flex items-center gap-2.5 sm:gap-3.5 flex-wrap text-xs font-mono">
           {/* Easy */}
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span className="text-[var(--chalk-dim)]">Easy</span>
-            <span className="font-semibold text-[var(--chalk)]">
-              {easyMastered}<span className="text-[var(--chalk-faint)] font-normal">/{easyTotal || 151}</span>
+          <button
+            onClick={() => {
+              sound?.playStep?.(580);
+              setDifficultyFilter(prev => prev === 'Easy' ? 'all' : 'Easy');
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all cursor-pointer border ${
+              difficultyFilter === 'Easy'
+                ? 'bg-[#3d9e5c]/15 border-[#3d9e5c] text-[#3d9e5c] shadow-[0_0_12px_rgba(61,158,92,0.25)]'
+                : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-body)]'
+            }`}
+            title="Click to filter by Easy problems"
+          >
+            <span className={`w-2.5 h-2.5 rounded-full bg-[#3d9e5c] shrink-0 ${difficultyFilter === 'Easy' ? 'animate-pulse ring-2 ring-[#3d9e5c]/40' : ''}`} />
+            <span>Easy</span>
+            <span className={`font-semibold ${difficultyFilter === 'Easy' ? 'text-[#3d9e5c]' : 'text-[var(--text-primary)]'}`}>
+              {easyMastered}<span className="text-[var(--text-muted)] font-normal">/{easyTotal || 151}</span>
             </span>
-          </div>
+          </button>
 
           {/* Medium */}
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <span className="text-[var(--chalk-dim)]">Medium</span>
-            <span className="font-semibold text-[var(--chalk)]">
-              {mediumMastered}<span className="text-[var(--chalk-faint)] font-normal">/{mediumTotal || 187}</span>
+          <button
+            onClick={() => {
+              sound?.playStep?.(580);
+              setDifficultyFilter(prev => prev === 'Medium' ? 'all' : 'Medium');
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all cursor-pointer border ${
+              difficultyFilter === 'Medium'
+                ? 'bg-[#d4a03c]/15 border-[#d4a03c] text-[#d4a03c] shadow-[0_0_12px_rgba(212,160,60,0.25)]'
+                : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-body)]'
+            }`}
+            title="Click to filter by Medium problems"
+          >
+            <span className={`w-2.5 h-2.5 rounded-full bg-[#d4a03c] shrink-0 ${difficultyFilter === 'Medium' ? 'animate-pulse ring-2 ring-[#d4a03c]/40' : ''}`} />
+            <span>Medium</span>
+            <span className={`font-semibold ${difficultyFilter === 'Medium' ? 'text-[#d4a03c]' : 'text-[var(--text-primary)]'}`}>
+              {mediumMastered}<span className="text-[var(--text-muted)] font-normal">/{mediumTotal || 187}</span>
             </span>
-          </div>
+          </button>
 
           {/* Hard */}
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-rose-400" />
-            <span className="text-[var(--chalk-dim)]">Hard</span>
-            <span className="font-semibold text-[var(--chalk)]">
-              {hardMastered}<span className="text-[var(--chalk-faint)] font-normal">/{hardTotal || 136}</span>
+          <button
+            onClick={() => {
+              sound?.playStep?.(580);
+              setDifficultyFilter(prev => prev === 'Hard' ? 'all' : 'Hard');
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all cursor-pointer border ${
+              difficultyFilter === 'Hard'
+                ? 'bg-[#b83c38]/15 border-[#b83c38] text-[#b83c38] shadow-[0_0_12px_rgba(184,60,56,0.25)]'
+                : 'bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--border-medium)] text-[var(--text-body)]'
+            }`}
+            title="Click to filter by Hard problems"
+          >
+            <span className={`w-2.5 h-2.5 rounded-full bg-[#b83c38] shrink-0 ${difficultyFilter === 'Hard' ? 'animate-pulse ring-2 ring-[#b83c38]/40' : ''}`} />
+            <span>Hard</span>
+            <span className={`font-semibold ${difficultyFilter === 'Hard' ? 'text-[#b83c38]' : 'text-[var(--text-primary)]'}`}>
+              {hardMastered}<span className="text-[var(--text-muted)] font-normal">/{hardTotal || 136}</span>
             </span>
-          </div>
+          </button>
         </div>
       </section>
 
       {/* ── 4. Main Content: 18-Step Collapsible Accordion or Card Grid ── */}
       {viewMode === 'accordion' ? (
-        <section className="space-y-2">
+        <section className="space-y-3">
           {hierarchicalSteps.map((step) => {
             const isOpen = openSteps.has(step.step_no);
-            const stepFraction = `${step.mastered} / ${step.total}`;
             const stepPct = Math.round((step.mastered / Math.max(step.total, 1)) * 100);
             const isCompleted = step.total > 0 && step.mastered === step.total;
 
             return (
               <div
                 key={step.step_no}
-                className="rounded-lg bg-[var(--board-raised)] border border-[var(--line)] overflow-hidden transition-colors"
+                className="card rounded-2xl overflow-hidden mb-3 border-none transition-all"
               >
                 {/* ── Step Header Row ── */}
                 <div
                   onClick={() => toggleStep(step.step_no)}
-                  className="px-4 py-3 flex items-center justify-between gap-4 cursor-pointer hover:bg-[var(--board-raised-2)] transition-colors select-none"
+                  className="px-5 py-4 flex items-center justify-between gap-4 cursor-pointer hover:bg-[rgba(255,248,230,0.02)] transition-colors select-none"
                 >
-                  {/* Left: Chevron & Step Title */}
-                  <div className="flex items-center gap-3 min-w-0">
-                    <ChevronRight
-                      className={`w-4 h-4 text-[var(--chalk-faint)] transition-transform duration-150 shrink-0 ${
-                        isOpen ? 'rotate-90' : ''
-                      }`}
-                    />
-                    <h3 className="text-[13.5px] font-medium text-[var(--chalk)] truncate">
-                      {step.title}
-                    </h3>
+                  {/* Left: Chevron & Monospace Step Badge & Step Title */}
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-medium)] flex items-center justify-center shrink-0">
+                      <ChevronRight
+                        className={`w-4 h-4 text-[var(--accent)] transition-transform duration-200 ${
+                          isOpen ? 'rotate-90' : ''
+                        }`}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2.5 truncate">
+                      <span className="text-xs font-mono font-semibold text-[var(--accent)] tracking-wider shrink-0">
+                        [STEP {String(step.step_no).padStart(2, '0')}]
+                      </span>
+                      <h3 className="text-sm sm:text-[15px] font-semibold text-[var(--text-primary)] truncate">
+                        {step.title}
+                      </h3>
+                    </div>
                   </div>
 
-                  {/* Right: Progress Track Bar & Count Fraction */}
-                  <div className="flex items-center gap-3.5 shrink-0">
-                    {/* Clean Progress Bar */}
-                    <div className="w-20 sm:w-32 h-1.5 rounded bg-[var(--board-raised-2)] overflow-hidden">
+                  {/* Right: Theory Hub Action, Progress Track Bar & Count Fraction */}
+                  <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+                    {onOpenStepTheory && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          sound?.playStep?.(620);
+                          onOpenStepTheory(step.step_no);
+                        }}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-medium text-[var(--accent)] hover:text-[var(--accent-bright)] bg-[rgba(212,160,60,0.08)] hover:bg-[rgba(212,160,60,0.18)] border border-[var(--border-accent)]/30 hover:border-[var(--accent)] transition-all cursor-pointer"
+                        title={`Open Step ${step.step_no} Theory, Video Lectures & Notes`}
+                      >
+                        <BookOpen className="w-3.5 h-3.5" />
+                        <span>Theory</span>
+                      </button>
+                    )}
+
+                    <div className="hidden sm:block w-24 sm:w-36 h-1.5 rounded-full bg-[rgba(255,248,230,0.06)] overflow-hidden">
                       <div
-                        className={`h-full rounded transition-all duration-300 ${
-                          isCompleted ? 'bg-emerald-500' : 'bg-[var(--indigo)]'
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          isCompleted ? 'bg-[#3d9e5c]' : 'bg-[var(--accent)]'
                         }`}
                         style={{ width: `${stepPct}%` }}
                       />
                     </div>
 
-                    {/* Fraction (e.g. 0 / 54) */}
-                    <span className="text-xs font-mono text-[var(--chalk-dim)] w-14 text-right">
-                      {stepFraction}
+                    <span className="text-xs font-mono text-[var(--text-muted)] w-14 text-right">
+                      <span className="font-semibold text-[var(--text-primary)]">{step.mastered}</span> / {step.total}
                     </span>
                   </div>
                 </div>
 
                 {/* ── Step Content (Subcategories & Problems) ── */}
                 {isOpen && (
-                  <div className="border-t border-[var(--line)] bg-[var(--board)] p-3 sm:p-4 space-y-3">
+                  <div className="border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] p-3 sm:p-5 space-y-4">
                     {Array.from(step.subcategories.values()).map((sub, sIdx) => {
                       const subKey = `${step.step_no}_${sub.substep_name}`;
                       const isSubOpen = !openSubcategories.has(subKey);
@@ -556,35 +629,34 @@ export default function LibraryView({
                       return (
                         <div
                           key={sIdx}
-                          className="rounded-md bg-[var(--board-raised)] border border-[var(--line)] overflow-hidden"
+                          className="rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)] overflow-hidden"
                         >
                           {/* Subcategory Header */}
                           <div
                             onClick={() => toggleSubcategory(subKey)}
-                            className="px-3.5 py-2 flex items-center justify-between gap-2 cursor-pointer hover:bg-[var(--board-hover)] transition-colors select-none bg-[var(--board-raised-2)]"
+                            className="px-4 py-2.5 flex items-center justify-between gap-2 cursor-pointer hover:bg-[rgba(255,248,230,0.02)] transition-colors select-none bg-[var(--bg-card)] border-b border-[var(--border-subtle)]"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2.5">
                               <ChevronDown
-                                className={`w-3.5 h-3.5 text-[var(--chalk-faint)] transition-transform duration-150 ${
+                                className={`w-3.5 h-3.5 text-[var(--text-tertiary)] transition-transform duration-150 ${
                                   isSubOpen ? '' : '-rotate-90'
                                 }`}
                               />
-                              <span className="text-xs font-medium text-[var(--chalk)]">
-                                {sub.substep_name}
+                              <span className="text-xs font-mono font-medium text-[var(--text-primary)] tracking-wide">
+                                [{sub.substep_name}]
                               </span>
                             </div>
-                            <span className="text-[11px] font-mono text-[var(--chalk-dim)]">
-                              {sub.mastered} / {sub.total}
+                            <span className="text-xs font-mono text-[var(--text-tertiary)]">
+                              <span className="text-[var(--text-body)] font-medium">{sub.mastered}</span> / {sub.total}
                             </span>
                           </div>
 
                           {/* Problem Rows Table */}
                           {isSubOpen && (
-                            <div className="divide-y divide-[var(--line)]">
-                              {sub.problems.map((q) => {
+                            <div className="divide-y divide-[var(--border-subtle)]">
+                              {sub.problems.map((q, pIdx) => {
                                 const isSolved = q.status === 'mastered';
                                 const diffKey = (q.difficulty || 'medium').toLowerCase();
-                                const diffCfg = DIFF_COLORS[diffKey] || DIFF_COLORS.medium;
                                 const hasVis = Boolean(
                                   visualizersRegistry[q.component_key || q.componentKey]
                                 );
@@ -597,27 +669,27 @@ export default function LibraryView({
                                 return (
                                   <div
                                     key={q.id}
-                                    className="px-3.5 py-2 flex items-center justify-between gap-3 hover:bg-[var(--board-hover)] transition-colors group"
+                                    className="px-4 py-2.5 flex items-center justify-between gap-3 hover:bg-[rgba(255,248,230,0.02)] transition-colors group"
                                   >
-                                    {/* Left: Checkbox, Star & Title */}
-                                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                    {/* Left: Checkbox, Star, Sequential Index & Problem Title */}
+                                    <div className="flex items-center gap-3 min-w-0 flex-1">
                                       {/* Checkbox */}
                                       <button
                                         onClick={() => {
                                           sound.playStep(640);
                                           onStatusChange(q.id, isSolved ? 'to_learn' : 'mastered');
                                         }}
-                                        className={`w-4 h-4 rounded flex items-center justify-center transition-colors cursor-pointer shrink-0 border ${
+                                        className={`w-4 h-4 rounded-[4px] flex items-center justify-center transition-all cursor-pointer shrink-0 border ${
                                           isSolved
-                                            ? 'bg-emerald-500 border-emerald-500 text-white'
-                                            : 'border-[var(--line-strong)] hover:border-[var(--chalk-dim)] bg-[var(--board)]'
+                                            ? 'bg-[#3d9e5c] border-[#3d9e5c] text-black shadow-[0_0_8px_rgba(61,158,92,0.4)]'
+                                            : 'border-[var(--border-medium)] hover:border-[var(--accent)] bg-[var(--bg-surface)]'
                                         }`}
                                         title={isSolved ? 'Mark as unsolved' : 'Mark as solved'}
                                       >
                                         {isSolved && <Check className="w-3 h-3 stroke-[3]" />}
                                       </button>
 
-                                      {/* Star / Bookmark */}
+                                      {/* Bookmark Star */}
                                       <button
                                         onClick={() => {
                                           sound.playStep(720);
@@ -625,17 +697,22 @@ export default function LibraryView({
                                         }}
                                         className={`p-0.5 rounded transition-colors cursor-pointer shrink-0 ${
                                           q.is_favorite
-                                            ? 'text-amber-400'
-                                            : 'text-[var(--chalk-faint)] hover:text-amber-400'
+                                            ? 'text-[var(--accent)]'
+                                            : 'text-[var(--text-tertiary)] hover:text-[var(--accent)]'
                                         }`}
                                         title={q.is_favorite ? 'Bookmarked' : 'Add to bookmarks'}
                                       >
                                         <Star
                                           className={`w-3.5 h-3.5 ${
-                                            q.is_favorite ? 'fill-amber-400' : ''
+                                            q.is_favorite ? 'fill-[var(--accent)]' : ''
                                           }`}
                                         />
                                       </button>
+
+                                      {/* Clean Problem Number Index (01, 02, 03...) */}
+                                      <span className="text-xs font-mono text-[var(--text-tertiary)] w-6 shrink-0 tabular-nums select-none hidden sm:inline">
+                                        {String(pIdx + 1).padStart(2, '0')}
+                                      </span>
 
                                       {/* Problem Title */}
                                       <span
@@ -644,31 +721,54 @@ export default function LibraryView({
                                           if (onOpenArticle) onOpenArticle(q);
                                           else onOpenQuestion(q);
                                         }}
-                                        className={`text-xs sm:text-[13px] font-medium transition-colors cursor-pointer truncate ${
+                                        className={`text-[13px] sm:text-sm font-medium transition-colors cursor-pointer truncate ${
                                           isSolved
-                                            ? 'text-[var(--chalk-faint)] line-through'
-                                            : 'text-[var(--chalk)] hover:text-[var(--indigo)]'
+                                            ? 'text-[var(--text-muted)] line-through'
+                                            : 'text-[var(--text-primary)] hover:text-[var(--accent-bright)]'
                                         }`}
+                                        title={q.title}
                                       >
                                         {q.title}
                                       </span>
                                     </div>
 
-                                    {/* Right: Actions & Resource Badges */}
-                                    <div className="flex items-center gap-1.5 shrink-0">
-                                      
-                                      {/* Article Button */}
+                                    {/* Right: Actions & Resource Badges (Restrained & Quiet) */}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                      {/* Subtle Difficulty Dot + Text */}
+                                      <div className="flex items-center gap-1.5 w-14 sm:w-16 shrink-0 justify-end sm:justify-start">
+                                        <span
+                                          className={`w-1.5 h-1.5 rounded-full ${
+                                            diffKey === 'easy'
+                                              ? 'bg-[#3d9e5c]'
+                                              : diffKey === 'hard'
+                                              ? 'bg-[#b83c38]'
+                                              : 'bg-[#d4a03c]'
+                                          }`}
+                                        />
+                                        <span
+                                          className={`text-[11px] font-mono capitalize ${
+                                            diffKey === 'easy'
+                                              ? 'text-[#3d9e5c]'
+                                              : diffKey === 'hard'
+                                              ? 'text-[#b83c38]'
+                                              : 'text-[#d4a03c]'
+                                          }`}
+                                        >
+                                          {q.difficulty || 'Med'}
+                                        </span>
+                                      </div>
+
+                                      {/* Resource Action Icons: Docs / Notes */}
                                       <button
                                         onClick={() => {
                                           sound.playStep(520);
                                           if (onOpenArticle) onOpenArticle(q);
                                           else onOpenQuestion(q);
                                         }}
-                                        className="h-6 px-2 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[11px] font-mono text-teal-400/90 hover:text-teal-300 transition-colors cursor-pointer flex items-center gap-1"
-                                        title="Open Tutorial & Article Hub"
+                                        className="p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,248,230,0.06)] transition-colors cursor-pointer"
+                                        title="Editorial Article & Solution Notes"
                                       >
-                                        <BookOpen className="w-3 h-3 text-teal-400" />
-                                        <span className="hidden md:inline">Docs</span>
+                                        <BookOpen className="w-3.5 h-3.5" />
                                       </button>
 
                                       {/* Video Button */}
@@ -676,20 +776,22 @@ export default function LibraryView({
                                         <div className="relative" onClick={(e) => e.stopPropagation()}>
                                           <button
                                             onClick={() => setVideoMenuOpenId(isVideoMenuOpen ? null : q.id)}
-                                            className="h-6 px-2 rounded bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[11px] font-mono text-rose-400 transition-colors cursor-pointer flex items-center gap-1"
-                                            title="View video tutorials"
+                                            className="p-1.5 rounded-md text-[var(--text-muted)] hover:text-rose-400 hover:bg-[rgba(255,248,230,0.06)] transition-colors cursor-pointer flex items-center gap-1"
+                                            title="Video Breakdown"
                                           >
-                                            <Play className="w-3 h-3 fill-current" />
-                                            <span className="hidden md:inline">
-                                              {videoList.length > 1 ? `${videoList.length} vids` : 'Video'}
-                                            </span>
+                                            <YoutubeIcon className="w-3.5 h-3.5" />
+                                            {videoList.length > 1 && (
+                                              <span className="text-[10px] font-mono text-[var(--accent)] font-semibold">
+                                                {videoList.length}
+                                              </span>
+                                            )}
                                           </button>
 
                                           {/* Popover Menu for Videos */}
                                           {isVideoMenuOpen && (
-                                            <div className="absolute right-0 bottom-full mb-1 w-60 rounded-md bg-[var(--board-raised)] border border-[var(--line)] shadow-xl p-1 z-50 text-xs font-sans space-y-0.5">
-                                              <div className="text-[10px] font-mono uppercase text-[var(--chalk-faint)] px-2 py-1">
-                                                Tutorials ({videoList.length})
+                                            <div className="absolute right-0 bottom-full mb-1 w-64 rounded-xl bg-[var(--bg-card)] border border-[var(--border-medium)] shadow-2xl p-2 z-50 text-xs space-y-1">
+                                              <div className="text-[10px] font-mono uppercase text-[var(--accent)] px-2 py-1 tracking-wider">
+                                                [Video Breakdown ({videoList.length})]
                                               </div>
                                               {videoList.map((vid, vIdx) => (
                                                 <button
@@ -698,33 +800,18 @@ export default function LibraryView({
                                                     setVideoMenuOpenId(null);
                                                     if (onOpenArticle) onOpenArticle(q);
                                                   }}
-                                                  className="w-full flex items-center justify-between px-2 py-1.5 rounded hover:bg-[var(--board-hover)] text-left text-[var(--chalk)] transition-colors cursor-pointer"
+                                                  className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg hover:bg-[rgba(255,248,230,0.06)] text-left text-[var(--text-primary)] transition-colors cursor-pointer"
                                                 >
-                                                  <div className="flex items-center gap-1.5 truncate">
-                                                    <YoutubeIcon className="w-3 h-3 text-rose-400 shrink-0" />
+                                                  <div className="flex items-center gap-2 truncate">
+                                                    <YoutubeIcon className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                                                     <span className="truncate text-xs">{vid.channel || vid.title || `Video ${vIdx + 1}`}</span>
                                                   </div>
-                                                  <span className="text-[10px] font-mono text-[var(--indigo)] shrink-0">Study →</span>
+                                                  <span className="text-[10px] font-mono text-[var(--accent)] shrink-0">Study →</span>
                                                 </button>
                                               ))}
                                             </div>
                                           )}
                                         </div>
-                                      )}
-
-                                      {/* Interactive Visualizer Launch */}
-                                      {hasVis && (
-                                        <button
-                                          onClick={() => {
-                                            sound?.playSuccess?.();
-                                            onOpenQuestion(q);
-                                          }}
-                                          className="h-6 px-2 rounded bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/25 text-[11px] font-mono text-indigo-400 transition-colors cursor-pointer flex items-center gap-1"
-                                          title="Launch Interactive Algorithm Visualizer"
-                                        >
-                                          <Layers className="w-3 h-3" />
-                                          <span className="hidden lg:inline">Visualize</span>
-                                        </button>
                                       )}
 
                                       {/* LeetCode link */}
@@ -733,19 +820,26 @@ export default function LibraryView({
                                           href={q.leetcode_url}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="p-1 text-[var(--chalk-faint)] hover:text-[var(--chalk)] transition-colors"
+                                          className="p-1.5 rounded-md text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,248,230,0.06)] transition-colors"
                                           title="Open on LeetCode"
                                         >
-                                          <ExternalLink className="w-3 h-3" />
+                                          <ExternalLink className="w-3.5 h-3.5" />
                                         </a>
                                       )}
 
-                                      {/* Difficulty Badge */}
-                                      <span
-                                        className={`px-1.5 py-0.2 rounded text-[10px] font-mono border ${diffCfg.badge}`}
-                                      >
-                                        {q.difficulty}
-                                      </span>
+                                      {/* Interactive Visualizer Launch — Minimalist Icon Button */}
+                                      {hasVis && (
+                                        <button
+                                          onClick={() => {
+                                            sound?.playSuccess?.();
+                                            onOpenQuestion(q);
+                                          }}
+                                          className="p-1.5 rounded-md text-[var(--accent)] hover:text-[var(--accent-bright)] bg-[rgba(212,160,60,0.08)] hover:bg-[rgba(212,160,60,0.18)] border border-[var(--border-accent)]/40 hover:border-[var(--accent)] transition-all cursor-pointer shadow-[0_0_8px_rgba(212,160,60,0.10)] hover:shadow-[0_0_14px_rgba(212,160,60,0.25)]"
+                                          title="Launch Interactive Algorithm Visualizer Studio"
+                                        >
+                                          <Sparkles className="w-3.5 h-3.5" />
+                                        </button>
+                                      )}
                                     </div>
                                   </div>
                                 );

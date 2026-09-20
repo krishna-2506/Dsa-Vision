@@ -1,0 +1,827 @@
+[
+  {
+    "id": "pattern-21",
+    "title": "Pattern 21",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Pyramid Patterns",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 21: Hollow Rectangle/Square Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-21",
+        "title": "take U forward - Pattern 21: Hollow Square Pattern",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Uses boundary checks (i == 0 || j == 0 || i == n-1 || j == n-1) to print border stars."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-21",
+        "title": "Kunal Kushwaha - Boundary Condition Patterns",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Covers nested loop boundary coordinate validation for hollow squares."
+      }
+    ]
+  },
+  {
+    "id": "pattern-22",
+    "title": "Pattern 22",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Number Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 22: The Number Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-22",
+        "title": "take U forward - Pattern 22: Concentric Number Matrix",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Mathematical reduction using min distance from top, bottom, left, and right borders."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-22",
+        "title": "Kunal Kushwaha - Number Spiral / Concentric Square Pattern",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Formula derivation for 2n-1 square matrix indexing."
+      }
+    ]
+  },
+  {
+    "id": "pattern-3",
+    "title": "Pattern 3",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/right-angled-number-triangle/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Right-Angled Number Triangle Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/right-angled-number-triangle/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 3: Right-Angled Number Triangle",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-3",
+        "title": "take U forward - Pattern 3: Number Triangle Walkthrough",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Prints incremental column indices from 1 to current row count."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-3",
+        "title": "Kunal Kushwaha - Number Triangle Iteration",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Explains nested counter iteration in triangular configurations."
+      }
+    ]
+  },
+  {
+    "id": "pattern-4",
+    "title": "Pattern 4",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Number Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 4: Right-Angled Number Triangle - II",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-4",
+        "title": "take U forward - Pattern 4: Repeated Row Digits Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Demonstrates printing the outer loop variable across all columns in a row."
+      },
+      {
+        "id": "love-babbar-pattern-4",
+        "title": "CodeHelp by Babbar - Row Variable Broadcasting",
+        "url": "https://www.youtube.com/watch?v=WR31ByTzAVQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Explains difference between column-dependent and row-dependent values."
+      }
+    ]
+  },
+  {
+    "id": "pattern-5",
+    "title": "Pattern 5",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Pyramid Patterns",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 5: Inverted Right Pyramid",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-5",
+        "title": "take U forward - Pattern 5: Inverted Right-Angled Star Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Covers descending inner loop bounds using condition j <= n - i."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-5",
+        "title": "Kunal Kushwaha - Inverted Star Triangle Walkthrough",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Illustrates reverse loop step counts."
+      }
+    ]
+  },
+  {
+    "id": "pattern-6",
+    "title": "Pattern 6",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Number Pattern",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-number-pattern/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 6: Inverted Numbered Right Pyramid",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-6",
+        "title": "take U forward - Pattern 6: Inverted Number Triangle",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Prints sequential numbers 1 to n - i in an inverted triangle."
+      },
+      {
+        "id": "love-babbar-pattern-6",
+        "title": "CodeHelp by Babbar - Inverted Number Patterns",
+        "url": "https://www.youtube.com/watch?v=WR31ByTzAVQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Shows coordinate indexing with decrementing ceiling limits."
+      }
+    ]
+  },
+  {
+    "id": "pattern-7",
+    "title": "Pattern 7",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/pyramid-patterns/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Pyramid Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/pyramid-patterns/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 7: Star Pyramid",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-7",
+        "title": "take U forward - Pattern 7: Star Pyramid Walkthrough",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Tripartite structure: (n-i-1) spaces, (2*i+1) stars, and trailing spaces."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-7",
+        "title": "Kunal Kushwaha - Centered Pyramid Pattern",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Space-star ratio derivation for centered pyramids."
+      }
+    ]
+  },
+  {
+    "id": "pattern-8",
+    "title": "Pattern 8",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program To Print Pyramid Patterns",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-print-pyramid-patterns/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 8: Inverted Star Pyramid",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-8",
+        "title": "take U forward - Pattern 8: Inverted Star Pyramid",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Inverted pyramid logic with i leading spaces and 2*(n-i)-1 stars."
+      },
+      {
+        "id": "love-babbar-pattern-8",
+        "title": "CodeHelp by Babbar - Inverted Pyramidal Spacing",
+        "url": "https://www.youtube.com/watch?v=dr-pLeJBr38",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Explains row offsets and shrinking star arithmetic."
+      }
+    ]
+  },
+  {
+    "id": "pattern-9",
+    "title": "Pattern 9",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/pattern/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Diamond Shape Pattern",
+        "url": "https://www.geeksforgeeks.org/problems/pattern/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Pattern 9: Diamond Star Pattern",
+        "url": "https://takeuforward.org/strivers-a2z-dsa-course/must-do-pattern-problems-before-starting-dsa/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-pattern-9",
+        "title": "take U forward - Pattern 9: Diamond Star Pattern",
+        "url": "https://www.youtube.com/watch?v=tNm_NNSB3_w",
+        "channel": "take U forward",
+        "notes": "Chains the erect pyramid logic with the inverted pyramid logic."
+      },
+      {
+        "id": "kunal-kushwaha-pattern-9",
+        "title": "Kunal Kushwaha - Diamond Pattern Walkthrough",
+        "url": "https://www.youtube.com/watch?v=lsOOs5J8ycw",
+        "channel": "Kunal Kushwaha",
+        "notes": "Modular combination of two symmetrical halves."
+      }
+    ]
+  },
+  {
+    "id": "java-collections",
+    "title": "Java Collections",
+    "gfg_url": "https://www.geeksforgeeks.org/java/java-collection-tutorial/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Java Collection Framework Tutorial",
+        "url": "https://www.geeksforgeeks.org/java/java-collection-tutorial/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - How to Learn Java Collections",
+        "url": "https://www.geeksforgeeks.org/java/how-to-learn-java-collections-a-complete-guide/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "kunal-kushwaha-java-collections",
+        "title": "Kunal Kushwaha - Collections Framework, Vector Class, Enums in Java",
+        "url": "https://www.youtube.com/watch?v=9ogGan-R1pc",
+        "channel": "Kunal Kushwaha",
+        "notes": "Comprehensive overview of List, Set, Queue, and Map interfaces in Java."
+      },
+      {
+        "id": "take-u-forward-java-collections",
+        "title": "take U forward - Java Collections Overview",
+        "url": "https://takeuforward.org/data-structure/java-collections",
+        "channel": "take U forward",
+        "notes": "Time complexities and common methods for Java collections in competitive programming."
+      }
+    ]
+  },
+  {
+    "id": "stl",
+    "title": "STL",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/cpp-stl-interview-questions/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ STL Interview Questions and Answers",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-stl-interview-questions/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - STL Components Overview",
+        "url": "https://www.geeksforgeeks.org/cpp/why-does-the-c-stl-not-provide-any-tree-containers/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-stl",
+        "title": "take U forward - C++ STL Tutorial | Most Frequent Used STL Containers",
+        "url": "https://www.youtube.com/watch?v=RRVYpIET_RU",
+        "channel": "take U forward",
+        "notes": "Covers vector, list, deque, stack, queue, priority_queue, set, and map with iterators."
+      },
+      {
+        "id": "love-babbar-stl",
+        "title": "CodeHelp by Babbar - Lecture 19: C++ STL in 1 Video",
+        "url": "https://www.youtube.com/watch?v=WgMPrLX-zsA",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "In-depth guide to STL algorithms like binary_search, lower_bound, and sort."
+      }
+    ]
+  },
+  {
+    "id": "check-for-prime-number",
+    "title": "Check for Prime Number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/prime-number2314/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Prime Number",
+        "url": "https://www.geeksforgeeks.org/problems/prime-number2314/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Check if a Number is Prime or Not",
+        "url": "https://takeuforward.org/data-structure/check-if-a-number-is-prime-or-not/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-prime",
+        "title": "take U forward - Basic Maths for DSA | Prime Checking",
+        "url": "https://www.youtube.com/watch?v=1xNbjMdbjug",
+        "channel": "take U forward",
+        "notes": "Optimal O(sqrt(N)) factor checking and mathematical rationale."
+      },
+      {
+        "id": "love-babbar-prime",
+        "title": "CodeHelp by Babbar - Lecture 15: Prime Numbers and Sieve",
+        "url": "https://www.youtube.com/watch?v=ktEyWsU7G94",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Divisor pairing and prime testing optimization."
+      }
+    ]
+  },
+  {
+    "id": "check-if-the-number-is-armstrong",
+    "title": "Check if the Number is Armstrong",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/armstrong-numbers2727/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Armstrong Numbers",
+        "url": "https://www.geeksforgeeks.org/problems/armstrong-numbers2727/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Check if a Number is Armstrong Number or Not",
+        "url": "https://takeuforward.org/maths/check-if-a-number-is-armstrong-number-or-not/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-armstrong",
+        "title": "take U forward - Armstrong Number Checking",
+        "url": "https://www.youtube.com/watch?v=1xNbjMdbjug",
+        "channel": "take U forward",
+        "notes": "Digit extraction via modulo and accumulating power of digits."
+      },
+      {
+        "id": "love-babbar-armstrong",
+        "title": "CodeHelp by Babbar - Basic Maths for DSA Series",
+        "url": "https://www.youtube.com/watch?v=ktEyWsU7G94",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Handling multi-digit powers and integer overflow considerations."
+      }
+    ]
+  },
+  {
+    "id": "count-all-digits-of-a-number",
+    "title": "Count all Digits of a Number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-total-digits-in-a-number/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Count Digits in Number",
+        "url": "https://www.geeksforgeeks.org/problems/count-total-digits-in-a-number/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Count Digits in a Number",
+        "url": "https://takeuforward.org/data-structure/count-digits-in-a-number/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-count-digits",
+        "title": "take U forward - Count Digits in a Number",
+        "url": "https://www.youtube.com/watch?v=1xNbjMdbjug",
+        "channel": "take U forward",
+        "notes": "Demonstrates iterative division (n /= 10) and logarithmic direct computation (log10(n) + 1)."
+      },
+      {
+        "id": "love-babbar-count-digits",
+        "title": "CodeHelp by Babbar - Digit Extraction & Counting",
+        "url": "https://www.youtube.com/watch?v=0fwrMYPcGQ0",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Walkthrough of decimal digit extraction mechanics."
+      }
+    ]
+  },
+  {
+    "id": "gcd-of-two-numbers",
+    "title": "GCD of Two Numbers",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/gcd-of-two-numbers3459/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - GCD of Two",
+        "url": "https://www.geeksforgeeks.org/problems/gcd-of-two-numbers3459/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Find GCD of Two Numbers",
+        "url": "https://takeuforward.org/data-structure/find-gcd-of-two-numbers/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-gcd",
+        "title": "take U forward - Euclidean Algorithm for GCD",
+        "url": "https://www.youtube.com/watch?v=1xNbjMdbjug",
+        "channel": "take U forward",
+        "notes": "Explains Euclidean modulo subtraction and logarithmic time complexity O(log(min(a,b)))."
+      },
+      {
+        "id": "shrenik-jain-euclidean-gcd",
+        "title": "Shrenik Jain - Euclidean algorithm to find GCD of two numbers",
+        "url": "https://www.youtube.com/watch?v=b1ZV2VzNqAo",
+        "channel": "Shrenik Jain",
+        "notes": "Clear proof and division remainder steps for Euclid's algorithm."
+      }
+    ]
+  },
+  {
+    "id": "palindrome-number",
+    "title": "Palindrome Number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/palindrome0746/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Palindrome Number",
+        "url": "https://www.geeksforgeeks.org/problems/palindrome0746/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Palindrome Number",
+        "url": "https://leetcode.com/problems/palindrome-number/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-palindrome-number",
+        "title": "NeetCode - Palindrome Number - Leetcode 9 - Python",
+        "url": "https://www.youtube.com/watch?v=yubRKwixN-U",
+        "channel": "NeetCode",
+        "notes": "Reversing half the integer to avoid 32-bit overflow."
+      },
+      {
+        "id": "take-u-forward-palindrome-number",
+        "title": "take U forward - Palindrome Number Check",
+        "url": "https://www.youtube.com/watch?v=1xNbjMdbjug",
+        "channel": "take U forward",
+        "notes": "Integer reversal and negative number handling."
+      }
+    ]
+  },
+  {
+    "id": "print-all-divisors",
+    "title": "Print all Divisors",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/sum-of-all-divisors-from-1-to-n4738/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Sum 1 to n Divisors",
+        "url": "https://www.geeksforgeeks.org/problems/sum-of-all-divisors-from-1-to-n4738/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Print all Divisors of a Given Number",
+        "url": "https://takeuforward.org/data-structure/print-all-divisors-of-a-given-number/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-divisors",
+        "title": "take U forward - Print all Divisors in O(sqrt(N))",
+        "url": "https://www.youtube.com/watch?v=1xNbjMdbjug",
+        "channel": "take U forward",
+        "notes": "Iterating up to sqrt(N) to capture divisor pairs (i and n/i)."
+      },
+      {
+        "id": "love-babbar-divisors",
+        "title": "CodeHelp by Babbar - Factors & Multiples Analysis",
+        "url": "https://www.youtube.com/watch?v=ktEyWsU7G94",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Optimized factor collection and sorting."
+      }
+    ]
+  },
+  {
+    "id": "reverse-a-number",
+    "title": "Reverse a number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/reverse-digit0316/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Reverse Digits",
+        "url": "https://www.geeksforgeeks.org/problems/reverse-digit0316/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Reverse Integer",
+        "url": "https://leetcode.com/problems/reverse-integer/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-reverse-number",
+        "title": "take U forward - Reverse Digits of a Number",
+        "url": "https://www.youtube.com/watch?v=1xNbjMdbjug",
+        "channel": "take U forward",
+        "notes": "Extracting digits via modulo 10 and checking 32-bit INT_MAX / INT_MIN overflow bounds."
+      },
+      {
+        "id": "love-babbar-reverse-integer",
+        "title": "CodeHelp by Babbar - Lecture 7: LeetCode Reverse Integer",
+        "url": "https://www.youtube.com/watch?v=0fwrMYPcGQ0",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Handling INT_MAX / 10 overflow edge cases."
+      }
+    ]
+  },
+  {
+    "id": "check-if-string-is-palindrome-or-not",
+    "title": "Check if String is Palindrome or Not",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/palindrome-string0817/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Palindrome String",
+        "url": "https://www.geeksforgeeks.org/problems/palindrome-string0817/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Valid Palindrome",
+        "url": "https://leetcode.com/problems/valid-palindrome/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-valid-palindrome",
+        "title": "NeetCode - Valid Palindrome - Leetcode 125 - Python",
+        "url": "https://www.youtube.com/watch?v=jJXJ16kPFWg",
+        "channel": "NeetCode",
+        "notes": "Two-pointer approach skipping non-alphanumeric characters."
+      },
+      {
+        "id": "take-u-forward-string-palindrome-recursion",
+        "title": "take U forward - Check if String is Palindrome using Recursion",
+        "url": "https://www.youtube.com/watch?v=twuC1F6gLI8",
+        "channel": "take U forward",
+        "notes": "Functional recursive two-pointer check comparing s[i] with s[n-i-1]."
+      }
+    ]
+  },
+  {
+    "id": "factorial-of-a-given-number",
+    "title": "Factorial of a given number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/factorial5739/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Factorial",
+        "url": "https://www.geeksforgeeks.org/problems/factorial5739/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Factorial of a Number: Iterative and Recursive",
+        "url": "https://takeuforward.org/data-structure/factorial-of-a-number-iterative-and-recursive",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-factorial-recursion",
+        "title": "take U forward - Recursion Lecture 3: Factorial of a Number",
+        "url": "https://www.youtube.com/watch?v=69ZCDFy-OUo",
+        "channel": "take U forward",
+        "notes": "Contrasts parameterized recursion with functional recursion."
+      },
+      {
+        "id": "kunal-kushwaha-recursion-factorial",
+        "title": "Kunal Kushwaha - Introduction to Recursion: Base Cases",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Call stack tracing and recurrence relation n * fact(n-1)."
+      }
+    ]
+  },
+  {
+    "id": "fibonacci-number",
+    "title": "Fibonacci Number",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/nth-fibonacci-number1335/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Nth Fibonacci Number",
+        "url": "https://www.geeksforgeeks.org/problems/nth-fibonacci-number1335/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Fibonacci Number",
+        "url": "https://leetcode.com/problems/fibonacci-number/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-fibonacci",
+        "title": "NeetCode - Recursion for Beginners - Fibonacci Numbers",
+        "url": "https://www.youtube.com/watch?v=dDokMfPpfu4",
+        "channel": "NeetCode",
+        "notes": "Walkthrough of recursive branching and call tree execution."
+      },
+      {
+        "id": "take-u-forward-fibonacci-recursion",
+        "title": "take U forward - Recursion Lecture 5: Multiple Recursive Calls",
+        "url": "https://www.youtube.com/watch?v=kvRjNm4rVBE",
+        "channel": "take U forward",
+        "notes": "Visualizes the dual recursive tree and exponential time complexity."
+      }
+    ]
+  },
+  {
+    "id": "print-1-to-n-using-recursion",
+    "title": "Print 1 to N using Recursion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/print-1-to-n-without-using-loops3621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - 1 to n Without Loop",
+        "url": "https://www.geeksforgeeks.org/problems/print-1-to-n-without-using-loops3621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Print 1 to N using Recursion",
+        "url": "https://takeuforward.org/recursion/print-1-to-n-using-recursion/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-print-1-to-n",
+        "title": "take U forward - Problems on Recursion: Print 1 to N",
+        "url": "https://www.youtube.com/watch?v=un6PLygfXrA",
+        "channel": "take U forward",
+        "notes": "Explains forward recursion with incrementing index and backtracking."
+      },
+      {
+        "id": "kunal-kushwaha-recursion-flow",
+        "title": "Kunal Kushwaha - Recursion Call Stack Flow",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Contrasts execution before recursive call vs after recursive call."
+      }
+    ]
+  },
+  {
+    "id": "print-n-to-1-using-recursion",
+    "title": "Print N to 1 using Recursion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/print-1-to-n-without-using-loops3621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Print Numbers Without Loop",
+        "url": "https://www.geeksforgeeks.org/problems/print-1-to-n-without-using-loops3621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Print N to 1 using Recursion",
+        "url": "https://takeuforward.org/recursion/print-n-to-1-using-recursion/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-print-n-to-1",
+        "title": "take U forward - Print N to 1 Using Backtracking",
+        "url": "https://www.youtube.com/watch?v=un6PLygfXrA",
+        "channel": "take U forward",
+        "notes": "Shows head recursion and processing on unwinding of the stack."
+      },
+      {
+        "id": "kunal-kushwaha-recursion-descending",
+        "title": "Kunal Kushwaha - Tail Recursion and Return Mechanics",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Printing in descending order using tail calls."
+      }
+    ]
+  },
+  {
+    "id": "print-name-n-times-using-recursion",
+    "title": "Print name N times using recursion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/print-gfg-n-times/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Print GFG n times",
+        "url": "https://www.geeksforgeeks.org/problems/print-gfg-n-times/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Print name N times using recursion",
+        "url": "https://takeuforward.org/recursion/print-name-n-times-using-recursion/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-print-name-recursion",
+        "title": "take U forward - Recursion Lecture 2: Base Case Condition",
+        "url": "https://www.youtube.com/watch?v=un6PLygfXrA",
+        "channel": "take U forward",
+        "notes": "Demonstrates avoiding stack overflow errors through base case guard conditions."
+      },
+      {
+        "id": "kunal-kushwaha-recursion-intro",
+        "title": "Kunal Kushwaha - Why Recursion? Call Stack & Memory",
+        "url": "https://www.youtube.com/watch?v=M2uO2nMT0Bk",
+        "channel": "Kunal Kushwaha",
+        "notes": "Intuitive explanation of call stack memory allocation."
+      }
+    ]
+  },
+  {
+    "id": "reverse-an-array",
+    "title": "Reverse an array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/reverse-an-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks Practice - Reverse Array",
+        "url": "https://www.geeksforgeeks.org/problems/reverse-an-array/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Reverse a Given Array",
+        "url": "https://takeuforward.org/data-structure/reverse-a-given-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "take-u-forward-reverse-array-recursion",
+        "title": "take U forward - Reverse an Array using Recursion",
+        "url": "https://www.youtube.com/watch?v=twuC1F6gLI8",
+        "channel": "take U forward",
+        "notes": "Two-pointer swap recursion and single-pointer (n-i-1) recursive formulation."
+      },
+      {
+        "id": "love-babbar-reverse-array",
+        "title": "CodeHelp by Babbar - Lecture 9: Arrays & Array Reversal",
+        "url": "https://www.youtube.com/watch?v=sNrLlmOIn-c",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Covers two-pointer swapping and time/space complexity analysis."
+      }
+    ]
+  }
+]

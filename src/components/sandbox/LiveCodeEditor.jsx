@@ -1,14 +1,93 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, AlertCircle, Check, CheckCheck } from 'lucide-react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Check } from 'lucide-react';
+
+/**
+ * VS Code Dark+ Syntax Tokenizer for Python, C++, and JavaScript.
+ * Accurately colors keywords, strings, numbers, comments, built-ins, and functions.
+ */
+function renderSyntaxHighlightedLine(line, language) {
+  if (!line) return <span>&nbsp;</span>;
+
+  // 1. Comments
+  const commentPrefix = language === 'python' ? '#' : '//';
+  const commentIdx = line.indexOf(commentPrefix);
+  let codePart = line;
+  let commentPart = null;
+
+  if (commentIdx !== -1) {
+    const before = line.slice(0, commentIdx);
+    const doubleQuotes = (before.match(/"/g) || []).length;
+    const singleQuotes = (before.match(/'/g) || []).length;
+    if (doubleQuotes % 2 === 0 && singleQuotes % 2 === 0) {
+      codePart = line.slice(0, commentIdx);
+      commentPart = line.slice(commentIdx);
+    }
+  }
+
+  // 2. Tokenizer Regex
+  const tokenRegex = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`[^`]*`|\b\d+(?:\.\d+)?\b|\b[a-zA-Z_]\w*\b|[^\s\w'"`]+|\s+)/g;
+  const tokens = [];
+  let match;
+
+  const pythonControl = new Set([
+    'return', 'for', 'while', 'if', 'elif', 'else', 'try', 'except',
+    'finally', 'with', 'pass', 'continue', 'break', 'yield'
+  ]);
+  const pythonKeywords = new Set([
+    'def', 'class', 'import', 'from', 'as', 'in', 'lambda', 'and', 'or', 'not', 'is', 'self'
+  ]);
+  const cppKeywords = new Set([
+    'int', 'void', 'char', 'bool', 'double', 'float', 'long', 'auto', 'vector',
+    'string', 'const', 'return', 'for', 'while', 'if', 'else', 'switch', 'case',
+    'break', 'continue', 'class', 'struct', 'public', 'private', 'std'
+  ]);
+  const jsKeywords = new Set([
+    'function', 'const', 'let', 'var', 'return', 'for', 'while', 'if', 'else',
+    'switch', 'case', 'break', 'continue', 'class', 'import', 'export', 'from',
+    'async', 'await', 'new', 'typeof'
+  ]);
+  const constKeywords = new Set(['True', 'False', 'None', 'true', 'false', 'null', 'undefined', 'nullptr']);
+  const builtinFuncs = new Set([
+    'print', 'len', 'range', 'append', 'min', 'max', 'sum', 'abs', 'enumerate', 'zip',
+    'cout', 'cin', 'push_back', 'console', 'log', 'push', 'pop'
+  ]);
+
+  const controlKw = pythonControl;
+  const activeKw = language === 'cpp' ? cppKeywords : language === 'javascript' ? jsKeywords : pythonKeywords;
+
+  let keyCounter = 0;
+  while ((match = tokenRegex.exec(codePart)) !== null) {
+    const t = match[0];
+    keyCounter++;
+    if (t.startsWith('"') || t.startsWith("'") || t.startsWith('`')) {
+      tokens.push(<span key={keyCounter} className="text-[#ce9178]">{t}</span>);
+    } else if (constKeywords.has(t)) {
+      tokens.push(<span key={keyCounter} className="text-[#569cd6] font-semibold">{t}</span>);
+    } else if (controlKw.has(t)) {
+      tokens.push(<span key={keyCounter} className="text-[#c586c0] font-semibold">{t}</span>);
+    } else if (activeKw.has(t)) {
+      tokens.push(<span key={keyCounter} className="text-[#569cd6] font-semibold">{t}</span>);
+    } else if (builtinFuncs.has(t)) {
+      tokens.push(<span key={keyCounter} className="text-[#dcdcaa]">{t}</span>);
+    } else if (/^\d+(\.\d+)?$/.test(t)) {
+      tokens.push(<span key={keyCounter} className="text-[#b5cea8]">{t}</span>);
+    } else {
+      tokens.push(<span key={keyCounter} className="text-[#d4d4d4]">{t}</span>);
+    }
+  }
+
+  return (
+    <>
+      {tokens}
+      {commentPart && <span className="text-[#6a9955] italic">{commentPart}</span>}
+    </>
+  );
+}
 
 export default function LiveCodeEditor({
   code = '',
   onChange = () => {},
   onRun = null,
-  onFormat = null,
-  isFormatting = false,
-  prettierStatus = 'idle', // 'idle' | 'formatted' | 'error'
-  prettierMessage = '',
   activeLine = null,
   errorLine = null,
   errorMessage = null,
@@ -18,9 +97,10 @@ export default function LiveCodeEditor({
 }) {
   const textareaRef = useRef(null);
   const gutterRef = useRef(null);
+  const highlightOverlayRef = useRef(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
-  const lines = code.split('\n');
+  const lines = useMemo(() => code.split('\n'), [code]);
 
   // Track cursor Ln & Col
   const updateCursorPos = () => {
@@ -34,17 +114,8 @@ export default function LiveCodeEditor({
     });
   };
 
-  // Handle Tab key, Ctrl+Enter / Cmd+Enter, and Shift+Alt+F (Prettier)
+  // Keyboard shortcut Ctrl+Enter to run
   const handleKeyDown = (e) => {
-    // Shift + Alt + F (Windows/Linux) or Shift + Option + F (macOS) -> Prettier Format Document
-    if (e.shiftKey && e.altKey && (e.key === 'F' || e.key === 'f')) {
-      e.preventDefault();
-      if (typeof onFormat === 'function') {
-        onFormat();
-      }
-      return;
-    }
-
     // Ctrl + Enter or Cmd + Enter -> Compile & Run
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -76,33 +147,41 @@ export default function LiveCodeEditor({
 
   const handleScroll = (e) => {
     const top = e.target.scrollTop;
+    const left = e.target.scrollLeft;
     setScrollTop(top);
     if (gutterRef.current) {
       gutterRef.current.scrollTop = top;
     }
+    if (highlightOverlayRef.current) {
+      highlightOverlayRef.current.scrollTop = top;
+      highlightOverlayRef.current.scrollLeft = left;
+    }
   };
 
-  // Auto-scroll to activeLine or errorLine if outside view
+  // Auto-scroll to activeLine or errorLine
   useEffect(() => {
     const focusLine = errorLine || activeLine;
     if (!focusLine || !textareaRef.current) return;
-    const lineHeight = 20; // 20px per line
+    const lineHeight = 20;
     const targetScroll = (focusLine - 3) * lineHeight;
     textareaRef.current.scrollTop = Math.max(0, targetScroll);
     setScrollTop(Math.max(0, targetScroll));
     if (gutterRef.current) {
       gutterRef.current.scrollTop = Math.max(0, targetScroll);
     }
+    if (highlightOverlayRef.current) {
+      highlightOverlayRef.current.scrollTop = Math.max(0, targetScroll);
+    }
   }, [activeLine, errorLine]);
 
   return (
-    <div className={`relative flex flex-col rounded-lg border border-[var(--line)] bg-[var(--board)] overflow-hidden font-mono text-xs ${className}`}>
-      {/* Editor Body: Gutter + Code Surface */}
+    <div className={`relative flex flex-col rounded-xl border border-[var(--border-subtle)] bg-[#0d0c0a] overflow-hidden font-mono text-xs ${className}`}>
+      {/* Editor Body: Gutter + Syntax Highlighted Surface */}
       <div className="relative flex flex-1 overflow-hidden min-h-[350px]">
         {/* Line Numbers Gutter */}
         <div
           ref={gutterRef}
-          className="select-none py-3 px-2 bg-[var(--board-raised)] border-r border-[var(--line)] text-[var(--chalk-dim)] text-right w-12 shrink-0 space-y-0.5 overflow-hidden"
+          className="select-none py-3 px-2 bg-[#090807] border-r border-[var(--border-subtle)] text-[var(--text-tertiary)] text-right w-11 shrink-0 space-y-0.5 overflow-hidden font-mono text-[11px]"
         >
           {lines.map((_, idx) => {
             const lineNum = idx + 1;
@@ -111,12 +190,12 @@ export default function LiveCodeEditor({
             return (
               <div
                 key={lineNum}
-                className={`h-5 leading-5 transition-colors flex items-center justify-end gap-1 font-mono text-[11px] ${
+                className={`h-5 leading-5 transition-colors flex items-center justify-end gap-1 ${
                   isError
                     ? 'text-rose-400 font-bold bg-rose-500/15 -mx-2 px-2'
                     : isActive
-                    ? 'text-indigo-400 font-bold'
-                    : 'text-[var(--chalk-faint)]'
+                    ? 'text-[var(--accent)] font-bold'
+                    : 'text-[var(--text-tertiary)]'
                 }`}
               >
                 {isError && <span className="text-[10px] text-rose-400 font-bold">✖</span>}
@@ -126,9 +205,9 @@ export default function LiveCodeEditor({
           })}
         </div>
 
-        {/* Code Area & Overlays */}
+        {/* Code Area: Syntax Overlay + Interactive Textarea */}
         <div className="relative flex-1 overflow-hidden">
-          {/* Error Line Highlight Overlay */}
+          {/* Error Line Highlight */}
           {errorLine && errorLine <= lines.length && (
             <div
               className="absolute left-0 right-0 h-5 bg-rose-500/20 border-l-2 border-rose-500 pointer-events-none transition-all duration-75 z-0 flex items-center justify-between px-3"
@@ -143,15 +222,28 @@ export default function LiveCodeEditor({
             </div>
           )}
 
-          {/* Active Line Highlight Banner */}
+          {/* Active Line Highlight */}
           {!errorLine && activeLine && activeLine <= lines.length && (
             <div
-              className="absolute left-0 right-0 h-5 bg-indigo-500/15 border-l-2 border-indigo-500 pointer-events-none transition-all duration-75 z-0"
+              className="absolute left-0 right-0 h-5 bg-[rgba(212,160,60,0.12)] border-l-2 border-[var(--accent)] pointer-events-none transition-all duration-75 z-0"
               style={{ top: `${12 + (activeLine - 1) * 20 - scrollTop}px` }}
             />
           )}
 
-          {/* Textarea Code Input */}
+          {/* ── VS Code Syntax Highlighted Layer (Rendered below textarea) ── */}
+          <div
+            ref={highlightOverlayRef}
+            aria-hidden="true"
+            className="absolute inset-0 p-3 pointer-events-none font-mono text-[12.5px] leading-5 whitespace-pre select-none overflow-hidden z-0"
+          >
+            {lines.map((line, idx) => (
+              <div key={idx} className="h-5 leading-5">
+                {renderSyntaxHighlightedLine(line, language)}
+              </div>
+            ))}
+          </div>
+
+          {/* ── Transparent Interactive Textarea (Top Layer) ── */}
           <textarea
             ref={textareaRef}
             value={code}
@@ -166,67 +258,28 @@ export default function LiveCodeEditor({
             onScroll={handleScroll}
             readOnly={readOnly}
             spellCheck={false}
-            className="relative z-10 w-full h-full p-3 bg-transparent text-[var(--chalk)] caret-indigo-400 resize-none focus:outline-none leading-5 whitespace-pre font-mono text-[12.5px]"
+            className="relative z-10 w-full h-full p-3 bg-transparent text-transparent caret-[var(--accent)] resize-none focus:outline-none leading-5 whitespace-pre font-mono text-[12.5px] selection:bg-[rgba(212,160,60,0.28)] selection:text-transparent"
             style={{ minHeight: '350px' }}
           />
         </div>
       </div>
 
-      {/* ── VS Code Style Prettier Status Bar ── */}
-      <div className="px-3 py-1.5 bg-[var(--board-raised)] border-t border-[var(--line)] flex items-center justify-between text-[11px] font-mono select-none">
-        {/* Left: Prettier Extension Status Pill */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onFormat}
-            disabled={isFormatting}
-            className={`flex items-center gap-1.5 px-2 py-0.5 rounded transition-all cursor-pointer ${
-              isFormatting
-                ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-                : prettierStatus === 'formatted'
-                ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                : prettierStatus === 'error'
-                ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
-                : 'hover:bg-[var(--board-raised-2)] text-[var(--chalk-dim)] hover:text-cyan-300'
-            }`}
-            title="Format Document with Prettier (Shift + Alt + F)"
-          >
-            <Sparkles className="w-3 h-3 text-cyan-400" />
-            <span className="font-semibold">Prettier:</span>
-            {isFormatting ? (
-              <span className="text-amber-400 animate-pulse">formatting...</span>
-            ) : prettierStatus === 'formatted' ? (
-              <span className="text-emerald-400 font-bold flex items-center gap-0.5">
-                <CheckCheck className="w-3.5 h-3.5" />
-                <span>formatted</span>
-              </span>
-            ) : prettierStatus === 'error' ? (
-              <span className="text-rose-400 font-bold">⚠ error</span>
-            ) : (
-              <span className="text-cyan-400 font-bold flex items-center">
-                <CheckCheck className="w-3.5 h-3.5" />
-              </span>
-            )}
-          </button>
-
-          {prettierMessage && (
-            <span className={`text-[10px] transition-opacity ${
-              prettierStatus === 'error' ? 'text-rose-400' : 'text-emerald-400'
-            }`}>
-              {prettierMessage}
-            </span>
-          )}
+      {/* ── Clean, Grounded Status Bar ── */}
+      <div className="px-3.5 py-1.5 bg-[#090807] border-t border-[var(--border-subtle)] flex items-center justify-between text-[11px] font-mono select-none text-[var(--text-tertiary)]">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#3d9e5c]" />
+          <span className="text-[var(--text-muted)]">Prettier Formatted</span>
         </div>
 
-        {/* Right: VS Code Telemetry (Cursor Ln/Col, Spaces, Encoding, Language) */}
-        <div className="flex items-center gap-3 text-[var(--chalk-faint)] text-[10.5px]">
+        <div className="flex items-center gap-3 text-[10.5px]">
           <span>
-            Ln <strong className="text-[var(--chalk-dim)]">{cursorPos.line}</strong>, Col <strong className="text-[var(--chalk-dim)]">{cursorPos.col}</strong>
+            Ln <strong className="text-[var(--text-body)]">{cursorPos.line}</strong>, Col <strong className="text-[var(--text-body)]">{cursorPos.col}</strong>
           </span>
           <span className="hidden sm:inline">
-            Spaces: <strong className="text-[var(--chalk-dim)]">{language === 'javascript' ? 2 : 4}</strong>
+            Spaces: <strong className="text-[var(--text-body)]">{language === 'javascript' ? 2 : 4}</strong>
           </span>
           <span className="hidden md:inline">UTF-8</span>
-          <span className="px-1.5 py-0.2 rounded bg-[var(--board-raised-2)] text-[var(--chalk-dim)] uppercase text-[9.5px] font-bold">
+          <span className="px-1.5 py-0.2 rounded bg-[var(--bg-surface)] text-[var(--accent)] uppercase text-[9.5px] font-semibold border border-[var(--border-subtle)]">
             {language}
           </span>
         </div>

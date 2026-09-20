@@ -821,8 +821,8 @@ export default function VisualizerStudio({
 
         {/* Main Stage Grid or Beta Mode Component */}
         {activeTier === 'beta' ? (
-          <div className="p-4 bg-[var(--board)]">
-            <BetaCodeVisualizer question={question} />
+          <div className="p-4 bg-[var(--bg-base)]">
+            <BetaCodeVisualizer question={question} solutions={solutions} />
           </div>
         ) : (
           <>
