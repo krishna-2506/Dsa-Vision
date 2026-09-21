@@ -64,36 +64,60 @@ export default function App() {
 
   // Synchronize route from current URL hash or pathname
   const syncRoute = (list = questions) => {
-    const hash = window.location.hash;
-    const pathname = window.location.pathname;
+    const rawHash = window.location.hash || '';
+    const pathname = window.location.pathname || '';
+    const cleanHash = rawHash.replace(/^#\/?/, '');
 
-    if (hash === '#admin' || pathname === '/admin') {
+    const findMatchingQuestion = (rawInput) => {
+      if (!rawInput) return null;
+      const cleanId = decodeURIComponent(rawInput).trim();
+      const normalizedCleanId = cleanId.toLowerCase().replace(/[-_]/g, ' ').trim();
+      return list.find((q) => {
+        if (!q) return false;
+        if (q.id === cleanId || q.slug === cleanId) return true;
+        if (q.title && q.title.toLowerCase() === cleanId.toLowerCase()) return true;
+        const normalizedTitle = (q.title || '').toLowerCase().replace(/[-_]/g, ' ').trim();
+        const normalizedSlug = (q.slug || q.id || '').toLowerCase().replace(/[-_]/g, ' ').trim();
+        return normalizedTitle === normalizedCleanId || normalizedSlug === normalizedCleanId;
+      }) || null;
+    };
+
+    if (cleanHash.startsWith('admin/') || pathname.startsWith('/admin/')) {
+      const rawId = cleanHash.startsWith('admin/')
+        ? cleanHash.replace('admin/', '')
+        : pathname.replace('/admin/', '');
+      const matched = findMatchingQuestion(rawId);
+      setActiveView('admin');
+      if (matched) {
+        setActiveQuestion(matched);
+      }
+    } else if (cleanHash === 'admin' || pathname === '/admin') {
       setActiveView('admin');
       setActiveQuestion(null);
-    } else if (hash === '#sandbox' || pathname === '/sandbox') {
+    } else if (cleanHash === 'sandbox' || pathname === '/sandbox') {
       setActiveView('sandbox');
       setActiveQuestion(null);
-    } else if (hash.startsWith('#article/') || pathname.startsWith('/article/')) {
-      const qId = hash.startsWith('#article/')
-        ? hash.replace('#article/', '')
+    } else if (cleanHash.startsWith('article/') || pathname.startsWith('/article/')) {
+      const rawId = cleanHash.startsWith('article/')
+        ? cleanHash.replace('article/', '')
         : pathname.replace('/article/', '');
-      const matched = list.find((q) => q.id === qId || q.slug === qId);
+      const matched = findMatchingQuestion(rawId);
       if (matched) {
         setActiveQuestion(matched);
         setActiveView('article');
       }
-    } else if (hash.startsWith('#studio/') || pathname.startsWith('/studio/')) {
-      const qId = hash.startsWith('#studio/')
-        ? hash.replace('#studio/', '')
+    } else if (cleanHash.startsWith('studio/') || pathname.startsWith('/studio/')) {
+      const rawId = cleanHash.startsWith('studio/')
+        ? cleanHash.replace('studio/', '')
         : pathname.replace('/studio/', '');
-      const matched = list.find((q) => q.id === qId || q.slug === qId);
+      const matched = findMatchingQuestion(rawId);
       if (matched) {
         setActiveQuestion(matched);
         setActiveView('studio');
       }
-    } else if (hash.startsWith('#theory/') || pathname.startsWith('/theory/')) {
-      const stepStr = hash.startsWith('#theory/')
-        ? hash.replace('#theory/', '')
+    } else if (cleanHash.startsWith('theory/') || pathname.startsWith('/theory/')) {
+      const stepStr = cleanHash.startsWith('theory/')
+        ? cleanHash.replace('theory/', '')
         : pathname.replace('/theory/', '');
       const stepNo = parseInt(stepStr, 10) || 1;
       setActiveTheoryStep(stepNo);
@@ -166,13 +190,34 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleOpenAdmin = (questionId = null) => {
-    if (questionId) {
-      const q = questions.find((item) => item.id === questionId);
-      if (q) setActiveQuestion(q);
+  const handleOpenAdmin = (targetOrId = null) => {
+    let target = null;
+    if (targetOrId && typeof targetOrId === 'object') {
+      target = targetOrId;
+    } else if (targetOrId) {
+      const cleanId = String(targetOrId).trim();
+      const normalizedCleanId = cleanId.toLowerCase().replace(/[-_]/g, ' ').trim();
+      target = questions.find((q) => {
+        if (!q) return false;
+        if (q.id === cleanId || q.slug === cleanId) return true;
+        if (q.title && q.title.toLowerCase() === cleanId.toLowerCase()) return true;
+        const normalizedTitle = (q.title || '').toLowerCase().replace(/[-_]/g, ' ').trim();
+        const normalizedSlug = (q.slug || q.id || '').toLowerCase().replace(/[-_]/g, ' ').trim();
+        return normalizedTitle === normalizedCleanId || normalizedSlug === normalizedCleanId;
+      }) || (activeQuestion && (activeQuestion.id === targetOrId || activeQuestion.slug === targetOrId) ? activeQuestion : null);
+    } else if (activeQuestion) {
+      target = activeQuestion;
     }
+
+    setActiveQuestion(target);
     setActiveView('admin');
-    window.location.hash = '#admin';
+    if (target) {
+      window.location.hash = `#admin/${target.id}`;
+    } else if (targetOrId) {
+      window.location.hash = `#admin/${targetOrId}`;
+    } else {
+      window.location.hash = '#admin';
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -294,7 +339,7 @@ export default function App() {
         userStats={userStats}
         onOpenAuthModal={() => setAuthModalOpen(true)}
         onOpenDashboardModal={() => setDashboardModalOpen(true)}
-        onOpenAdminModal={() => handleOpenAdmin(activeQuestion?.id)}
+        onOpenAdminModal={() => handleOpenAdmin(activeQuestion)}
         onNavigateSandbox={handleOpenSandbox}
         questions={questions}
         onNavigateQuestion={handleOpenArticle}
@@ -306,9 +351,11 @@ export default function App() {
       <main className="flex-1">
         {activeView === 'admin' ? (
           <AdminPage
+            key={activeQuestion?.id || 'admin-root'}
             onNavigateHome={handleBackToLibrary}
             onNavigateQuestion={handleOpenStudio}
             onNavigateArticle={handleOpenArticle}
+            initialQuestion={activeQuestion}
             initialQuestionId={activeQuestion?.id}
           />
         ) : activeView === 'sandbox' ? (
@@ -320,7 +367,7 @@ export default function App() {
             onLaunchStudio={handleOpenStudio}
             onStatusChange={handleStatusChange}
             onToggleFavorite={handleToggleFavorite}
-            onOpenAdmin={(qId) => handleOpenAdmin(qId)}
+            onOpenAdmin={(target) => handleOpenAdmin(target || activeQuestion)}
             currentUser={currentUser}
           />
         ) : activeView === 'studio' && activeQuestion ? (

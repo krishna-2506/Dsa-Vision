@@ -1,10 +1,8 @@
 import { dbService } from './server/db.js';
 
 export function algovisionApiPlugin() {
-  return {
-    name: 'algovision-api-plugin',
-    configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
+  const setupMiddlewares = (server) => {
+    server.middlewares.use(async (req, res, next) => {
         const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
         const pathname = url.pathname;
 
@@ -493,6 +491,11 @@ ${solutions.typescript || solutions.javascript || '// No TypeScript solution'}
           res.end(JSON.stringify({ error: err.message }));
         }
       });
-    }
+  };
+
+  return {
+    name: 'algovision-api-plugin',
+    configureServer: setupMiddlewares,
+    configurePreviewServer: setupMiddlewares
   };
 }

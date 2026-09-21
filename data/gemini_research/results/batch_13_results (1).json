@@ -1,0 +1,460 @@
+[
+  {
+    "id": "assign-cookies",
+    "title": "Assign Cookies",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/assign-cookies/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Assign Maximum Cookies",
+        "url": "https://www.geeksforgeeks.org/dsa/assign-cookies/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Assign Cookies",
+        "url": "https://leetcode.com/problems/assign-cookies/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-assign-cookies",
+        "title": "NeetCode - Assign Cookies - Leetcode 455 - Python",
+        "url": "https://www.youtube.com/watch?v=JW8fgvoxPTg",
+        "channel": "NeetCodeIO",
+        "notes": "Greedy two-pointer approach sorting both children greed factors and cookie sizes in O(N log N)."
+      },
+      {
+        "id": "takeuforward-assign-cookies",
+        "title": "take U forward - L1. Assign Cookies | Greedy Algorithm Playlist",
+        "url": "https://www.youtube.com/watch?v=DIX2p7vb9co",
+        "channel": "take U forward",
+        "notes": "Step-by-step intuitive walkthrough of greedy cookie assignment by Striver."
+      }
+    ]
+  },
+  {
+    "id": "fractional-knapsack",
+    "title": "Fractional Knapsack",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/fractional-knapsack-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Fractional Knapsack Problem",
+        "url": "https://www.geeksforgeeks.org/problems/fractional-knapsack-1587115620/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "abdul-bari-fractional-knapsack",
+        "title": "Abdul Bari - 3.1 Knapsack Problem - Greedy Method",
+        "url": "https://www.youtube.com/watch?v=oTTzNMHM05I",
+        "channel": "Abdul Bari",
+        "notes": "Classic algorithmic proof and value-per-weight ratio sorting explained with visual diagrams."
+      },
+      {
+        "id": "takeuforward-fractional-knapsack",
+        "title": "take U forward - L13. Fractional Knapsack Algorithm",
+        "url": "https://www.youtube.com/watch?v=1ibsQrnuEEg",
+        "channel": "take U forward",
+        "notes": "Optimal greedy approach sorting items by value-to-weight ratio in descending order."
+      }
+    ]
+  },
+  {
+    "id": "lemonade-change",
+    "title": "Lemonade Change",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/lemonade-stand-change-challenge/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Bus Ticket Change",
+        "url": "https://www.geeksforgeeks.org/dsa/lemonade-stand-change-challenge/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Lemonade Change",
+        "url": "https://leetcode.com/problems/lemonade-change/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-lemonade-change",
+        "title": "NeetCode - Lemonade Change - Leetcode 860 - Python",
+        "url": "https://www.youtube.com/watch?v=mSVAw0AUZgA",
+        "channel": "NeetCodeIO",
+        "notes": "Greedy coin simulation prioritizing larger denominations ($10) over smaller ($5) for change."
+      },
+      {
+        "id": "takeuforward-lemonade-change",
+        "title": "take U forward - L2. Lemonade Change | Greedy Algorithm Playlist",
+        "url": "https://www.youtube.com/watch?v=n_tmibEhO6Q",
+        "channel": "take U forward",
+        "notes": "Striver breaks down the greedy coin counting approach with edge case walkthroughs."
+      }
+    ]
+  },
+  {
+    "id": "valid-paranthesis-checker",
+    "title": "Valid Paranthesis Checker",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/print-all-balanced-brackets-strings-that-can-be-formed-by-replacing-wild-card/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Print all Balanced Brackets Strings by replacing wildcard",
+        "url": "https://www.geeksforgeeks.org/dsa/print-all-balanced-brackets-strings-that-can-be-formed-by-replacing-wild-card/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Valid Parenthesis String",
+        "url": "https://leetcode.com/problems/valid-parenthesis-string/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-valid-parenthesis-string",
+        "title": "take U forward - L11. Valid Parenthesis String | Multiple Approaches",
+        "url": "https://www.youtube.com/watch?v=cHT6sG_hUZI",
+        "channel": "take U forward",
+        "notes": "Explains recursion, dynamic programming, and optimal O(N) range/greedy tracking."
+      },
+      {
+        "id": "neetcode-valid-parenthesis-string",
+        "title": "NeetCode - Valid Parenthesis String - Leetcode 678 - Python",
+        "url": "https://www.youtube.com/watch?v=QhPdNS143Qg",
+        "channel": "NeetCode",
+        "notes": "Optimal O(N) greedy min-max open bracket counter approach."
+      }
+    ]
+  },
+  {
+    "id": "candy",
+    "title": "Candy",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/candy/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Candy Distribution",
+        "url": "https://www.geeksforgeeks.org/problems/candy/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Candy",
+        "url": "https://leetcode.com/problems/candy/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-candy",
+        "title": "NeetCode - Candy - Leetcode 135 - Python",
+        "url": "https://www.youtube.com/watch?v=1IzCRCcK17A",
+        "channel": "NeetCodeIO",
+        "notes": "Two-pass greedy approach (left-to-right and right-to-left) satisfying neighbor rating conditions in O(N)."
+      },
+      {
+        "id": "takeuforward-candy",
+        "title": "take U forward - L12. Candy | Slope Approach Intuition Based",
+        "url": "https://www.youtube.com/watch?v=IIqVFvKE6RY",
+        "channel": "take U forward",
+        "notes": "Covers both the two-pass array solution and the optimal O(1) space peak-and-valley slope algorithm."
+      }
+    ]
+  },
+  {
+    "id": "insert-interval",
+    "title": "Insert Interval",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/insert-interval-1666733333/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Insert Interval",
+        "url": "https://www.geeksforgeeks.org/problems/insert-interval-1666733333/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Insert Interval",
+        "url": "https://leetcode.com/problems/insert-interval/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-insert-interval",
+        "title": "NeetCode - Insert Interval - Leetcode 57 - Python",
+        "url": "https://www.youtube.com/watch?v=A8NUOmlwOlM",
+        "channel": "NeetCode",
+        "notes": "Linear scan merging overlapping intervals and placing non-overlapping ones in O(N) time."
+      },
+      {
+        "id": "takeuforward-insert-intervals",
+        "title": "take U forward - L9. Insert Intervals | Greedy Algorithms Playlist",
+        "url": "https://www.youtube.com/watch?v=xxRE-46OCC8",
+        "channel": "take U forward",
+        "notes": "Step-by-step breakdown handling non-overlapping left, overlapping middle, and non-overlapping right sections."
+      }
+    ]
+  },
+  {
+    "id": "job-sequencing-problem",
+    "title": "Job sequencing Problem",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/job-sequencing-problem-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Job Sequencing Problem",
+        "url": "https://www.geeksforgeeks.org/dsa/job-sequencing-problem/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-job-sequencing",
+        "title": "take U forward - L6. Job Sequencing Problem | Greedy Algorithm Playlist",
+        "url": "https://www.youtube.com/watch?v=QbwltemZbRg",
+        "channel": "take U forward",
+        "notes": "Greedy approach sorting jobs by descending profit and scheduling at the latest available slot."
+      },
+      {
+        "id": "abdul-bari-job-sequencing",
+        "title": "Abdul Bari - 7.1 Job Sequencing with Deadline - Branch and Bound",
+        "url": "https://www.youtube.com/watch?v=M7Fl_z7_J2k",
+        "channel": "Abdul Bari",
+        "notes": "Intuitive diagrammatic lecture explaining deadline constraints and maximum profit selection."
+      }
+    ]
+  },
+  {
+    "id": "jump-game-i",
+    "title": "Jump Game - I",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/jump-game/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Jump Game Minimum Jumps to Reach End",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-number-of-jumps-to-reach-end-of-a-given-array/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Jump Game",
+        "url": "https://leetcode.com/problems/jump-game/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-jump-game",
+        "title": "NeetCode - Jump Game - Greedy - Leetcode 55",
+        "url": "https://www.youtube.com/watch?v=Yan0cv2cLy8",
+        "channel": "NeetCode",
+        "notes": "Reverse greedy approach moving the goalpost backwards from the last index in O(N) time."
+      },
+      {
+        "id": "takeuforward-jump-game-i",
+        "title": "take U forward - L4. Jump Game - I | Greedy Algorithm Playlist",
+        "url": "https://www.youtube.com/watch?v=tZAa_jJ3SwQ",
+        "channel": "take U forward",
+        "notes": "Forward greedy traversal tracking maximum reachable index at each step in O(N)."
+      }
+    ]
+  },
+  {
+    "id": "jump-game-ii",
+    "title": "Jump Game II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-number-of-jumps-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Jumps",
+        "url": "https://www.geeksforgeeks.org/problems/minimum-number-of-jumps-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Jump Game II",
+        "url": "https://leetcode.com/problems/jump-game-ii/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-jump-game-ii",
+        "title": "take U forward - L5. Jump Game - II | Greedy Algorithm Playlist",
+        "url": "https://www.youtube.com/watch?v=7SBVnw7GSTk",
+        "channel": "take U forward",
+        "notes": "Breadth-first-search style greedy range window maintaining current and farthest reach in O(N)."
+      },
+      {
+        "id": "neetcode-jump-game-ii",
+        "title": "NeetCode - Jump Game II - Greedy - Leetcode 45 - Python",
+        "url": "https://www.youtube.com/watch?v=dJ7sWiOoK7g",
+        "channel": "NeetCode",
+        "notes": "BFS window technique calculating minimum jumps by tracking current level boundaries."
+      }
+    ]
+  },
+  {
+    "id": "merge-intervals",
+    "title": "Merge Intervals",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/overlapping-intervals--170633/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Overlapping Intervals",
+        "url": "https://www.geeksforgeeks.org/problems/overlapping-intervals--170633/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Merge Intervals",
+        "url": "https://leetcode.com/problems/merge-intervals/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-merge-intervals",
+        "title": "take U forward - Merge Overlapping Intervals | Brute, Optimal with Precise TC analysis",
+        "url": "https://www.youtube.com/watch?v=IexN60k62jo",
+        "channel": "take U forward",
+        "notes": "Sorting intervals by start time and merging in a single pass in O(N log N) time."
+      },
+      {
+        "id": "neetcode-merge-intervals",
+        "title": "NeetCode - Merge Intervals - Sorting - Leetcode 56",
+        "url": "https://www.youtube.com/watch?v=44H3cEC2fFM",
+        "channel": "NeetCode",
+        "notes": "Classic sorting technique comparing start of current interval with end of preceding interval."
+      }
+    ]
+  },
+  {
+    "id": "minimum-number-of-platforms-required-for-a-railway",
+    "title": "Minimum number of platforms required for a railway",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-platforms-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Platforms Required",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-number-platforms-required-railwaybus-station/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-minimum-platforms",
+        "title": "take U forward - L10. Minimum number of platforms required in a railway station",
+        "url": "https://www.youtube.com/watch?v=AsGzwR_FWok",
+        "channel": "take U forward",
+        "notes": "Two-pointer sweep-line algorithm after sorting arrival and departure times separately in O(N log N)."
+      },
+      {
+        "id": "techdose-minimum-platforms",
+        "title": "Techdose - Minimum platforms needed in a railway station",
+        "url": "https://www.youtube.com/watch?v=38JLfQGVlkw",
+        "channel": "Techdose",
+        "notes": "Simulates train arrivals and departures using chrono-sorting to track concurrent platforms."
+      }
+    ]
+  },
+  {
+    "id": "n-meetings-in-one-room",
+    "title": "N meetings in one room",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-meetings-in-one-room/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Meetings in One Room",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-meetings-in-one-room/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-n-meetings-in-one-room",
+        "title": "take U forward - L7. N Meeting in One Room | Greedy Algorithms Playlist",
+        "url": "https://www.youtube.com/watch?v=mKfhTotEguk",
+        "channel": "take U forward",
+        "notes": "Activity selection greedy paradigm sorting meetings by finish time in ascending order."
+      },
+      {
+        "id": "takeuforward-n-meetings-greedy",
+        "title": "take U forward - N meetings In One Room | Greedy Algorithm",
+        "url": "https://www.youtube.com/watch?v=II6ziNnub1Q",
+        "channel": "take U forward",
+        "notes": "Detailed walkthrough covering comparator sorting on meeting end times and room assignment."
+      }
+    ]
+  },
+  {
+    "id": "non-overlapping-intervals",
+    "title": "Non-overlapping Intervals",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/non-overlapping-intervals/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Non-overlapping intervals in an array",
+        "url": "https://www.geeksforgeeks.org/dsa/find-non-overlapping-intervals-among-a-given-set-of-intervals/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Non-overlapping Intervals",
+        "url": "https://leetcode.com/problems/non-overlapping-intervals/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-non-overlapping-intervals",
+        "title": "NeetCode - Non-Overlapping Intervals - Leetcode 435 - Python",
+        "url": "https://www.youtube.com/watch?v=nONCGxWoUfM",
+        "channel": "NeetCode",
+        "notes": "Greedy interval scheduling sorting by end times to minimize removals in O(N log N)."
+      },
+      {
+        "id": "nikhil-lohia-non-overlapping-intervals",
+        "title": "Nikhil Lohia - Non-overlapping Intervals (LeetCode 435) | Visualizing with different scenarios",
+        "url": "https://www.youtube.com/watch?v=XsrJgwGlRoc",
+        "channel": "Nikhil Lohia",
+        "notes": "Visual proof and edge case diagrams for interval overlap resolution."
+      }
+    ]
+  },
+  {
+    "id": "program-for-least-recently-used-lru-page-replacement-algorithm",
+    "title": "Program for Least Recently Used (LRU) Page Replacement Algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/page-faults-in-lru5603/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Page Faults in LRU | Implementation",
+        "url": "https://www.geeksforgeeks.org/operating-systems/page-faults-in-lru-implementation/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "gatesmashers-lru-page-replacement",
+        "title": "Gate Smashers - L-5.25: Least Recently Used Page Replacement Algorithm | Operating System",
+        "url": "https://www.youtube.com/watch?v=dYIoWkCvd6A",
+        "channel": "Gate Smashers",
+        "notes": "Operating system memory management lecture walking through page fault calculation for LRU."
+      }
+    ]
+  },
+  {
+    "id": "shortest-job-first",
+    "title": "Shortest Job First",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/shortest-job-first/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Shortest Job First or SJF CPU Scheduling",
+        "url": "https://www.geeksforgeeks.org/operating-systems/shortest-job-first-or-sjf-cpu-scheduling/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-shortest-job-first",
+        "title": "take U forward - L3. Shortest Job First (or SJF) CPU Scheduling",
+        "url": "https://www.youtube.com/watch?v=3-QbX1iDbXs",
+        "channel": "take U forward",
+        "notes": "Greedy scheduling proof sorting burst times to minimize total waiting time."
+      },
+      {
+        "id": "gatesmashers-sjf-scheduling",
+        "title": "Gate Smashers - L-2.4: Shortest Job First(SJF) Scheduling Algorithm with Example",
+        "url": "https://www.youtube.com/watch?v=VCIVXPoiLpU",
+        "channel": "Gate Smashers",
+        "notes": "Comprehensive Gantt chart analysis and waiting time calculation."
+      }
+    ]
+  }
+]

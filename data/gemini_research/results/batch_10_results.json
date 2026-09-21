@@ -1,0 +1,653 @@
+[
+  {
+    "id": "balanced-paranthesis",
+    "title": "Balanced Paranthesis",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/parenthesis-checker2744/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Check for balanced parentheses in an expression | O(1) space",
+        "url": "https://www.geeksforgeeks.org/dsa/check-for-balanced-parentheses-in-an-expression-o1-space-on2-time-complexity/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-valid-parentheses",
+        "title": "NeetCode - Valid Parentheses - Stack - Leetcode 20 - Python",
+        "url": "https://www.youtube.com/watch?v=WTzjTskDFMg",
+        "channel": "NeetCode",
+        "notes": "Classic stack approach matching opening and closing bracket pairs in O(N) time and O(N) space."
+      },
+      {
+        "id": "takeuforward-balanced-parentheses",
+        "title": "take U forward - L2. Check for Balanced Parentheses | Stack and Queue",
+        "url": "https://www.youtube.com/watch?v=xwjS0iZhw4I",
+        "channel": "take U forward",
+        "notes": "Comprehensive explanation of balanced parentheses checking using a stack by Striver."
+      }
+    ]
+  },
+  {
+    "id": "implement-min-stack",
+    "title": "Implement Min Stack",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/get-minimum-element-from-stack/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Get Min with Stack Pop",
+        "url": "https://www.geeksforgeeks.org/problems/get-min-at-pop/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-min-stack",
+        "title": "NeetCode - Design Min Stack - Amazon Interview Question - Leetcode 155 - Python",
+        "url": "https://www.youtube.com/watch?v=qkLl7nAwDPo",
+        "channel": "NeetCode",
+        "notes": "Demonstrates maintaining a secondary min stack to retrieve minimum elements in O(1) time."
+      },
+      {
+        "id": "takeuforward-min-stack",
+        "title": "take U forward - L4. Implement Min Stack | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=NdDIaH91P0g",
+        "channel": "take U forward",
+        "notes": "Covers both the O(2N) pair approach and the optimal O(N) space mathematical encoding approach."
+      }
+    ]
+  },
+  {
+    "id": "implement-queue-using-arrays",
+    "title": "Implement Queue using Arrays",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/implement-queue-using-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Queue using Array - Simple Implementation",
+        "url": "https://www.geeksforgeeks.org/dsa/array-implementation-of-queue-simple/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-queue-using-arrays",
+        "title": "take U forward - Queue Implementation using Arrays",
+        "url": "https://www.youtube.com/watch?v=M6GnoUDpqEE",
+        "channel": "take U forward",
+        "notes": "Explains fixed-size array queue implementation using front and rear pointers with modular arithmetic."
+      },
+      {
+        "id": "takeuforward-stack-queue-intro",
+        "title": "take U forward - L1. Introduction to Stack and Queue | Implementation using Data Structures",
+        "url": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+        "channel": "take U forward",
+        "notes": "Comprehensive overview covering array-based queue design and circular queue buffer concepts."
+      }
+    ]
+  },
+  {
+    "id": "implement-queue-using-linkedlist",
+    "title": "Implement queue using Linkedlist",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/implement-queue-using-linked-list/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program to Implement Queue using Linked List",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-implement-queue-using-linked-list/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-queue-linked-list",
+        "title": "take U forward - L1. Introduction to Stack and Queue | Implementation using Data Structures",
+        "url": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+        "channel": "take U forward",
+        "notes": "Details dynamic queue memory allocation using linked list head (front) and tail (rear) nodes."
+      },
+      {
+        "id": "geeksforgeeks-implement-queue-linked-list",
+        "title": "GeeksforGeeks Practice - L-7 | Implement Queue using Linked List | Linked List Series",
+        "url": "https://www.youtube.com/watch?v=-7ho2ady_rE",
+        "channel": "GeeksforGeeks",
+        "notes": "Live coding and walkthrough of enqueue and dequeue operations on a singly linked list."
+      }
+    ]
+  },
+  {
+    "id": "implement-queue-using-stack",
+    "title": "Implement Queue using Stack",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/queue-using-stack/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Queue using Stack",
+        "url": "https://www.geeksforgeeks.org/problems/queue-using-stack/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-queue-using-stacks",
+        "title": "NeetCode - Implement Queue using Stacks - Leetcode 232 - Python",
+        "url": "https://www.youtube.com/watch?v=eanwa3ht3YQ",
+        "channel": "NeetCode",
+        "notes": "Simulates FIFO queue behavior with two stacks (input/output) achieving amortized O(1) operations."
+      },
+      {
+        "id": "takeuforward-queue-using-stack",
+        "title": "take U forward - Queue Implementation using Stack | O(1) Push and Pop Operations",
+        "url": "https://www.youtube.com/watch?v=3Et9MrMc02A",
+        "channel": "take U forward",
+        "notes": "Compares push-heavy and pop-heavy implementations using two stacks."
+      }
+    ]
+  },
+  {
+    "id": "implement-stack-using-arrays",
+    "title": "Implement Stack using Arrays",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/implement-stack-using-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C++ Program to Implement Stack using array",
+        "url": "https://www.geeksforgeeks.org/cpp/cpp-program-to-implement-stack-using-array/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-stack-using-arrays",
+        "title": "take U forward - Implementation of Stack using Arrays",
+        "url": "https://www.youtube.com/watch?v=GYptUgnIM_I",
+        "channel": "take U forward",
+        "notes": "Walks through maintaining a top index pointer to execute push, pop, top, and size in O(1) time."
+      },
+      {
+        "id": "takeuforward-stack-queue-intro-stack",
+        "title": "take U forward - L1. Introduction to Stack and Queue | Implementation using Data Structures",
+        "url": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+        "channel": "take U forward",
+        "notes": "Deep dive into LIFO memory models, handling underflow and overflow conditions in array stacks."
+      }
+    ]
+  },
+  {
+    "id": "implement-stack-using-linkedlist",
+    "title": "Implement stack using Linkedlist",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/implement-stack-using-linked-list/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Python Program to Implement Stack Using Linked List",
+        "url": "https://www.geeksforgeeks.org/python/python-program-to-implement-stack-using-linked-list/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-stack-using-linkedlist",
+        "title": "take U forward - L1. Introduction to Stack and Queue | Implementation using Data Structures",
+        "url": "https://www.youtube.com/watch?v=tqQ5fTamIN4",
+        "channel": "take U forward",
+        "notes": "Implements dynamic stack push and pop at the head node of a singly linked list in O(1) time."
+      },
+      {
+        "id": "geeksforgeeks-implement-stack-linked-list",
+        "title": "GeeksforGeeks Practice - L-6 | Implement Stack using Linked List | Linked List Series",
+        "url": "https://www.youtube.com/watch?v=ICFBAHmh6eU",
+        "channel": "GeeksforGeeks",
+        "notes": "Explains pointer manipulation and memory deallocation for stack operations using linked lists."
+      }
+    ]
+  },
+  {
+    "id": "implement-stack-using-queue",
+    "title": "Implement Stack using Queue",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/implement-a-stack-using-single-queue/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Implement a stack using single queue",
+        "url": "https://www.geeksforgeeks.org/dsa/implement-a-stack-using-single-queue/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-stack-using-single-queue",
+        "title": "take U forward - Stack Implementation using a Single Queue",
+        "url": "https://www.youtube.com/watch?v=jDZQKzEtbYQ",
+        "channel": "take U forward",
+        "notes": "Implements stack LIFO behavior using a single queue by rotating existing elements after each push."
+      },
+      {
+        "id": "neetcode-stack-using-queues",
+        "title": "NeetCode - Implement Stack using Queues - Leetcode 225 - Python",
+        "url": "https://www.youtube.com/watch?v=rW4vm0-DLYc",
+        "channel": "NeetCode",
+        "notes": "Demonstrates single-queue rotation method for LeetCode 225 in O(N) push and O(1) pop."
+      }
+    ]
+  },
+  {
+    "id": "infix-to-postfix-conversion",
+    "title": "Infix to Postfix Conversion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/infix-to-postfix-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Infix to Postfix Conversion using Stack in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/infix-to-postfix-conversion-using-stack-in-cpp/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-infix-to-postfix",
+        "title": "take U forward - L3. Prefix, Infix, and Postfix Conversion | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=4pIc9UBHJtk",
+        "channel": "take U forward",
+        "notes": "Detailed algorithm using operator precedence and associativity to convert infix expressions to postfix."
+      },
+      {
+        "id": "jennyslectures-infix-to-postfix",
+        "title": "Jenny's Lectures CS IT - 3.6 Infix to Postfix using Stack | Data Structure and Algorithm",
+        "url": "https://www.youtube.com/watch?v=PAceaOSnxQs",
+        "channel": "Jenny's Lectures CS IT",
+        "notes": "Step-by-step lecture covering conversion rules, operator priority tables, and stack tracing."
+      }
+    ]
+  },
+  {
+    "id": "infix-to-prefix-conversion",
+    "title": "Infix to Prefix Conversion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/infix-to-prefix-notation/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Infix To Prefix Notation",
+        "url": "https://www.geeksforgeeks.org/dsa/convert-infix-prefix-notation/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-infix-to-prefix",
+        "title": "take U forward - L3. Prefix, Infix, and Postfix Conversion | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=4pIc9UBHJtk",
+        "channel": "take U forward",
+        "notes": "Explains three-step method: reverse infix, swap parentheses, perform controlled postfix conversion, and reverse result."
+      },
+      {
+        "id": "jennyslectures-infix-to-prefix",
+        "title": "Jenny's Lectures CS IT - 3.8 Infix to Prefix using Stack | Data Structures Tutorials",
+        "url": "https://www.youtube.com/watch?v=8QxlrRws9OI",
+        "channel": "Jenny's Lectures CS IT",
+        "notes": "Comprehensive guide on converting infix expressions directly to prefix notation using a stack."
+      }
+    ]
+  },
+  {
+    "id": "postfix-to-infix-conversion",
+    "title": "Postfix to Infix Conversion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/postfix-to-infix-conversion/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Postfix to Infix Conversion",
+        "url": "https://www.geeksforgeeks.org/dsa/postfix-to-infix/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-postfix-to-infix",
+        "title": "take U forward - L3. Prefix, Infix, and Postfix Conversion | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=4pIc9UBHJtk",
+        "channel": "take U forward",
+        "notes": "Scans postfix left to right, pops top two operands upon encountering an operator, forms parenthesized string, and pushes back."
+      },
+      {
+        "id": "jennyslectures-postfix-to-infix",
+        "title": "Jenny's Lectures CS IT - 3.11 Prefix to Infix Conversion | Postfix to Infix Conversion | Data structure Tutorials",
+        "url": "https://www.youtube.com/watch?v=1zqgyoZzda4",
+        "channel": "Jenny's Lectures CS IT",
+        "notes": "Walks through stack-based operand evaluation and bracketed infix generation from postfix notation."
+      }
+    ]
+  },
+  {
+    "id": "postfix-to-prefix-conversion",
+    "title": "Postfix to Prefix Conversion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/postfix-to-prefix-conversion/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Postfix to Prefix Conversion",
+        "url": "https://www.geeksforgeeks.org/dsa/postfix-prefix-conversion/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "simplesnippets-postfix-to-prefix",
+        "title": "Simple Snippets - Postfix to Prefix Conversion & vice versa MANUAL conversion (6 Solved Examples)",
+        "url": "https://www.youtube.com/watch?v=tuRwmc6Jo1U",
+        "channel": "Simple Snippets",
+        "notes": "Covers algorithmic conversion rules by popping operands and prefixing the operator into (op + op1 + op2)."
+      },
+      {
+        "id": "gatesmashers-notations-overview",
+        "title": "Gate Smashers - Lec-36: Infix, Prefix & Postfix with examples | Data Structure",
+        "url": "https://www.youtube.com/watch?v=vtyuftvugXY",
+        "channel": "Gate Smashers",
+        "notes": "Theoretical foundation of prefix and postfix notations, operator positions, and conversion rules."
+      }
+    ]
+  },
+  {
+    "id": "prefix-to-infix-conversion",
+    "title": "Prefix to Infix Conversion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/prefix-to-infix-conversion/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Prefix to Infix Conversion",
+        "url": "https://www.geeksforgeeks.org/dsa/prefix-infix-conversion/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "tuf-prefix-to-infix-conversion",
+        "title": "take U forward - L3. Prefix, Infix, and Postfix Conversion",
+        "url": "https://www.youtube.com/watch?v=4pIc9UBHJtk",
+        "channel": "take U forward",
+        "notes": "Explains the stack-based algorithm for converting prefix expressions to infix."
+      }
+    ]
+  },
+  {
+    "id": "prefix-to-postfix-conversion",
+    "title": "Prefix to Postfix Conversion",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/prefix-to-postfix-conversion/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Prefix to Postfix Conversion",
+        "url": "https://www.geeksforgeeks.org/dsa/prefix-postfix-conversion/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "tuf-prefix-to-postfix-conversion",
+        "title": "take U forward - L3. Prefix, Infix, and Postfix Conversion",
+        "url": "https://www.youtube.com/watch?v=4pIc9UBHJtk",
+        "channel": "take U forward",
+        "notes": "Covers right-to-left traversal and operand combination into postfix notation."
+      }
+    ]
+  },
+  {
+    "id": "asteroid-collision",
+    "title": "Asteroid Collision",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/opposite-sign-pair-reduction/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Opposite Sign Pair Reduction",
+        "url": "https://www.geeksforgeeks.org/problems/opposite-sign-pair-reduction/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-asteroid-collision",
+        "title": "NeetCode - Asteroid Collision - Stack - Leetcode 735",
+        "url": "https://www.youtube.com/watch?v=LN7KjRszjk4",
+        "channel": "NeetCode",
+        "notes": "Linear time stack simulation tracking collisions of moving asteroids."
+      },
+      {
+        "id": "tuf-asteroid-collision",
+        "title": "take U forward - L11. Asteroid Collisions | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=_eYGqw_VDR4",
+        "channel": "take U forward",
+        "notes": "Comprehensive breakdown of collision conditions and stack state updates."
+      }
+    ]
+  },
+  {
+    "id": "largest-rectangle-in-a-histogram",
+    "title": "Largest rectangle in a histogram",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-rectangular-area-in-a-histogram-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Largest Rectangular Area in a Histogram using Segment Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/largest-rectangular-area-in-a-histogram-using-segment-tree/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-largest-rectangle-in-histogram",
+        "title": "NeetCode - LARGEST RECTANGLE IN HISTOGRAM - Leetcode 84 - Python",
+        "url": "https://www.youtube.com/watch?v=zx5Sw9130L0",
+        "channel": "NeetCode",
+        "notes": "Uses a monotonic stack to determine maximum width boundaries in O(N) time."
+      },
+      {
+        "id": "tuf-largest-rectangle-in-histogram",
+        "title": "take U forward - L12. Largest Rectangle in Histogram | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=Bzat9vgD0fs",
+        "channel": "take U forward",
+        "notes": "Derives the optimal one-pass stack solution from previous and next smaller elements."
+      }
+    ]
+  },
+  {
+    "id": "maximum-rectangles",
+    "title": "Maximum Rectangles",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/max-rectangle/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Area Rectangle of 1s in a Binary Matrix",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-size-rectangle-binary-sub-matrix-1s/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "tuf-maximal-rectangle",
+        "title": "take U forward - L13. Maximal Rectangle | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=ttVu6G7Ayik",
+        "channel": "take U forward",
+        "notes": "Transforms 2D matrix rows into histogram problems solved via monotonic stack."
+      }
+    ]
+  },
+  {
+    "id": "next-greater-element",
+    "title": "Next Greater Element",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/next-larger-element-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Next Greater Element",
+        "url": "https://www.geeksforgeeks.org/dsa/next-greater-element/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "tuf-next-greater-element",
+        "title": "take U forward - L5. Next Greater Element | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=e7XQLtOQM3I",
+        "channel": "take U forward",
+        "notes": "Classic monotonic stack algorithm traversing right-to-left in linear time."
+      },
+      {
+        "id": "neetcode-next-greater-element-i",
+        "title": "NeetCode - Next Greater Element I - Leetcode 496 - Python",
+        "url": "https://www.youtube.com/watch?v=68a1Dc_qVq4",
+        "channel": "NeetCode",
+        "notes": "Monotonic stack pattern combined with hash map mapping for O(N) lookup."
+      }
+    ]
+  },
+  {
+    "id": "next-greater-element-2",
+    "title": "Next Greater Element - 2",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/next-greater-element/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Next greater element in a Circular Array",
+        "url": "https://www.geeksforgeeks.org/dsa/find-the-next-greater-element-in-a-circular-array/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "tuf-next-greater-element-ii",
+        "title": "take U forward - L6. Next Greater Element - II | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=7PrncD7v9YQ",
+        "channel": "take U forward",
+        "notes": "Simulates circular array traversal by iterating 2N elements with modulo arithmetic."
+      }
+    ]
+  },
+  {
+    "id": "next-smaller-element",
+    "title": "Next Smaller Element",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/immediate-smaller-element1142/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Next Smaller Element",
+        "url": "https://www.geeksforgeeks.org/dsa/next-smaller-element/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "aditya-verma-nearest-smaller-to-right",
+        "title": "Aditya Verma - 5 NSR | Nearest Smaller to Right",
+        "url": "https://www.youtube.com/watch?v=nc1AYFyvOR4",
+        "channel": "Aditya Verma",
+        "notes": "Monotonic stack implementation identifying the nearest smaller element to the right."
+      },
+      {
+        "id": "tuf-previous-smaller-element",
+        "title": "take U forward - L7. Previous Smaller Element | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=zMdbdGJNlh4",
+        "channel": "take U forward",
+        "notes": "Covers directional variations of smaller element lookups using monotonic stacks."
+      }
+    ]
+  },
+  {
+    "id": "number-of-greater-elements-to-the-right",
+    "title": "Number of Greater Elements to the Right",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-nges-to-the-right/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count Greater on Right Queries",
+        "url": "https://www.geeksforgeeks.org/problems/number-of-nges-to-the-right/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "aditya-verma-nearest-greater-to-right",
+        "title": "Aditya Verma - 2 NGR | Nearest Greater to right | Next Largest Element",
+        "url": "https://www.youtube.com/watch?v=NXOOYYwpbg4",
+        "channel": "Aditya Verma",
+        "notes": "Foundational monotonic stack concepts for tracking greater elements on the right."
+      }
+    ]
+  },
+  {
+    "id": "remove-k-digits",
+    "title": "Remove K Digits",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/remove-k-digits/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Remove K Digits",
+        "url": "https://www.geeksforgeeks.org/problems/remove-k-digits/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-remove-k-digits",
+        "title": "NeetCode - Remove K Digits - Leetcode 402 - Python",
+        "url": "https://www.youtube.com/watch?v=cFabMOnJaq0",
+        "channel": "NeetCode",
+        "notes": "Greedy monotonic stack strategy to construct the smallest possible numerical value."
+      },
+      {
+        "id": "tuf-remove-k-digits",
+        "title": "take U forward - L14. Remove K Digits | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=jmbuRzYPGrg",
+        "channel": "take U forward",
+        "notes": "Detailed walk-through addressing edge cases including leading zeroes and trailing removals."
+      }
+    ]
+  },
+  {
+    "id": "sum-of-subarray-minimums",
+    "title": "Sum of Subarray Minimums",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/sum-of-subarray-minimum/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Sum of Subarray Minimums",
+        "url": "https://www.geeksforgeeks.org/dsa/sum-of-minimum-elements-of-all-subarrays/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "tuf-sum-of-subarray-minimum",
+        "title": "take U forward - L9. Sum of Subarray Minimum | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=v0e8p9JCgRc",
+        "channel": "take U forward",
+        "notes": "Calculates contribution counts per element via previous and next smaller elements."
+      },
+      {
+        "id": "neetcodeio-sum-of-subarray-minimums",
+        "title": "NeetCodeIO - Sum of Subarray Minimums - Leetcode 907 - Python",
+        "url": "https://www.youtube.com/watch?v=aX1F2-DrBkQ",
+        "channel": "NeetCodeIO",
+        "notes": "Monotonic stack breakdown explaining mathematical subarray contribution."
+      }
+    ]
+  },
+  {
+    "id": "sum-of-subarray-ranges",
+    "title": "Sum of Subarray Ranges",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/sum-of-subarray-ranges/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Sum of Subarray Ranges",
+        "url": "https://www.geeksforgeeks.org/dsa/sum-of-subarray-ranges-1/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "tuf-sum-of-subarray-ranges",
+        "title": "take U forward - L10. Sum of subarray ranges | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=gIrMptNPf5M",
+        "channel": "take U forward",
+        "notes": "Solves range sums in O(N) by computing sum of subarray maximums minus sum of minimums."
+      }
+    ]
+  },
+  {
+    "id": "trapping-rainwater",
+    "title": "Trapping Rainwater",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/trapping-rain-water-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Trapping Rain Water",
+        "url": "https://www.geeksforgeeks.org/problems/trapping-rain-water-1587115621/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-trapping-rain-water",
+        "title": "NeetCode - Trapping Rain Water - Google Interview Question - Leetcode 42",
+        "url": "https://www.youtube.com/watch?v=ZI2z5pq0TqA",
+        "channel": "NeetCode",
+        "notes": "Explains the prefix/suffix max arrays, monotonic stack, and optimal two-pointer approach."
+      }
+    ]
+  }
+]

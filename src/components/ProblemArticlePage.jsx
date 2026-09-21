@@ -478,7 +478,7 @@ export default function ProblemArticlePage({
               <button
                 onClick={() => {
                   sound.playStep(640);
-                  onOpenAdmin(question.id);
+                  onOpenAdmin(question);
                 }}
                 className="btn-secondary flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[var(--ink-muted)] hover:text-amber-400 cursor-pointer"
                 title="Edit YouTube links, Article content & Solutions in Admin Page"

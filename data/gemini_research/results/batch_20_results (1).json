@@ -1,0 +1,35 @@
+[
+  {
+    "id": "matrix-chain-multiplication",
+    "title": "Matrix chain multiplication",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Matrix Chain Multiplication",
+        "url": "https://www.geeksforgeeks.org/dsa/matrix-chain-multiplication-dp-8/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Matrix Chain Multiplication",
+        "url": "https://takeuforward.org/dynamic-programming/matrix-chain-multiplication-dp-48/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-matrix-chain-multiplication",
+        "title": "take U forward - DP 48. Matrix Chain Multiplication | MCM | Partition DP Starts 🔥",
+        "url": "https://www.youtube.com/watch?v=vRVfmbCFW7Y",
+        "channel": "take U forward",
+        "notes": "Optimal partition dynamic programming recursive pattern with memoization."
+      },
+      {
+        "id": "abdul-bari-matrix-chain-multiplication",
+        "title": "Abdul Bari - 4.3 Matrix Chain Multiplication - Dynamic Programming",
+        "url": "https://www.youtube.com/watch?v=prx1psByp7U",
+        "channel": "Abdul Bari",
+        "notes": "Fundamental intuition, parenthesization counting, and recursive formula derivation."
+      }
+    ]
+  }
+]

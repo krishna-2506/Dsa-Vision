@@ -39,9 +39,11 @@ export default function AdminPage({
   onNavigateHome,
   onNavigateQuestion,
   onNavigateArticle,
+  initialQuestion = null,
   initialQuestionId = null
 }) {
-  const [activeTab, setActiveTab] = useState(initialQuestionId ? 'customizer' : 'questions'); // 'questions' | 'customizer' | 'add' | 'visualizers' | 'database' | 'reports'
+  const resolvedTargetId = initialQuestion?.id || initialQuestionId;
+  const [activeTab, setActiveTab] = useState(resolvedTargetId ? 'customizer' : 'questions'); // 'questions' | 'customizer' | 'add' | 'visualizers' | 'database' | 'reports'
   const [questions, setQuestions] = useState([]);
   const [adminStats, setAdminStats] = useState(null);
   const [diskFiles, setDiskFiles] = useState([]);
@@ -56,8 +58,24 @@ export default function AdminPage({
   const [visFilter, setVisFilter] = useState('all'); // 'all' | 'has_vis' | 'missing_vis'
 
   // Active question being edited in the Customizer
-  const [selectedQuestionId, setSelectedQuestionId] = useState(initialQuestionId);
-  const [editingData, setEditingData] = useState(null);
+  const [selectedQuestionId, setSelectedQuestionId] = useState(resolvedTargetId);
+  const [editingData, setEditingData] = useState(() => {
+    if (!initialQuestion) return null;
+    const vids = Array.isArray(initialQuestion.youtube_videos) && initialQuestion.youtube_videos.length > 0
+      ? initialQuestion.youtube_videos
+      : (initialQuestion.youtube_url ? [{ id: 'striver-main', title: "Striver's Solution", url: initialQuestion.youtube_url, channel: 'take U forward', is_primary: true }] : []);
+    return {
+      ...initialQuestion,
+      youtube_videos: vids,
+      article_content: initialQuestion.article_content || '',
+      article_url: initialQuestion.article_url || '',
+      gfg_url: initialQuestion.gfg_url || '',
+      leetcode_url: initialQuestion.leetcode_url || '',
+      time_complexity: initialQuestion.time_complexity || 'O(N)',
+      space_complexity: initialQuestion.space_complexity || 'O(1)',
+      component_key: initialQuestion.component_key || ''
+    };
+  });
   const [editingSolutions, setEditingSolutions] = useState({
     cpp: '',
     java: '',
@@ -128,8 +146,11 @@ export default function AdminPage({
       ]);
       if (qList) {
         setQuestions(qList);
-        if (selectedQuestionId) {
-          const match = qList.find((q) => q.id === selectedQuestionId);
+        const targetId = initialQuestionId || selectedQuestionId;
+        if (targetId) {
+          const match = qList.find(
+            (q) => q.id === targetId || q.slug === targetId || q.title?.toLowerCase() === String(targetId).toLowerCase()
+          );
           if (match) {
             setupEditingData(match);
           }
@@ -141,11 +162,31 @@ export default function AdminPage({
     } finally {
       setLoading(false);
     }
-  }, [selectedQuestionId]);
+  }, [selectedQuestionId, initialQuestionId]);
 
   useEffect(() => {
     loadAdminData();
   }, [loadAdminData]);
+
+  // When initialQuestion/initialQuestionId changes or questions load, auto-select and open customizer
+  useEffect(() => {
+    if (initialQuestion) {
+      setSelectedQuestionId(initialQuestion.id);
+      setActiveTab('customizer');
+      setupEditingData(initialQuestion);
+    } else if (initialQuestionId) {
+      setSelectedQuestionId(initialQuestionId);
+      setActiveTab('customizer');
+      if (questions.length > 0) {
+        const match = questions.find(
+          (q) => q.id === initialQuestionId || q.slug === initialQuestionId || q.title?.toLowerCase() === String(initialQuestionId).toLowerCase()
+        );
+        if (match) {
+          setupEditingData(match);
+        }
+      }
+    }
+  }, [initialQuestion, initialQuestionId, questions]);
 
   // Setup question for editing
   const setupEditingData = async (q) => {

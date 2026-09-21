@@ -1,0 +1,394 @@
+[
+  {
+    "id": "celebrity-problem",
+    "title": "Celebrity Problem",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/the-celebrity-problem/1",
+    "alternate_articles": [
+      {
+        "title": "The Celebrity Problem - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/the-celebrity-problem/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-the-celebrity-problem",
+        "title": "L17. The Celebrity Problem | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=cEadsbTeze4",
+        "channel": "take U forward",
+        "notes": "Optimal two-pointer and stack-based approaches to identify the celebrity in O(N) time."
+      }
+    ]
+  },
+  {
+    "id": "lfu-cache",
+    "title": "LFU Cache",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/lfu-cache-1665050355/1",
+    "alternate_articles": [
+      {
+        "title": "LFU Cache | Practice - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/problems/lfu-cache-1665050355/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-lfu-cache",
+        "title": "Implement LFU cache in C++/Java | Leetcode(Hard)",
+        "url": "https://www.youtube.com/watch?v=mzqHlAW7jeE",
+        "channel": "take U forward",
+        "notes": "Comprehensive design of Least Frequently Used (LFU) Cache using doubly linked lists and hash maps in O(1) time."
+      },
+      {
+        "id": "neetcode-lfu-cache",
+        "title": "LFU Cache - Leetcode 460 - Python",
+        "url": "https://www.youtube.com/watch?v=bLEIHn-DgoA",
+        "channel": "NeetCodeIO",
+        "notes": "NeetCode implementation of LFU Cache using hash maps and linked list nodes."
+      }
+    ]
+  },
+  {
+    "id": "lru-cache",
+    "title": "LRU Cache",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/lru-cache/1",
+    "alternate_articles": [
+      {
+        "title": "LRU Cache | Practice - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/problems/lru-cache/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-lru-cache",
+        "title": "LRU Cache - Twitch Interview Question - Leetcode 146",
+        "url": "https://www.youtube.com/watch?v=7ABFKPK2hD4",
+        "channel": "NeetCode",
+        "notes": "Detailed walkthrough implementing LRU cache in O(1) time using a hash map and doubly linked list."
+      },
+      {
+        "id": "takeuforward-lru-cache",
+        "title": "L18. Implement LRU Cache",
+        "url": "https://www.youtube.com/watch?v=z9bJUPxzFOw",
+        "channel": "take U forward",
+        "notes": "Striver's implementation of LRU Cache with optimal time complexity."
+      }
+    ]
+  },
+  {
+    "id": "sliding-window-maximum",
+    "title": "Sliding Window Maximum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-of-all-subarrays-of-size-k3101/1",
+    "alternate_articles": [
+      {
+        "title": "Sliding Window Maximum using stack in O(n) time - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/sliding-window-maximum-maximum-of-all-subarrays-of-size-k-using-stack-in-on-time/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-sliding-window-maximum",
+        "title": "Sliding Window Maximum - Monotonic Queue - Leetcode 239",
+        "url": "https://www.youtube.com/watch?v=DfljaUwZsOk",
+        "channel": "NeetCode",
+        "notes": "Optimal sliding window maximum solution using a monotonic decreasing deque in O(N) time."
+      },
+      {
+        "id": "takeuforward-sliding-window-maximum",
+        "title": "L16. Sliding Window Maximum | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=NwBvene4Imo",
+        "channel": "take U forward",
+        "notes": "Striver explains how to use a deque to maintain maximums across sliding windows."
+      }
+    ]
+  },
+  {
+    "id": "stock-span-problem",
+    "title": "Stock span problem",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/stock-span-problem-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "Stock Buy and Sell - The Stock Span Problem - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/all-variations-of-stock-problems/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-stock-span-problem",
+        "title": "L15. Stock Span Problem | Stack and Queue Playlist",
+        "url": "https://www.youtube.com/watch?v=eay-zoSRkVc",
+        "channel": "take U forward",
+        "notes": "Monotonic stack approach to find the consecutive days of lower or equal prices in O(N) time."
+      },
+      {
+        "id": "neetcode-online-stock-span",
+        "title": "Online Stock Span - Leetcode 901 - Python",
+        "url": "https://www.youtube.com/watch?v=slYh0ZNEqSw",
+        "channel": "NeetCode",
+        "notes": "NeetCode explains the monotonic stack implementation for Online Stock Span."
+      }
+    ]
+  },
+  {
+    "id": "binary-subarrays-with-sum",
+    "title": "Binary Subarrays With Sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/binary-subarray-with-sum/1",
+    "alternate_articles": [
+      {
+        "title": "Count of Subarrays with sum equals k in given Binary Array - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/count-of-subarrays-with-sum-equals-k-in-given-binary-array/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-binary-subarrays-with-sum",
+        "title": "L9. Binary Subarrays With Sum | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=XnMdNUkX6VM",
+        "channel": "take U forward",
+        "notes": "Sliding window solution calculating count(sum <= goal) - count(sum <= goal - 1)."
+      },
+      {
+        "id": "neetcode-binary-subarrays-with-sum",
+        "title": "Binary Subarrays with Sum - Leetcode 930 - Python",
+        "url": "https://www.youtube.com/watch?v=j4JDr4-jvo4",
+        "channel": "NeetCodeIO",
+        "notes": "NeetCode sliding window and prefix sum approaches for LeetCode 930."
+      }
+    ]
+  },
+  {
+    "id": "count-number-of-nice-subarrays",
+    "title": "Count number of Nice subarrays",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-subarray-with-k-odds/1",
+    "alternate_articles": [
+      {
+        "title": "Subarrays with k odd numbers - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/number-subarrays-m-odd-numbers/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-count-number-of-nice-subarrays",
+        "title": "L10. Count number of Nice subarrays | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=j_QOv9OT9Og",
+        "channel": "take U forward",
+        "notes": "Reducing the problem to binary subarrays with sum k and applying two-pointer sliding window."
+      },
+      {
+        "id": "neetcode-count-number-of-nice-subarrays",
+        "title": "Count Number of Nice Subarrays - Leetcode 1248 - Python",
+        "url": "https://www.youtube.com/watch?v=4zNK0rhFfcA",
+        "channel": "NeetCode",
+        "notes": "NeetCode explains the sliding window approach for counting subarrays with k odd integers."
+      }
+    ]
+  },
+  {
+    "id": "fruit-into-baskets",
+    "title": "Fruit Into Baskets",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/fruit-into-baskets/",
+    "alternate_articles": [
+      {
+        "title": "Fruit Into Baskets - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/fruit-into-baskets/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-fruit-into-baskets",
+        "title": "L5. Fruit Into Baskets | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=e3bs0uA1NhQ",
+        "channel": "take U forward",
+        "notes": "Two pointers and sliding window technique to find the maximum length contiguous subarray with at most 2 unique types."
+      },
+      {
+        "id": "neetcode-fruits-into-basket",
+        "title": "Fruits into Basket - Leetcode 904 - Python",
+        "url": "https://www.youtube.com/watch?v=yYtaV0G3mWQ",
+        "channel": "NeetCode",
+        "notes": "NeetCode sliding window walkthrough with hash map tracking at most 2 distinct fruits."
+      }
+    ]
+  },
+  {
+    "id": "longest-repeating-character-replacement",
+    "title": "Longest Repeating Character Replacement",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-repeating-character-replacement/1",
+    "alternate_articles": [
+      {
+        "title": "Longest substring having all same characters after k changes - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-length-substring-having-all-same-characters-after-k-changes/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-longest-repeating-character-replacement",
+        "title": "Longest Repeating Character Replacement - Leetcode 424 - Python",
+        "url": "https://www.youtube.com/watch?v=gqXU1UyA8pk",
+        "channel": "NeetCode",
+        "notes": "Classic sliding window approach maintaining max frequency within window size minus k."
+      },
+      {
+        "id": "takeuforward-longest-repeating-character-replacement",
+        "title": "L8. Longest Repeating Character Replacement | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=_eNhaDCr6P0",
+        "channel": "take U forward",
+        "notes": "Striver's optimal two-pointer and sliding window explanation in O(N) time."
+      }
+    ]
+  },
+  {
+    "id": "longest-substring-without-repeating-characters",
+    "title": "Longest Substring Without Repeating Characters",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-distinct-characters-in-string5848/1",
+    "alternate_articles": [
+      {
+        "title": "Print Longest substring without repeating characters - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/print-longest-substring-without-repeating-characters/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-substring-without-repeating-characters",
+        "title": "L3. Longest Substring Without Repeating Characters | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=-zSxTJkcdAo",
+        "channel": "take U forward",
+        "notes": "Optimal two-pointer sliding window with hash map to jump left pointer directly on repeats in O(N) time."
+      },
+      {
+        "id": "neetcode-longest-substring-without-repeating-characters",
+        "title": "Longest Substring Without Repeating Characters - Leetcode 3",
+        "url": "https://www.youtube.com/watch?v=wiGpQwVHdE0",
+        "channel": "NeetCode",
+        "notes": "Sliding window solution using a set to track visited characters."
+      }
+    ]
+  },
+  {
+    "id": "max-consecutive-ones-iii",
+    "title": "Max Consecutive Ones III",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximize-number-of-1s0905/1",
+    "alternate_articles": [
+      {
+        "title": "Maximum consecutive one's (or zeros) in a binary array - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-consecutive-ones-or-zeros-in-a-binary-array/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-max-consecutive-ones-iii",
+        "title": "L4. Max Consecutive Ones III | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=3E4JBHSLpYk",
+        "channel": "take U forward",
+        "notes": "Sliding window technique allowing at most k zeroes within the active window."
+      }
+    ]
+  },
+  {
+    "id": "maximum-points-you-can-obtain-from-cards",
+    "title": "Maximum Points You Can Obtain from Cards",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-point-you-can-obtain-from-cards/1",
+    "alternate_articles": [
+      {
+        "title": "Collect maximum points in an array with k moves - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/collect-maximum-points-array-k-moves/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-maximum-points-you-can-obtain-from-cards",
+        "title": "L2. Maximum Points You Can Obtain from Cards | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=pBWCOCS636U",
+        "channel": "take U forward",
+        "notes": "Sliding window approach shifting the window from left end to right end to maximize card sum in O(K) time."
+      },
+      {
+        "id": "neetcode-maximum-points-you-can-obtain-from-cards",
+        "title": "Maximum Points you can Obtain from Cards - Leetcode 1423 - Python",
+        "url": "https://www.youtube.com/watch?v=TsA4vbtfCvo",
+        "channel": "NeetCode",
+        "notes": "NeetCode explains the inverse sliding window strategy to find minimum subarray sum of size (N - K)."
+      }
+    ]
+  },
+  {
+    "id": "number-of-substrings-containing-all-three-characters",
+    "title": "Number of Substrings Containing All Three Characters",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-substring/1",
+    "alternate_articles": [
+      {
+        "title": "Count of substrings from given Ternary strings containing characters at least once - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/count-of-substrings-from-given-ternary-strings-containing-characters-at-least-once/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-substrings-containing-all-three-characters",
+        "title": "L7. Number of Substrings Containing All Three Characters | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=xtqN4qlgr8s",
+        "channel": "take U forward",
+        "notes": "Maintaining the most recent indices of 'a', 'b', and 'c' to directly count valid substrings ending at each index in O(N) time."
+      },
+      {
+        "id": "neetcode-number-of-substrings-containing-all-three-characters",
+        "title": "Number of Substrings Containing All Three Characters - Leetcode 1358 - Python",
+        "url": "https://www.youtube.com/watch?v=iSf7d2ldp70",
+        "channel": "NeetCodeIO",
+        "notes": "NeetCode sliding window and three-pointer tracking approach."
+      }
+    ]
+  },
+  {
+    "id": "longest-substring-with-at-most-k-distinct-characters",
+    "title": "Longest Substring With At Most K Distinct Characters",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-k-unique-characters-substring0853/1",
+    "alternate_articles": [
+      {
+        "title": "Longest substring with k unique characters - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/find-the-longest-substring-with-k-unique-characters-in-a-given-string/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-substring-with-at-most-k-distinct-characters",
+        "title": "L6. Longest Substring With At Most K Distinct Characters | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=teM9ZsVRQyc",
+        "channel": "take U forward",
+        "notes": "Two-pointer sliding window using a hash map to dynamically maintain at most k distinct characters."
+      }
+    ]
+  },
+  {
+    "id": "subarrays-with-k-different-integers",
+    "title": "Subarrays with K Different Integers",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/subarrays-with-k-different-integers/1",
+    "alternate_articles": [
+      {
+        "title": "Smallest subarray with k distinct numbers - GeeksforGeeks",
+        "url": "https://www.geeksforgeeks.org/dsa/smallest-subarray-k-distinct-numbers/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-subarrays-with-k-different-integers",
+        "title": "L11. Subarray with k different integers | 2 Pointers and Sliding Window Playlist",
+        "url": "https://www.youtube.com/watch?v=7wYGbV_LsX4",
+        "channel": "take U forward",
+        "notes": "Solving exact k distinct integers by computing atMost(k) - atMost(k - 1) using sliding window in O(N) time."
+      }
+    ]
+  }
+]

@@ -1,0 +1,766 @@
+[
+  {
+    "id": "connected-components",
+    "title": "Connected Components",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/connected-components-in-an-undirected-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Connected Components in an Undirected Graph",
+        "url": "https://www.geeksforgeeks.org/dsa/connected-components-in-an-undirected-graph/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-connected-components",
+        "title": "take U forward - G-4. What are Connected Components ?",
+        "url": "https://www.youtube.com/watch?v=lea-Wl_uWXY",
+        "channel": "take U forward",
+        "notes": "Foundational conceptual video explaining multiple graph components and visited array logic."
+      },
+      {
+        "id": "takeuforward-connected-components-graphs",
+        "title": "take U forward - Connected Components in Graphs",
+        "url": "https://www.youtube.com/watch?v=I6v0itcISSY",
+        "channel": "take U forward",
+        "notes": "Overview of connected component traversal across disconnected subgraphs."
+      }
+    ]
+  },
+  {
+    "id": "dfs",
+    "title": "DFS",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/depth-first-traversal-for-a-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Depth First Search or DFS for a Graph",
+        "url": "https://www.geeksforgeeks.org/dsa/depth-first-search-or-dfs-for-a-graph/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-dfs-traversal",
+        "title": "take U forward - G-6. Depth-First Search (DFS) | C++ and Java",
+        "url": "https://www.youtube.com/watch?v=Qzf1a--rhp8",
+        "channel": "take U forward",
+        "notes": "Recursive DFS traversal implementation in C++ and Java with call stack visualization."
+      },
+      {
+        "id": "takeuforward-dfs-algorithm",
+        "title": "take U forward - DFS Algorithm | Depth First Search Traversal in Graph",
+        "url": "https://www.youtube.com/watch?v=0ql7lZS2qt0",
+        "channel": "take U forward",
+        "notes": "Complete step-by-step depth first search tutorial with recursion tree breakdown."
+      }
+    ]
+  },
+  {
+    "id": "graph-representation-c",
+    "title": "Graph Representation | C++",
+    "gfg_url": "https://www.geeksforgeeks.org/cpp/graph-representation-using-adjacency-matrix-in-cpp/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Graph and its representations",
+        "url": "https://www.geeksforgeeks.org/dsa/graph-and-its-representations/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-graph-representation-cpp",
+        "title": "take U forward - Graph Representation in C++",
+        "url": "https://www.youtube.com/watch?v=bTtm2ky7I3Y",
+        "channel": "take U forward",
+        "notes": "Explains Adjacency Matrix vs Adjacency List representation in C++ with space complexity comparison."
+      }
+    ]
+  },
+  {
+    "id": "graph-representation-java",
+    "title": "Graph Representation | Java",
+    "gfg_url": "https://www.geeksforgeeks.org/java/graph-representation-in-java/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Graph Representation in Java",
+        "url": "https://www.geeksforgeeks.org/java/graph-representation-in-java/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-graph-representation-java",
+        "title": "take U forward - G-3. Graph Representation in Java | Two Ways to Represent",
+        "url": "https://www.youtube.com/watch?v=OsNklbh9gYI",
+        "channel": "take U forward",
+        "notes": "Details ArrayList of ArrayLists and matrix representations of graphs in Java."
+      }
+    ]
+  },
+  {
+    "id": "introduction-to-graph",
+    "title": "Introduction to Graph",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/introduction-to-graphs-data-structure-and-algorithm-tutorials/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Introduction to Graphs Data Structure and Algorithm",
+        "url": "https://www.geeksforgeeks.org/dsa/introduction-to-graphs-data-structure-and-algorithm-tutorials/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-introduction-to-graphs",
+        "title": "take U forward - 1. Graph Introduction and Course Overview",
+        "url": "https://www.youtube.com/watch?v=fKyMBuJuRyk",
+        "channel": "take U forward",
+        "notes": "Covers graph terminology, directed/undirected edges, weighted edges, cycles, and degree of vertices."
+      }
+    ]
+  },
+  {
+    "id": "traversal-techniques",
+    "title": "Traversal Techniques",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/graph-traversals-bfs-and-dfs/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Graph Traversals (BFS and DFS)",
+        "url": "https://www.geeksforgeeks.org/dsa/graph-traversals-bfs-and-dfs/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-bfs-traversal-technique",
+        "title": "take U forward - Breadth-First Search (BFS) | Traversal Technique in Graphs",
+        "url": "https://www.youtube.com/watch?v=UeE67iCK2lQ",
+        "channel": "take U forward",
+        "notes": "Queue-based level-by-level BFS traversal algorithm in C++ and Java."
+      },
+      {
+        "id": "takeuforward-dfs-traversal-technique",
+        "title": "take U forward - G-6. Depth-First Search (DFS) | C++ and Java",
+        "url": "https://www.youtube.com/watch?v=Qzf1a--rhp8",
+        "channel": "take U forward",
+        "notes": "Recursive DFS traversal technique with visited tracking."
+      }
+    ]
+  },
+  {
+    "id": "bipartite-graph-dfs",
+    "title": "Bipartite Graph (DFS)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/bipartite-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Check if a graph is Bipartite using DFS",
+        "url": "https://www.geeksforgeeks.org/dsa/check-if-a-given-graph-is-bipartite-using-dfs/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Is Graph Bipartite?",
+        "url": "https://leetcode.com/problems/is-graph-bipartite/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-bipartite-graph-dfs",
+        "title": "take U forward - Bipartite Graph (DFS) | Graph Coloring",
+        "url": "https://www.youtube.com/watch?v=uC884ske2uQ",
+        "channel": "take U forward",
+        "notes": "2-coloring algorithm using DFS recursion to detect odd-length cycles in O(V + E)."
+      },
+      {
+        "id": "neetcode-is-graph-bipartite",
+        "title": "NeetCode - Is Graph Bipartite? - Leetcode 785 - Python",
+        "url": "https://www.youtube.com/watch?v=mev55LTubBY",
+        "channel": "NeetCode",
+        "notes": "Graph coloring approach assigning alternating colors to adjacent nodes."
+      }
+    ]
+  },
+  {
+    "id": "connected-components-problem-in-matrix",
+    "title": "Connected Components Problem in Matrix",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-the-number-of-islands/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Find the number of islands",
+        "url": "https://www.geeksforgeeks.org/dsa/find-number-of-islands/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Number of Islands",
+        "url": "https://leetcode.com/problems/number-of-islands/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-islands",
+        "title": "take U forward - G-8. Number of Islands | Number of Connected Components in Matrix",
+        "url": "https://www.youtube.com/watch?v=muncqlKJrH0",
+        "channel": "take U forward",
+        "notes": "BFS/DFS matrix grid traversal counting disconnected components (islands) in O(N*M)."
+      },
+      {
+        "id": "neetcode-number-of-islands",
+        "title": "NeetCode - NUMBER OF ISLANDS - Leetcode 200 - Python",
+        "url": "https://www.youtube.com/watch?v=pV2kpPD66nE",
+        "channel": "NeetCode",
+        "notes": "Classic BFS/DFS grid traversal marking visited land cells in linear time."
+      }
+    ]
+  },
+  {
+    "id": "cycle-detection-in-directed-graph-dfs",
+    "title": "Cycle Detection in Directed Graph (DFS)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Detect Cycle in a Directed Graph",
+        "url": "https://www.geeksforgeeks.org/dsa/detect-cycle-in-a-graph/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Course Schedule",
+        "url": "https://leetcode.com/problems/course-schedule/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-detect-cycle-directed-graph-dfs",
+        "title": "take U forward - G-19. Detect cycle in a directed graph using DFS | Java | C++",
+        "url": "https://www.youtube.com/watch?v=9twcmtQj4DU",
+        "channel": "take U forward",
+        "notes": "Maintains visited and path-visited arrays to detect back-edges during DFS traversal."
+      },
+      {
+        "id": "neetcode-course-schedule",
+        "title": "NeetCode - Course Schedule - Graph Adjacency List - Leetcode 207",
+        "url": "https://www.youtube.com/watch?v=EgI5nU9etnU",
+        "channel": "NeetCode",
+        "notes": "Detects cycles in prerequisite dependencies using DFS recursion and visited states."
+      }
+    ]
+  },
+  {
+    "id": "cycle-detection-in-undirected-graph-bfs",
+    "title": "Cycle Detection in Undirected Graph (bfs)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Detect cycle in an undirected graph using BFS",
+        "url": "https://www.geeksforgeeks.org/dsa/detect-cycle-in-an-undirected-graph-using-bfs/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-cycle-detection-undirected-bfs",
+        "title": "take U forward - Detect Cycle in Undirected graph | Using BFS",
+        "url": "https://www.youtube.com/watch?v=-qvqta_uWn8",
+        "channel": "take U forward",
+        "notes": "Queue stores (node, parent) pairs; if an adjacent node is visited and not the parent, a cycle exists."
+      },
+      {
+        "id": "codehelp-babbar-cycle-detection-bfs",
+        "title": "CodeHelp - by Babbar - Cycle Detection in Undirected Graphs || Using BFS and DFS",
+        "url": "https://www.youtube.com/watch?v=1cSzxlhxOw8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Detailed dry run of queue-based cycle detection in undirected components."
+      }
+    ]
+  },
+  {
+    "id": "detect-a-cycle-in-an-undirected-graph",
+    "title": "Detect a cycle in an undirected graph",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/detect-cycle-in-an-undirected-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Detect Cycle in an Undirected Graph",
+        "url": "https://www.geeksforgeeks.org/dsa/detect-cycle-undirected-graph/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "codehelp-babbar-cycle-detection-dfs",
+        "title": "CodeHelp - by Babbar - Cycle Detection in Undirected Graphs || Using BFS and DFS",
+        "url": "https://www.youtube.com/watch?v=1cSzxlhxOw8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Recursive DFS cycle detection passing parent pointer to avoid false positives from bidirectional edges."
+      },
+      {
+        "id": "takeuforward-cycle-detection-undirected-dfs",
+        "title": "take U forward - Detect a Cycle in an Undirected Graph using DFS",
+        "url": "https://www.youtube.com/watch?v=Y8bOGiLkBqg",
+        "channel": "take U forward",
+        "notes": "Optimal DFS implementation with parent tracking to detect cycles in O(V + E) time."
+      }
+    ]
+  },
+  {
+    "id": "distance-of-nearest-cell-having-one",
+    "title": "Distance of nearest cell having one",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/distance-of-nearest-cell-having-1-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Distance of nearest cell having 1 in a binary matrix",
+        "url": "https://www.geeksforgeeks.org/dsa/distance-nearest-cell-1-binary-matrix/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - 01 Matrix",
+        "url": "https://leetcode.com/problems/01-matrix/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-distance-nearest-cell-1",
+        "title": "take U forward - G-13. Distance of nearest cell having 1 | 0/1 Matrix | C++",
+        "url": "https://www.youtube.com/watch?v=edXdVwkYHF8",
+        "channel": "take U forward",
+        "notes": "Multi-source BFS pushing all 1s (or 0s) into the queue initially to find shortest distances in O(N*M)."
+      },
+      {
+        "id": "neetcode-01-matrix",
+        "title": "NeetCode - 01 Matrix - Leetcode 542 - Python",
+        "url": "https://www.youtube.com/watch?v=2c7veIUvWNE",
+        "channel": "NeetCode",
+        "notes": "Optimal multi-source BFS grid traversal tracking layer-by-layer distance propagation."
+      }
+    ]
+  },
+  {
+    "id": "number-of-enclaves",
+    "title": "Number of enclaves",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-enclaves/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Number Of Enclaves",
+        "url": "https://www.geeksforgeeks.org/problems/number-of-enclaves/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Number of Enclaves",
+        "url": "https://leetcode.com/problems/number-of-enclaves/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-enclaves",
+        "title": "take U forward - G-15. Number of Enclaves | Multi-source BFS | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=rxKcepXQgU4",
+        "channel": "take U forward",
+        "notes": "Multi-source BFS starting from boundary land cells to identify unvisited enclaves in O(N*M) time."
+      },
+      {
+        "id": "neetcodeio-number-of-enclaves",
+        "title": "NeetCodeIO - Number of Enclaves - Leetcode 1020 - Python",
+        "url": "https://www.youtube.com/watch?v=dYOm367BdbM",
+        "channel": "NeetCodeIO",
+        "notes": "DFS traversal from border cells marking reachable land cells and counting enclosed enclaves."
+      }
+    ]
+  },
+  {
+    "id": "number-of-islands",
+    "title": "Number of islands",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-the-number-of-islands/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count Islands",
+        "url": "https://www.geeksforgeeks.org/problems/find-the-number-of-islands/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Number of Islands",
+        "url": "https://leetcode.com/problems/number-of-islands/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-islands",
+        "title": "take U forward - G-8. Number of Islands | Number of Connected Components in Matrix",
+        "url": "https://www.youtube.com/watch?v=muncqlKJrH0",
+        "channel": "take U forward",
+        "notes": "Connected components counting using BFS queue traversal with 8-directional exploration."
+      },
+      {
+        "id": "neetcode-number-of-islands",
+        "title": "NeetCode - NUMBER OF ISLANDS - Leetcode 200 - Python",
+        "url": "https://www.youtube.com/watch?v=pV2kpPD66nE",
+        "channel": "NeetCode",
+        "notes": "Classic 4-directional BFS/DFS sinking visited land nodes in O(M*N) time."
+      }
+    ]
+  },
+  {
+    "id": "number-of-provinces",
+    "title": "Number of provinces",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-provinces/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Number of Connected Components",
+        "url": "https://www.geeksforgeeks.org/problems/number-of-provinces/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Number of Provinces",
+        "url": "https://leetcode.com/problems/number-of-provinces/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-provinces",
+        "title": "take U forward - G-7. Number of Provinces | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=W3YyfjxKcA0",
+        "channel": "take U forward",
+        "notes": "Converts adjacency matrix to list and counts connected components via standard DFS in O(V + E)."
+      },
+      {
+        "id": "neetcode-number-of-provinces",
+        "title": "NeetCode - Number of Provinces - Leetcode 547 - Python",
+        "url": "https://www.youtube.com/watch?v=jKv_W-YMqsk",
+        "channel": "NeetCode",
+        "notes": "Union-find disjoint set and DFS approaches for counting connected components in undirected graphs."
+      }
+    ]
+  },
+  {
+    "id": "rotten-oranges",
+    "title": "Rotten Oranges",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/rotten-oranges2536/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Rotten Oranges",
+        "url": "https://www.geeksforgeeks.org/problems/rotten-oranges2536/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Rotting Oranges",
+        "url": "https://leetcode.com/problems/rotting-oranges/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-rotten-oranges",
+        "title": "take U forward - G-10. Rotten Oranges | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=pUAPcVlHLKA",
+        "channel": "take U forward",
+        "notes": "Multi-source BFS using queue storing (r, c, time) tracking rot propagation time in O(N*M)."
+      },
+      {
+        "id": "neetcode-rotting-oranges",
+        "title": "NeetCode - Rotting Oranges - Leetcode 994 - Python",
+        "url": "https://www.youtube.com/watch?v=y704fEOx0s0",
+        "channel": "NeetCode",
+        "notes": "Multi-source BFS simulation tracking fresh orange count to return minimum elapsed minutes."
+      }
+    ]
+  },
+  {
+    "id": "surrounded-regions",
+    "title": "Surrounded Regions",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/replace-os-with-xs0052/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Replace O's with X's",
+        "url": "https://www.geeksforgeeks.org/problems/replace-os-with-xs0052/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Surrounded Regions",
+        "url": "https://leetcode.com/problems/surrounded-regions/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-surrounded-regions",
+        "title": "take U forward - G-14. Surrounded Regions | Replace O's with X's | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=BtdgAys4yMk",
+        "channel": "take U forward",
+        "notes": "Boundary DFS marking connected un-surroundable 'O' cells before converting remaining internal 'O's to 'X'."
+      },
+      {
+        "id": "neetcode-surrounded-regions",
+        "title": "NeetCode - Surrounded Regions - Graph - Leetcode 130 - Python",
+        "url": "https://www.youtube.com/watch?v=9z2BunfoZ5Y",
+        "channel": "NeetCode",
+        "notes": "Reverse boundary traversal marking border-connected regions and flipping inner cells in O(M*N)."
+      }
+    ]
+  },
+  {
+    "id": "word-ladder-i",
+    "title": "Word ladder I",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/word-ladder/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Shortest Transformation Length in a Word List",
+        "url": "https://www.geeksforgeeks.org/problems/word-ladder/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Word Ladder",
+        "url": "https://leetcode.com/problems/word-ladder/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-word-ladder-i",
+        "title": "take U forward - G-29. Word Ladder - I | Shortest Paths",
+        "url": "https://www.youtube.com/watch?v=tRPda0rcf8E",
+        "channel": "take U forward",
+        "notes": "Queue BFS storing (word, step) pairs with hash set lookups trying all 26 character variations."
+      },
+      {
+        "id": "neetcode-word-ladder",
+        "title": "NeetCode - Word Ladder - Breadth First Search - Leetcode 127 - Python",
+        "url": "https://www.youtube.com/watch?v=h9iTnkgv05E",
+        "channel": "NeetCode",
+        "notes": "Builds pattern adjacency map for wildcard transformations and performs level-order BFS in O(N * M^2)."
+      }
+    ]
+  },
+  {
+    "id": "word-ladder-ii",
+    "title": "Word ladder II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/word-ladder-ii/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Shortest Transformation Sequences in a Word List",
+        "url": "https://www.geeksforgeeks.org/problems/word-ladder-ii/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Word Ladder II",
+        "url": "https://leetcode.com/problems/word-ladder-ii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-word-ladder-ii",
+        "title": "take U forward - G-30. Word Ladder - 2 | Shortest Paths",
+        "url": "https://www.youtube.com/watch?v=DREutrv2XD0",
+        "channel": "take U forward",
+        "notes": "BFS storing vector paths to collect all shortest transformation sequences."
+      },
+      {
+        "id": "takeuforward-word-ladder-ii-optimized",
+        "title": "take U forward - G-31. Word Ladder - 2 | Optimised Approach for Leetcode",
+        "url": "https://www.youtube.com/watch?v=AD4SFl7tu7I",
+        "channel": "take U forward",
+        "notes": "Optimal combination of forward BFS to record word distances and reverse DFS backtracking."
+      }
+    ]
+  },
+  {
+    "id": "alien-dictionary",
+    "title": "Alien Dictionary",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/alien-dictionary/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Alien Dictionary",
+        "url": "https://www.geeksforgeeks.org/problems/alien-dictionary/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Alien Dictionary - Topological Sort",
+        "url": "https://takeuforward.org/data-structure/alien-dictionary-topological-sort-g-26/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-alien-dictionary",
+        "title": "take U forward - G-26. Alien Dictionary - Topological Sort",
+        "url": "https://www.youtube.com/watch?v=U3N_je7tWAs",
+        "channel": "take U forward",
+        "notes": "Compares adjacent string pairs to build directed graph edges followed by Kahn's BFS topological sort."
+      },
+      {
+        "id": "neetcode-alien-dictionary",
+        "title": "NeetCode - Alien Dictionary - Leetcode 269 - Blind 75 Explained - Graphs - Python",
+        "url": "https://www.youtube.com/watch?v=IIgisEKjCKA",
+        "channel": "NeetCode",
+        "notes": "Builds character dependency graph and executes postorder DFS with cycle detection."
+      }
+    ]
+  },
+  {
+    "id": "course-schedule-i",
+    "title": "Course Schedule I",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/course-schedule-i/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Course Schedule I",
+        "url": "https://www.geeksforgeeks.org/dsa/find-whether-it-is-possible-to-finish-all-tasks-or-not-from-given-dependencies/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Course Schedule",
+        "url": "https://leetcode.com/problems/course-schedule/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-course-schedule-i",
+        "title": "take U forward - G-24. Course Schedule I and II | Pre-requisite Tasks | Topological Sort",
+        "url": "https://www.youtube.com/watch?v=WAOfKpxYHR8",
+        "channel": "take U forward",
+        "notes": "Detects cycles in prerequisite DAG using Kahn's algorithm (BFS in-degree reduction)."
+      },
+      {
+        "id": "neetcode-course-schedule",
+        "title": "NeetCode - Course Schedule - Graph Adjacency List - Leetcode 207",
+        "url": "https://www.youtube.com/watch?v=EgI5nU9etnU",
+        "channel": "NeetCode",
+        "notes": "DFS cycle detection with recursion stack set tracking active paths."
+      }
+    ]
+  },
+  {
+    "id": "course-schedule-ii",
+    "title": "Course Schedule II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/course-schedule/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Find Course Schedule II",
+        "url": "https://www.geeksforgeeks.org/dsa/find-course-schedule-ii/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Course Schedule II",
+        "url": "https://leetcode.com/problems/course-schedule-ii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-course-schedule-ii",
+        "title": "NeetCode - Course Schedule II - Topological Sort - Leetcode 210",
+        "url": "https://www.youtube.com/watch?v=Akt3glAwyfY",
+        "channel": "NeetCode",
+        "notes": "DFS topological sort adding completed courses post-recursion or returning empty list on cycle."
+      },
+      {
+        "id": "takeuforward-course-schedule-ii",
+        "title": "take U forward - G-24. Course Schedule I and II | Pre-requisite Tasks | Topological Sort",
+        "url": "https://www.youtube.com/watch?v=WAOfKpxYHR8",
+        "channel": "take U forward",
+        "notes": "Returns topological sort ordering using Kahn's BFS algorithm checking if ordering length equals V."
+      }
+    ]
+  },
+  {
+    "id": "detect-a-cycle-in-a-directed-graph",
+    "title": "Detect a cycle in a directed graph",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Directed Graph Cycle",
+        "url": "https://www.geeksforgeeks.org/problems/detect-cycle-in-a-directed-graph/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Detect Cycle in a Directed Graph using BFS",
+        "url": "https://www.geeksforgeeks.org/dsa/detect-cycle-in-a-directed-graph-using-bfs/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-detect-cycle-directed-graph-bfs",
+        "title": "take U forward - G-23. Detect a Cycle in Directed Graph | Topological Sort",
+        "url": "https://www.youtube.com/watch?v=iTBaI90lpDQ",
+        "channel": "take U forward",
+        "notes": "Applies Kahn's algorithm: if topological sort does not contain all V vertices, a cycle exists."
+      },
+      {
+        "id": "takeuforward-detect-cycle-directed-graph-dfs",
+        "title": "take U forward - G-19. Detect cycle in a directed graph using DFS | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=9twcmtQj4DU",
+        "channel": "take U forward",
+        "notes": "DFS using visited and pathVisited arrays to detect back-edges in O(V + E) time."
+      }
+    ]
+  },
+  {
+    "id": "find-eventual-safe-states",
+    "title": "Find eventual safe states",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/eventual-safe-states/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Eventual Safe States",
+        "url": "https://www.geeksforgeeks.org/dsa/eventual-safe-states/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Find Eventual Safe States",
+        "url": "https://leetcode.com/problems/find-eventual-safe-states/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-eventual-safe-states-bfs",
+        "title": "take U forward - G-25. Find Eventual Safe States - BFS - Topological Sort",
+        "url": "https://www.youtube.com/watch?v=uRbJ1OF9aYM",
+        "channel": "take U forward",
+        "notes": "Reverses all graph edges and runs Kahn's topological sort starting from terminal nodes."
+      },
+      {
+        "id": "neetcode-find-eventual-safe-states",
+        "title": "NeetCode - Find Eventual Safe States - Leetcode 802 - Python",
+        "url": "https://www.youtube.com/watch?v=Re_v0j0CRsg",
+        "channel": "NeetCode",
+        "notes": "DFS cycle detection with three-state coloring (unvisited, visiting, safe) in O(V + E)."
+      }
+    ]
+  },
+  {
+    "id": "topo-sort",
+    "title": "Topo Sort",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/topological-sort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Topological Sort",
+        "url": "https://www.geeksforgeeks.org/problems/topological-sort/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Topological Sort Algorithm DFS",
+        "url": "https://takeuforward.org/data-structure/topological-sort-algorithm-dfs-g-21/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-topological-sort-dfs",
+        "title": "take U forward - G-21. Topological Sort Algorithm | DFS",
+        "url": "https://www.youtube.com/watch?v=5lZ0iJMrUMk",
+        "channel": "take U forward",
+        "notes": "DFS recursive traversal pushing nodes to a stack upon completion to achieve linear topological ordering."
+      },
+      {
+        "id": "takeuforward-topological-sort-bfs",
+        "title": "take U forward - G-22. Kahn's Algorithm | Topological Sort Algorithm | BFS",
+        "url": "https://www.youtube.com/watch?v=73sneFXuTEg",
+        "channel": "take U forward",
+        "notes": "Kahn's BFS algorithm maintaining in-degree array and queue of 0 in-degree vertices in O(V + E)."
+      }
+    ]
+  }
+]

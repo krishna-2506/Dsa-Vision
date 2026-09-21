@@ -1,0 +1,762 @@
+[
+  {
+    "id": "binary-tree-representation-in-java",
+    "title": "Binary Tree Representation in Java",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/binary-tree-representation/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Implementing a Binary Tree in Java",
+        "url": "https://www.geeksforgeeks.org/java/implementing-a-binary-tree-in-java/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Binary Tree Representation",
+        "url": "https://www.geeksforgeeks.org/dsa/binary-tree-representation/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-binary-tree-representation-java",
+        "title": "take U forward - L3. Binary Tree Representation in Java",
+        "url": "https://www.youtube.com/watch?v=hyLyW7rP24I",
+        "channel": "take U forward",
+        "notes": "Explains Java class structure for Node with left and right child references and dynamic tree linking."
+      },
+      {
+        "id": "takeuforward-binary-tree-representation-cpp",
+        "title": "take U forward - L2. Binary Tree Representation in C++",
+        "url": "https://www.youtube.com/watch?v=ctCpP0RFDFc",
+        "channel": "take U forward",
+        "notes": "Struct and pointer representation of binary tree nodes in C++ with memory breakdown."
+      }
+    ]
+  },
+  {
+    "id": "inorder-traversal-of-binary-tree",
+    "title": "Inorder Traversal of Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/inorder-traversal/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Inorder Traversal of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/inorder-traversal-of-binary-tree/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Binary Tree Inorder Traversal",
+        "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-inorder-traversal",
+        "title": "take U forward - L6. Inorder Traversal of Binary Tree | C++ | Java | Code Explanation",
+        "url": "https://www.youtube.com/watch?v=Z_NEgBgbRVI",
+        "channel": "take U forward",
+        "notes": "Recursive Left-Root-Right traversal with call stack trace and implementation in C++ and Java."
+      },
+      {
+        "id": "neetcode-inorder-traversal",
+        "title": "NeetCode - Iterative & Recursive - Binary Tree Inorder Traversal - Leetcode 94 - Python",
+        "url": "https://www.youtube.com/watch?v=g_S5WuasWUE",
+        "channel": "NeetCode",
+        "notes": "Walkthrough of both recursive DFS and iterative stack-based inorder traversal in O(N) time."
+      }
+    ]
+  },
+  {
+    "id": "introduction-to-trees",
+    "title": "Introduction to Trees",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/types-of-trees-in-data-structures/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - What is Tree | Tree Definition & Meaning in DSA",
+        "url": "https://www.geeksforgeeks.org/dsa/tree-meaning-in-dsa/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Introduction to Trees",
+        "url": "https://takeuforward.org/binary-tree/introduction-to-trees/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-introduction-to-trees",
+        "title": "take U forward - L1. Introduction to Trees | Types of Trees",
+        "url": "https://www.youtube.com/watch?v=_ANrF3FJm7I",
+        "channel": "take U forward",
+        "notes": "Foundational breakdown of tree terminology, nodes, edges, height, depth, and full/complete/binary tree variants."
+      },
+      {
+        "id": "jennys-lectures-tree-intro",
+        "title": "Jenny's Lectures CS IT - 5.1 Tree in Data Structure | Introduction to Trees | Data Structures Tutorials",
+        "url": "https://www.youtube.com/watch?v=YAdLFsTG70w",
+        "channel": "Jenny's Lectures CS IT",
+        "notes": "Conceptual introduction to hierarchical non-linear data structures, parent-child relations, and subtrees."
+      }
+    ]
+  },
+  {
+    "id": "iterative-inorder-traversal-of-binary-tree",
+    "title": "Iterative Inorder Traversal of Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/inorder-traversal-iterative/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Inorder Tree Traversal without Recursion",
+        "url": "https://www.geeksforgeeks.org/dsa/inorder-tree-traversal-without-recursion/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Binary Tree Inorder Traversal",
+        "url": "https://leetcode.com/problems/binary-tree-inorder-traversal/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-iterative-inorder",
+        "title": "take U forward - L10. iterative Inorder Traversal in Binary Tree | C++ | Java | Stack",
+        "url": "https://www.youtube.com/watch?v=lxTGsVXjwvM",
+        "channel": "take U forward",
+        "notes": "Simulating recursion using an explicit stack by pushing left children, popping, and transitioning to right subtrees."
+      },
+      {
+        "id": "neetcode-iterative-inorder",
+        "title": "NeetCode - Iterative & Recursive - Binary Tree Inorder Traversal - Leetcode 94 - Python",
+        "url": "https://www.youtube.com/watch?v=g_S5WuasWUE",
+        "channel": "NeetCode",
+        "notes": "Demonstrates iterative stack-based traversal maintaining O(N) time and O(H) auxiliary space."
+      }
+    ]
+  },
+  {
+    "id": "iterative-preorder-traversal-of-binary-tree",
+    "title": "Iterative Preorder Traversal of Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/preorder-traversal-iterative/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Preorder Traversal without Recursion",
+        "url": "https://www.geeksforgeeks.org/dsa/preorder-traversal-of-n-ary-tree-without-recursion/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Binary Tree Preorder Traversal",
+        "url": "https://leetcode.com/problems/binary-tree-preorder-traversal/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-iterative-preorder",
+        "title": "take U forward - L9. Iterative Preorder Traversal in Binary Tree | C++ | Java | Stack",
+        "url": "https://www.youtube.com/watch?v=Bfqd8BsPVuw",
+        "channel": "take U forward",
+        "notes": "Pushes right child first then left child to stack to guarantee LIFO processing in Root-Left-Right order."
+      },
+      {
+        "id": "neetcodeio-iterative-preorder",
+        "title": "NeetCodeIO - Binary Tree Preorder Traversal (Iterative) - Leetcode 144 - Python",
+        "url": "https://www.youtube.com/watch?v=afTpieEZXck",
+        "channel": "NeetCodeIO",
+        "notes": "Iterative stack implementation traversing tree in preorder in O(N) time without recursion."
+      }
+    ]
+  },
+  {
+    "id": "level-order-traversal",
+    "title": "Level Order Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/level-order-traversal/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Level Order Traversal of a Binary Tree in Java",
+        "url": "https://www.geeksforgeeks.org/java/level-order-traversal-of-a-binary-tree-in-java/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Binary Tree Level Order Traversal",
+        "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-level-order-traversal",
+        "title": "take U forward - L8. Level Order Traversal of Binary Tree | BFS | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=EoAsWbO7sqg",
+        "channel": "take U forward",
+        "notes": "Breadth-first search queue implementation processing nodes level-by-level in O(N) time."
+      },
+      {
+        "id": "neetcode-level-order-traversal",
+        "title": "NeetCode - Binary Tree Level Order Traversal - BFS - Leetcode 102",
+        "url": "https://www.youtube.com/watch?v=6ZnyEApgFYg",
+        "channel": "NeetCode",
+        "notes": "Uses a queue to track current level sizes and snapshot node values level by level."
+      }
+    ]
+  },
+  {
+    "id": "post-order-traversal-of-binary-tree-using-1-stack",
+    "title": "Post-order Traversal of Binary Tree using 1 stack",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/postorder-traversal-iterative/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Iterative Postorder Traversal | Set 2 (Using One Stack)",
+        "url": "https://www.geeksforgeeks.org/dsa/iterative-postorder-traversal-using-stack/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Postorder Traversal of Binary Tree",
+        "url": "https://takeuforward.org/data-structure/post-order-traversal-of-binary-tree/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-postorder-1-stack",
+        "title": "take U forward - L12. Iterative Postorder Traversal using 1 Stack | C++ | Java | Binary Trees",
+        "url": "https://www.youtube.com/watch?v=NzIGLLwZBS8",
+        "channel": "take U forward",
+        "notes": "Advanced 1-stack technique tracking the previously visited node to determine when right subtrees are complete."
+      },
+      {
+        "id": "neetcodeio-iterative-postorder",
+        "title": "NeetCodeIO - Binary Tree Postorder Traversal (Iterative) - Leetcode 145 - Python",
+        "url": "https://www.youtube.com/watch?v=QhszUQhGGlA",
+        "channel": "NeetCodeIO",
+        "notes": "Iterative single stack approach using a visited state flag to simulate recursive postorder call stack."
+      }
+    ]
+  },
+  {
+    "id": "post-order-traversal-of-binary-tree-using-2-stack",
+    "title": "Post-order Traversal of Binary Tree using 2 stack",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/iterative-postorder-traversal-using-stack/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Iterative Postorder Traversal using Stack",
+        "url": "https://www.geeksforgeeks.org/dsa/iterative-postorder-traversal-using-stack/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Iterative Postorder Traversal of Binary Tree using 2 Stacks",
+        "url": "https://takeuforward.org/data-structure/iterative-postorder-traversal-of-binary-tree-using-2-stack",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-postorder-2-stacks",
+        "title": "take U forward - L11. Iterative Postorder Traversal using 2 Stack | C++ | Java | Binary Tree",
+        "url": "https://www.youtube.com/watch?v=2YBhNLodD8Q",
+        "channel": "take U forward",
+        "notes": "Pushes modified preorder (Root-Right-Left) into stack 1, popping into stack 2 to yield Left-Right-Root order."
+      },
+      {
+        "id": "codehelp-babbar-traversals",
+        "title": "CodeHelp - by Babbar - Lecture 62: Binary Trees & its Representation || Different types of Traversals",
+        "url": "https://www.youtube.com/watch?v=5NiXlPrLslg",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Comprehensive lecture on binary tree creation, memory representations, and iterative/recursive traversals."
+      }
+    ]
+  },
+  {
+    "id": "postorder-traversal",
+    "title": "Postorder Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/postorder-traversal/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Postorder Traversal of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/postorder-traversal-binary-tree/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Binary Tree Postorder Traversal",
+        "url": "https://leetcode.com/problems/binary-tree-postorder-traversal/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-postorder-traversal",
+        "title": "take U forward - L7. Postorder Traversal of Binary Tree | C++ | Java | Code Explanation",
+        "url": "https://www.youtube.com/watch?v=COQOU6klsBg",
+        "channel": "take U forward",
+        "notes": "Recursive postorder traversal following Left-Right-Root pattern with call stack trace."
+      },
+      {
+        "id": "neetcodeio-binary-tree-postorder",
+        "title": "NeetCodeIO - Binary Tree Postorder Traversal (Iterative) - Leetcode 145 - Python",
+        "url": "https://www.youtube.com/watch?v=QhszUQhGGlA",
+        "channel": "NeetCodeIO",
+        "notes": "Detailed walkthrough of both iterative and recursive postorder traversal for LeetCode 145."
+      }
+    ]
+  },
+  {
+    "id": "pre-post-inorder-in-one-traversal",
+    "title": "Pre, Post, Inorder in one traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/preorder-postorder-and-inorder-traversal-of-a-binary-tree-using-a-single-stack/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Pre Order, Post Order and In Order traversal of a Binary Tree in one traversal using recursion",
+        "url": "https://www.geeksforgeeks.org/dsa/pre-order-post-order-and-in-order-traversal-of-a-binary-tree-in-one-traversal-using-recursion/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Preorder Inorder Postorder Traversals in One Traversal",
+        "url": "https://takeuforward.org/data-structure/preorder-inorder-postorder-traversals-in-one-traversal/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-all-traversals-one-pass",
+        "title": "take U forward - L13. Preorder Inorder Postorder Traversals in One Traversal | C++ | Java | Stack | Binary Trees",
+        "url": "https://www.youtube.com/watch?v=ySp2epYvgTE",
+        "channel": "take U forward",
+        "notes": "Maintains a pair of (node, state) in a single stack where states 1, 2, and 3 correspond to pre, in, and postorder."
+      },
+      {
+        "id": "techdose-binary-tree-traversals",
+        "title": "Techdose - Simplest Binary Tree Traversal trick for preorder inorder postorder",
+        "url": "https://www.youtube.com/watch?v=WLvU5EQVZqY",
+        "channel": "Techdose",
+        "notes": "Intuitive visual outline trick to find preorder, inorder, and postorder in a single traversal."
+      }
+    ]
+  },
+  {
+    "id": "preorder-inorder-and-postorder-traversal-in-one-traversal",
+    "title": "Preorder, Inorder, and Postorder Traversal in one Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/preorder-postorder-and-inorder-traversal-of-a-binary-tree-using-a-single-stack/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Preorder, Postorder and Inorder Traversal of a Binary Tree using a single stack",
+        "url": "https://www.geeksforgeeks.org/dsa/preorder-postorder-and-inorder-traversal-of-a-binary-tree-using-a-single-stack/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Preorder Inorder Postorder Traversals in One Traversal",
+        "url": "https://takeuforward.org/data-structure/preorder-inorder-postorder-traversals-in-one-traversal/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-all-traversals-single-stack",
+        "title": "take U forward - L13. Preorder Inorder Postorder Traversals in One Traversal | C++ | Java | Stack | Binary Trees",
+        "url": "https://www.youtube.com/watch?v=ySp2epYvgTE",
+        "channel": "take U forward",
+        "notes": "Classic 3-state stack algorithm by Striver returning all three traversals in O(3N) time."
+      },
+      {
+        "id": "techdose-traversal-technique",
+        "title": "Techdose - Simplest Binary Tree Traversal trick for preorder inorder postorder",
+        "url": "https://www.youtube.com/watch?v=WLvU5EQVZqY",
+        "channel": "Techdose",
+        "notes": "Visual boundary curve tracing technique covering pre, in, and postorder in one sweep."
+      }
+    ]
+  },
+  {
+    "id": "preorder-traversal",
+    "title": "Preorder Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/preorder-traversal/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Preorder Traversal of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/preorder-traversal-binary-tree/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Binary Tree Preorder Traversal",
+        "url": "https://leetcode.com/problems/binary-tree-preorder-traversal/editorial/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-preorder-traversal",
+        "title": "take U forward - L5. Preorder Traversal of Binary Tree | C++ | Java | Code Explanation",
+        "url": "https://www.youtube.com/watch?v=RlUu72JrOCQ",
+        "channel": "take U forward",
+        "notes": "Recursive preorder traversal following Root-Left-Right pattern with time and space analysis."
+      },
+      {
+        "id": "neetcodeio-preorder-traversal",
+        "title": "NeetCodeIO - Binary Tree Preorder Traversal (Iterative) - Leetcode 144 - Python",
+        "url": "https://www.youtube.com/watch?v=afTpieEZXck",
+        "channel": "NeetCodeIO",
+        "notes": "Optimal Python solution covering both recursive and stack-based iterative approaches."
+      }
+    ]
+  },
+  {
+    "id": "bottom-view-of-bt",
+    "title": "Bottom view of BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/bottom-view-of-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Bottom View of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/problems/bottom-view-of-binary-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-bottom-view-binary-tree",
+        "title": "take U forward - L23. Bottom View of Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=0FtVY6I4pB8",
+        "channel": "take U forward",
+        "notes": "BFS traversal maintaining a map of horizontal distance to node values overwriting at each level."
+      },
+      {
+        "id": "codehelp-babbar-bottom-view",
+        "title": "CodeHelp - by Babbar - Lecture 64: Binary Tree FAANG Interview Questions || Part-2",
+        "url": "https://www.youtube.com/watch?v=s1d8UGDCCN8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Horizontal coordinate mapping and queue-based level order traversal for bottom view."
+      }
+    ]
+  },
+  {
+    "id": "boundary-traversal",
+    "title": "Boundary Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/boundary-traversal-of-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Tree Boundary Traversal",
+        "url": "https://www.geeksforgeeks.org/problems/boundary-traversal-of-binary-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-boundary-traversal",
+        "title": "take U forward - L20. Boundary Traversal in Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=0ca1nvR0be4",
+        "channel": "take U forward",
+        "notes": "Three-part anti-clockwise traversal: left boundary excluding leaf, leaf nodes in-order, and reverse right boundary."
+      },
+      {
+        "id": "codehelp-babbar-boundary-traversal",
+        "title": "CodeHelp - by Babbar - Lecture 64: Binary Tree FAANG Interview Questions || Part-2",
+        "url": "https://www.youtube.com/watch?v=s1d8UGDCCN8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Detailed breakdown of left subtree traversal, leaf collection, and right subtree reversal."
+      }
+    ]
+  },
+  {
+    "id": "check-for-balanced-binary-tree",
+    "title": "Check for balanced binary tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/check-for-balanced-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Balanced Tree Check",
+        "url": "https://www.geeksforgeeks.org/problems/check-for-balanced-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-balanced-binary-tree",
+        "title": "take U forward - L15. Check for Balanced Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=Yt50Jfbd8Po",
+        "channel": "take U forward",
+        "notes": "Optimized O(N) postorder DFS returning -1 if height difference of left and right subtrees exceeds 1."
+      },
+      {
+        "id": "neetcode-balanced-binary-tree",
+        "title": "NeetCode - Balanced Binary Tree - Leetcode 110 - Python",
+        "url": "https://www.youtube.com/watch?v=QfJsau0ItOY",
+        "channel": "NeetCode",
+        "notes": "Bottom-up recursive approach computing height and balance status simultaneously in O(N)."
+      }
+    ]
+  },
+  {
+    "id": "check-if-two-trees-are-identical-or-not",
+    "title": "Check if two trees are identical or not",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/determine-if-two-trees-are-identical/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Identical Trees",
+        "url": "https://www.geeksforgeeks.org/problems/determine-if-two-trees-are-identical/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-identical-trees",
+        "title": "take U forward - L18. Check it two trees are Identical or Not | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=BhuvF_-PWS0",
+        "channel": "take U forward",
+        "notes": "Simultaneous preorder DFS comparing node values and recursively verifying left and right branches."
+      },
+      {
+        "id": "neetcode-same-tree",
+        "title": "NeetCode - Same Tree - Leetcode 100 - Python",
+        "url": "https://www.youtube.com/watch?v=vRbbcKXCxOw",
+        "channel": "NeetCode",
+        "notes": "Recursive depth-first search base cases handling null nodes and value mismatches in O(N)."
+      }
+    ]
+  },
+  {
+    "id": "diameter-of-binary-tree",
+    "title": "Diameter of Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/diameter-of-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Diameter of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/problems/diameter-of-binary-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-diameter-binary-tree",
+        "title": "take U forward - L16. Diameter of Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=Rezetez59Nk",
+        "channel": "take U forward",
+        "notes": "Optimal O(N) single-pass DFS passing max diameter reference while calculating node heights."
+      },
+      {
+        "id": "neetcode-diameter-binary-tree",
+        "title": "NeetCode - Diameter of a Binary Tree - Leetcode 543 - Python",
+        "url": "https://www.youtube.com/watch?v=bkxqA8Rfv04",
+        "channel": "NeetCode",
+        "notes": "Explains maximizing (left_height + right_height) at each node using bottom-up DFS."
+      }
+    ]
+  },
+  {
+    "id": "maximum-depth-in-bt",
+    "title": "Maximum Depth in BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-depth-of-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Depth Of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/problems/maximum-depth-of-binary-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-max-depth-binary-tree",
+        "title": "take U forward - L14. Maximum Depth in Binary Tree | Height of Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=eD3tmO66aBA",
+        "channel": "take U forward",
+        "notes": "Compares 1 + max(left, right) recursive DFS with level-order BFS queue counting in O(N)."
+      },
+      {
+        "id": "neetcode-max-depth-binary-tree",
+        "title": "NeetCode - Maximum Depth of Binary Tree - 3 Solutions - Leetcode 104 - Python",
+        "url": "https://www.youtube.com/watch?v=hTM3phVI6YQ",
+        "channel": "NeetCode",
+        "notes": "Walks through Recursive DFS, Iterative DFS (with stack), and BFS (level order traversal)."
+      }
+    ]
+  },
+  {
+    "id": "maximum-path-sum",
+    "title": "Maximum path sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-path-sum-from-any-node/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Path Sum",
+        "url": "https://www.geeksforgeeks.org/problems/maximum-path-sum-from-any-node/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-maximum-path-sum",
+        "title": "take U forward - L17. Maximum Path Sum in Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=WszrfSwMz58",
+        "channel": "take U forward",
+        "notes": "Optimal O(N) postorder recursion ignoring negative branch contributions via max(0, branch_sum)."
+      },
+      {
+        "id": "neetcode-maximum-path-sum",
+        "title": "NeetCode - Binary Tree Maximum Path Sum - DFS - Leetcode 124 - Python",
+        "url": "https://www.youtube.com/watch?v=Hr5cWUld4vU",
+        "channel": "NeetCode",
+        "notes": "Detailed walkthrough computing max split path through current node while returning un-split path to parent."
+      }
+    ]
+  },
+  {
+    "id": "right-left-view-of-binary-tree",
+    "title": "Right/Left View of Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/right-view-of-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Right View of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/problems/right-view-of-binary-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-right-left-view",
+        "title": "take U forward - L24. Right/Left View of Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=KV4mRzTjlAk",
+        "channel": "take U forward",
+        "notes": "Recursive reverse preorder traversal (root, right, left) recording first visited node at each level in O(N)."
+      },
+      {
+        "id": "neetcode-binary-tree-right-side-view",
+        "title": "NeetCode - Binary Tree Right Side View - Breadth First Search - Leetcode 199",
+        "url": "https://www.youtube.com/watch?v=d4zLyf32e3I",
+        "channel": "NeetCode",
+        "notes": "Level order BFS queue approach capturing the last element of each level queue."
+      }
+    ]
+  },
+  {
+    "id": "symmetric-binary-tree",
+    "title": "Symmetric Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/symmetric-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Symmetric Tree",
+        "url": "https://www.geeksforgeeks.org/problems/symmetric-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-symmetric-binary-tree",
+        "title": "take U forward - L25. Check for Symmetrical Binary Trees | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=nKggNAiEpBE",
+        "channel": "take U forward",
+        "notes": "Simultaneous mirror traversal checking left->left with right->right and left->right with right->left."
+      },
+      {
+        "id": "neetcode-symmetric-tree",
+        "title": "NeetCode - Symmetric Tree - Leetcode 101 - Python",
+        "url": "https://www.youtube.com/watch?v=Mao9uzxwvmc",
+        "channel": "NeetCodeIO",
+        "notes": "Clean recursive helper comparing mirror node values and opposites in O(N)."
+      }
+    ]
+  },
+  {
+    "id": "top-view-of-bt",
+    "title": "Top View of BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/top-view-of-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Top View of Binary Tree",
+        "url": "https://www.geeksforgeeks.org/problems/top-view-of-binary-tree/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-top-view-binary-tree",
+        "title": "take U forward - L22. Top View of Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=Et9OCDNvJ78",
+        "channel": "take U forward",
+        "notes": "Level order BFS storing only the first node visited for each horizontal distance coordinate."
+      },
+      {
+        "id": "codehelp-babbar-top-view",
+        "title": "CodeHelp - by Babbar - Lecture 64: Binary Tree FAANG Interview Questions || Part-2",
+        "url": "https://www.youtube.com/watch?v=s1d8UGDCCN8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Vertical indexing using an ordered map ensuring unique leftmost and rightmost line-of-sight views."
+      }
+    ]
+  },
+  {
+    "id": "vertical-order-traversal",
+    "title": "Vertical Order Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/print-a-binary-tree-in-vertical-order/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Vertical Tree Traversal",
+        "url": "https://www.geeksforgeeks.org/problems/print-a-binary-tree-in-vertical-order/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-vertical-order-traversal",
+        "title": "take U forward - L21. Vertical Order Traversal of Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=q_a6lpbKJdw",
+        "channel": "take U forward",
+        "notes": "2D coordinate mapping (vertical, level) using nested multiset/priority-queue structures for strict sorted order."
+      },
+      {
+        "id": "techdose-vertical-order-traversal",
+        "title": "Techdose - Vertical order traversal of a binary tree | Leetcode #987",
+        "url": "https://www.youtube.com/watch?v=kqHNP6NTzME",
+        "channel": "Techdose",
+        "notes": "Step-by-step horizontal coordinate assignment and sorting overlapping node values."
+      }
+    ]
+  },
+  {
+    "id": "zig-zag-or-spiral-traversal",
+    "title": "Zig Zag or Spiral Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/zigzag-tree-traversal/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Zig-Zag Tree Traversal",
+        "url": "https://www.geeksforgeeks.org/problems/zigzag-tree-traversal/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-zigzag-traversal",
+        "title": "take U forward - L19. Zig-Zag or Spiral Traversal in Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=3OXWEdlIGl4",
+        "channel": "take U forward",
+        "notes": "Queue-based level order traversal using a boolean left-to-right flag to alternate index assignment."
+      },
+      {
+        "id": "neetcode-zigzag-level-order",
+        "title": "NeetCode - Binary Tree Zigzag Level Order Traversal - Leetcode 103 - Python",
+        "url": "https://www.youtube.com/watch?v=igbboQbiwqw",
+        "channel": "NeetCodeIO",
+        "notes": "Double-ended queue (deque) level order traversal reversing order on alternating levels."
+      }
+    ]
+  },
+  {
+    "id": "children-sum-property-in-binary-tree",
+    "title": "Children Sum Property in Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/children-sum-parent/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Children Sum in a Binary Tree",
+        "url": "https://www.geeksforgeeks.org/problems/children-sum-parent/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-children-sum-property",
+        "title": "take U forward - L29. Children Sum Property in Binary Tree | O(N) Approach | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=fnmisPM6cVo",
+        "channel": "take U forward",
+        "notes": "Converts arbitrary binary trees to satisfy children sum property by propagating values downward and summing upward in O(N)."
+      },
+      {
+        "id": "codehelp-babbar-children-sum-tree",
+        "title": "CodeHelp - by Babbar - Lecture 63: Binary Tree FAANG Interview Questions || Part-1",
+        "url": "https://www.youtube.com/watch?v=nHMQ33LZ6oA",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Checks if root equals sum of children recursively with base condition handling."
+      }
+    ]
+  }
+]

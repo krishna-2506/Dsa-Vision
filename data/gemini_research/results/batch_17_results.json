@@ -1,0 +1,788 @@
+[
+  {
+    "id": "topological-sort-or-kahn-s-algorithm",
+    "title": "Topological sort or Kahn's algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/topological-sort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Topological Sorting using BFS - Kahn's Algorithm",
+        "url": "https://www.geeksforgeeks.org/dsa/topological-sorting-indegree-based-solution/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-kahns-algorithm",
+        "title": "take U forward - G-22. Kahn's Algorithm | Topological Sort Algorithm | BFS",
+        "url": "https://www.youtube.com/watch?v=73sneFXuTEg",
+        "channel": "take U forward",
+        "notes": "BFS-based topological sort using indegree array and queue in O(V + E) time."
+      },
+      {
+        "id": "codehelp-babbar-kahns-algorithm",
+        "title": "CodeHelp - by Babbar - Lecture 91: Topological Sort ( Using Kahn's Algorithm ) || Placement Series",
+        "url": "https://www.youtube.com/watch?v=6XmzL04mlgQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Step-by-step implementation of Kahn's algorithm with indegree calculation and queue processing."
+      }
+    ]
+  },
+  {
+    "id": "bellman-ford-algorithm",
+    "title": "Bellman Ford Algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/distance-from-the-source-bellman-ford-algorithm/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Bellman\u2013Ford Algorithm",
+        "url": "https://www.geeksforgeeks.org/dsa/bellman-ford-algorithm-dp-23/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-bellman-ford-algorithm",
+        "title": "take U forward - G-41. Bellman Ford Algorithm",
+        "url": "https://www.youtube.com/watch?v=0vVofAhAYjc",
+        "channel": "take U forward",
+        "notes": "Explains edge relaxation N-1 times and detecting negative weight cycles in directed graphs."
+      },
+      {
+        "id": "abdul-bari-bellman-ford",
+        "title": "Abdul Bari - 4.4 Bellman Ford Algorithm - Single Source Shortest Path - Dynamic Programming",
+        "url": "https://www.youtube.com/watch?v=FtN3BYH2Zes",
+        "channel": "Abdul Bari",
+        "notes": "Foundational intuition, mathematical principles, and trace of Bellman-Ford algorithm."
+      }
+    ]
+  },
+  {
+    "id": "cheapest-flight-within-k-stops",
+    "title": "Cheapest flight within K stops",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/minimum-cost-of-path-between-given-nodes-containing-at-most-k-nodes-in-a-directed-and-weighted-graph/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Shortest Path with At most k Nodes",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-cost-of-path-between-given-nodes-containing-at-most-k-nodes-in-a-directed-and-weighted-graph/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Cheapest Flights Within K Stops",
+        "url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-cheapest-flights-k-stops",
+        "title": "take U forward - G-38. Cheapest Flights Within K Stops",
+        "url": "https://www.youtube.com/watch?v=9XybHVqTHcQ",
+        "channel": "take U forward",
+        "notes": "Modified BFS queue approach prioritizing stops over distance to avoid redundant state updates in O(E * K)."
+      },
+      {
+        "id": "neetcode-cheapest-flights-within-k-stops",
+        "title": "NeetCode - Bellman-Ford - Cheapest Flights within K Stops - Leetcode 787",
+        "url": "https://www.youtube.com/watch?v=5eIK3zUdYmE",
+        "channel": "NeetCode",
+        "notes": "Shortest path approach using Bellman-Ford algorithm relaxed exactly K + 1 times."
+      }
+    ]
+  },
+  {
+    "id": "djisktra-s-algorithm",
+    "title": "Djisktra's Algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/implementing-dijkstra-set-1-adjacency-matrix/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Dijkstra's Algorithm based Common Questions",
+        "url": "https://www.geeksforgeeks.org/dsa/introduction-to-dijkstras-shortest-path-algorithm/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-dijkstras-algorithm",
+        "title": "take U forward - G-32. Dijkstra's Algorithm - Using Priority Queue - C++ and Java - Part 1",
+        "url": "https://www.youtube.com/watch?v=V6H1qAeB-l4",
+        "channel": "take U forward",
+        "notes": "Greedy single-source shortest path algorithm using a min-heap priority queue in O(E log V) time."
+      },
+      {
+        "id": "abdul-bari-dijkstra-algorithm",
+        "title": "Abdul Bari - 3.6 Dijkstra Algorithm - Single Source Shortest Path - Greedy Method",
+        "url": "https://www.youtube.com/watch?v=XB4MIexjvY0",
+        "channel": "Abdul Bari",
+        "notes": "Comprehensive conceptual lecture explaining relaxation, greedy choice property, and distance array tracing."
+      }
+    ]
+  },
+  {
+    "id": "find-the-city-with-the-smallest-number-of-neighbors",
+    "title": "Find the city with the smallest number of neighbors",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Most Isolated City",
+        "url": "https://www.geeksforgeeks.org/problems/city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Find the City With the Smallest Number of Neighbors at a Threshold Distance",
+        "url": "https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-find-city-smallest-neighbors",
+        "title": "take U forward - G-43. Find the City With the Smallest Number of Neighbours at a Threshold Distance",
+        "url": "https://www.youtube.com/watch?v=PwMVNSJ5SLI",
+        "channel": "take U forward",
+        "notes": "Uses Floyd-Warshall algorithm to compute all-pairs shortest paths and counts cities within threshold distance."
+      },
+      {
+        "id": "neetcodeio-find-the-city-with-the-smallest-number-of-neighbors",
+        "title": "NeetCodeIO - Find the City With the Smallest Number of Neighbors at a Threshold Distance - Leetcode 1334 - Python",
+        "url": "https://www.youtube.com/watch?v=--wKPR3ByJc",
+        "channel": "NeetCodeIO",
+        "notes": "Detailed Dijkstra and Floyd-Warshall walkthroughs comparing time and space tradeoffs."
+      }
+    ]
+  },
+  {
+    "id": "floyd-warshall-algorithm",
+    "title": "Floyd warshall algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/implementing-floyd-warshall2042/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Floyd-Warshall Algorithm in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/floyd-warshall-algorithm-cpp/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-floyd-warshall-algorithm",
+        "title": "take U forward - G-42. Floyd Warshall Algorithm",
+        "url": "https://www.youtube.com/watch?v=YbY8cVwWAvw",
+        "channel": "take U forward",
+        "notes": "Multi-source shortest path dynamic programming algorithm in O(V^3) time and detecting negative cycles."
+      },
+      {
+        "id": "abdul-bari-floyd-warshall",
+        "title": "Abdul Bari - 4.2 All Pairs Shortest Path (Floyd-Warshall) - Dynamic Programming",
+        "url": "https://www.youtube.com/watch?v=oNI0rf2P9gE",
+        "channel": "Abdul Bari",
+        "notes": "Step-by-step matrix iteration through intermediate vertices with dynamic programming formulation."
+      }
+    ]
+  },
+  {
+    "id": "minimum-multiplications-to-reach-end",
+    "title": "Minimum multiplications to reach end",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-multiplications-to-reach-end/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Multiplications to reach End",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-steps-to-reach-end-from-start-by-performing-multiplication-and-mod-operations-with-array-elements/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-minimum-multiplications-to-reach-end",
+        "title": "take U forward - G-39. Minimum Multiplications to Reach End",
+        "url": "https://www.youtube.com/watch?v=_BvEJ3VIDWw",
+        "channel": "take U forward",
+        "notes": "BFS queue-based shortest path on state graph of size 100,000 where edge weights are uniformly 1 step."
+      }
+    ]
+  },
+  {
+    "id": "network-delay-time",
+    "title": "Network Delay Time",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/network-delay-time/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Network Delay Time",
+        "url": "https://www.geeksforgeeks.org/problems/network-delay-time/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Network Delay Time",
+        "url": "https://leetcode.com/problems/network-delay-time/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-network-delay-time",
+        "title": "NeetCode - Network Delay Time - Dijkstra's algorithm - Leetcode 743",
+        "url": "https://www.youtube.com/watch?v=EaphyqKU4PQ",
+        "channel": "NeetCode",
+        "notes": "Classic min-heap Dijkstra implementation calculating max travel time to visit all nodes in O(E log V)."
+      }
+    ]
+  },
+  {
+    "id": "number-of-ways-to-arrive-at-destination",
+    "title": "Number of ways to arrive at destination",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-ways-to-arrive-at-destination/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Number of Ways to Arrive at Destination",
+        "url": "https://www.geeksforgeeks.org/problems/number-of-ways-to-arrive-at-destination/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Number of Ways to Arrive at Destination",
+        "url": "https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-ways-to-arrive-at-destination",
+        "title": "take U forward - G-40. Number of Ways to Arrive at Destination",
+        "url": "https://www.youtube.com/watch?v=_-0mx0SmYxA",
+        "channel": "take U forward",
+        "notes": "Dijkstra algorithm combined with dynamic programming ways array modulo 10^9+7 to count shortest paths."
+      },
+      {
+        "id": "neetcodeio-number-of-ways-to-arrive-at-destination",
+        "title": "NeetCodeIO - Number of Ways to Arrive at Destination - Leetcode 1976 - Python",
+        "url": "https://www.youtube.com/watch?v=VFCzKOH1hnk",
+        "channel": "NeetCodeIO",
+        "notes": "Explains path-count aggregation during Dijkstra node relaxation in Python."
+      }
+    ]
+  },
+  {
+    "id": "path-with-minimum-effort",
+    "title": "Path with minimum effort",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/path-with-minimum-effort/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Path with minimum cost",
+        "url": "https://www.geeksforgeeks.org/dsa/path-with-smallest-difference-between-consecutive-cells-path-with-minimum-effort/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Path with Minimum Effort",
+        "url": "https://leetcode.com/problems/path-with-minimum-effort/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-path-with-minimum-effort",
+        "title": "take U forward - G-37. Path With Minimum Effort",
+        "url": "https://www.youtube.com/watch?v=0ytpZyiZFhA",
+        "channel": "take U forward",
+        "notes": "Dijkstra on 2D grid tracking minimum maximum absolute difference along paths to target in O(N * M log(N * M))."
+      },
+      {
+        "id": "neetcodeio-path-with-minimum-effort",
+        "title": "NeetCodeIO - Path with Minimum Effort - Leetcode 1631 - Python",
+        "url": "https://www.youtube.com/watch?v=XQlxCCx2vI4",
+        "channel": "NeetCodeIO",
+        "notes": "Min-heap Dijkstra implementation traversing grid neighbors with effort tracking."
+      }
+    ]
+  },
+  {
+    "id": "shortest-distance-in-a-binary-maze",
+    "title": "Shortest Distance in a Binary Maze",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/shortest-path-in-a-binary-maze-1655453161/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Shortest Distance in a Binary Maze",
+        "url": "https://www.geeksforgeeks.org/problems/shortest-path-in-a-binary-maze-1655453161/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Shortest Path in Binary Matrix",
+        "url": "https://leetcode.com/problems/shortest-path-in-binary-matrix/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-shortest-distance-binary-maze",
+        "title": "take U forward - G-36. Shortest Distance in a Binary Maze",
+        "url": "https://www.youtube.com/watch?v=U5Mw4eyUmw4",
+        "channel": "take U forward",
+        "notes": "BFS queue algorithm finding shortest steps in 2D binary grid without priority queue overhead."
+      },
+      {
+        "id": "neetcode-shortest-path-binary-matrix",
+        "title": "NeetCode - Shortest Path in a Binary Matrix - Leetcode 1091 - Python",
+        "url": "https://www.youtube.com/watch?v=YnxUdAO7TAo",
+        "channel": "NeetCode",
+        "notes": "Level-order BFS exploring 8-directional neighbors in O(N^2) time."
+      }
+    ]
+  },
+  {
+    "id": "shortest-path-in-dag",
+    "title": "Shortest path in DAG",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/shortest-path-in-directed-acyclic-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Shortest Path in Directed Acyclic Graph",
+        "url": "https://www.geeksforgeeks.org/problems/shortest-path-in-directed-acyclic-graph/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Shortest path in a directed graph by Dijkstra's algorithm",
+        "url": "https://www.geeksforgeeks.org/dsa/shortest-path-in-a-directed-graph-by-dijkstras-algorithm/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-shortest-path-in-dag",
+        "title": "take U forward - G-27. Shortest Path in Directed Acyclic Graph - Topological Sort",
+        "url": "https://www.youtube.com/watch?v=ZUFQfFaU-8U",
+        "channel": "take U forward",
+        "notes": "Linear time O(V + E) shortest path algorithm utilizing topological ordering to relax edges in topological sequence."
+      },
+      {
+        "id": "codehelp-babbar-shortest-path-dag",
+        "title": "CodeHelp - by Babbar - Lecture 94: Shortest Path in Directed Acyclic Graphs || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=P_bfy0LOU5g",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Topological sort based dynamic programming relaxation for DAGs in C++."
+      }
+    ]
+  },
+  {
+    "id": "shortest-path-in-undirected-graph-with-unit-weights",
+    "title": "Shortest path in undirected graph with unit weights",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/shortest-path-in-undirected-graph-having-unit-distance/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Shortest Path in Unweighted Graph",
+        "url": "https://www.geeksforgeeks.org/dsa/shortest-path-unweighted-graph/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Shortest Path in Undirected Graph with Unit Distance",
+        "url": "https://takeuforward.org/data-structure/shortest-path-in-undirected-graph-with-unit-distance-g-28/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-shortest-path-undirected-unit-weights",
+        "title": "take U forward - G-28. Shortest Path in Undirected Graph with Unit Weights",
+        "url": "https://www.youtube.com/watch?v=C4gxoTaI71U",
+        "channel": "take U forward",
+        "notes": "Standard BFS using a distance array initialized to infinity, relaxing unvisited neighbors in O(V + E) time."
+      },
+      {
+        "id": "takeuforward-shortest-path-unit-weights-walkthrough",
+        "title": "take U forward - Shortest Path in Undirected Graph with Unit Weights",
+        "url": "https://www.youtube.com/watch?v=hwCWi7-bRfI",
+        "channel": "take U forward",
+        "notes": "Detailed walkthrough of queue-based level order traversal for unit distance graphs."
+      }
+    ]
+  },
+  {
+    "id": "why-priority-queue-is-used-in-djisktra-s-algorithm",
+    "title": "Why priority Queue is used in Djisktra's Algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/can-we-use-simple-queue-instead-of-priority-queue-to-implement-dijkstras-algorithm/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Why Dijkstra's Algorithm uses a Priority Queue?",
+        "url": "https://www.geeksforgeeks.org/dsa/can-we-use-simple-queue-instead-of-priority-queue-to-implement-dijkstras-algorithm/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Dijkstra's Algorithm Using Priority Queue",
+        "url": "https://takeuforward.org/data-structure/dijkstras-algorithm-using-priority-queue-g-32/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-why-pq-in-dijkstra",
+        "title": "take U forward - G-34. Dijkstra's Algorithm - Why PQ and not Q, Intuition, Time Complexity Derivation - Part 3",
+        "url": "https://www.youtube.com/watch?v=3dINsjyfooY",
+        "channel": "take U forward",
+        "notes": "Explains why min-heaps avoid redundant explorations and derives the optimal O(E log V) time complexity."
+      },
+      {
+        "id": "takeuforward-dijkstra-using-pq",
+        "title": "take U forward - G-32. Dijkstra's Algorithm - Using Priority Queue - C++ and Java - Part 1",
+        "url": "https://www.youtube.com/watch?v=V6H1qAeB-l4",
+        "channel": "take U forward",
+        "notes": "Complete implementation of Dijkstra's algorithm using priority_queue in C++ and Java."
+      }
+    ]
+  },
+  {
+    "id": "accounts-merge",
+    "title": "Accounts merge",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/merging-details/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Merging Details",
+        "url": "https://www.geeksforgeeks.org/problems/merging-details/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Accounts Merge",
+        "url": "https://leetcode.com/problems/accounts-merge/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-accounts-merge",
+        "title": "take U forward - G-50. Accounts Merge - DSU",
+        "url": "https://www.youtube.com/watch?v=FMwpt_aQOGw",
+        "channel": "take U forward",
+        "notes": "Maps email addresses to numerical account nodes and unifies connected accounts using Disjoint Set Union."
+      },
+      {
+        "id": "neetcodeio-accounts-merge",
+        "title": "NeetCodeIO - Accounts Merge - Leetcode 721 - Python",
+        "url": "https://www.youtube.com/watch?v=6st4IxEF-90",
+        "channel": "NeetCodeIO",
+        "notes": "Union-Find approach to cluster shared email addresses across user accounts."
+      }
+    ]
+  },
+  {
+    "id": "disjoint-set",
+    "title": "Disjoint Set",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/disjoint-set-union-find/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Disjoint Set (Union-Find)",
+        "url": "https://www.geeksforgeeks.org/problems/disjoint-set-union-find/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Disjoint Set | Union by Rank | Union by Size | Path Compression",
+        "url": "https://takeuforward.org/data-structure/disjoint-set-union-by-rank-union-by-size-path-compression-g-46/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-disjoint-set-union",
+        "title": "take U forward - G-46. Disjoint Set | Union by Rank | Union by Size | Path Compression",
+        "url": "https://www.youtube.com/watch?v=aBxjDBC4M1U",
+        "channel": "take U forward",
+        "notes": "Covers findParent with path compression and union by rank/size achieving amortized O(4*alpha) near-constant operations."
+      },
+      {
+        "id": "abdul-bari-disjoint-sets",
+        "title": "Abdul Bari - 1.12 Disjoint Sets Data Structure - Weighted Union and Collapsing Find",
+        "url": "https://www.youtube.com/watch?v=wU6udHRIkcc",
+        "channel": "Abdul Bari",
+        "notes": "In-depth theoretical foundation and diagrammatic proof of collapsing find and weighted union."
+      }
+    ]
+  },
+  {
+    "id": "find-the-mst-weight",
+    "title": "Find the MST weight",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-spanning-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Spanning Tree",
+        "url": "https://www.geeksforgeeks.org/problems/minimum-spanning-tree/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Minimum Spanning Tree - Kruskal's Algorithm",
+        "url": "https://www.geeksforgeeks.org/problems/minimum-spanning-tree-kruskals-algorithm/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-find-mst-weight-prims",
+        "title": "take U forward - G-45. Prim's Algorithm - Minimum Spanning Tree - C++ and Java",
+        "url": "https://www.youtube.com/watch?v=mJcZjjKzeqk",
+        "channel": "take U forward",
+        "notes": "Greedy MST weight accumulation using a min-heap and visited array in O(E log E) time."
+      },
+      {
+        "id": "abdul-bari-prims-kruskals-mst",
+        "title": "Abdul Bari - 3.5 Prims and Kruskals Algorithms - Greedy Method",
+        "url": "https://www.youtube.com/watch?v=4ZlRH0eK-qQ",
+        "channel": "Abdul Bari",
+        "notes": "Detailed comparative analysis and step-by-step tabular calculation of minimum spanning tree weight."
+      }
+    ]
+  },
+  {
+    "id": "making-a-large-island",
+    "title": "Making a large island",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-connected-group/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Connected Group in a Binary Matrix",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-connected-group-making-a-large-island/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Making A Large Island",
+        "url": "https://leetcode.com/problems/making-a-large-island/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-making-a-large-island",
+        "title": "take U forward - G-52. Making a Large Island - DSU",
+        "url": "https://www.youtube.com/watch?v=lgiz0Oup6gM",
+        "channel": "take U forward",
+        "notes": "Connects grid components using DSU and evaluates flipping each 0 to 1 by summing unique adjacent component sizes."
+      },
+      {
+        "id": "neetcodeio-making-a-large-island",
+        "title": "NeetCodeIO - Making A Large Island - Leetcode 827 - Python",
+        "url": "https://www.youtube.com/watch?v=pq61VNqXGvA",
+        "channel": "NeetCodeIO",
+        "notes": "Precomputes island areas with unique component IDs and checks all 4-directional boundary unions."
+      }
+    ]
+  },
+  {
+    "id": "most-stones-removed-with-same-row-or-column",
+    "title": "Most stones removed with same row or column",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-stone-removal-1662179442/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Stone Removal",
+        "url": "https://www.geeksforgeeks.org/problems/maximum-stone-removal-1662179442/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Most Stones Removed with Same Row or Column",
+        "url": "https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-most-stones-removed",
+        "title": "take U forward - G-53. Most Stones Removed with Same Row or Column - DSU",
+        "url": "https://www.youtube.com/watch?v=OwMNX8SPavM",
+        "channel": "take U forward",
+        "notes": "Treats rows and offset columns as graph nodes in DSU; maximum stones removed = total stones - connected components."
+      },
+      {
+        "id": "shiran-afergan-most-stones-removed",
+        "title": "Shiran Afergan - Google Coding Interview Question and Answer - Most Stones Removed with Same Row or Column [LeetCode]",
+        "url": "https://www.youtube.com/watch?v=beOCN7G4h-M",
+        "channel": "Shiran Afergan",
+        "notes": "Visual explanation of connected stone components and optimal removal order strategy."
+      }
+    ]
+  },
+  {
+    "id": "mst-theory",
+    "title": "MST theory",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/what-is-minimum-spanning-tree-mst/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - What is Minimum Spanning Tree (MST)",
+        "url": "https://www.geeksforgeeks.org/dsa/what-is-minimum-spanning-tree-mst/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Minimum Spanning Tree Theory",
+        "url": "https://takeuforward.org/data-structure/minimum-spanning-tree-theory-g-44/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-mst-theory",
+        "title": "take U forward - G-44. Minimum Spanning Tree - Theory",
+        "url": "https://www.youtube.com/watch?v=ZSPjZuZWCME",
+        "channel": "take U forward",
+        "notes": "Covers essential spanning tree properties: V vertices, V-1 edges, connected, non-cyclic, and minimum edge weight sum."
+      },
+      {
+        "id": "takeuforward-mst-explanation",
+        "title": "take U forward - Minimum Spanning Tree Explanation",
+        "url": "https://www.youtube.com/watch?v=xsM8i0jVF1w",
+        "channel": "take U forward",
+        "notes": "Conceptual overview comparing greedy choices made by Prim's vs Kruskal's algorithms."
+      }
+    ]
+  },
+  {
+    "id": "number-of-islands-ii",
+    "title": "Number of islands II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-islands/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Number of Islands After K Operations",
+        "url": "https://www.geeksforgeeks.org/problems/number-of-islands/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Find the number of Islands using Disjoint Set",
+        "url": "https://www.geeksforgeeks.org/dsa/find-the-number-of-islands-using-disjoint-set/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-islands-ii",
+        "title": "take U forward - G-51. Number of Islands - II - Online Queries - DSU",
+        "url": "https://www.youtube.com/watch?v=Rn6B-Q4SNyA",
+        "channel": "take U forward",
+        "notes": "Handles dynamic online land queries using 2D-to-1D index flattening and DSU component tracking."
+      },
+      {
+        "id": "techdose-number-of-islands-dsu",
+        "title": "Techdose - Number of Islands | Leetcode #200 & Variants",
+        "url": "https://www.youtube.com/watch?v=7zmgQSJghpo",
+        "channel": "Techdose",
+        "notes": "Explains dynamically connecting grid cells and managing island counts upon query insertion."
+      }
+    ]
+  },
+  {
+    "id": "number-of-operations-to-make-network-connected",
+    "title": "Number of operations to make network connected",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/connecting-the-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Min Edge Movements to Connect a Graph",
+        "url": "https://www.geeksforgeeks.org/problems/connecting-the-graph/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Number of Operations to Make Network Connected",
+        "url": "https://leetcode.com/problems/number-of-operations-to-make-network-connected/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-operations-network-connected",
+        "title": "take U forward - G-49. Number of Operations to Make Network Connected - DSU",
+        "url": "https://www.youtube.com/watch?v=FYrl7iz9_ZU",
+        "channel": "take U forward",
+        "notes": "Identifies redundant cyclic edges via DSU; connecting C components requires C - 1 extra edges."
+      },
+      {
+        "id": "techdose-network-connected",
+        "title": "Techdose - Number of Operations to Make Network Connected | Leetcode #1319 | MST | DFS",
+        "url": "https://www.youtube.com/watch?v=3JIwIRir2sM",
+        "channel": "Techdose",
+        "notes": "Walkthrough comparing available spare cables against the number of isolated computer networks."
+      }
+    ]
+  },
+  {
+    "id": "prim-s-algorithm",
+    "title": "Prim's Algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-spanning-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Prim's Minimum Spanning Tree Algorithm",
+        "url": "https://www.geeksforgeeks.org/dsa/prims-minimum-spanning-tree-mst-greedy-algo-5/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Prim's Algorithm - Minimum Spanning Tree",
+        "url": "https://takeuforward.org/data-structure/prims-algorithm-minimum-spanning-tree-c-and-java-g-45/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-prims-algorithm",
+        "title": "take U forward - G-45. Prim's Algorithm - Minimum Spanning Tree - C++ and Java",
+        "url": "https://www.youtube.com/watch?v=mJcZjjKzeqk",
+        "channel": "take U forward",
+        "notes": "Detailed algorithm maintaining a min-heap of {weight, node, parent} to grow the MST vertex by vertex."
+      },
+      {
+        "id": "abdul-bari-prims-algorithm",
+        "title": "Abdul Bari - 3.5 Prims and Kruskals Algorithms - Greedy Method",
+        "url": "https://www.youtube.com/watch?v=4ZlRH0eK-qQ",
+        "channel": "Abdul Bari",
+        "notes": "Classic tutorial demonstrating table-based edge selection and algorithmic invariants of Prim's method."
+      }
+    ]
+  },
+  {
+    "id": "swim-in-rising-water",
+    "title": "Swim in Rising Water",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/minimum-time-required-to-swim-in-rising-water/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Time Required to Swim in Rising Water",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-time-required-to-swim-in-rising-water/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Swim in Rising Water",
+        "url": "https://leetcode.com/problems/swim-in-rising-water/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-swim-in-rising-water",
+        "title": "NeetCode - Swim in Rising Water - Dijkstra's Algorithm - Leetcode 778 - Python",
+        "url": "https://www.youtube.com/watch?v=amvrKlMLuGY",
+        "channel": "NeetCode",
+        "notes": "Min-heap Dijkstra variant exploring paths that minimize the maximum water elevation encountered in O(N^2 log N)."
+      },
+      {
+        "id": "codestorywithmik-swim-in-rising-water",
+        "title": "codestorywithMIK - Swim in Rising Water | Different Ways To Think | Intuitive | Leetcode 778 | codestorywithMIK",
+        "url": "https://www.youtube.com/watch?v=9WYhuzn8hd8",
+        "channel": "codestorywithMIK",
+        "notes": "Comprehensive breakdown comparing modified Dijkstra's with Binary Search on Answer + BFS/DFS."
+      }
+    ]
+  },
+  {
+    "id": "articulation-point-in-graph",
+    "title": "Articulation point in graph",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/articulation-point2616/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Articulation Points (or Cut Vertices) in a Graph",
+        "url": "https://www.geeksforgeeks.org/dsa/articulation-points-or-cut-vertices-in-a-graph/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Articulation Point in Graph",
+        "url": "https://takeuforward.org/data-structure/articulation-point-in-graph-g-56/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-articulation-point",
+        "title": "take U forward - G-56. Articulation Point in Graph",
+        "url": "https://www.youtube.com/watch?v=j1QDfU21iZk",
+        "channel": "take U forward",
+        "notes": "Tarjan's DFS algorithm tracking tin and low arrays to find cut vertices where low[child] >= tin[node]."
+      },
+      {
+        "id": "codehelp-babbar-articulation-points",
+        "title": "CodeHelp - by Babbar - Lecture 99: Articulation Points in Graphs || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=fqkqx6OBRDE",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Step-by-step C++ implementation of discovery times, back-edge resolution, and root node edge counting."
+      }
+    ]
+  }
+]

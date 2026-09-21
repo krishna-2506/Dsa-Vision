@@ -1,0 +1,657 @@
+[
+  {
+    "id": "construct-a-bt-from-preorder-and-inorder",
+    "title": "Construct a BT from Preorder and Inorder",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/construct-tree-1/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Construct Tree from given Inorder and Preorder traversals",
+        "url": "https://www.geeksforgeeks.org/problems/construct-tree-1/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Construct Binary Tree from Preorder and Inorder Traversal",
+        "url": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-construct-binary-tree-preorder-inorder",
+        "title": "NeetCode - Construct Binary Tree from Inorder and Preorder Traversal - Leetcode 105 - Python",
+        "url": "https://www.youtube.com/watch?v=ihj4IQGZ2zc",
+        "channel": "NeetCode",
+        "notes": "Recursive partitioning of preorder root against hash map index lookup of inorder array in O(N) time."
+      },
+      {
+        "id": "takeuforward-construct-binary-tree-preorder-inorder",
+        "title": "take U forward - L34. Construct a Binary Tree from Preorder and Inorder Traversal | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=aZNaLrVebKQ",
+        "channel": "take U forward",
+        "notes": "Detailed boundary pointer management and hashmap index optimization for tree reconstruction."
+      }
+    ]
+  },
+  {
+    "id": "construct-the-binary-tree-from-postorder-and-inorder-traversal",
+    "title": "Construct the Binary Tree from Postorder and Inorder Traversal",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/tree-from-postorder-and-inorder/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Construct a Binary Tree from Postorder and Inorder Traversal",
+        "url": "https://www.geeksforgeeks.org/problems/tree-from-postorder-and-inorder/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Construct Binary Tree from Inorder and Postorder Traversal",
+        "url": "https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-construct-binary-tree-postorder-inorder",
+        "title": "take U forward - L35. Construct the Binary Tree from Postorder and Inorder Traversal | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=LgLRTaEMRVc",
+        "channel": "take U forward",
+        "notes": "Builds right subtree first from the back of postorder array with index-bounded recursive calls in O(N)."
+      },
+      {
+        "id": "neetcodeio-construct-binary-tree-postorder-inorder",
+        "title": "NeetCodeIO - Construct Binary Tree from Inorder and Postorder Traversal - Leetcode 106 - Python",
+        "url": "https://www.youtube.com/watch?v=vm63HuIU7kw",
+        "channel": "NeetCodeIO",
+        "notes": "Clean Python recursion utilizing hash map mapping of inorder indices."
+      }
+    ]
+  },
+  {
+    "id": "count-total-nodes-in-a-complete-bt",
+    "title": "Count total nodes in a complete BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-number-of-nodes-in-a-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count number of nodes in a complete Binary Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/count-number-of-nodes-in-a-complete-binary-tree/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Count Complete Tree Nodes",
+        "url": "https://leetcode.com/problems/count-complete-tree-nodes/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-count-nodes-complete-binary-tree",
+        "title": "take U forward - L32. Count total Nodes in a COMPLETE Binary Tree | O(Log^2 N) Approach | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=u-yWemKGWO0",
+        "channel": "take U forward",
+        "notes": "Optimal O((log N)^2) solution comparing left and right subtree heights to use the full binary tree formula 2^h - 1."
+      },
+      {
+        "id": "techdose-count-complete-tree-nodes",
+        "title": "Techdose - Count Complete Tree Nodes | Leetcode #222",
+        "url": "https://www.youtube.com/watch?v=CvrPf1-flAA",
+        "channel": "Techdose",
+        "notes": "Explains binary search over tree leaves combined with height comparison logic."
+      }
+    ]
+  },
+  {
+    "id": "flatten-binary-tree-to-linked-list",
+    "title": "Flatten Binary Tree to Linked List",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/flatten-binary-tree-to-linked-list/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Flatten a Binary Tree into Linked List",
+        "url": "https://www.geeksforgeeks.org/dsa/flatten-a-binary-tree-into-linked-list/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Flatten Binary Tree to Linked List",
+        "url": "https://leetcode.com/problems/flatten-binary-tree-to-linked-list/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-flatten-binary-tree-to-linked-list",
+        "title": "take U forward - L38. Flatten a Binary Tree to Linked List | 3 Approaches | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=sWf7k1x9XR4",
+        "channel": "take U forward",
+        "notes": "Covers reverse postorder recursion, iterative stack approach, and optimal O(1) space Morris traversal."
+      },
+      {
+        "id": "neetcode-flatten-binary-tree-to-linked-list",
+        "title": "NeetCode - Flatten Binary Tree to Linked List - Leetcode 114 - Python",
+        "url": "https://www.youtube.com/watch?v=rKnD7rLT0lI",
+        "channel": "NeetCode",
+        "notes": "DFS post-order traversal rewiring left child tail to right child in O(N) time."
+      }
+    ]
+  },
+  {
+    "id": "lca-in-bt",
+    "title": "LCA in BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/lowest-common-ancestor-in-a-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Lowest Common Ancestor in a Binary Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/lowest-common-ancestor-binary-tree-set-1/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Lowest Common Ancestor of a Binary Tree",
+        "url": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-lowest-common-ancestor-in-binary-tree",
+        "title": "take U forward - L27. Lowest Common Ancestor in Binary Tree | LCA | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=_-QHfMDde90",
+        "channel": "take U forward",
+        "notes": "Recursive bottom-up traversal returning non-null nodes when target keys match in O(N) time."
+      },
+      {
+        "id": "techdose-lowest-common-ancestor-binary-tree",
+        "title": "Techdose - Lowest Common Ancestor of a binary tree | Leetcode #236",
+        "url": "https://www.youtube.com/watch?v=KobQcxdaZKY",
+        "channel": "Techdose",
+        "notes": "Clear tree diagrams illustrating recursive return bubbling and ancestor identification."
+      }
+    ]
+  },
+  {
+    "id": "maximum-width-of-bt",
+    "title": "Maximum Width of BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-width-of-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum width of a Binary Tree with null value",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-width-of-a-binary-tree-with-null-value/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Maximum Width of Binary Tree",
+        "url": "https://leetcode.com/problems/maximum-width-of-binary-tree/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-maximum-width-of-binary-tree",
+        "title": "take U forward - L28. Maximum Width of Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=ZbybYvcVLks",
+        "channel": "take U forward",
+        "notes": "BFS level-order indexing (2*i + 1, 2*i + 2) with index zeroing per level to prevent integer overflow."
+      },
+      {
+        "id": "neetcodeio-maximum-width-of-binary-tree",
+        "title": "NeetCodeIO - Maximum Width of Binary Tree - Leetcode 662 - Python",
+        "url": "https://www.youtube.com/watch?v=FPzLE2L7uHs",
+        "channel": "NeetCodeIO",
+        "notes": "Queue-based level-order traversal tracking node indices to determine maximum width including null nodes."
+      }
+    ]
+  },
+  {
+    "id": "minimum-time-taken-to-burn-the-bt-from-a-given-node",
+    "title": "Minimum time taken to burn the BT from a given Node",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/burning-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Burn the binary tree starting from the target node",
+        "url": "https://www.geeksforgeeks.org/dsa/burn-the-binary-tree-starting-from-the-target-node/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Minimum time taken to BURN the Binary Tree from a Node",
+        "url": "https://takeuforward.org/data-structure/minimum-time-taken-to-burn-the-binary-tree-from-a-node",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-burn-binary-tree-from-node",
+        "title": "take U forward - L31. Minimum time taken to BURN the Binary Tree from a Node | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=2r5wLmQfD6g",
+        "channel": "take U forward",
+        "notes": "Parent pointer mapping via BFS followed by radial multi-directional BFS expansion to measure burn time in O(N)."
+      },
+      {
+        "id": "codehelp-babbar-burning-tree",
+        "title": "CodeHelp - by Babbar - Lecture 67: Minimum Time to BURN the Entire Binary Tree || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=XLdpy0_6MR4",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Comprehensive explanation using node-to-parent mapping and visited queue simulation."
+      }
+    ]
+  },
+  {
+    "id": "morris-inorder-traversal-of-a-binary-tree",
+    "title": "Morris Inorder Traversal of a Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/inorder-traversal-iterative/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Inorder Tree Traversal without recursion and without stack",
+        "url": "https://www.geeksforgeeks.org/dsa/postorder-traversal-binary-tree-without-recursion-without-stack/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Morris Inorder Traversal of a Binary Tree",
+        "url": "https://takeuforward.org/data-structure/morris-inorder-traversal-of-a-binary-tree/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-morris-inorder-traversal",
+        "title": "take U forward - L37. Morris Traversal | Preorder | Inorder | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=80Zug6D1_r4",
+        "channel": "take U forward",
+        "notes": "Threaded binary tree concept connecting inorder predecessors to achieve O(N) time and O(1) auxiliary space."
+      },
+      {
+        "id": "codehelp-babbar-morris-traversal",
+        "title": "CodeHelp - by Babbar - Lecture 68: Morris Traversal || Flatten a Binary tree to Linked List || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=2BdY9fixMrM",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Detailed live code constructing temporary predecessor threads and restoring original tree structure."
+      }
+    ]
+  },
+  {
+    "id": "morris-preorder-traversal-of-a-binary-tree",
+    "title": "Morris Preorder Traversal of a Binary Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/morris-traversal-for-preorder/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Morris Traversal for Preorder",
+        "url": "https://www.geeksforgeeks.org/dsa/morris-traversal-for-preorder/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Morris Preorder Traversal of a Binary Tree",
+        "url": "https://takeuforward.org/data-structure/morris-preorder-traversal-of-a-binary-tree/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-morris-preorder-traversal",
+        "title": "take U forward - L37. Morris Traversal | Preorder | Inorder | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=80Zug6D1_r4",
+        "channel": "take U forward",
+        "notes": "Visits and prints root before establishing the predecessor thread, achieving O(1) space preorder traversal."
+      },
+      {
+        "id": "codehelp-babbar-morris-preorder",
+        "title": "CodeHelp - by Babbar - Lecture 68: Morris Traversal || Flatten a Binary tree to Linked List || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=2BdY9fixMrM",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Demonstrates preorder print timings during threading phase vs unthreading phase."
+      }
+    ]
+  },
+  {
+    "id": "print-all-nodes-at-a-distance-of-k-in-bt",
+    "title": "Print all nodes at a distance of K in BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/nodes-at-given-distance-in-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Print all nodes at distance k from a given node",
+        "url": "https://www.geeksforgeeks.org/dsa/print-nodes-distance-k-given-node-binary-tree/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - All Nodes Distance K in Binary Tree",
+        "url": "https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-nodes-at-distance-k-binary-tree",
+        "title": "take U forward - L30. Print all the Nodes at a distance of K in Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=i9ORlEy6EsI",
+        "channel": "take U forward",
+        "notes": "Parent-pointer mapping with BFS outward traversal tracking radial distance up to k edges."
+      },
+      {
+        "id": "cracking-faang-all-nodes-distance-k",
+        "title": "Cracking FAANG - ALL NODES DISTANCE K IN BINARY TREE | PYTHON | LEETCODE # 863",
+        "url": "https://www.youtube.com/watch?v=2IHdqU48N2w",
+        "channel": "Cracking FAANG",
+        "notes": "Converts binary tree to an undirected graph adjacency list followed by a breadth-first search."
+      }
+    ]
+  },
+  {
+    "id": "print-root-to-leaf-path-in-bt",
+    "title": "Print root to leaf path in BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/root-to-leaf-paths/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Print Root-to-Leaf Paths in a Binary Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/given-a-binary-tree-print-all-root-to-leaf-paths/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-root-to-node-path",
+        "title": "take U forward - L26. Print Root to Node Path in Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=fmflMqVOC7k",
+        "channel": "take U forward",
+        "notes": "Recursive backtracking to record the path from the root node to a target node in O(N) time."
+      },
+      {
+        "id": "nick-white-binary-tree-paths",
+        "title": "Nick White - LeetCode 257. Binary Tree Paths (Algorithm Explained)",
+        "url": "https://www.youtube.com/watch?v=H2D4HcVZq_g",
+        "channel": "Nick White",
+        "notes": "Depth-first search path traversal collecting all root-to-leaf paths into strings."
+      }
+    ]
+  },
+  {
+    "id": "serialize-and-de-serialize-bt",
+    "title": "Serialize and De-serialize BT",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/serialize-and-deserialize-a-binary-tree/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Basic Operations on Binary Tree with Implementations",
+        "url": "https://www.geeksforgeeks.org/dsa/tutorial-on-binary-tree/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode Editorial - Serialize and Deserialize Binary Tree",
+        "url": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-serialize-and-deserialize-binary-tree",
+        "title": "NeetCode - Serialize and Deserialize Binary Tree - Preorder Traversal - Leetcode 297 - Python",
+        "url": "https://www.youtube.com/watch?v=u4JAi2JJhI8",
+        "channel": "NeetCode",
+        "notes": "Preorder traversal with delimiters and null markers to serialize and reconstruct the tree in O(N) time."
+      },
+      {
+        "id": "takeuforward-serialize-and-deserialize-binary-tree",
+        "title": "take U forward - L36. Serialize and De-serialize Binary Tree | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=-YbXySKJsX8",
+        "channel": "take U forward",
+        "notes": "Level-order (BFS) string encoding using stringstream and queue reconstruction."
+      }
+    ]
+  },
+  {
+    "id": "find-min-max-in-bst",
+    "title": "Find Min/Max in BST",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-element-in-bst/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum in a Binary Search Tree",
+        "url": "https://www.geeksforgeeks.org/dsa/find-the-node-with-maximum-value-in-a-binary-search-tree/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Minimum in BST",
+        "url": "https://www.geeksforgeeks.org/problems/minimum-element-in-bst/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "mycodeschool-find-min-max-in-bst",
+        "title": "mycodeschool - Find min and max element in a binary search tree",
+        "url": "https://www.youtube.com/watch?v=Ut90klNN264",
+        "channel": "mycodeschool",
+        "notes": "Explains iterative and recursive left-leaning/right-leaning traversal to find minimum and maximum in O(H) time."
+      },
+      {
+        "id": "codehelp-babbar-bst-implementation",
+        "title": "CodeHelp - by Babbar - Lecture 69: Binary Search Tree & its Implementation || Insertion, Deletion & Searching a Node",
+        "url": "https://www.youtube.com/watch?v=UeRUKRJvPa4",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Covers finding min and max nodes in BST alongside insertion and deletion."
+      }
+    ]
+  },
+  {
+    "id": "introduction-to-bst",
+    "title": "Introduction to BST",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/binary-search-tree-data-structure/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Binary Search Tree Data Structure",
+        "url": "https://www.geeksforgeeks.org/dsa/binary-search-tree-data-structure/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Introduction to Binary Search Trees",
+        "url": "https://takeuforward.org/binary-search-tree/introduction-to-binary-search-trees/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-introduction-to-bst",
+        "title": "take U forward - L39. Introduction to Binary Search Tree | BST",
+        "url": "https://www.youtube.com/watch?v=p7-9UvDQZ3w",
+        "channel": "take U forward",
+        "notes": "Explains BST ordering properties, left < root < right invariant, and O(H) operations."
+      },
+      {
+        "id": "mycodeschool-binary-search-tree-intro",
+        "title": "mycodeschool - Data structures: Binary Search Tree",
+        "url": "https://www.youtube.com/watch?v=pYT9F8_LFTM",
+        "channel": "mycodeschool",
+        "notes": "Clear visual introduction to binary search tree properties, search efficiency, and structure."
+      }
+    ]
+  },
+  {
+    "id": "search-in-a-binary-search-tree",
+    "title": "Search in a Binary Search Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/search-a-node-in-bst/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Search a node in BST",
+        "url": "https://www.geeksforgeeks.org/problems/search-a-node-in-bst/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Search in a Binary Search Tree",
+        "url": "https://leetcode.com/problems/search-in-a-binary-search-tree/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-search-in-bst",
+        "title": "take U forward - L40. Search in a Binary Search Tree | BST | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=KcNt6v_56cc",
+        "channel": "take U forward",
+        "notes": "Demonstrates navigating left or right subtree based on target key comparison in O(H) time."
+      },
+      {
+        "id": "techdose-search-in-bst",
+        "title": "Techdose - Search in a Binary Search Tree | Leetcode #700",
+        "url": "https://www.youtube.com/watch?v=Lr2oxJlnLMM",
+        "channel": "Techdose",
+        "notes": "Iterative and recursive lookup in a binary search tree."
+      }
+    ]
+  },
+  {
+    "id": "floor-in-a-binary-search-tree",
+    "title": "Floor in a Binary Search Tree",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/floor-in-bst/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Floor in Binary Search Tree (BST)",
+        "url": "https://www.geeksforgeeks.org/dsa/floor-in-binary-search-tree-bst/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Floor in a Binary Search Tree",
+        "url": "https://takeuforward.org/binary-search-tree/floor-in-a-binary-search-tree/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-floor-in-bst",
+        "title": "take U forward - L42. Floor in a Binary Search Tree | BST | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=xm_W1ub-K-w",
+        "channel": "take U forward",
+        "notes": "Efficient O(H) pointer movement maintaining the greatest node value <= key."
+      },
+      {
+        "id": "codehelp-babbar-faang-interview-questions-part1",
+        "title": "CodeHelp - by Babbar - Lecture 70: Binary SearchTree FAANG Interview Questions || Part-1",
+        "url": "https://www.youtube.com/watch?v=pDURIj98e0I",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Covers predecessor, successor, floor, and ceil finding techniques in BST."
+      }
+    ]
+  },
+  {
+    "id": "inorder-successor-predecessor-in-bst",
+    "title": "Inorder Successor/Predecessor in BST",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/predecessor-and-successor/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Inorder predecessor and successor for a given key in BST",
+        "url": "https://www.geeksforgeeks.org/dsa/inorder-predecessor-and-successor-for-a-given-key-in-bst-iterative-approach/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Inorder Successor in BST",
+        "url": "https://www.geeksforgeeks.org/problems/inorder-successor-in-bst/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-inorder-successor-predecessor-in-bst",
+        "title": "take U forward - L49. Inorder Successor/Predecessor in BST | 3 Methods",
+        "url": "https://www.youtube.com/watch?v=SXKAD2svfmI",
+        "channel": "take U forward",
+        "notes": "Covers brute-force inorder traversal, recursive tracking, and optimal O(H) binary search method."
+      },
+      {
+        "id": "codehelp-babbar-predecessor-successor-bst",
+        "title": "CodeHelp - by Babbar - Lecture 70: Binary SearchTree FAANG Interview Questions || Part-1",
+        "url": "https://www.youtube.com/watch?v=pDURIj98e0I",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Detailed C++ implementation finding both inorder predecessor and successor in O(H) time and O(1) auxiliary space."
+      }
+    ]
+  },
+  {
+    "id": "kth-smallest-and-largest-element-in-bst",
+    "title": "Kth Smallest and Largest element in BST",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-k-th-smallest-element-in-bst/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - k-th Smallest in BST",
+        "url": "https://www.geeksforgeeks.org/problems/find-k-th-smallest-element-in-bst/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Kth Largest in BST",
+        "url": "https://www.geeksforgeeks.org/problems/kth-largest-element-in-bst/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-kth-smallest-largest-bst",
+        "title": "take U forward - L45. K-th Smallest/Largest Element in BST",
+        "url": "https://www.youtube.com/watch?v=9TJYWh0adfk",
+        "channel": "take U forward",
+        "notes": "Explains standard inorder traversal for kth smallest and reverse inorder (right-root-left) for kth largest in O(N)."
+      },
+      {
+        "id": "neetcode-kth-smallest-element-in-bst",
+        "title": "NeetCode - Kth Smallest Element in a BST - Leetcode 230 - Python",
+        "url": "https://www.youtube.com/watch?v=5LUXSvjmGCw",
+        "channel": "NeetCode",
+        "notes": "Iterative inorder traversal using a stack to return the kth element early without visiting the entire tree."
+      }
+    ]
+  },
+  {
+    "id": "merge-2-bst-s",
+    "title": "Merge 2 BST's",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/merge-two-bst-s/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Merge Two BSTs",
+        "url": "https://www.geeksforgeeks.org/problems/merge-two-bst-s/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Merge two BSTs with limited extra space",
+        "url": "https://www.geeksforgeeks.org/dsa/merge-two-bsts-with-limited-extra-space/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "codehelp-babbar-merge-2-bst",
+        "title": "CodeHelp - by Babbar - Lecture 72: Merge 2 Binary Search Trees || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=18w8VduomfI",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Covers multiple techniques: merging sorted inorder arrays and converting to balanced BST, and flattening to doubly linked lists."
+      },
+      {
+        "id": "takeuforward-bst-iterator",
+        "title": "take U forward - L50. Binary Search Tree Iterator | BST | O(H) Space",
+        "url": "https://www.youtube.com/watch?v=D2jMcmxU4bs",
+        "channel": "take U forward",
+        "notes": "Implements BST iterators in O(H) space, allowing two-pointer style merging across two binary search trees."
+      }
+    ]
+  },
+  {
+    "id": "two-sum-in-bst-check-if-there-exists-a-pair-with-sum-k",
+    "title": "Two Sum In BST | Check if there exists a pair with Sum K",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-a-pair-with-given-target-in-bst/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Pair Sum in BST",
+        "url": "https://www.geeksforgeeks.org/problems/find-a-pair-with-given-target-in-bst/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Two Sum IV - Input is a BST",
+        "url": "https://leetcode.com/problems/two-sum-iv-input-is-a-bst/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-two-sum-in-bst",
+        "title": "take U forward - L51. Two Sum In BST | Check if there exists a pair with Sum K",
+        "url": "https://www.youtube.com/watch?v=ssL3sHwPeb4",
+        "channel": "take U forward",
+        "notes": "Optimal two-pointer approach utilizing two BST iterators (forward and reverse) in O(H) space."
+      },
+      {
+        "id": "codehelp-babbar-two-sum-in-bst",
+        "title": "CodeHelp - by Babbar - Lecture 71: Binary SearchTree FAANG Interview Questions || Part-2",
+        "url": "https://www.youtube.com/watch?v=IGHyX15fLI8",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Solves Two Sum IV in a BST using inorder traversal array with two pointers, and discusses space-optimized iterator approaches."
+      }
+    ]
+  }
+]

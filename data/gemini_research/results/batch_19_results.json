@@ -1,0 +1,817 @@
+[
+  {
+    "id": "distinct-subsequences",
+    "title": "Distinct subsequences",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-distinct-subsequences0909/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count Distinct Subsequences",
+        "url": "https://www.geeksforgeeks.org/dsa/count-distinct-subsequences/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Distinct Subsequences",
+        "url": "https://leetcode.com/problems/distinct-subsequences/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-distinct-subsequences",
+        "title": "take U forward - DP 32. Distinct Subsequences | 1D Array Optimisation Technique \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=nVG7eTiD2bY",
+        "channel": "take U forward",
+        "notes": "Covers recursion, 2D memoization table, and 1D array space optimization for counting distinct subsequence matches in O(N*M)."
+      },
+      {
+        "id": "neetcode-distinct-subsequences",
+        "title": "NeetCode - Distinct Subsequences - Dynamic Programming - Leetcode 115 - Python",
+        "url": "https://www.youtube.com/watch?v=-RDzMJ33nx8",
+        "channel": "NeetCode",
+        "notes": "Intuitive 2D dynamic programming grid walkthrough explaining decision tree branching for matching vs skipping characters."
+      }
+    ]
+  },
+  {
+    "id": "edit-distance",
+    "title": "Edit distance",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/edit-distance3702/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Edit Distance",
+        "url": "https://www.geeksforgeeks.org/cpp/edit-distance-in-cpp/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Edit Distance",
+        "url": "https://leetcode.com/problems/edit-distance/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-edit-distance",
+        "title": "take U forward - DP 33. Edit Distance | Recursive to 1D Array Optimised Solution \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=fJaKO8FbDdo",
+        "channel": "take U forward",
+        "notes": "Comprehensive breakdown of insert, delete, and replace operations with 1D array space optimization."
+      },
+      {
+        "id": "neetcode-edit-distance",
+        "title": "NeetCode - Edit Distance - Dynamic Programming - Leetcode 72 - Python",
+        "url": "https://www.youtube.com/watch?v=XYi2-LPrwm4",
+        "channel": "NeetCode",
+        "notes": "Bottom-up 2D tabulation matrix explanation of the classic Levenshtein distance problem in O(M*N) time."
+      }
+    ]
+  },
+  {
+    "id": "longest-common-subsequence",
+    "title": "Longest common subsequence",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-common-subsequence-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Common Subsequence",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-common-subsequence-dp-4/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Longest Common Subsequence",
+        "url": "https://leetcode.com/problems/longest-common-subsequence/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-common-subsequence",
+        "title": "take U forward - Dp 25. Longest Common Subsequence | Top Down | Bottom-Up | Space Optimised | DP on Strings",
+        "url": "https://www.youtube.com/watch?v=NPZn9jBrX8U",
+        "channel": "take U forward",
+        "notes": "Foundational tutorial explaining index shifting, recursion tree, memoization, and two-row space optimization."
+      },
+      {
+        "id": "neetcode-longest-common-subsequence",
+        "title": "NeetCode - Longest Common Subsequence - Dynamic Programming - Leetcode 1143",
+        "url": "https://www.youtube.com/watch?v=Ua0GhsJSlWM",
+        "channel": "NeetCode",
+        "notes": "Clear 2D bottom-up grid walkthrough explaining subproblem relationships when characters match vs differ."
+      }
+    ]
+  },
+  {
+    "id": "longest-common-substring",
+    "title": "Longest common substring",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-common-substring1452/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Common Substring",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-common-substring-dp-29/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-common-substring",
+        "title": "take U forward - DP 27. Longest Common Substring | DP on Strings \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=_wP9mWNPL5w",
+        "channel": "take U forward",
+        "notes": "Explains how continuity constraint resets non-matching cells to 0 and tracks global maximum length in O(N*M)."
+      },
+      {
+        "id": "aditya-verma-longest-common-substring",
+        "title": "Aditya Verma - 22 Longest Common Substring",
+        "url": "https://www.youtube.com/watch?v=HrybPYpOvz0",
+        "channel": "Aditya Verma",
+        "notes": "Pattern-based comparison with LCS highlighting the crucial tabular initialization and reset differences."
+      }
+    ]
+  },
+  {
+    "id": "longest-palindromic-subsequence",
+    "title": "Longest palindromic subsequence",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-palindromic-subsequence-1612327878/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Palindromic Subsequence",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-palindromic-subsequence-dp-12/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Longest Palindromic Subsequence",
+        "url": "https://leetcode.com/problems/longest-palindromic-subsequence/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-palindromic-subsequence",
+        "title": "take U forward - DP 28. Longest Palindromic Subsequence",
+        "url": "https://www.youtube.com/watch?v=6i_T5kkfv4A",
+        "channel": "take U forward",
+        "notes": "Demonstrates reduction to standard LCS between the original string and its reverse in O(N^2) time."
+      },
+      {
+        "id": "neetcodeio-longest-palindromic-subsequence",
+        "title": "NeetCodeIO - Longest Palindromic Subsequence - Leetcode 516 - Python",
+        "url": "https://www.youtube.com/watch?v=bUr8cNWI09Q",
+        "channel": "NeetCodeIO",
+        "notes": "Interval DP approach using memoization and 2D tabulation directly on (i, j) boundary pointers."
+      }
+    ]
+  },
+  {
+    "id": "minimum-insertions-or-deletions-to-convert-string-a-to-b",
+    "title": "Minimum insertions or deletions to convert string A to B",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-number-of-deletions-and-insertions0209/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Number of Deletions and Insertions to Transform One String into Another",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-number-deletions-insertions-transform-one-string-another/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Delete Operation for Two Strings",
+        "url": "https://leetcode.com/problems/delete-operation-for-two-strings/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-min-insertions-deletions",
+        "title": "take U forward - DP 30. Minimum Insertions/Deletions to Convert String A to String B",
+        "url": "https://www.youtube.com/watch?v=yMnH0jrir0Q",
+        "channel": "take U forward",
+        "notes": "Derives the formula (n - LCS) deletions + (m - LCS) insertions using longest common subsequence."
+      },
+      {
+        "id": "aditya-verma-min-insertions-deletions",
+        "title": "Aditya Verma - 25 Minimum Number of Insertion and Deletion to convert String a to String b",
+        "url": "https://www.youtube.com/watch?v=-fx6aDxcWyg",
+        "channel": "Aditya Verma",
+        "notes": "Clear visual breakdown of transforming strings via preserved common subsequences."
+      }
+    ]
+  },
+  {
+    "id": "minimum-insertions-to-make-string-palindrome-dp-29",
+    "title": "Minimum insertions to make string palindrome | DP-29",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/form-a-palindrome2544/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum Insertions to Form a Palindrome",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-insertions-to-form-a-palindrome-dp-28/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Minimum Insertion Steps to Make a String Palindrome",
+        "url": "https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-min-insertions-palindrome",
+        "title": "take U forward - DP 29. Minimum Insertions to Make String Palindrome",
+        "url": "https://www.youtube.com/watch?v=xPBLEj41rFU",
+        "channel": "take U forward",
+        "notes": "Shows that keeping the longest palindromic subsequence intact leaves exactly n - len(LPS) characters to insert."
+      },
+      {
+        "id": "aditya-verma-min-insertions-palindrome",
+        "title": "Aditya Verma - 32 Minimum number of insertion in a string to make it a palindrome",
+        "url": "https://www.youtube.com/watch?v=AEcRW4ylm_c",
+        "channel": "Aditya Verma",
+        "notes": "Demonstrates equivalence of minimum insertions and minimum deletions to achieve palindrome symmetry."
+      }
+    ]
+  },
+  {
+    "id": "print-longest-common-subsequence-dp-26",
+    "title": "Print Longest Common Subsequence | (DP - 26)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/print-all-lcs-sequences3413/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Printing Longest Common Subsequence",
+        "url": "https://www.geeksforgeeks.org/dsa/printing-longest-common-subsequence/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-print-lcs",
+        "title": "take U forward - DP 26. Print Longest Common Subsequence | Dp on Strings",
+        "url": "https://www.youtube.com/watch?v=-zI4mrF2Pb4",
+        "channel": "take U forward",
+        "notes": "Backtracks through the completed 2D DP matrix from (n, m) to reconstruct the exact LCS string."
+      },
+      {
+        "id": "aditya-verma-print-lcs",
+        "title": "Aditya Verma - 23 Printing Longest common subsequence",
+        "url": "https://www.youtube.com/watch?v=x5hQvnUcjiM",
+        "channel": "Aditya Verma",
+        "notes": "Step-by-step matrix backtracking visualization moving diagonally on matching characters."
+      }
+    ]
+  },
+  {
+    "id": "shortest-common-supersequence",
+    "title": "Shortest common supersequence",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/shortest-common-supersequence0322/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Printing Shortest Common Supersequence",
+        "url": "https://www.geeksforgeeks.org/dsa/print-shortest-common-supersequence/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Shortest Common Supersequence",
+        "url": "https://leetcode.com/problems/shortest-common-supersequence/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-shortest-common-supersequence",
+        "title": "take U forward - DP 31. Shortest Common Supersequence | DP on Strings",
+        "url": "https://www.youtube.com/watch?v=xElxAuBcvsU",
+        "channel": "take U forward",
+        "notes": "Builds LCS table and traverses back to include characters from both strings while adding common characters once."
+      },
+      {
+        "id": "aditya-verma-shortest-common-supersequence",
+        "title": "Aditya Verma - 24 Shortest Common SuperSequence",
+        "url": "https://www.youtube.com/watch?v=823Grn4_dCQ",
+        "channel": "Aditya Verma",
+        "notes": "Intuitive mathematical proof for supersequence length = m + n - LCS length with full trace."
+      }
+    ]
+  },
+  {
+    "id": "wildcard-matching",
+    "title": "Wildcard matching",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/wildcard-pattern-matching/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Wildcard Pattern Matching",
+        "url": "https://www.geeksforgeeks.org/dsa/wildcard-pattern-matching/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Wildcard Matching",
+        "url": "https://leetcode.com/problems/wildcard-matching/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-wildcard-matching",
+        "title": "take U forward - DP 34. Wildcard Matching | Recursive to 1D Array Optimisation \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=ZmlQ3vgAOMo",
+        "channel": "take U forward",
+        "notes": "Handles '?' (single char match) and '*' (empty sequence or multi-char match) with 1D array optimization."
+      },
+      {
+        "id": "codehelp-babbar-wildcard-matching",
+        "title": "CodeHelp - by Babbar - Lecture 139: Wildcard Pattern Matching || DP Series",
+        "url": "https://www.youtube.com/watch?v=OgovJ9CB0hI",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Step-by-step recursive formulation, memoization, base cases, and space-optimized tabulation in C++."
+      }
+    ]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock",
+    "title": "Best time to buy and sell stock",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/buy-stock-2/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Best Time to Buy and Sell Stock",
+        "url": "https://www.geeksforgeeks.org/dsa/all-variations-of-stock-problems/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Best Time to Buy and Sell Stock",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-buy-sell-stock",
+        "title": "NeetCode - Sliding Window: Best Time to Buy and Sell Stock - Leetcode 121 - Python",
+        "url": "https://www.youtube.com/watch?v=1pkOgXD63yU",
+        "channel": "NeetCode",
+        "notes": "Two-pointer sliding window approach maintaining the minimum buy price to compute maximum profit in O(N)."
+      },
+      {
+        "id": "takeuforward-buy-sell-stock-dp",
+        "title": "take U forward - DP 35. Best Time to Buy and Sell Stock | DP on Stocks \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=excAOvwF_Wk",
+        "channel": "take U forward",
+        "notes": "Linear scan remembering prefix minimum buy price and updating maximum profit in O(1) space."
+      }
+    ]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock-ii",
+    "title": "Best time to buy and sell stock II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/stock-buy-and-sell2615/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Stock Buy and Sell \u2013 Multiple Transaction Allowed",
+        "url": "https://www.geeksforgeeks.org/dsa/all-variations-of-stock-problems/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Best Time to Buy and Sell Stock II",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-buy-sell-stock-ii",
+        "title": "take U forward - DP 36. Buy and Sell Stock - II | Recursion to Space Optimisation",
+        "url": "https://www.youtube.com/watch?v=nGJmxkUJQGs",
+        "channel": "take U forward",
+        "notes": "State machine DP tracking buy/sell availability across days, optimized to 4 variables in O(1) auxiliary space."
+      },
+      {
+        "id": "neetcode-buy-sell-stock-ii",
+        "title": "NeetCode - Best Time to Buy and Sell a Stock II - Leetcode 122 - Python",
+        "url": "https://www.youtube.com/watch?v=3SJ3pUkPQMc",
+        "channel": "NeetCode",
+        "notes": "Greedy one-pass approach summing all positive price increments between consecutive days in O(N) time."
+      }
+    ]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock-iii",
+    "title": "Best time to buy and sell stock III",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/buy-and-sell-a-share-at-most-twice/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Profit By Buying And Selling A Share At Most Twice",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-profit-by-buying-and-selling-a-share-at-most-twice/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Best Time to Buy and Sell Stock III",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-buy-and-sell-stock-iii",
+        "title": "take U forward - DP 37. Buy and Sell Stocks III | Recursion to Space Optimisation",
+        "url": "https://www.youtube.com/watch?v=-uQGzhYj8BQ",
+        "channel": "take U forward",
+        "notes": "3D dynamic programming tracking index, buy state, and remaining transactions with space optimization."
+      },
+      {
+        "id": "techdose-best-time-to-buy-and-sell-stock-iii",
+        "title": "Techdose - Best Time to Buy and Sell Stock III | Leetcode #123",
+        "url": "https://www.youtube.com/watch?v=37s1_xBiqH0",
+        "channel": "Techdose",
+        "notes": "Intuitive bidirectional dynamic programming tracking maximum profit from left and right passes."
+      }
+    ]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock-iv",
+    "title": "Best time to buy and sell stock IV",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-profit4657/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Profit by Buying and Selling a Share at Most K Times",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-profit-by-buying-and-selling-a-share-at-most-k-times/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Best Time to Buy and Sell Stock IV",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-buy-and-sell-stock-iv",
+        "title": "take U forward - DP 38. Buy and Stock Sell IV | Recursion to Space Optimisation",
+        "url": "https://www.youtube.com/watch?v=IV1dHbk5CDc",
+        "channel": "take U forward",
+        "notes": "Generalizes Stock III to k transactions using dynamic programming state transition tables."
+      },
+      {
+        "id": "techdose-best-time-to-buy-and-sell-stock-iv",
+        "title": "Techdose - Best time to buy and sell stock 4 | Leetcode #188",
+        "url": "https://www.youtube.com/watch?v=6928FkPhGUA",
+        "channel": "Techdose",
+        "notes": "Detailed tabular tabulation and optimization for at most k transactions."
+      }
+    ]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock-with-cooldown",
+    "title": "Best Time to Buy and Sell Stock with Cooldown",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/buy-stock-with-cooldown/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Stock Buy and Sell with Cooldown",
+        "url": "https://www.geeksforgeeks.org/problems/buy-stock-with-cooldown/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Best Time to Buy and Sell Stock with Cooldown",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-buy-and-sell-stocks-with-cooldown",
+        "title": "take U forward - DP 39. Buy and Sell Stocks With Cooldown | Recursion to Space Optimisation",
+        "url": "https://www.youtube.com/watch?v=IGIe46xw3YY",
+        "channel": "take U forward",
+        "notes": "State machine transition advancing index by 2 after selling to respect cooldown constraints."
+      },
+      {
+        "id": "neetcode-buy-and-sell-stock-with-cooldown",
+        "title": "NeetCode - Best Time to Buy and Sell Stock with Cooldown - Leetcode 309 - Python",
+        "url": "https://www.youtube.com/watch?v=I7j0F7AHpb8",
+        "channel": "NeetCode",
+        "notes": "Decision tree visualization and memoization caching buy, sell, and cooldown states."
+      }
+    ]
+  },
+  {
+    "id": "best-time-to-buy-and-sell-stock-with-transaction-fees",
+    "title": "Best time to buy and sell stock with transaction fees",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/buy-stock-with-transaction-fee/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Buy Stock with Transaction Fee",
+        "url": "https://www.geeksforgeeks.org/problems/buy-stock-with-transaction-fee/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Best Time to Buy and Sell Stock with Transaction Fee",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-buy-and-sell-stocks-with-fee",
+        "title": "take U forward - DP 40. Buy and Sell Stocks With Transaction Fee | Recursion to Space Optimisation",
+        "url": "https://www.youtube.com/watch?v=k4eK-vEmnKg",
+        "channel": "take U forward",
+        "notes": "Incorporates transaction fee deduction during stock sale with space optimization down to two variables."
+      },
+      {
+        "id": "cracckify-buy-and-sell-stock-transaction-fee",
+        "title": "Jeevan Kumar - Cracckify - LeetCode 714 Best Time to Buy and Sell Stock with Transaction Fee",
+        "url": "https://www.youtube.com/watch?v=KE2fc0RJ4hU",
+        "channel": "Jeevan Kumar - Cracckify",
+        "notes": "Greedy and dynamic programming approaches maintaining holding and cash balances."
+      }
+    ]
+  },
+  {
+    "id": "largest-divisible-subset",
+    "title": "Largest Divisible Subset",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/largest-divisible-subset--170643/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Largest Divisible Subset in Array",
+        "url": "https://www.geeksforgeeks.org/dsa/largest-divisible-subset-in-array/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Largest Divisible Subset",
+        "url": "https://leetcode.com/problems/largest-divisible-subset/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-largest-divisible-subset",
+        "title": "take U forward - DP 44. Largest Divisible Subset | Longest Increasing Subsequence",
+        "url": "https://www.youtube.com/watch?v=gDuZwBW9VvM",
+        "channel": "take U forward",
+        "notes": "Sorts array and modifies standard LIS algorithm with parent hash tracking to print the actual divisible subset."
+      },
+      {
+        "id": "neetcodeio-largest-divisible-subset",
+        "title": "NeetCodeIO - Largest Divisible Subset - Leetcode 368 - Python",
+        "url": "https://www.youtube.com/watch?v=LeRU6irRoW0",
+        "channel": "NeetCodeIO",
+        "notes": "Sort-based dynamic programming with memoization solving divisibility chains."
+      }
+    ]
+  },
+  {
+    "id": "longest-bitonic-subsequence",
+    "title": "Longest Bitonic Subsequence",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-bitonic-subsequence0824/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Bitonic Subsequence (DP-15)",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-bitonic-subsequence-dp-15/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Longest Bitonic Subsequence",
+        "url": "https://takeuforward.org/data-structure/longest-bitonic-subsequence-dp-46/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-bitonic-subsequence",
+        "title": "take U forward - DP 46. Longest Bitonic Subsequence | LIS",
+        "url": "https://www.youtube.com/watch?v=y4vN0WNdrlg",
+        "channel": "take U forward",
+        "notes": "Computes forward LIS and backward LIS arrays, maximizing dp1[i] + dp2[i] - 1 across all peak elements."
+      },
+      {
+        "id": "pepcoding-longest-bitonic-subsequence",
+        "title": "Pepcoding - Longest Bitonic Subsequence | Dynamic Programming | Explanation with Code",
+        "url": "https://www.youtube.com/watch?v=jdfpGSSyN2I",
+        "channel": "Pepcoding",
+        "notes": "Combines increasing and decreasing subsequence dynamic programming tables to identify maximum bitonic length."
+      }
+    ]
+  },
+  {
+    "id": "longest-increasing-subsequence",
+    "title": "Longest Increasing Subsequence",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-increasing-subsequence-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Increasing Subsequence (DP-3)",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-increasing-subsequence-dp-3/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Longest Increasing Subsequence",
+        "url": "https://leetcode.com/problems/longest-increasing-subsequence/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-increasing-subsequence-memoization",
+        "title": "take U forward - DP 41. Longest Increasing Subsequence | Memoization",
+        "url": "https://www.youtube.com/watch?v=ekcwMsSIzVc",
+        "channel": "take U forward",
+        "notes": "Covers recursive formulation with previous index tracking, 2D memoization, and coordinate shifting."
+      },
+      {
+        "id": "neetcode-longest-increasing-subsequence",
+        "title": "NeetCode - Longest Increasing Subsequence - Dynamic Programming - Leetcode 300",
+        "url": "https://www.youtube.com/watch?v=cjWnW0hdF1Y",
+        "channel": "NeetCode",
+        "notes": "Classic bottom-up dynamic programming approach in O(N^2) time."
+      }
+    ]
+  },
+  {
+    "id": "longest-increasing-subsequence-dp-43",
+    "title": "Longest Increasing Subsequence |(DP-43)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-increasing-subsequence-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest Monotonically Increasing Subsequence Size (N log N)",
+        "url": "https://www.geeksforgeeks.org/dsa/longest-monotonically-increasing-subsequence-size-n-log-n/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Longest Increasing Subsequence using Binary Search",
+        "url": "https://takeuforward.org/data-structure/longest-increasing-subsequence-binary-search-dp-43/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-lis-binary-search",
+        "title": "take U forward - DP 43. Longest Increasing Subsequence | Binary Search | Intuition",
+        "url": "https://www.youtube.com/watch?v=on2hvxBXJH4",
+        "channel": "take U forward",
+        "notes": "Patience sorting / lower_bound binary search technique reducing LIS time complexity to O(N log N)."
+      },
+      {
+        "id": "codehelp-babbar-lis-binary-search",
+        "title": "CodeHelp - by Babbar - Lecture 119: Longest Increasing Subsequence + Russian Doll LeetCode || DP + Binary Search",
+        "url": "https://www.youtube.com/watch?v=MYHajVcnXSA",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Optimal binary search and dynamic programming implementation for LIS in C++."
+      }
+    ]
+  },
+  {
+    "id": "longest-string-chain",
+    "title": "Longest String Chain",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/longest-string-chain/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Find The Length Of The Longest Possible Word Chain",
+        "url": "https://www.geeksforgeeks.org/dsa/find-the-length-of-the-longest-possible-word-chain/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Longest String Chain",
+        "url": "https://leetcode.com/problems/longest-string-chain/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-longest-string-chain",
+        "title": "take U forward - DP 45. Longest String Chain | Longest Increasing Subsequence | LIS",
+        "url": "https://www.youtube.com/watch?v=YY8iBaYcc4g",
+        "channel": "take U forward",
+        "notes": "Custom string comparator with two-pointer character difference check integrated into LIS logic."
+      },
+      {
+        "id": "neetcodeio-longest-string-chain",
+        "title": "NeetCodeIO - Longest String Chain - Leetcode 1048 - Python",
+        "url": "https://www.youtube.com/watch?v=7b0V1gT_TIk",
+        "channel": "NeetCodeIO",
+        "notes": "Hash map memoization and string length sorting finding maximum predecessor chains in O(N * L^2)."
+      }
+    ]
+  },
+  {
+    "id": "number-of-longest-increasing-subsequences",
+    "title": "Number of Longest Increasing Subsequences",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-longest-increasing-subsequence/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Number of Longest Increasing Subsequences",
+        "url": "https://www.geeksforgeeks.org/dsa/number-of-longest-increasing-subsequences/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Number of Longest Increasing Subsequence",
+        "url": "https://leetcode.com/problems/number-of-longest-increasing-subsequence/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-lis",
+        "title": "take U forward - DP 47. Number of Longest Increasing Subsequences",
+        "url": "https://www.youtube.com/watch?v=cKVl1TFdNXg",
+        "channel": "take U forward",
+        "notes": "Maintains length array dp[] alongside count array ct[] to aggregate combinations forming max LIS."
+      },
+      {
+        "id": "neetcode-number-of-longest-increasing-subsequence",
+        "title": "NeetCode - Number of Longest Increasing Subsequence - Dynamic Programming - Leetcode 673 - Python",
+        "url": "https://www.youtube.com/watch?v=Tuc-rjJbsXU",
+        "channel": "NeetCode",
+        "notes": "Tabular dynamic programming maintaining length and frequency pairs."
+      }
+    ]
+  },
+  {
+    "id": "print-longest-increasing-subsequence",
+    "title": "Print Longest Increasing Subsequence",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/printing-longest-increasing-subsequence/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Construction of Longest Increasing Subsequence using Dynamic Programming",
+        "url": "https://www.geeksforgeeks.org/dsa/construction-of-longest-increasing-subsequence-using-dynamic-programming/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Printing Longest Increasing Subsequence",
+        "url": "https://takeuforward.org/data-structure/printing-longest-increasing-subsequence-dp-42/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-printing-lis",
+        "title": "take U forward - DP 42. Printing Longest Increasing Subsequence | Tabulation | Algorithm",
+        "url": "https://www.youtube.com/watch?v=IFfYfonAFGc",
+        "channel": "take U forward",
+        "notes": "Uses a hash / parent pointer array during 1D DP tabulation to backtrack and construct the exact LIS."
+      },
+      {
+        "id": "codehelp-babbar-lis-printing",
+        "title": "CodeHelp - by Babbar - Lecture 119: Longest Increasing Subsequence + Russian Doll LeetCode || DP + Binary Search",
+        "url": "https://www.youtube.com/watch?v=MYHajVcnXSA",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Explains reconstructing elements from the optimal DP state transitions in C++."
+      }
+    ]
+  },
+  {
+    "id": "burst-balloons",
+    "title": "Burst balloons",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-triple-product/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Burst Balloon to Maximize Coins",
+        "url": "https://www.geeksforgeeks.org/dsa/burst-balloon-to-maximize-coins/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Burst Balloons",
+        "url": "https://leetcode.com/problems/burst-balloons/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-burst-balloons",
+        "title": "take U forward - DP 51. Burst Balloons | Partition DP | Interactive G-Meet Session Update",
+        "url": "https://www.youtube.com/watch?v=Yz4LlDSlkns",
+        "channel": "take U forward",
+        "notes": "Partition DP thinking in reverse: deciding which balloon is burst last in subarray (i, j) to ensure independent subproblems."
+      },
+      {
+        "id": "neetcode-burst-balloons",
+        "title": "NeetCode - Burst Baloons - Dynamic Programming - Leetcode 312 - Python",
+        "url": "https://www.youtube.com/watch?v=VFskby7lUbw",
+        "channel": "NeetCode",
+        "notes": "Top-down memoization and bottom-up DP solving reverse balloon bursting in O(N^3) time."
+      }
+    ]
+  },
+  {
+    "id": "different-ways-to-evaluate-a-boolean-expression",
+    "title": "Different Ways to Evaluate a Boolean Expression",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/boolean-parenthesization5610/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Boolean Parenthesization Problem (DP-37)",
+        "url": "https://www.geeksforgeeks.org/dsa/boolean-parenthesization-problem-dp-37/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Evaluate Boolean Expression to True | Partition DP",
+        "url": "https://takeuforward.org/data-structure/evaluate-boolean-expression-to-true-partition-dp-dp-52/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-evaluate-boolean-expression",
+        "title": "take U forward - DP 52. Evaluate Boolean Expression to True | Partition DP",
+        "url": "https://www.youtube.com/watch?v=MM7fXopgyjw",
+        "channel": "take U forward",
+        "notes": "Matrix Chain Multiplication pattern partitioning across operators with recursive count of true/false subtrees."
+      },
+      {
+        "id": "aditya-verma-boolean-parenthesization",
+        "title": "Aditya Verma - 39 Evaluate Expression to True Boolean Parenthesization Recursive",
+        "url": "https://www.youtube.com/watch?v=pGVguAcWX4g",
+        "channel": "Aditya Verma",
+        "notes": "Partition dynamic programming breakdown counting ways to evaluate boolean expressions using &, |, and ^."
+      }
+    ]
+  }
+]

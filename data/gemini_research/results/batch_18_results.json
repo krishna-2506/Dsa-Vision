@@ -1,0 +1,778 @@
+[
+  {
+    "id": "bridges-in-graph",
+    "title": "Bridges in graph",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/bridge-edge-in-graph/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Bridge in a graph",
+        "url": "https://www.geeksforgeeks.org/dsa/bridge-in-a-graph/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Critical Connections in a Network",
+        "url": "https://leetcode.com/problems/critical-connections-in-a-network/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-bridges-in-graph",
+        "title": "take U forward - G-55. Bridges in Graph - Using Tarjan's Algorithm of time in and low time",
+        "url": "https://www.youtube.com/watch?v=qrAub5z8FeA",
+        "channel": "take U forward",
+        "notes": "Tarjan's algorithm with time of insertion and lowest time of insertion to detect bridges in O(V + 2E) time."
+      },
+      {
+        "id": "codehelp-babbar-bridges-in-graph",
+        "title": "CodeHelp - by Babbar - Lecture 98: Bridges in a Graph || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=CiDPT1xMKI0",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Detailed step-by-step logic, discovery arrays, and bridge condition (low[nbr] > tin[node]) explanation in C++."
+      }
+    ]
+  },
+  {
+    "id": "kosaraju-s-algorithm",
+    "title": "Kosaraju's algorithm",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/strongly-connected-components-kosarajus-algo/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Strongly Connected Components",
+        "url": "https://www.geeksforgeeks.org/dsa/strongly-connected-components/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Strongly Connected Components - Kosaraju's Algorithm",
+        "url": "https://takeuforward.org/graph/strongly-connected-components-kosarajus-algorithm-g-54/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-kosaraju-algorithm",
+        "title": "take U forward - G-54. Strongly Connected Components - Kosaraju's Algorithm",
+        "url": "https://www.youtube.com/watch?v=R6uoSjZ2imo",
+        "channel": "take U forward",
+        "notes": "Explains sorting nodes by finish time, reversing graph edges, and running second DFS to find SCCs in O(V + E)."
+      },
+      {
+        "id": "codehelp-babbar-kosaraju-algorithm",
+        "title": "CodeHelp - by Babbar - Lecture 100: Kosaraju's Algorithm for Strongly Connected Components || C++ Placement Series",
+        "url": "https://www.youtube.com/watch?v=ndfjV_yHpgQ",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Clear walkthrough of topological sort order stack, transpose graph, and finding count of SCCs in C++."
+      }
+    ]
+  },
+  {
+    "id": "introduction-to-dp",
+    "title": "Introduction to DP",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/introduction-to-dynamic-programming/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Dynamic Programming",
+        "url": "https://www.geeksforgeeks.org/dsa/dynamic-programming/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Dynamic Programming Introduction",
+        "url": "https://takeuforward.org/data-structure/dynamic-programming-introduction/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-intro-to-dp",
+        "title": "take U forward - DP 1. Introduction to Dynamic Programming | Memoization | Tabulation | Space Optimization Techniques",
+        "url": "https://www.youtube.com/watch?v=tyB0ztf0DNY",
+        "channel": "take U forward",
+        "notes": "Foundational breakdown of recursion, memoization (top-down), tabulation (bottom-up), and space optimization."
+      },
+      {
+        "id": "aditya-verma-intro-to-dp",
+        "title": "Aditya Verma - Dynamic Programming | Introduction",
+        "url": "https://www.youtube.com/watch?v=nqowUJzG-iM",
+        "channel": "Aditya Verma",
+        "notes": "Intuitive guide on identifying DP problems, overlapping subproblems, and optimal substructure."
+      }
+    ]
+  },
+  {
+    "id": "climbing-stairs",
+    "title": "Climbing stairs",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-ways-to-reach-the-nth-stair-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count ways to reach the n'th stair",
+        "url": "https://www.geeksforgeeks.org/dsa/count-ways-reach-nth-stair/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Climbing Stairs",
+        "url": "https://leetcode.com/problems/climbing-stairs/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-climbing-stairs",
+        "title": "take U forward - DP 2. Climbing Stairs | Learn How to Write 1D Recurrence Relations",
+        "url": "https://www.youtube.com/watch?v=mLfjzJsN8us",
+        "channel": "take U forward",
+        "notes": "Step-by-step 1D DP recurrence derivation and O(1) space optimization using Fibonacci state variables."
+      },
+      {
+        "id": "neetcode-climbing-stairs",
+        "title": "NeetCode - Climbing Stairs - Dynamic Programming - Leetcode 70 - Python",
+        "url": "https://www.youtube.com/watch?v=Y0lT9Fck7qI",
+        "channel": "NeetCode",
+        "notes": "Bottom-up dynamic programming approach in O(N) time and O(1) space."
+      }
+    ]
+  },
+  {
+    "id": "frog-jump",
+    "title": "Frog Jump",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/geek-jump/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Frog Jump - Climbing Stairs with Cost",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-cost-for-hopping-frog-to-reach-stair-n/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Dynamic Programming Frog Jump (DP-3)",
+        "url": "https://takeuforward.org/data-structure/dynamic-programming-frog-jump-dp-3/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-frog-jump",
+        "title": "take U forward - DP 3. Frog Jump | Dynamic Programming | Learn to write 1D DP",
+        "url": "https://www.youtube.com/watch?v=EgG3jsGoPvQ",
+        "channel": "take U forward",
+        "notes": "Detailed explanation of 1-step and 2-step energy cost transitions with memoization, tabulation, and O(1) space."
+      }
+    ]
+  },
+  {
+    "id": "frog-jump-with-k-distances",
+    "title": "Frog jump with K distances",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimal-cost/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum cost to reach the last stone",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-cost-incurred-before-the-geek-reaches-stone-n/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Frog Jump with K Distances (DP-4)",
+        "url": "https://takeuforward.org/data-structure/dynamic-programming-frog-jump-with-k-distances-dp-4/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-frog-jump-k-distances",
+        "title": "take U forward - DP 4. Frog Jump with K Distance | Lecture 3 Follow Up Question",
+        "url": "https://www.youtube.com/watch?v=Kmh3rhyEtB8",
+        "channel": "take U forward",
+        "notes": "Generalizes frog jump transitions across 1 to K steps using loop-based DP transitions in O(N*K) time."
+      }
+    ]
+  },
+  {
+    "id": "house-robber",
+    "title": "House robber",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/house-robber-ii/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Stickler Thief II",
+        "url": "https://www.geeksforgeeks.org/problems/house-robber-ii/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - House Robber II",
+        "url": "https://leetcode.com/problems/house-robber-ii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-house-robber-2",
+        "title": "take U forward - DP 6. House Robber 2 | 1D DP | DP on Subsequences",
+        "url": "https://www.youtube.com/watch?v=3WaxQMELSkw",
+        "channel": "take U forward",
+        "notes": "Handles circular arrangement by running linear non-adjacent DP twice: excluding first vs excluding last house."
+      },
+      {
+        "id": "neetcode-house-robber-ii",
+        "title": "NeetCode - House Robber II - Dynamic Programming - Leetcode 213",
+        "url": "https://www.youtube.com/watch?v=rWAJCfYYOvM",
+        "channel": "NeetCode",
+        "notes": "Decomposes circular house robber into two subproblems and solves each in O(N) time and O(1) space."
+      }
+    ]
+  },
+  {
+    "id": "maximum-sum-of-non-adjacent-elements",
+    "title": "Maximum sum of non adjacent elements",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/stickler-theif-1587115621/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Stickler Thief",
+        "url": "https://www.geeksforgeeks.org/problems/stickler-theif-1587115621/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - House Robber",
+        "url": "https://leetcode.com/problems/house-robber/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-maximum-sum-non-adjacent",
+        "title": "take U forward - DP 5. Maximum Sum of Non-Adjacent Elements | House Robber | 1-D | DP on Subsequences",
+        "url": "https://www.youtube.com/watch?v=GrMBfJNk_NY",
+        "channel": "take U forward",
+        "notes": "Pick vs non-pick recursive pattern converted to O(N) tabulation and optimized to O(1) space."
+      },
+      {
+        "id": "neetcode-house-robber",
+        "title": "NeetCode - House Robber -  Leetcode 198 - Python Dynamic Programming",
+        "url": "https://www.youtube.com/watch?v=73r3KWiEvyk",
+        "channel": "NeetCode",
+        "notes": "Linear scan maintaining rob1 and rob2 variables to achieve maximum non-adjacent loot in O(N) time."
+      }
+    ]
+  },
+  {
+    "id": "grid-unique-paths-dp-on-grids-dp8",
+    "title": "Grid Unique Paths : DP on Grids (DP8)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-unique-paths5339/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Unique Paths in a Grid",
+        "url": "https://www.geeksforgeeks.org/problems/unique-paths-in-a-grid--170647/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Unique Paths",
+        "url": "https://leetcode.com/problems/unique-paths/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-grid-unique-paths",
+        "title": "take U forward - DP 8. Grid Unique Paths | Learn Everything about DP on Grids | ALL TECHNIQUES \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=sdE0A2Oxofw",
+        "channel": "take U forward",
+        "notes": "Explains 2D grid DP traversal from (0, 0) to (m-1, n-1) with memoization, tabulation, space optimization, and combinatorics."
+      },
+      {
+        "id": "neetcode-unique-paths",
+        "title": "NeetCode - Unique Paths - Dynamic Programming - Leetcode 62",
+        "url": "https://www.youtube.com/watch?v=IlEsdxuD4lY",
+        "channel": "NeetCode",
+        "notes": "Bottom-up 2D grid tabulation row-by-row in O(M*N) time and O(N) space."
+      }
+    ]
+  },
+  {
+    "id": "minimum-falling-path-sum",
+    "title": "Minimum Falling Path Sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-cost-path3833/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum sum falling path in a NxN grid",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-sum-falling-path-in-a-nxn-grid/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Minimum Path Sum",
+        "url": "https://leetcode.com/problems/minimum-path-sum/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-minimum-path-sum-grid",
+        "title": "take U forward - DP 10. Minimum Path Sum in Grid | Asked to me In Microsoft Internship Interview | DP on GRIDS",
+        "url": "https://www.youtube.com/watch?v=_rgTlyky1uQ",
+        "channel": "take U forward",
+        "notes": "2D grid path finding taking min of coming from top or left cell with O(N) space optimization."
+      },
+      {
+        "id": "neetcode-minimum-path-sum",
+        "title": "NeetCode - Minimum Path Sum - Dynamic Programming - Leetcode 64 - Python",
+        "url": "https://www.youtube.com/watch?v=pGMsrvt0fpk",
+        "channel": "NeetCode",
+        "notes": "Dynamic programming approach computing cumulative min costs across the matrix in O(M*N)."
+      }
+    ]
+  },
+  {
+    "id": "ninja-and-his-friends",
+    "title": "Ninja and his Friends",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/chocolates-pickup/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Chocolates Pickup",
+        "url": "https://www.geeksforgeeks.org/problems/chocolates-pickup/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Cherry Pickup II",
+        "url": "https://leetcode.com/problems/cherry-pickup-ii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-cherry-pickup-ii",
+        "title": "take U forward - DP 13. Cherry Pickup II | 3D DP Made Easy | DP On Grids",
+        "url": "https://www.youtube.com/watch?v=QGfn7JeXK54",
+        "channel": "take U forward",
+        "notes": "Simultaneous 3D grid traversal dp[row][col1][col2] exploring all 9 direction pairs in O(R * C * C)."
+      },
+      {
+        "id": "neetcodeio-cherry-pickup-ii",
+        "title": "NeetCodeIO - Cherry Pickup II - Leetcode 1463 - Python",
+        "url": "https://www.youtube.com/watch?v=c1stwk2TbNk",
+        "channel": "NeetCodeIO",
+        "notes": "Memoized 3D dynamic programming tracking both robots moving synchronously down the grid."
+      }
+    ]
+  },
+  {
+    "id": "ninja-s-training",
+    "title": "Ninja's training",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/geeks-training/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Geek's Training",
+        "url": "https://www.geeksforgeeks.org/problems/geeks-training/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Ninja's Training (DP 7)",
+        "url": "https://takeuforward.org/data-structure/dynamic-programming-ninjas-training-dp-7/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-ninjas-training",
+        "title": "take U forward - DP 7. Ninja's Training | MUST WATCH for 2D CONCEPTS \ud83d\udd25 | Vacation | Atcoder | 2D DP |",
+        "url": "https://www.youtube.com/watch?v=AE39gJYuRog",
+        "channel": "take U forward",
+        "notes": "2D state DP dp[day][last_activity] selecting optimal non-consecutive activities in O(N * 4 * 3) time."
+      }
+    ]
+  },
+  {
+    "id": "triangle",
+    "title": "Triangle",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/triangle-path-sum/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Dynamic Programming (DP) on Grids",
+        "url": "https://www.geeksforgeeks.org/dsa/dp-on-grids/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Triangle",
+        "url": "https://leetcode.com/problems/triangle/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-triangle",
+        "title": "take U forward - DP 11. Triangle | Fixed Starting Point and Variable Ending Point | DP on GRIDS",
+        "url": "https://www.youtube.com/watch?v=SrP-PiLSYC0",
+        "channel": "take U forward",
+        "notes": "Bottom-up tabulation and top-down memoization approaches for triangular grid minimum path sum."
+      },
+      {
+        "id": "neetcode-triangle",
+        "title": "NeetCode - Triangle - Dynamic Programming made Easy - Leetcode 120",
+        "url": "https://www.youtube.com/watch?v=OM1MTokvxs4",
+        "channel": "NeetCode",
+        "notes": "Space-optimized bottom-up DP computing minimum adjacent row sums in O(N^2) time and O(N) space."
+      }
+    ]
+  },
+  {
+    "id": "unique-paths-ii",
+    "title": "Unique paths II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/unique-paths-in-a-grid--170647/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Unique paths in a Grid with Obstacles",
+        "url": "https://www.geeksforgeeks.org/dsa/unique-paths-in-a-grid-with-obstacles/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Unique Paths II",
+        "url": "https://leetcode.com/problems/unique-paths-ii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-unique-paths-2",
+        "title": "take U forward - DP 9. Unique Paths 2 | DP on Grid with Maze Obstacles",
+        "url": "https://www.youtube.com/watch?v=TmhpgXScLyY",
+        "channel": "take U forward",
+        "notes": "Handles obstacle cells by setting paths to 0 during grid transition states in O(M*N) time."
+      },
+      {
+        "id": "neetcodeio-unique-paths-ii",
+        "title": "NeetCodeIO - Unique Paths II - Leetcode 63 - Python",
+        "url": "https://www.youtube.com/watch?v=d3UOz7zdE4I",
+        "channel": "NeetCodeIO",
+        "notes": "Row-by-row 1D space-optimized DP solution skipping obstacle positions."
+      }
+    ]
+  },
+  {
+    "id": "assign-cookies-541",
+    "title": "Assign Cookies",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/assign-cookies/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Assign Maximum Cookies",
+        "url": "https://www.geeksforgeeks.org/dsa/assign-cookies/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Assign Cookies",
+        "url": "https://leetcode.com/problems/assign-cookies/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-assign-cookies",
+        "title": "take U forward - L1. Assign Cookies | Greedy Algorithm Playlist",
+        "url": "https://www.youtube.com/watch?v=DIX2p7vb9co",
+        "channel": "take U forward",
+        "notes": "Greedy two-pointer approach after sorting both greed factors and cookie sizes in O(N log N + M log M)."
+      },
+      {
+        "id": "neetcodeio-assign-cookies",
+        "title": "NeetCodeIO - Assign Cookies - Leetcode 455 - Python",
+        "url": "https://www.youtube.com/watch?v=JW8fgvoxPTg",
+        "channel": "NeetCodeIO",
+        "notes": "Clear walkthrough assigning the smallest possible satisfying cookie to each child using greedy pointers."
+      }
+    ]
+  },
+  {
+    "id": "coin-change-2-dp-22",
+    "title": "Coin Change 2 (DP - 22)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/coin-change2448/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Understanding The Coin Change Problem With Dynamic Programming",
+        "url": "https://www.geeksforgeeks.org/dsa/understanding-the-coin-change-problem-with-dynamic-programming/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Coin Change 2",
+        "url": "https://leetcode.com/problems/coin-change-2/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-coin-change-2",
+        "title": "take U forward - DP 22. Coin Change 2 | Infinite Supply Problems  | DP on Subsequences",
+        "url": "https://www.youtube.com/watch?v=HgyouUi11zk",
+        "channel": "take U forward",
+        "notes": "Explains infinite coin supply pattern with pick and not-pick logic and single-row space optimization."
+      },
+      {
+        "id": "neetcode-coin-change-2",
+        "title": "NeetCode - Coin Change 2 - Dynamic Programming Unbounded Knapsack - Leetcode 518 - Python",
+        "url": "https://www.youtube.com/watch?v=Mjy4hd2xgrs",
+        "channel": "NeetCode",
+        "notes": "Models the problem as an unbounded knapsack counting total combinations in O(N * Amount) time."
+      }
+    ]
+  },
+  {
+    "id": "count-partitions-with-given-difference",
+    "title": "Count partitions with given difference",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/partitions-with-given-difference/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count of Subsets with given Difference",
+        "url": "https://www.geeksforgeeks.org/dsa/count-of-subsets-with-given-difference/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Count Partitions with Given Difference",
+        "url": "https://takeuforward.org/data-structure/count-partitions-with-given-difference-dp-18/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-count-partitions-with-given-difference",
+        "title": "take U forward - DP 18. Count Partitions With Given Difference | Dp on Subsequences",
+        "url": "https://www.youtube.com/watch?v=zoilQD1kYSg",
+        "channel": "take U forward",
+        "notes": "Transforms the partition condition into finding subsets with sum equal to (totalSum - diff) / 2 modulo 10^9+7."
+      }
+    ]
+  },
+  {
+    "id": "count-subsets-with-sum-k",
+    "title": "Count subsets with sum K",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/perfect-sum-problem5633/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count subsets with sum equal to target",
+        "url": "https://www.geeksforgeeks.org/dsa/count-of-subsets-with-sum-equal-to-x/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Count Subsets with Sum K",
+        "url": "https://takeuforward.org/data-structure/count-subsets-with-sum-k-dp-17/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-count-subsets-with-sum-k",
+        "title": "take U forward - DP 17. Counts Subsets with Sum K | Dp on Subsequences",
+        "url": "https://www.youtube.com/watch?v=ZHyb-A2Mte4",
+        "channel": "take U forward",
+        "notes": "Covers pick/non-pick recursion with special handling for 0-valued elements to count valid subsets."
+      }
+    ]
+  },
+  {
+    "id": "minimum-coins-dp-20",
+    "title": "Minimum Coins (DP - 20)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/number-of-coins1824/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Coin Change (Minimum Coins)",
+        "url": "https://www.geeksforgeeks.org/problems/number-of-coins1824/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Coin Change",
+        "url": "https://leetcode.com/problems/coin-change/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-minimum-coins",
+        "title": "take U forward - DP 20. Minimum Coins | DP on Subsequences | Infinite Supplies Pattern",
+        "url": "https://www.youtube.com/watch?v=myPeWb3Y68A",
+        "channel": "take U forward",
+        "notes": "Infinite supply pattern taking min(1 + solve(i, target - coin), solve(i - 1, target)) with 1D DP optimization."
+      },
+      {
+        "id": "neetcode-coin-change",
+        "title": "NeetCode - Coin Change - Dynamic Programming Bottom Up - Leetcode 322",
+        "url": "https://www.youtube.com/watch?v=H9bfqozjoqs",
+        "channel": "NeetCode",
+        "notes": "Classic bottom-up DP initializing table with infinity and computing min coins for each sub-amount."
+      }
+    ]
+  },
+  {
+    "id": "partition-a-set-into-two-subsets-with-minimum-absolute-sum-difference",
+    "title": "Partition a set into two subsets with minimum absolute sum difference",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-sum-partition3317/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Partition into Two Halves with Minimum Sum Diff",
+        "url": "https://www.geeksforgeeks.org/dsa/partition-into-two-halves-with-minimum-sum-diff/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Partition Array Into Two Arrays to Minimize Sum Difference",
+        "url": "https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-partition-set-min-sum-diff",
+        "title": "take U forward - Dp 16. Partition A Set Into Two Subsets With Minimum Absolute Sum Difference | DP on Subsequences",
+        "url": "https://www.youtube.com/watch?v=GS_OqZb2CWc",
+        "channel": "take U forward",
+        "notes": "Uses the last row of the subset-sum DP table to check reachable target sums up to totalSum / 2."
+      }
+    ]
+  },
+  {
+    "id": "partition-equal-subset-sum",
+    "title": "Partition equal subset sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/subset-sum-problem2014/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Partition Equal Subset Sum in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/partition-equal-subset-sum-in-cpp/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Partition Equal Subset Sum",
+        "url": "https://leetcode.com/problems/partition-equal-subset-sum/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-partition-equal-subset-sum",
+        "title": "take U forward - DP 15. Partition Equal Subset Sum | DP on Subsequences",
+        "url": "https://www.youtube.com/watch?v=7win3dcgo3k",
+        "channel": "take U forward",
+        "notes": "Reduces the problem to finding a subset with sum totalSum / 2, returning false immediately if totalSum is odd."
+      },
+      {
+        "id": "neetcode-partition-equal-subset-sum",
+        "title": "NeetCode - Partition Equal Subset Sum - Dynamic Programming - Leetcode 416 - Python",
+        "url": "https://www.youtube.com/watch?v=IsvocB5BJhw",
+        "channel": "NeetCode",
+        "notes": "Optimal 0/1 knapsack set-based dynamic programming approach in Python."
+      }
+    ]
+  },
+  {
+    "id": "rod-cutting-problem-dp-24",
+    "title": "Rod Cutting Problem | (DP - 24)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/rod-cutting0840/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Rod Cutting Problem in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/rod-cutting-problem-in-cpp/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Rod Cutting Problem",
+        "url": "https://takeuforward.org/data-structure/rod-cutting-problem-dp-24/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-rod-cutting",
+        "title": "take U forward - DP 24. Rod Cutting Problem | 1D Array Space Optimised Approach",
+        "url": "https://www.youtube.com/watch?v=mO8XpGoJwuo",
+        "channel": "take U forward",
+        "notes": "Models rod cuts as an unbounded knapsack with piece lengths as weights and profits as values."
+      },
+      {
+        "id": "aditya-verma-rod-cutting",
+        "title": "Aditya Verma - 14  Rod Cutting Problem",
+        "url": "https://www.youtube.com/watch?v=SZqAQLjDsag",
+        "channel": "Aditya Verma",
+        "notes": "Step-by-step unbounded knapsack pattern identification and iterative table construction."
+      }
+    ]
+  },
+  {
+    "id": "subset-sum-equal-to-target-dp-14",
+    "title": "Subset sum equal to target (DP- 14)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/subset-sum-problem-1611555638/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - C Program for Subset Sum Problem | DP-25",
+        "url": "https://www.geeksforgeeks.org/c/c-program-for-subset-sum-problem-dp-25/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Subset Sum Equal To Target",
+        "url": "https://takeuforward.org/data-structure/subset-sum-equal-to-target-dp-14/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-subset-sum-target",
+        "title": "take U forward - DP 14. Subset Sum Equals to Target | Identify DP on Subsequences and Ways to Solve them",
+        "url": "https://www.youtube.com/watch?v=fWX9xDmIzRI",
+        "channel": "take U forward",
+        "notes": "Fundamental DP on subsequences explaining memoization, tabulation, and space optimization to a 1D array."
+      },
+      {
+        "id": "aditya-verma-subset-sum",
+        "title": "Aditya Verma - 7 Subset Sum Problem",
+        "url": "https://www.youtube.com/watch?v=_gPcYovP7wc",
+        "channel": "Aditya Verma",
+        "notes": "Intuitive recursive decision tree and bottom-up boolean matrix derivation for subset sum."
+      }
+    ]
+  },
+  {
+    "id": "target-sum",
+    "title": "Target sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/target-sum-1626326450/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Target Sum",
+        "url": "https://www.geeksforgeeks.org/dsa/number-of-ways-to-calculate-a-target-number-using-only-array-elements/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Target Sum",
+        "url": "https://leetcode.com/problems/target-sum/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-target-sum",
+        "title": "take U forward - DP 21. Target Sum | DP on Subsequences",
+        "url": "https://www.youtube.com/watch?v=b3GD8263-PQ",
+        "channel": "take U forward",
+        "notes": "Converts sign assignments (+/-) into subset partition difference: S1 - S2 = Target."
+      },
+      {
+        "id": "neetcode-target-sum",
+        "title": "NeetCode - Target Sum - Dynamic Programming - Leetcode 494 - Python",
+        "url": "https://www.youtube.com/watch?v=g0npyaQtAQM",
+        "channel": "NeetCode",
+        "notes": "Memoized decision tree tracking (index, total) and bottom-up DP dictionary implementation."
+      }
+    ]
+  },
+  {
+    "id": "unbounded-knapsack",
+    "title": "Unbounded knapsack",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/knapsack-with-duplicate-items4201/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Unbounded Knapsack (Repetition of items allowed)",
+        "url": "https://www.geeksforgeeks.org/dsa/unbounded-knapsack-repetition-items-allowed/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Unbounded Knapsack",
+        "url": "https://takeuforward.org/data-structure/unbounded-knapsack-dp-23/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-unbounded-knapsack",
+        "title": "take U forward - DP 23. Unbounded Knapsack | 1-D Array Space Optimised Approach",
+        "url": "https://www.youtube.com/watch?v=OgvOZ6OrJoY",
+        "channel": "take U forward",
+        "notes": "Transition from 0/1 knapsack to unlimited item choices using 1D space optimization in O(N * W) time."
+      }
+    ]
+  }
+]

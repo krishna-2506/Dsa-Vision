@@ -1,0 +1,563 @@
+[
+  {
+    "id": "matrix-chain-multiplication",
+    "title": "Matrix chain multiplication",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Matrix Chain Multiplication",
+        "url": "https://www.geeksforgeeks.org/dsa/matrix-chain-multiplication-dp-8/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Matrix Chain Multiplication",
+        "url": "https://takeuforward.org/dynamic-programming/matrix-chain-multiplication-dp-48/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-matrix-chain-multiplication",
+        "title": "take U forward - DP 48. Matrix Chain Multiplication | MCM | Partition DP Starts \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=vRVfmbCFW7Y",
+        "channel": "take U forward",
+        "notes": "Optimal partition dynamic programming recursive pattern with memoization."
+      },
+      {
+        "id": "abdul-bari-matrix-chain-multiplication",
+        "title": "Abdul Bari - 4.3 Matrix Chain Multiplication - Dynamic Programming",
+        "url": "https://www.youtube.com/watch?v=prx1psByp7U",
+        "channel": "Abdul Bari",
+        "notes": "Fundamental intuition, parenthesization counting, and recursive formula derivation."
+      }
+    ]
+  },
+  {
+    "id": "matrix-chain-multiplication-bottom-up-dp-49",
+    "title": "Matrix Chain Multiplication | Bottom-Up|(DP-49)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Matrix Chain Multiplication (Tabulation)",
+        "url": "https://www.geeksforgeeks.org/dsa/matrix-chain-multiplication-dp-8/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Matrix Chain Multiplication Tabulation Method",
+        "url": "https://takeuforward.org/data-structure/matrix-chain-multiplication-tabulation-method-dp-49/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-matrix-chain-multiplication-tabulation",
+        "title": "take U forward - DP 49. Matrix Chain Multiplication | Bottom-Up | Tabulation",
+        "url": "https://www.youtube.com/watch?v=pDCXsbAw5Cg",
+        "channel": "take U forward",
+        "notes": "Bottom-up 2D tabulation matrix filling diagonal-by-diagonal in O(N^3) time."
+      },
+      {
+        "id": "abdul-bari-matrix-chain-multiplication-formula",
+        "title": "Abdul Bari - [New] Matrix Chain Multiplication using Dynamic Programming Formula",
+        "url": "https://www.youtube.com/watch?v=_WncuhSJZyA",
+        "channel": "Abdul Bari",
+        "notes": "Step-by-step tabular matrix chain calculation with cost and k-split tables."
+      }
+    ]
+  },
+  {
+    "id": "minimum-cost-to-cut-the-stick",
+    "title": "Minimum cost to cut the stick",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/minimum-cost-to-cut-a-stick-of-length-n/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum cost to cut a stick of length n",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-cost-to-cut-a-stick-of-length-n/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Minimum Cost to Cut a Stick",
+        "url": "https://leetcode.com/problems/minimum-cost-to-cut-a-stick/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-minimum-cost-to-cut-the-stick",
+        "title": "take U forward - DP 50. Minimum Cost to Cut the Stick",
+        "url": "https://www.youtube.com/watch?v=xwomavsC86c",
+        "channel": "take U forward",
+        "notes": "Sorts cuts array and applies partition DP between boundaries (i, j) in O(C^3) time."
+      },
+      {
+        "id": "neetcodeio-minimum-cost-to-cut-a-stick",
+        "title": "NeetCodeIO - Minimum Cost to Cut a Stick - Leetcode 1547 - Python",
+        "url": "https://www.youtube.com/watch?v=EVxTO5I0d7w",
+        "channel": "NeetCodeIO",
+        "notes": "Clear memoized interval dynamic programming breakdown in Python."
+      }
+    ]
+  },
+  {
+    "id": "palindrome-partitioning-ii",
+    "title": "Palindrome partitioning II",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/palindromic-patitioning4845/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Palindromic Partitioning",
+        "url": "https://www.geeksforgeeks.org/problems/palindromic-patitioning4845/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Palindrome Partitioning II",
+        "url": "https://leetcode.com/problems/palindrome-partitioning-ii/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-palindrome-partitioning-ii",
+        "title": "take U forward - DP 53. Palindrome Partitioning - II | Front Partition \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=_H8V5hJUGd0",
+        "channel": "take U forward",
+        "notes": "Front partitioning approach making 1D cuts wherever prefix forms a palindrome in O(N^2)."
+      },
+      {
+        "id": "aditya-verma-palindrome-partitioning",
+        "title": "Aditya Verma - 36 Palindrome Partitioning Recursive",
+        "url": "https://www.youtube.com/watch?v=szKVpQtBHh8",
+        "channel": "Aditya Verma",
+        "notes": "Recursive decision tree partitioning strings to minimize cut count."
+      }
+    ]
+  },
+  {
+    "id": "partition-array-for-maximum-sum",
+    "title": "Partition Array for Maximum Sum",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/partition-array-for-maximum-sum/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Partition Array into Atmost K Length Segments for Maximum Sum",
+        "url": "https://www.geeksforgeeks.org/dsa/partition-array-for-maximum-sum/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Partition Array for Maximum Sum",
+        "url": "https://leetcode.com/problems/partition-array-for-maximum-sum/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-partition-array-for-maximum-sum",
+        "title": "take U forward - DP 54. Partition Array for Maximum Sum | Front Partition \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=PhWWJmaKfMc",
+        "channel": "take U forward",
+        "notes": "Front partition DP trying partition lengths 1 to k with running maximums in O(N*K)."
+      },
+      {
+        "id": "codestorywithmik-partition-array-for-maximum-sum",
+        "title": "codestorywithMIK - Partition Array for Maximum Sum | Why DP | Recursion | Memo | Bottom Up | Leetcode 1043",
+        "url": "https://www.youtube.com/watch?v=LvvIcZWtuoY",
+        "channel": "codestorywithMIK",
+        "notes": "Intuitive recursion to bottom-up dynamic programming transformation."
+      }
+    ]
+  },
+  {
+    "id": "count-square-submatrices-with-all-ones-dp-56",
+    "title": "Count Square Submatrices with All Ones|(DP-56)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-square-submatrices-with-all-ones/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count Square Submatrices with All Ones",
+        "url": "https://www.geeksforgeeks.org/problems/count-square-submatrices-with-all-ones/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Count Square Submatrices with All Ones",
+        "url": "https://leetcode.com/problems/count-square-submatrices-with-all-ones/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-count-square-submatrices",
+        "title": "take U forward - DP 56. Count Square Submatrices with All Ones | DP on Rectangles \ud83d\udd25",
+        "url": "https://www.youtube.com/watch?v=auS1fynpnjo",
+        "channel": "take U forward",
+        "notes": "Bottom-up tabulation taking min(top, left, diagonal) + 1 and summing all cell values in O(N*M)."
+      },
+      {
+        "id": "neetcodeio-count-square-submatrices",
+        "title": "NeetCodeIO - Count Square Submatrices with All Ones - Leetcode 1277 - Python",
+        "url": "https://www.youtube.com/watch?v=5Li-cR5h_uw",
+        "channel": "NeetCodeIO",
+        "notes": "Top-down memoization and bottom-up DP computing max square side lengths ending at (r, c)."
+      }
+    ]
+  },
+  {
+    "id": "maximum-rectangle-area-with-all-1-s-dp-55",
+    "title": "Maximum Rectangle Area with all 1's|(DP-55)",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/maximum-size-rectangle-binary-sub-matrix-with-all-1s-set-2/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum size rectangle binary sub-matrix with all 1s",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-size-rectangle-binary-sub-matrix-with-all-1s-set-2/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Maximal Rectangle",
+        "url": "https://leetcode.com/problems/maximal-rectangle/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-maximum-rectangle-area",
+        "title": "take U forward - DP 55. Maximum Rectangle Area with all 1's | DP on Rectangles",
+        "url": "https://www.youtube.com/watch?v=tOylVCugy9k",
+        "channel": "take U forward",
+        "notes": "Accumulates column heights row-by-row and applies largest rectangle in histogram algorithm in O(N*M)."
+      },
+      {
+        "id": "techdose-maximal-rectangle",
+        "title": "Techdose - Maximal rectangle | Leetcode #85 | Maximum area rectangle in a binary matrix",
+        "url": "https://www.youtube.com/watch?v=dAVF2NpC3j4",
+        "channel": "Techdose",
+        "notes": "Detailed visual conversion of binary matrix rows into histograms using monotonic stacks."
+      }
+    ]
+  },
+  {
+    "id": "trie-implementation-and-operations",
+    "title": "Trie Implementation and Operations",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/trie-insert-and-search0651/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Trie Data Structure in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/trie-data-structure-in-cpp/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Implement Trie (Prefix Tree)",
+        "url": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-implement-trie",
+        "title": "take U forward - L1. Implement TRIE | INSERT | SEARCH | STARTSWITH",
+        "url": "https://www.youtube.com/watch?v=dBGUmUQhjaM",
+        "channel": "take U forward",
+        "notes": "Complete TrieNode implementation with links array, insert, search, and startsWith operations in O(L) time."
+      },
+      {
+        "id": "neetcode-implement-trie",
+        "title": "NeetCode - Implement Trie (Prefix Tree) - Leetcode 208",
+        "url": "https://www.youtube.com/watch?v=oobqoCJlHA0",
+        "channel": "NeetCode",
+        "notes": "Clean object-oriented implementation using hash maps/arrays for children nodes in Python."
+      }
+    ]
+  },
+  {
+    "id": "maximum-xor-of-two-numbers-in-an-array",
+    "title": "Maximum XOR of two numbers in an array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-xor-of-two-numbers-in-an-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum XOR of Two Numbers in an Array",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-xor-of-two-numbers-in-an-array/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Maximum XOR of Two Numbers in an Array",
+        "url": "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-maximum-xor-two-numbers",
+        "title": "take U forward - L6. Maximum XOR of Two Numbers in an Array | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=EIhAwfHubE8",
+        "channel": "take U forward",
+        "notes": "Bitwise 32-bit binary trie taking opposite bit branches to maximize XOR in O(32 * N) time."
+      },
+      {
+        "id": "techdose-maximum-xor-two-numbers",
+        "title": "Techdose - Max XOR of 2 numbers in an array | Leetcode #421",
+        "url": "https://www.youtube.com/watch?v=jCuZCbXnpLo",
+        "channel": "Techdose",
+        "notes": "Binary trie insertion and greedy bitwise opposite matching explanation."
+      }
+    ]
+  },
+  {
+    "id": "maximum-xor-with-an-element-from-an-array",
+    "title": "Maximum Xor with an element from an array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-xor-with-an-element-from-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum XOR Queries With an Element From Array",
+        "url": "https://www.geeksforgeeks.org/dsa/maximum-xor-queries-with-an-element-from-array/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Maximum XOR With an Element From Array",
+        "url": "https://leetcode.com/problems/maximum-xor-with-an-element-from-array/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-maximum-xor-queries",
+        "title": "take U forward - L7. Maximum XOR With an Element From Array | Queries | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=Q8LhG9Pi5KM",
+        "channel": "take U forward",
+        "notes": "Offline queries technique sorting array and queries by limit 'm' to incrementally populate Trie in O(Q log Q + N log N)."
+      },
+      {
+        "id": "takeuforward-maximum-xor-base",
+        "title": "take U forward - L6. Maximum XOR of Two Numbers in an Array | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=EIhAwfHubE8",
+        "channel": "take U forward",
+        "notes": "Foundational bitwise trie construction required before applying query constraints."
+      }
+    ]
+  },
+  {
+    "id": "number-of-distinct-substrings-in-a-string",
+    "title": "Number of distinct substrings in a string",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-of-distinct-substrings/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Count of distinct substrings of a string using Suffix Trie",
+        "url": "https://www.geeksforgeeks.org/dsa/count-distinct-substrings-string-using-suffix-trie/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Number of Distinct Substrings in a String using Trie",
+        "url": "https://takeuforward.org/data-structure/number-of-distinct-substrings-in-a-string-using-trie/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-number-of-distinct-substrings",
+        "title": "take U forward - L4. Number of Distinct Substrings in a String | Trie | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=RV0QeTyHZxo",
+        "channel": "take U forward",
+        "notes": "Counts distinct substrings by counting the number of newly created nodes in a suffix Trie in O(N^2) time."
+      },
+      {
+        "id": "shashcode-count-distinct-substrings",
+        "title": "ShashCode - Count Distinct Substrings Using Trie in Java | String + Trie Interview Problem",
+        "url": "https://www.youtube.com/watch?v=xFGetwuiUjo",
+        "channel": "ShashCode",
+        "notes": "Detailed step-by-step walkthrough of Trie insertion and node counting for substrings."
+      }
+    ]
+  },
+  {
+    "id": "trie-implementation-and-advanced-operations",
+    "title": "Trie Implementation and Advanced Operations",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/trie-delete/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Trie Delete",
+        "url": "https://www.geeksforgeeks.org/problems/trie-delete/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Implement Trie II",
+        "url": "https://takeuforward.org/data-structure/implement-trie-ii/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "takeuforward-implement-trie-2",
+        "title": "take U forward - L2. Implement Trie-2 | INSERT | countWordsEqualTo() | countWordsStartingWith() | C++ | Java",
+        "url": "https://www.youtube.com/watch?v=K5pcpkEMCN0",
+        "channel": "take U forward",
+        "notes": "Augments TrieNode with countWordsEqualTo and countWordsStartingWith counters and erase operations in O(L)."
+      },
+      {
+        "id": "takeuforward-implement-trie-1",
+        "title": "take U forward - L1. Implement TRIE | INSERT | SEARCH | STARTSWITH",
+        "url": "https://www.youtube.com/watch?v=dBGUmUQhjaM",
+        "channel": "take U forward",
+        "notes": "Foundational Trie structure and node reference setup."
+      }
+    ]
+  },
+  {
+    "id": "count-and-say",
+    "title": "Count and say",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/look-and-say-sequence/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Look-and-Say Sequence",
+        "url": "https://www.geeksforgeeks.org/dsa/look-and-say-sequence/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Count and Say",
+        "url": "https://leetcode.com/problems/count-and-say/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "techdose-count-and-say",
+        "title": "Techdose - Count and Say | Leetcode 38",
+        "url": "https://www.youtube.com/watch?v=htSwmFGdFUI",
+        "channel": "Techdose",
+        "notes": "Detailed step-by-step simulation grouping identical consecutive characters and generating next sequence terms."
+      },
+      {
+        "id": "codestorywithmik-count-and-say",
+        "title": "codestorywithMIK - Count and Say | Made Super Easy | Simple Explanation | Leetcode 38 | codestorywithMIK",
+        "url": "https://www.youtube.com/watch?v=5uJitfSM3vk",
+        "channel": "codestorywithMIK",
+        "notes": "Intuitive recursion and string building explanation in C++."
+      }
+    ]
+  },
+  {
+    "id": "hashing-in-strings-theory",
+    "title": "Hashing In Strings | Theory",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/search-pattern-rabin-karp-algorithm--141631/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Implementation of Rabin Karp Algorithm in C++",
+        "url": "https://www.geeksforgeeks.org/cpp/implementation-of-rabin-karp-algorithm-in-cpp/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Hashing In Strings",
+        "url": "https://takeuforward.org/data-structure/hashing-in-strings",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "abdul-bari-rabin-karp",
+        "title": "Abdul Bari - 9.2 Rabin-Karp String Matching Algorithm",
+        "url": "https://www.youtube.com/watch?v=qQ8vS2btsxI",
+        "channel": "Abdul Bari",
+        "notes": "Foundational theory of rolling polynomial hash functions, modular arithmetic, and spurious hit handling."
+      },
+      {
+        "id": "abdul-bari-kmp-comparison",
+        "title": "Abdul Bari - 9.1 Knuth-Morris-Pratt KMP String Matching Algorithm",
+        "url": "https://www.youtube.com/watch?v=V5-7GzOfADQ",
+        "channel": "Abdul Bari",
+        "notes": "Comparative analysis of string hashing vs deterministic automaton matching."
+      }
+    ]
+  },
+  {
+    "id": "kmp-algorithm-or-lps-array",
+    "title": "KMP Algorithm or LPS array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/search-pattern0205/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - KMP (Knuth-Morris-Pratt) Algorithm for Pattern Searching in C",
+        "url": "https://www.geeksforgeeks.org/c/kmp-algorithm-for-pattern-searching-in-c/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Find the Index of the First Occurrence in a String",
+        "url": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "abdul-bari-kmp-algorithm",
+        "title": "Abdul Bari - 9.1 Knuth-Morris-Pratt KMP String Matching Algorithm",
+        "url": "https://www.youtube.com/watch?v=V5-7GzOfADQ",
+        "channel": "Abdul Bari",
+        "notes": "Comprehensive explanation of prefix function, pi table / LPS array construction, and skipping redundant comparisons in O(N + M) time."
+      },
+      {
+        "id": "neetcode-kmp-algorithm",
+        "title": "NeetCode - Knuth\u2013Morris\u2013Pratt KMP - Find the Index of the First Occurrence in a String - Leetcode 28 - Python",
+        "url": "https://www.youtube.com/watch?v=JoF0Z7nVSrA",
+        "channel": "NeetCode",
+        "notes": "Complete step-by-step code walkthrough of LPS array computation and linear search."
+      }
+    ]
+  },
+  {
+    "id": "longest-happy-prefix",
+    "title": "Longest happy prefix",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/print-the-longest-prefix-of-the-given-string-which-is-also-the-suffix-of-the-same-string/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Longest prefix which is also suffix",
+        "url": "https://www.geeksforgeeks.org/dsa/print-the-longest-prefix-of-the-given-string-which-is-also-the-suffix-of-the-same-string/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Longest Happy Prefix",
+        "url": "https://leetcode.com/problems/longest-happy-prefix/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "aditya-verma-longest-happy-prefix",
+        "title": "Aditya Verma - 5 Longest Happy Prefix | String Matching",
+        "url": "https://www.youtube.com/watch?v=u1Gd93lM1as",
+        "channel": "Aditya Verma",
+        "notes": "Demonstrates that the longest happy prefix is directly given by the final value of the KMP LPS array."
+      },
+      {
+        "id": "bharat-khanna-longest-happy-prefix",
+        "title": "Bharat Khanna - KMP Algorithm - Longest Happy Prefix | Covering ALL DSA Patterns in Coding Interviews",
+        "url": "https://www.youtube.com/watch?v=__9D8mPnjL0",
+        "channel": "Bharat Khanna",
+        "notes": "Comprehensive explanation connecting KMP preprocessing to prefix-suffix matching in O(N) time."
+      }
+    ]
+  },
+  {
+    "id": "minimum-number-of-bracket-reversals-to-make-an-expression-balanced",
+    "title": "Minimum number of bracket reversals to make an expression balanced",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/count-the-reversals0401/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Minimum bracket reversals to make an expression balanced",
+        "url": "https://www.geeksforgeeks.org/dsa/minimum-number-of-bracket-reversals-needed-to-make-an-expression-balanced/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Minimum Add to Make Parentheses Valid",
+        "url": "https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "codehelp-babbar-bracket-reversals",
+        "title": "CodeHelp - by Babbar - Lecture 55: Stack Interview Questions || Placement Series by Love Babbar",
+        "url": "https://www.youtube.com/watch?v=BmZnJehDzyU",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "In-depth stack-based cancellation of balanced pairs and mathematical derivation for remaining brackets: ceil(m/2) + ceil(n/2)."
+      },
+      {
+        "id": "neetcodeio-minimum-add-valid-parentheses",
+        "title": "NeetCodeIO - Minimum Add to Make Parentheses Valid - Leetcode 921 - Python",
+        "url": "https://www.youtube.com/watch?v=UizI7R6ND9Q",
+        "channel": "NeetCodeIO",
+        "notes": "O(N) time and O(1) space counter-based explanation for balancing parentheses."
+      }
+    ]
+  }
+]

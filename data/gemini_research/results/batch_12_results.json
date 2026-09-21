@@ -1,0 +1,492 @@
+[
+  {
+    "id": "check-if-an-array-represents-a-min-heap",
+    "title": "Check if an array represents a min heap",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/given-level-order-traversal-binary-tree-check-tree-min-heap/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Given level order traversal of a Binary Tree, check if the Tree is a Min-Heap",
+        "url": "https://www.geeksforgeeks.org/dsa/given-level-order-traversal-binary-tree-check-tree-min-heap/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "codehelp-babbar-heaps-validation",
+        "title": "CodeHelp - by Babbar - Lecture 75: Heaps in C++ || Interview Questions || Part - 1",
+        "url": "https://www.youtube.com/watch?v=_9F2VgZcvdw",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Covers checking if a given binary tree / array satisfies the complete binary tree and heap-order properties."
+      },
+      {
+        "id": "code-and-debug-check-min-heap",
+        "title": "Code and Debug - Check if an Array Represents a Min Heap | Validation Explained",
+        "url": "https://www.youtube.com/watch?v=AxcEJLQBELU",
+        "channel": "Code and Debug",
+        "notes": "Step-by-step parent-child index validation ensuring arr[i] <= arr[2*i + 1] and arr[i] <= arr[2*i + 2]."
+      }
+    ]
+  },
+  {
+    "id": "heaps-theory-video",
+    "title": "Heaps (Theory Video)",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/implementation-of-priority-queue-using-binary-heap/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Priority Queue using Binary Heap",
+        "url": "https://www.geeksforgeeks.org/dsa/priority-queue-using-binary-heap/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Implementation of Priority Queue using Binary Heap",
+        "url": "https://www.geeksforgeeks.org/problems/implementation-of-priority-queue-using-binary-heap/1",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "abdul-bari-heap-heapsort-priority-queues",
+        "title": "Abdul Bari - 2.6.3 Heap - Heap Sort - Heapify - Priority Queues",
+        "url": "https://www.youtube.com/watch?v=HqPJF2L5h9U",
+        "channel": "Abdul Bari",
+        "notes": "Comprehensive foundational lecture explaining binary heaps, complete binary trees, heapify, and priority queue operations."
+      },
+      {
+        "id": "codehelp-babbar-heap-intro",
+        "title": "CodeHelp - by Babbar - Lecture 74: Heaps in C++ || Heap Sort || Insertion/Deletion in Heap || Priority Queue STL",
+        "url": "https://www.youtube.com/watch?v=NKJnHewiGdc",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "In-depth practical tutorial covering 1-based and 0-based array representations, insertion, deletion, and STL priority_queue."
+      }
+    ]
+  },
+  {
+    "id": "hand-of-straights",
+    "title": "Hand of Straights",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/divide-array-into-sets-of-k-consecutive-numbers/",
+    "alternate_articles": [
+      {
+        "title": "LeetCode - Hand of Straights",
+        "url": "https://leetcode.com/problems/hand-of-straights/",
+        "source": "LeetCode"
+      },
+      {
+        "title": "take U forward - Hands of Straights",
+        "url": "https://takeuforward.org/data-structure/hands-of-straights",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-hand-of-straights",
+        "title": "NeetCode - Hand of Straights - Leetcode 846 - Python",
+        "url": "https://www.youtube.com/watch?v=amnrMCVd2YI",
+        "channel": "NeetCode",
+        "notes": "Uses a min-heap with frequency hash map to greedily group consecutive numbers in O(N log N) time."
+      },
+      {
+        "id": "nick-white-hand-of-straights",
+        "title": "Nick White - LeetCode 846. Hand of Straights (Algorithm Explained)",
+        "url": "https://www.youtube.com/watch?v=K7n_BQihPCM",
+        "channel": "Nick White",
+        "notes": "Intuitive walkthrough using treemap/ordered map and min-heap tracking group sizes."
+      }
+    ]
+  },
+  {
+    "id": "k-th-largest-element-in-an-array",
+    "title": "K-th Largest element in an array",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/k-largest-elements4206/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - k Largest Elements",
+        "url": "https://www.geeksforgeeks.org/problems/k-largest-elements4206/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - Kth Smallest/Largest Element in Unsorted Array",
+        "url": "https://www.geeksforgeeks.org/dsa/kth-smallest-largest-element-in-unsorted-array/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-kth-largest-element-in-an-array",
+        "title": "NeetCode - Kth Largest Element in an Array - Quick Select - Leetcode 215 - Python",
+        "url": "https://www.youtube.com/watch?v=XEmy13g1Qxc",
+        "channel": "NeetCode",
+        "notes": "Explains the min-heap approach maintaining k elements in O(N log K) time alongside the QuickSelect average O(N) solution."
+      },
+      {
+        "id": "aditya-verma-k-largest-elements",
+        "title": "Aditya Verma - 3 Return K largest Elements in array",
+        "url": "https://www.youtube.com/watch?v=3DdP6Ef8YZM",
+        "channel": "Aditya Verma",
+        "notes": "Identification and template: when asked for kth largest, use a min-heap of size k."
+      }
+    ]
+  },
+  {
+    "id": "kth-smallest-element-in-an-array-use-priority-queue",
+    "title": "Kth smallest element in an array [use priority queue]",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Kth Smallest",
+        "url": "https://www.geeksforgeeks.org/problems/kth-smallest-element5635/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "GeeksforGeeks - K'th Smallest Element in an Array",
+        "url": "https://www.geeksforgeeks.org/dsa/kth-smallest-largest-element-in-unsorted-array/",
+        "source": "GeeksforGeeks"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "aditya-verma-kth-smallest-element",
+        "title": "Aditya Verma - 2 Kth Smallest Element",
+        "url": "https://www.youtube.com/watch?v=4BfL2Hjvh8g",
+        "channel": "Aditya Verma",
+        "notes": "Core pattern explanation: when asked for kth smallest, maintain a max-heap of size k to achieve O(N log K) time."
+      },
+      {
+        "id": "codehelp-babbar-kth-smallest",
+        "title": "CodeHelp - by Babbar - Lecture 75: Heaps in C++ || Interview Questions || Part - 1",
+        "url": "https://www.youtube.com/watch?v=_9F2VgZcvdw",
+        "channel": "CodeHelp - by Babbar",
+        "notes": "Step-by-step implementation comparing sorting, min-heap, and optimal max-heap of size k."
+      }
+    ]
+  },
+  {
+    "id": "merge-k-sorted-lists",
+    "title": "Merge K sorted Lists",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/merge-k-sorted-linked-lists/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Merge K Sorted Linked Lists using Min Heap",
+        "url": "https://www.geeksforgeeks.org/dsa/merge-k-sorted-linked-lists-set-2-using-min-heap/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Merge k Sorted Lists",
+        "url": "https://leetcode.com/problems/merge-k-sorted-lists/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-merge-k-sorted-lists",
+        "title": "NeetCode - Merge K Sorted Lists - Leetcode 23 - Python",
+        "url": "https://www.youtube.com/watch?v=q5a5OiGbT6Q",
+        "channel": "NeetCode",
+        "notes": "Detailed breakdown comparing min-heap priority queue approach with divide-and-conquer merge sort."
+      },
+      {
+        "id": "takeuforward-merge-k-sorted-lists",
+        "title": "take U forward - L25. Merge K Sorted Lists | Multiple Approaches",
+        "url": "https://www.youtube.com/watch?v=1zktEppsdig",
+        "channel": "take U forward",
+        "notes": "Striver explains optimal min-heap implementation pushing node heads and advancing pointers in O(N log K)."
+      }
+    ]
+  },
+  {
+    "id": "replace-elements-by-their-rank",
+    "title": "Replace Elements by Their Rank",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/convert-an-array-to-reduced-form1101/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Replace Elements by Ranks",
+        "url": "https://www.geeksforgeeks.org/problems/convert-an-array-to-reduced-form1101/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Replace elements by its rank in the array",
+        "url": "https://takeuforward.org/data-structure/replace-elements-by-its-rank-in-the-array/",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "techdose-rank-transform-array",
+        "title": "Techdose - Rank Transform of an Array | Leetcode 1331",
+        "url": "https://www.youtube.com/watch?v=f1nZp5Mr3XE",
+        "channel": "Techdose",
+        "notes": "Walkthrough using sorting or min-heap with hash map to assign 1-based ranks to unique elements."
+      },
+      {
+        "id": "cracking-faang-rank-transform",
+        "title": "Cracking FAANG - RANK TRANSFORM OF AN ARRAY | LEETCODE 1331 | PYTHON SOLUTION",
+        "url": "https://www.youtube.com/watch?v=Q7PFgrpecpE",
+        "channel": "Cracking FAANG",
+        "notes": "Concise clean implementation mapping sorted unique values to ranks."
+      }
+    ]
+  },
+  {
+    "id": "sort-k-sorted-array",
+    "title": "Sort K sorted array",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/sort-a-nearly-sorted-array-using-stl/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Sort a nearly sorted array using STL",
+        "url": "https://www.geeksforgeeks.org/dsa/sort-a-nearly-sorted-array-using-stl/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Sort K sorted array",
+        "url": "https://takeuforward.org/data-structure/sort-k-sorted-array",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "aditya-verma-sort-k-sorted-array",
+        "title": "Aditya Verma - 4 Sort a K Sorted Array",
+        "url": "https://www.youtube.com/watch?v=dYfM6J1y0mU",
+        "channel": "Aditya Verma",
+        "notes": "Maintains a min-heap of size k + 1, continuously extracting the minimum element to achieve O(N log K) time."
+      },
+      {
+        "id": "yash-dwivedi-nearly-sorted",
+        "title": "Yash Dwivedi - Nearly sorted | Problem of the Day : 08/06/22 | Yash Dwivedi",
+        "url": "https://www.youtube.com/watch?v=Sk5ZxELRgj4",
+        "channel": "Yash Dwivedi",
+        "notes": "Clear intuition and live C++ code solving the nearly sorted array problem on GeeksforGeeks."
+      }
+    ]
+  },
+  {
+    "id": "task-scheduler",
+    "title": "Task Scheduler",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/task-scheduler/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Geek's Task Schedule",
+        "url": "https://www.geeksforgeeks.org/problems/task-scheduler/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Task Scheduler Editorial",
+        "url": "https://leetcode.com/problems/task-scheduler/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-task-scheduler",
+        "title": "NeetCode - Task Scheduler - Leetcode 621 - Python",
+        "url": "https://www.youtube.com/watch?v=s8p8ukTyA2I",
+        "channel": "NeetCode",
+        "notes": "Max-heap combined with a cooldown queue simulating CPU cycles to minimize idle slots."
+      },
+      {
+        "id": "nick-white-task-scheduler",
+        "title": "Nick White - LeetCode 621. Task Scheduler (Algorithm Explained)",
+        "url": "https://www.youtube.com/watch?v=eGf-26OTI-A",
+        "channel": "Nick White",
+        "notes": "Breaks down both the priority queue simulation approach and the greedy mathematical formula."
+      }
+    ]
+  },
+  {
+    "id": "design-twitter",
+    "title": "Design Twitter",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/design-twitter/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Design Twitter",
+        "url": "https://www.geeksforgeeks.org/problems/design-twitter/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Design Twitter",
+        "url": "https://leetcode.com/problems/design-twitter/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-design-twitter",
+        "title": "NeetCode - Design Twitter - Leetcode 355 - Python",
+        "url": "https://www.youtube.com/watch?v=pNichitDD2E",
+        "channel": "NeetCode",
+        "notes": "Implements follow/unfollow and retrieves the 10 most recent tweets using a max-heap merging user tweet lists."
+      },
+      {
+        "id": "neetcode-design-twitter-system-design",
+        "title": "NeetCode - Design Twitter - System Design Interview",
+        "url": "https://www.youtube.com/watch?v=o5n85GRKuzk",
+        "channel": "NeetCode",
+        "notes": "Expands on feed generation, fanout-on-write vs fanout-on-read, and real-time newsfeed architectures."
+      }
+    ]
+  },
+  {
+    "id": "find-median-from-data-stream",
+    "title": "Find Median from Data Stream",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/find-median-in-a-stream-1587115620/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Find Median in a Stream",
+        "url": "https://www.geeksforgeeks.org/problems/find-median-in-a-stream-1587115620/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Find Median from Data Stream",
+        "url": "https://leetcode.com/problems/find-median-from-data-stream/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-find-median-from-data-stream",
+        "title": "NeetCode - Find Median from Data Stream - Heap & Priority Queue - Leetcode 295",
+        "url": "https://www.youtube.com/watch?v=itmhHWaHupI",
+        "channel": "NeetCode",
+        "notes": "Two-heap design (max-heap for smaller half, min-heap for larger half) to find median in O(1) time and add in O(log N)."
+      },
+      {
+        "id": "techdose-find-median-from-data-stream",
+        "title": "Techdose - Find Median from Data Stream",
+        "url": "https://www.youtube.com/watch?v=1LkOrc-Le-Y",
+        "channel": "Techdose",
+        "notes": "Comprehensive explanation of balancing sizes between max-heap and min-heap with detailed dry run."
+      }
+    ]
+  },
+  {
+    "id": "kth-largest-element-in-a-stream-of-running-integers",
+    "title": "Kth largest element in a stream of running integers",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/kth-largest-element-in-a-stream2220/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Kth largest in a stream",
+        "url": "https://www.geeksforgeeks.org/dsa/kth-largest-element-in-a-stream/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Kth Largest Element in a Stream",
+        "url": "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-kth-largest-in-stream",
+        "title": "NeetCode - Kth Largest Element in a Stream - Leetcode 703 - Python",
+        "url": "https://www.youtube.com/watch?v=hOjcdrqMoQ8",
+        "channel": "NeetCode",
+        "notes": "Maintains a min-heap capped at size k such that the root always represents the current kth largest element in O(log K) per addition."
+      },
+      {
+        "id": "mikethecoder-kth-largest-stream",
+        "title": "Mike the Coder - LeetCode: Kth Largest Element in a Stream",
+        "url": "https://www.youtube.com/watch?v=m6zDTNzC1bA",
+        "channel": "Mike the Coder",
+        "notes": "Clear visual presentation of heap sizing and element eviction."
+      }
+    ]
+  },
+  {
+    "id": "maximum-sum-combination",
+    "title": "Maximum Sum Combination",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/maximum-sum-combination/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Maximum Sum Combination",
+        "url": "https://www.geeksforgeeks.org/problems/maximum-sum-combination/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Maximum Sum Combination",
+        "url": "https://takeuforward.org/data-structure/maximum-sum-combination",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "brocoders-maximum-sum-combinations",
+        "title": "Bro Coders - Maximum sum combinations | Amazon | InterviewBit | Day 27",
+        "url": "https://www.youtube.com/watch?v=55TeHh37Ly8",
+        "channel": "Bro Coders",
+        "notes": "Sorts both arrays and uses a max-heap with index pair tracking via a set to extract the top C combinations in O(C log C) time."
+      },
+      {
+        "id": "school-of-ai-maximum-sum-combination",
+        "title": "School of AI - GFG POTD: 25/09/2023 | Maximum Sum Combination | Problem of the Day GeeksforGeeks",
+        "url": "https://www.youtube.com/watch?v=RXmcaPCDJiM",
+        "channel": "School of AI",
+        "notes": "Detailed walkthrough of priority queue traversal and avoiding duplicate pair insertions."
+      }
+    ]
+  },
+  {
+    "id": "minimum-cost-to-connect-sticks",
+    "title": "Minimum Cost to Connect Sticks",
+    "gfg_url": "https://www.geeksforgeeks.org/dsa/connect-n-ropes-minimum-cost/",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Min Cost to Connect Ropes",
+        "url": "https://www.geeksforgeeks.org/dsa/connect-n-ropes-minimum-cost/",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "take U forward - Minimum Cost to Connect Sticks",
+        "url": "https://takeuforward.org/data-structure/minimum-cost-to-connect-sticks",
+        "source": "take U forward"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "aditya-verma-connect-ropes",
+        "title": "Aditya Verma - 9 Connect Ropes to Minimise the Cost",
+        "url": "https://www.youtube.com/watch?v=_k_c9nqzKN0",
+        "channel": "Aditya Verma",
+        "notes": "Classic greedy Huffman-coding approach: always pick and combine the two smallest sticks via a min-heap."
+      },
+      {
+        "id": "pepcoding-minimum-cost-to-connect-sticks",
+        "title": "Pepcoding - Minimum cost to connect sticks || Leetcode",
+        "url": "https://www.youtube.com/watch?v=wxBp_rFU7SY",
+        "channel": "Pepcoding",
+        "notes": "Optimal O(N log N) min-heap simulation accumulating connection costs until one stick remains."
+      }
+    ]
+  },
+  {
+    "id": "top-k-frequent-elements",
+    "title": "Top K Frequent Elements",
+    "gfg_url": "https://www.geeksforgeeks.org/problems/top-k-frequent-elements-in-array/1",
+    "alternate_articles": [
+      {
+        "title": "GeeksforGeeks - Top K Frequent in Array",
+        "url": "https://www.geeksforgeeks.org/problems/top-k-frequent-elements-in-array/1",
+        "source": "GeeksforGeeks"
+      },
+      {
+        "title": "LeetCode - Top K Frequent Elements",
+        "url": "https://leetcode.com/problems/top-k-frequent-elements/",
+        "source": "LeetCode"
+      }
+    ],
+    "alternate_videos": [
+      {
+        "id": "neetcode-top-k-frequent-elements",
+        "title": "NeetCode - Top K Frequent Elements - Bucket Sort - Leetcode 347 - Python",
+        "url": "https://www.youtube.com/watch?v=YPTqKIgVk-k",
+        "channel": "NeetCode",
+        "notes": "Compares min-heap approach of size k in O(N log K) with optimal bucket sort in O(N) linear time."
+      },
+      {
+        "id": "aditya-verma-top-k-frequent-numbers",
+        "title": "Aditya Verma - 6 Top K Frequent Numbers",
+        "url": "https://www.youtube.com/watch?v=7VoJn544QrM",
+        "channel": "Aditya Verma",
+        "notes": "Frequency map construction followed by a min-heap of size k storing frequency-element pairs."
+      }
+    ]
+  }
+]
