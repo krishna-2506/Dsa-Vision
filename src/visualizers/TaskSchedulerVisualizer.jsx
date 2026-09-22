@@ -183,8 +183,8 @@ export default function TaskSchedulerVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* CPU Execution Timeline */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">CPU Execution Schedule Slots</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">CPU Execution Schedule Slots</span>
 
         <div className="flex items-center justify-center gap-2 overflow-x-auto w-full py-2">
           {step.timeline.map((slot, idx) => {
@@ -192,7 +192,7 @@ export default function TaskSchedulerVisualizer({ currentStep = 0 }) {
             const isTaskA = slot === 'A';
             const isTaskB = slot === 'B';
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-500';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]';
             if (isIdle) {
               borderClass = 'border-rose-500/40 bg-rose-500/15 text-rose-400 font-semibold italic';
             } else if (isTaskA) {
@@ -207,18 +207,18 @@ export default function TaskSchedulerVisualizer({ currentStep = 0 }) {
                   <span>{isIdle ? '💤' : '⚙️'}</span>
                   <span className="mt-0.5">{slot || '—'}</span>
                 </div>
-                <span className="text-[9px] font-mono text-slate-500">t={idx}</span>
+                <span className="text-[9px] font-mono text-[var(--chalk-faint)]">t={idx}</span>
               </div>
             );
           })}
           {step.timeline.length === 0 && (
-            <span className="text-xs font-mono text-slate-500 italic">Initializing scheduling chunks...</span>
+            <span className="text-xs font-mono text-[var(--chalk-faint)] italic">Initializing scheduling chunks...</span>
           )}
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

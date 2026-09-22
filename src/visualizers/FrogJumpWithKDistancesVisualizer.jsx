@@ -1,12 +1,25 @@
-import React from 'react';
+// DATA-ONLY — rendered by DualArrayRenderer via rendererType
 
 export const meta = {
-  title: 'Frog Jump with K Distances',
+  title: 'Frog Jump with K Distances (DP-4)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * K)',
-  spaceComplexity: 'O(N)',
-  description: 'Generalizes Frog Jump where the frog can jump up to K steps forward at any point. At each stone i, we evaluate all possible previous steps (i - j) for 1 <= j <= K to minimize total energy.'
+  timeComplexity: 'O(N × K) Time',
+  spaceComplexity: 'O(N) Space',
+  description: 'Generalizes Frog Jump allowing jumps of up to K stairs forward at any point. At each stair i, we inspect all previous accessible stairs (i - j) for 1 <= j <= K to minimize total energy.'
+};
+
+export const rendererType = 'dual-array';
+
+export const ideaMap = {
+  title: 'Frog Jump with K Distances (DP-4)',
+  nodes: [
+    { id: 'root', label: 'K-Step Energy Minimization', children: ['k-branching', 'inner-loop-scan', 'optimal-substructure', 'time-space-tradeoff'] },
+    { id: 'k-branching', label: '1. K Leaping Options', detail: 'From any stair i, the frog can originate from any stone (i - j) where 1 <= j <= K and i - j >= 0.' },
+    { id: 'inner-loop-scan', label: '2. Inner Loop Min Scan', detail: 'jumpCost = dp[i - j] + |heights[i] - heights[i - j]| for all j in 1..K.' },
+    { id: 'optimal-substructure', label: '3. Min Energy Choice', detail: 'dp[i] = min_{1<=j<=K}(dp[i - j] + |h[i] - h[i - j]|)' },
+    { id: 'time-space-tradeoff', label: '4. Complexity O(N × K)', detail: 'N states each requiring K inner comparisons gives O(N × K) time with O(N) array storage.' }
+  ]
 };
 
 export const solutions = {
@@ -86,145 +99,263 @@ var minimizeCost = function(n, k, heights) {
 
 export const steps = [
   {
-    title: '1. Initialize: Heights [10, 30, 40, 50, 20], K = 3',
+    title: '1. K-Distance Generalization & Problem Setup',
     phase: 'INITIAL',
-    codeLine: 13,
-    heights: [10, 30, 40, 50, 20],
-    k: 3,
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: ['—', '—', '—', '—', '—'] }
+    ],
+    activeI: null,
+    activePrev: null,
+    trackTitle: 'K-Step Transition State',
+    metrics: [
+      { label: 'Stairs N', value: '5' },
+      { label: 'Max Jump K', value: '3' },
+      { label: 'Time Complexity', value: 'O(N × K)' }
+    ],
+    customCard: {
+      title: 'K-Step Jump Recurrence',
+      rows: [
+        { label: 'Allowed Jumps', value: 'j in {1, 2, ..., K}' },
+        { label: 'Jump Formula', value: 'dp[i-j] + |heights[i] - heights[i-j]|' },
+        { label: 'Min Scan', value: 'dp[i] = min_{1<=j<=k}(jumpCost)', accent: true }
+      ]
+    },
+    formula: 'dp[i] = min_{1<=j<=K, i-j>=0} (dp[i-j] + |heights[i] - heights[i-j]|)',
+    action: 'Initialize DP table for N=5 stones with maximum leap distance K=3',
+    explain: 'Instead of being limited to 1 or 2 steps, the frog can jump up to K=3 stairs in a single bound. At each stair i, an inner loop checks all valid ancestors (i - 1, i - 2, ..., i - K).',
+    intuition: 'Larger K gives greater flexibility to bypass expensive intermediate peaks.'
+  },
+  {
+    title: '2. Base Case: Stair 0',
+    phase: 'BASE_CASES',
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: [0, '—', '—', '—', '—'] }
+    ],
     activeI: 0,
-    dp: [0, null, null, null, null],
-    jumpsTested: [],
-    variables: { n: 5, k: 3, 'dp[0]': 0 },
-    explain: 'Starting at stone 0, base energy dp[0] = 0. We can jump up to 3 stones in a single leap.',
-    intuition: 'At each stone i, we evaluate up to K previous states.'
+    activePrev: null,
+    trackTitle: 'Base Case Initialization',
+    metrics: [
+      { label: 'Stair i', value: '0' },
+      { label: 'Height', value: '10' },
+      { label: 'dp[0]', value: '0' }
+    ],
+    customCard: {
+      title: 'Stair 0 Origin',
+      rows: [
+        { label: 'Starting Stone', value: 'Stair 0' },
+        { label: 'Energy Spent', value: '0' },
+        { label: 'dp[0]', value: '0', accent: true }
+      ]
+    },
+    formula: 'dp[0] = 0',
+    action: 'Set base case dp[0] = 0',
+    explain: 'At the starting stair 0, energy consumed is 0. dp[0] = 0.',
+    intuition: 'Zero movement requires zero energy.'
   },
   {
-    title: '2. Stone 1 (H=30): Jump from Stone 0 (j=1) -> Cost 0 + |30-10| = 20',
+    title: '3. Stair 1: Single Jump from 0',
     phase: 'COMPUTE',
-    codeLine: 18,
-    heights: [10, 30, 40, 50, 20],
-    k: 3,
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: [0, 20, '—', '—', '—'] }
+    ],
     activeI: 1,
-    dp: [0, 20, null, null, null],
-    jumpsTested: [{ from: 0, cost: 20 }],
-    variables: { i: 1, 'j=1': 'dp[0]+|30-10|=20', 'dp[1]': 20 },
-    explain: 'Only 1 preceding stone exists (j=1). Jump cost = 0 + 20 = 20.',
-    intuition: 'No further backward jumps possible since index cannot be negative.'
+    activePrev: 0,
+    trackTitle: 'Step i = 1 Evaluation',
+    metrics: [
+      { label: 'Stair i', value: '1 (H=30)' },
+      { label: 'Valid j', value: 'j = 1 only' },
+      { label: 'Cost', value: '0 + |30-10| = 20' },
+      { label: 'dp[1]', value: '20' }
+    ],
+    customCard: {
+      title: 'Stair 1 Ancestors',
+      rows: [
+        { label: 'j = 1 (from 0)', value: 'dp[0](0) + |30 - 10| = 20' },
+        { label: 'j = 2, 3', value: 'Out of bounds (i - j < 0)' },
+        { label: 'dp[1]', value: '20', accent: true }
+      ]
+    },
+    formula: 'dp[1] = dp[0] + |30 - 10| = 20',
+    action: 'Only j = 1 is in bounds; compute energy = 20',
+    explain: 'Only stone 0 can reach stone 1. Cost is dp[0] + |30 - 10| = 20. dp[1] = 20.',
+    intuition: 'Boundary conditions restrict available choices near the start of the array.'
   },
   {
-    title: '3. Stone 2 (H=40): Check j=1 (from 1: 20+10=30) and j=2 (from 0: 0+30=30)',
+    title: '4. Stair 2: Jumps from Stair 1 (j=1) and Stair 0 (j=2)',
     phase: 'COMPUTE',
-    codeLine: 18,
-    heights: [10, 30, 40, 50, 20],
-    k: 3,
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: [0, 20, 30, '—', '—'] }
+    ],
     activeI: 2,
-    dp: [0, 20, 30, null, null],
-    jumpsTested: [{ from: 1, cost: 30 }, { from: 0, cost: 30 }],
-    variables: { i: 2, 'j=1': '20+10=30', 'j=2': '0+30=30', 'dp[2]': 30 },
-    explain: 'Testing jump from stone 1 (cost 30) and stone 0 (cost 30). Minimum = 30.',
-    intuition: 'Both single and double jumps reach stone 2 with equal energy.'
+    activePrev: 1,
+    trackTitle: 'Step i = 2 Evaluation',
+    metrics: [
+      { label: 'Stair i', value: '2 (H=40)' },
+      { label: 'From 1 (j=1)', value: '20 + |40-30| = 30' },
+      { label: 'From 0 (j=2)', value: '0 + |40-10| = 30' },
+      { label: 'dp[2]', value: '30' }
+    ],
+    customCard: {
+      title: 'Stair 2 Comparison',
+      rows: [
+        { label: 'j = 1 (from 1)', value: '20 + 10 = 30' },
+        { label: 'j = 2 (from 0)', value: '0 + 30 = 30' },
+        { label: 'Chosen dp[2]', value: 'min(30, 30) = 30', accent: true }
+      ]
+    },
+    formula: 'dp[2] = min(dp[1] + 10, dp[0] + 30) = min(30, 30) = 30',
+    action: 'Evaluate j in {1, 2}; both give equal minimum cost 30',
+    explain: 'Hopping 1 step from stone 1 costs 20 + 10 = 30. Hopping 2 steps from stone 0 costs 0 + 30 = 30. Both yield 30. dp[2] = 30.',
+    intuition: 'Multiple distinct jump routes can tie for minimum cost.'
   },
   {
-    title: '4. Stone 3 (H=50): Check j=1 (30+10=40), j=2 (20+20=40), j=3 (0+40=40)',
+    title: '5. Stair 3: Full K = 3 Jumps Evaluated',
     phase: 'COMPUTE',
-    codeLine: 18,
-    heights: [10, 30, 40, 50, 20],
-    k: 3,
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: [0, 20, 30, 40, '—'] }
+    ],
     activeI: 3,
-    dp: [0, 20, 30, 40, null],
-    jumpsTested: [{ from: 2, cost: 40 }, { from: 1, cost: 40 }, { from: 0, cost: 40 }],
-    variables: { i: 3, 'j=1,2,3': 'all 40', 'dp[3]': 40 },
-    explain: 'Testing all 3 valid backward steps (from stones 2, 1, 0). All result in 40. dp[3] = 40.',
-    intuition: 'Checking full window of K preceding stones.'
+    activePrev: 2,
+    trackTitle: 'Step i = 3 Evaluation',
+    metrics: [
+      { label: 'Stair i', value: '3 (H=50)' },
+      { label: 'From 2 (j=1)', value: '30 + 10 = 40' },
+      { label: 'From 1 (j=2)', value: '20 + 20 = 40' },
+      { label: 'From 0 (j=3)', value: '0 + 40 = 40' }
+    ],
+    customCard: {
+      title: 'Stair 3: All 3 Options',
+      rows: [
+        { label: 'j = 1 (from 2)', value: '30 + |50 - 40| = 40' },
+        { label: 'j = 2 (from 1)', value: '20 + |50 - 30| = 40' },
+        { label: 'j = 3 (from 0)', value: '0 + |50 - 10| = 40' },
+        { label: 'Chosen dp[3]', value: 'min(40, 40, 40) = 40', accent: true }
+      ]
+    },
+    formula: 'dp[3] = min(dp[2]+10, dp[1]+20, dp[0]+40) = min(40, 40, 40) = 40',
+    action: 'All K=3 jump candidates yield cost 40; dp[3] = 40',
+    explain: 'At stair 3, all 3 jump sizes (j=1, 2, 3) are valid, and each happens to sum to 40. dp[3] = 40.',
+    intuition: 'Each additional leap option adds one comparison to the inner loop.'
   },
   {
-    title: '5. Stone 4 (H=20): j=1 (from 3: 40+30=70), j=2 (from 2: 30+20=50), j=3 (from 1: 20+10=30)',
-    phase: 'COMPLETED',
-    codeLine: 23,
-    heights: [10, 30, 40, 50, 20],
-    k: 3,
+    title: '6. Stair 4: Evaluating j = 1 (Jump from 3)',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: [0, 20, 30, 40, 70] }
+    ],
     activeI: 4,
-    dp: [0, 20, 30, 40, 30],
-    jumpsTested: [{ from: 3, cost: 70 }, { from: 2, cost: 50 }, { from: 1, cost: 30 }],
-    variables: { i: 4, minCost: 30, bestJump: 'From Stone 1 (j=3)' },
-    explain: 'Evaluating jumps: from 3 gives 70, from 2 gives 50, from 1 gives 30! Minimum total energy is 30.',
-    intuition: 'A long leap of 3 steps from stone 1 bypasses stones 2 and 3, saving significant energy!'
+    activePrev: 3,
+    trackTitle: 'Step i = 4 (Candidate j = 1)',
+    metrics: [
+      { label: 'Target Stair', value: '4 (H=20)' },
+      { label: 'From Stair 3', value: 'dp[3]=40' },
+      { label: 'Cost', value: '40 + |20-50| = 70' },
+      { label: 'Current Min', value: '70' }
+    ],
+    customCard: {
+      title: 'Candidate j = 1',
+      rows: [
+        { label: 'From Stair 3', value: 'dp[3] = 40' },
+        { label: 'Height Jump', value: '|20 - 50| = 30' },
+        { label: 'Candidate Cost', value: '40 + 30 = 70', accent: true }
+      ]
+    },
+    formula: 'candidate(j=1) = dp[3] + |20 - 50| = 70',
+    action: 'First candidate j = 1 gives cost 70',
+    explain: 'Jumping 1 step from stair 3 (height 50) to 4 (height 20) incurs 30 energy: 40 + 30 = 70. We proceed to inspect j = 2.',
+    intuition: 'Steep height drop from 50 to 20 makes a 1-step jump costly.'
+  },
+  {
+    title: '7. Stair 4: Evaluating j = 2 (Jump from 2)',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: [0, 20, 30, 40, 50] }
+    ],
+    activeI: 4,
+    activePrev: 2,
+    trackTitle: 'Step i = 4 (Candidate j = 2)',
+    metrics: [
+      { label: 'Target Stair', value: '4 (H=20)' },
+      { label: 'From Stair 2', value: 'dp[2]=30' },
+      { label: 'Cost', value: '30 + |20-40| = 50' },
+      { label: 'Current Min', value: '50' }
+    ],
+    customCard: {
+      title: 'Candidate j = 2',
+      rows: [
+        { label: 'From Stair 2', value: 'dp[2] = 30' },
+        { label: 'Height Jump', value: '|20 - 40| = 20' },
+        { label: 'Candidate Cost', value: '30 + 20 = 50 (beats 70!)', accent: true }
+      ]
+    },
+    formula: 'candidate(j=2) = dp[2] + |20 - 40| = 50 < 70 -> update to 50',
+    action: 'Candidate j = 2 gives cost 50; update minimum to 50',
+    explain: 'Jumping 2 steps from stair 2 (height 40) costs 30 + |20 - 40| = 50. This is 20 units cheaper than jumping from stair 3.',
+    intuition: 'Bypassing stair 3 entirely avoids the extreme altitude peak of 50.'
+  },
+  {
+    title: '8. Stair 4: Evaluating j = 3 (Jump from 1) -> WINNER!',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'dp (Min Energy)', items: [0, 20, 30, 40, 30] }
+    ],
+    activeI: 4,
+    activePrev: 1,
+    trackTitle: 'Step i = 4 (Candidate j = 3)',
+    metrics: [
+      { label: 'Target Stair', value: '4 (H=20)' },
+      { label: 'From Stair 1', value: 'dp[1]=20' },
+      { label: 'Cost', value: '20 + |20-30| = 30' },
+      { label: 'Final Min dp[4]', value: '30', highlight: true }
+    ],
+    customCard: {
+      title: 'Candidate j = 3 (Leap Across 3 Stones)',
+      rows: [
+        { label: 'From Stair 1', value: 'dp[1] = 20' },
+        { label: 'Height Jump', value: '|20 - 30| = 10' },
+        { label: 'Candidate Cost', value: '20 + 10 = 30 (beats 50!)', accent: true }
+      ]
+    },
+    formula: 'candidate(j=3) = dp[1] + |20 - 30| = 30 < 50 -> dp[4] = 30',
+    action: 'A massive 3-step jump from stone 1 achieves the global minimum of 30!',
+    explain: 'Stair 1 has height 30 and stair 4 has height 20. The energy cost is only |20 - 30| = 10! Adding dp[1] = 20 gives 20 + 10 = 30, crushing the other options (50 and 70).',
+    intuition: 'Longer jump distances K enable powerful shortcuts directly connecting similar altitudes.'
+  },
+  {
+    title: '9. Final Result: Minimum Cost = 30',
+    phase: 'COMPLETED',
+    tracks: [
+      { label: 'Heights', items: [10, 30, 40, 50, 20] },
+      { label: 'Optimal Path', items: ['Start (0)', 'Jump 1 (1)', '—', '—', 'Leap 3 (4)'] }
+    ],
+    activeI: 4,
+    activePrev: 1,
+    trackTitle: 'Optimal Solution Summary',
+    metrics: [
+      { label: 'Min Energy', value: '30', highlight: true },
+      { label: 'Path', value: '0 → 1 → 4' },
+      { label: 'Time Complexity', value: 'O(N × K)' },
+      { label: 'Space Complexity', value: 'O(N)' }
+    ],
+    customCard: {
+      title: 'Optimal Path Verification',
+      rows: [
+        { label: 'Hop 1 (0 -> 1)', value: '|30 - 10| = 20' },
+        { label: 'Hop 2 (1 -> 4)', value: '|20 - 30| = 10 (jump distance 3)' },
+        { label: 'Total Energy', value: '20 + 10 = 30', accent: true }
+      ]
+    },
+    formula: 'Result = dp[N-1] = 30',
+    action: 'Return final answer dp[4] = 30',
+    explain: 'The algorithm terminates in O(N × K) time and O(N) auxiliary space. The frog reaches the final stair with minimum energy 30 via path 0 -> 1 -> 4.',
+    intuition: 'Generalizing to K jumps converts a local neighbor search into a versatile multi-hop shortest path on a DAG.'
   }
 ];
-
-export default function FrogJumpWithKDistancesVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Max Jump Distance K = {step.k}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Target Stone: {step.activeI} | Min Energy: {step.dp[step.activeI] ?? '—'}
-        </span>
-      </div>
-
-      {/* Stones Array */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-5 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Stones Heights & Evaluated K-Jumps
-        </span>
-
-        <div className="w-full flex items-center justify-around gap-2 pt-2">
-          {step.heights.map((h, idx) => {
-            const isTarget = idx === step.activeI;
-            const energy = step.dp[idx];
-            const isTestedFrom = step.jumpsTested.some(jt => jt.from === idx);
-
-            return (
-              <div key={idx} className="flex flex-col items-center gap-2">
-                {isTarget ? (
-                  <span className="text-2xl animate-bounce">🐸</span>
-                ) : (
-                  <div className="h-8" />
-                )}
-
-                <div
-                  className={`w-18 h-24 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                    isTarget
-                      ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg'
-                      : isTestedFrom
-                      ? 'border-amber-500 bg-amber-500/20 text-amber-300'
-                      : energy !== null
-                      ? 'border-purple-500/40 bg-purple-500/15 text-purple-300'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-500'
-                  }`}
-                >
-                  <span className="text-[10px] text-[#8a8ea3]">Idx {idx}</span>
-                  <span className="text-xs font-bold text-amber-400 mt-0.5">H: {h}</span>
-                  <span className="text-[11px] font-semibold text-emerald-400 mt-2">
-                    {energy !== null ? `DP: ${energy}` : '—'}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Tested Jumps List */}
-        {step.jumpsTested.length > 0 && (
-          <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-            {step.jumpsTested.map((j, jidx) => (
-              <span key={jidx} className="px-2.5 py-1 rounded bg-[#12131b] border border-[#272b3c] text-slate-300">
-                From Stone {j.from} ➔ Total Energy: <strong className="text-amber-300">{j.cost}</strong>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

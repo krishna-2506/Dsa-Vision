@@ -144,7 +144,7 @@ export default function InsertionAtTheHeadOfLinkedListVisualizer({ currentStep =
       </div>
 
       {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-6">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-6">
         {/* Floating New Node Stage */}
         {step.newNodeVal !== null && (
           <div className="flex flex-col items-center gap-2 animate-bounce">
@@ -176,27 +176,27 @@ export default function InsertionAtTheHeadOfLinkedListVisualizer({ currentStep =
                     </span>
                   )}
                   <div className={`w-14 h-14 rounded-xl border flex items-center justify-center font-mono text-base font-bold ${
-                    isHead ? 'bg-cyan-500/15 border-cyan-400 text-cyan-200' : 'bg-[#12131b] border-[#272b3c] text-white'
+                    isHead ? 'bg-cyan-500/15 border-cyan-400 text-cyan-200' : 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]'
                   }`}>
                     {val}
                   </div>
                 </div>
 
                 {/* Pointer Arrow */}
-                <div className="text-[#8a8ea3] text-lg font-bold">&rarr;</div>
+                <div className="text-[var(--chalk-dim)] text-lg font-bold">&rarr;</div>
               </React.Fragment>
             );
           })}
 
           {/* NULL Terminator */}
-          <div className="w-14 h-14 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[#8a8ea3]">
+          <div className="w-14 h-14 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[var(--chalk-dim)]">
             NULL
           </div>
         </div>
       </div>
 
       {/* Complexity Banner */}
-      <div className="w-full p-3 rounded-xl bg-[#12131b] border border-[#202436] flex items-center justify-around font-mono text-xs text-[#8a8ea3]">
+      <div className="w-full p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-around font-mono text-xs text-[var(--chalk-dim)]">
         <div>Time Complexity: <strong className="text-emerald-400">O(1)</strong></div>
         <div>Auxiliary Space: <strong className="text-emerald-400">O(1)</strong></div>
       </div>

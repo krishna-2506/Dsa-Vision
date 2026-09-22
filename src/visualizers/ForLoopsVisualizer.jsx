@@ -126,30 +126,30 @@ export default function ForLoopsVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Loop Control Cycle</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Loop Control Cycle</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-          <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] space-y-1">
-            <span className="text-slate-400 text-[10px] uppercase">Condition Check:</span>
+          <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] space-y-1">
+            <span className="text-[var(--chalk-dim)] text-[10px] uppercase">Condition Check:</span>
             <div className={`font-bold ${step.phase === 'TERMINATE' ? 'text-rose-400' : 'text-emerald-400'}`}>
               {step.conditionResult}
             </div>
           </div>
-          <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] space-y-1">
-            <span className="text-slate-400 text-[10px] uppercase">Active Operation:</span>
+          <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] space-y-1">
+            <span className="text-[var(--chalk-dim)] text-[10px] uppercase">Active Operation:</span>
             <div className="text-indigo-300 font-semibold truncate">
               {step.action}
             </div>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

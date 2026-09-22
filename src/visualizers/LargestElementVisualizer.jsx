@@ -1,19 +1,32 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   display_id: 'Q-001',
-  title: 'Largest Element In Array',
-  category: 'Arrays',
+  title: 'Largest Element in Array',
+  category: 'Arrays & Linear Scan',
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1)',
-  description: 'Find the maximum value present in an unsorted array of integers.'
+  description: 'Finds the maximum value in an unsorted array of integers by performing a single linear traversal while maintaining a running maximum.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Largest Element Scanning Strategy',
+  nodes: [
+    { id: 'root', label: 'Single-Pass Peak Tracking', children: ['init-max', 'linear-scan', 'conditional-update', 'final-return', 'complexity'] },
+    { id: 'init-max', label: '1. Initialize with Head', detail: 'Set maxVal = arr[0]. Avoids negative-number edge cases compared to initializing with 0.' },
+    { id: 'linear-scan', label: '2. Scan Remaining Elements', detail: 'Iterate pointer i from index 1 to N-1, inspecting each element exactly once.' },
+    { id: 'conditional-update', label: '3. Greedy Maximum Update', detail: 'If arr[i] > maxVal, record arr[i] as the new peak and store its index.' },
+    { id: 'final-return', label: '4. Return Peak', detail: 'After inspecting all elements, maxVal is guaranteed to be the global maximum.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'O(N) time with strictly O(1) auxiliary space.' }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Optimal Solution: Single Pass Traversal
-// Time Complexity: O(N) — each element inspected exactly once
-// Space Complexity: O(1) — constant auxiliary space
+// Time Complexity: O(N) | Space Complexity: O(1)
 #include <vector>
 using namespace std;
 
@@ -22,324 +35,268 @@ public:
     int largest(vector<int>& arr) {
         if (arr.empty()) return -1;
 
-        // Line 12: Initialize max tracker with first element
-        int maxVal = arr[0];
+        int maxVal = arr[0]; // Initialize with first element
 
-        // Line 15: Iterate through remaining elements
         for (int i = 1; i < (int)arr.size(); ++i) {
-            // Line 17: Compare current element against recorded max
             if (arr[i] > maxVal) {
-                // Line 19: Update global maximum
-                maxVal = arr[i];
+                maxVal = arr[i]; // Update global maximum
             }
         }
 
-        // Line 24: Return largest element found
         return maxVal;
     }
 };`,
   python: `# Python 3 Optimal Solution: Single Pass Traversal
 # Time Complexity: O(N) | Space Complexity: O(1)
-
 class Solution:
     def largest(self, arr: list[int]) -> int:
         if not arr:
             return -1
 
-        # Line 9: Initialize max with first element
         max_val = arr[0]
 
-        # Line 12: Iterate through remaining elements
         for i in range(1, len(arr)):
-            # Line 14: Compare and update max if current is larger
             if arr[i] > max_val:
                 max_val = arr[i]
 
-        # Line 18: Return final maximum
-        return max_val
-`,
+        return max_val`,
   java: `// Java Optimal Solution: Single Pass Traversal
 // Time Complexity: O(N) | Space Complexity: O(1)
-
 class Solution {
     public int largest(int[] arr) {
         if (arr == null || arr.length == 0) return -1;
 
-        // Line 9: Track current largest element
         int maxVal = arr[0];
 
-        // Line 12: Single pass inspection
         for (int i = 1; i < arr.length; i++) {
-            // Line 14: Update max when larger item found
             if (arr[i] > maxVal) {
                 maxVal = arr[i];
             }
         }
 
-        // Line 20: Return maximum
         return maxVal;
     }
-}
-`,
-  typescript: `// TypeScript Optimal Solution
+}`,
+  javascript: `// JavaScript Optimal Solution: Single Pass Traversal
 // Time Complexity: O(N) | Space Complexity: O(1)
+var largest = function(arr) {
+    if (!arr || arr.length === 0) return -1;
 
-function largest(arr: number[]): number {
-  if (arr.length === 0) return -1;
+    let maxVal = arr[0];
 
-  let maxVal = arr[0];
-
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] > maxVal) {
-      maxVal = arr[i];
+    for (let i = 1; i < arr.length; i++) {
+        if (arr[i] > maxVal) {
+            maxVal = arr[i];
+        }
     }
-  }
 
-  return maxVal;
-}
-`
+    return maxVal;
+};`
 };
 
 export const steps = [
   {
-    i: null,
-    ans: 0,
-    codeLine: 12,
-    title: "Initialize 'maxVal' = arr[0] (1)",
-    operation: "Initialize maxVal with arr[0]",
-    state: { current: 1, maxVal: 1, i: 0 },
-    decision: "Array non-empty (n = 5)",
-    result: "maxVal initialized to 1",
-    msg: "Initialize 'maxVal' with the first element (arr[0] = 1)."
+    title: '1. Setup: Initialize maxVal = arr[0] (1)',
+    phase: 'SETUP',
+    track: {
+      label: 'Array nums (Size = 5)',
+      items: [
+        { val: 1, status: 'match', badge: 'Initial Max' },
+        { val: 8 },
+        { val: 7 },
+        { val: 56 },
+        { val: 90 }
+      ],
+      pointers: [
+        { index: 0, label: 'max = 1' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Current Max', value: 1, highlight: true },
+      { label: 'Max Index', value: 0 },
+      { label: 'Elements Checked', value: '1 / 5' }
+    ],
+    formula: 'int maxVal = arr[0]; // 1',
+    action: 'Initialize maxVal with the first element (arr[0] = 1).',
+    explain: 'Always initialize running max with arr[0] instead of 0 or INT_MIN to handle arrays containing negative numbers correctly.',
+    intuition: 'The first element is the presumptive champion until a larger candidate is encountered.',
+    variables: { i: 0, 'arr[0]': 1, maxVal: 1, maxIndex: 0 }
   },
   {
-    i: 1,
-    ans: 0,
-    codeLine: 15,
-    title: "Start Loop at Index 1",
-    operation: "Initialize loop iteration pointer i = 1",
-    state: { current: 8, maxVal: 1, i: 1 },
-    decision: "1 < 5 → True",
-    result: "Inspect element arr[1] = 8",
-    msg: "Start iteration with pointer 'i' at index 1 (val = 8)."
+    title: '2. Index 1: arr[1] = 8 > maxVal (1) -> New Max!',
+    phase: 'UPDATE_MAX',
+    track: {
+      label: 'New Peak Found at Index 1',
+      items: [
+        { val: 1 },
+        { val: 8, status: 'match', badge: 'New Max' },
+        { val: 7 },
+        { val: 56 },
+        { val: 90 }
+      ],
+      pointers: [
+        { index: 1, label: 'i = 1 (max = 8)' }
+      ]
+    },
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'Inspecting', value: 'arr[1] = 8' },
+      { label: '8 > 1 ?', value: 'True (Update)', highlight: true },
+      { label: 'New maxVal', value: 8 }
+    ],
+    formula: 'arr[1] > maxVal (8 > 1) ==> maxVal = 8',
+    action: 'Compare arr[1] (8) with maxVal (1). Since 8 > 1, update maxVal to 8.',
+    explain: 'arr[1] surpasses the previous maximum. We update maxVal = 8 and advance pointer i to index 2.',
+    intuition: 'The running maximum strictly ascends whenever a larger item is found.',
+    variables: { i: 1, 'arr[1]': 8, oldMax: 1, newMax: 8, maxIndex: 1 }
   },
   {
-    i: 1,
-    ans: 0,
-    codeLine: 17,
-    title: "Compare: arr[1] (8) > maxVal (1)",
-    operation: "Comparing arr[1] against maxVal",
-    state: { current: 8, maxVal: 1, i: 1 },
-    decision: "8 > 1 → True",
-    result: "Condition met: arr[1] is greater than current max",
-    msg: "Compare: Is arr[1] (8) > current 'maxVal' (1)? True."
+    title: '3. Index 2: arr[2] = 7 <= maxVal (8) -> Retain Max',
+    phase: 'SCANNING',
+    track: {
+      label: 'Element Below Current Peak',
+      items: [
+        { val: 1 },
+        { val: 8, status: 'match', badge: 'Max' },
+        { val: 7, status: 'discarded', badge: '< 8' },
+        { val: 56 },
+        { val: 90 }
+      ],
+      pointers: [
+        { index: 1, label: 'max = 8' },
+        { index: 2, label: 'i = 2' }
+      ]
+    },
+    activeI: 2,
+    activeJ: 1,
+    metrics: [
+      { label: 'Inspecting', value: 'arr[2] = 7' },
+      { label: '7 > 8 ?', value: 'False (Skip)' },
+      { label: 'Current maxVal', value: 8 }
+    ],
+    formula: 'arr[2] <= maxVal (7 <= 8) ==> no change',
+    action: 'Compare arr[2] (7) with maxVal (8). 7 is not greater than 8, so maxVal remains 8.',
+    explain: 'Element 7 is smaller than our recorded maximum. We move forward without mutating maxVal.',
+    intuition: 'Non-peak values are bypassed in O(1) comparison.',
+    variables: { i: 2, 'arr[2]': 7, maxVal: 8, maxIndex: 1 }
   },
   {
-    i: 1,
-    ans: 1,
-    codeLine: 19,
-    title: "Update maxVal = 8",
-    operation: "Update maxVal = arr[1]",
-    state: { current: 8, maxVal: 8, i: 1 },
-    decision: "State assignment executed",
-    result: "maxVal updated from 1 to 8",
-    msg: "Update 'maxVal' to 8 at index 1."
+    title: '4. Index 3: arr[3] = 56 > maxVal (8) -> New Max!',
+    phase: 'UPDATE_MAX',
+    track: {
+      label: 'New Peak Found at Index 3',
+      items: [
+        { val: 1 },
+        { val: 8 },
+        { val: 7 },
+        { val: 56, status: 'match', badge: 'New Max' },
+        { val: 90 }
+      ],
+      pointers: [
+        { index: 3, label: 'i = 3 (max = 56)' }
+      ]
+    },
+    activeI: 3,
+    activeJ: null,
+    metrics: [
+      { label: 'Inspecting', value: 'arr[3] = 56' },
+      { label: '56 > 8 ?', value: 'True (Update)', highlight: true },
+      { label: 'New maxVal', value: 56 }
+    ],
+    formula: 'arr[3] > maxVal (56 > 8) ==> maxVal = 56',
+    action: 'Compare arr[3] (56) with maxVal (8). Since 56 > 8, update maxVal to 56.',
+    explain: '56 significantly exceeds 8. Update maxVal = 56 and record index 3 as the new peak location.',
+    intuition: 'Running peak updated to 56.',
+    variables: { i: 3, 'arr[3]': 56, oldMax: 8, newMax: 56, maxIndex: 3 }
   },
   {
-    i: 2,
-    ans: 1,
-    codeLine: 15,
-    title: "Advance to Index 2",
-    operation: "Incrementing pointer i to 2",
-    state: { current: 7, maxVal: 8, i: 2 },
-    decision: "2 < 5 → True",
-    result: "Inspect element arr[2] = 7",
-    msg: "Increment 'i' to index 2 (val = 7)."
+    title: '5. Index 4: arr[4] = 90 > maxVal (56) -> New Max!',
+    phase: 'UPDATE_MAX',
+    track: {
+      label: 'New Global Peak Found at Index 4',
+      items: [
+        { val: 1 },
+        { val: 8 },
+        { val: 7 },
+        { val: 56 },
+        { val: 90, status: 'match', badge: 'Global Max' }
+      ],
+      pointers: [
+        { index: 4, label: 'i = 4 (max = 90)' }
+      ]
+    },
+    activeI: 4,
+    activeJ: null,
+    metrics: [
+      { label: 'Inspecting', value: 'arr[4] = 90' },
+      { label: '90 > 56 ?', value: 'True (Update)', highlight: true },
+      { label: 'New maxVal', value: 90 }
+    ],
+    formula: 'arr[4] > maxVal (90 > 56) ==> maxVal = 90',
+    action: 'Compare arr[4] (90) with maxVal (56). 90 > 56, update maxVal to 90.',
+    explain: 'The final element 90 is greater than 56. maxVal becomes 90. Traversal reaches the end of the array.',
+    intuition: 'Every element in the array has now been evaluated.',
+    variables: { i: 4, 'arr[4]': 90, oldMax: 56, newMax: 90, maxIndex: 4 }
   },
   {
-    i: 2,
-    ans: 1,
-    codeLine: 17,
-    title: "Compare: arr[2] (7) > maxVal (8)",
-    operation: "Comparing arr[2] against maxVal",
-    state: { current: 7, maxVal: 8, i: 2 },
-    decision: "7 > 8 → False",
-    result: "Maximum unchanged (maxVal remains 8)",
-    msg: "7 > 8 is False. 'maxVal' remains 8."
+    title: '6. Loop Bounds Exhausted (i = 5 >= N)',
+    phase: 'SCANNING',
+    track: {
+      label: 'End of Array Reached',
+      items: [
+        { val: 1 },
+        { val: 8 },
+        { val: 7 },
+        { val: 56 },
+        { val: 90, status: 'match', badge: 'Global Max' }
+      ],
+      pointers: [
+        { index: 4, label: 'Global Max = 90' }
+      ]
+    },
+    activeI: null,
+    activeJ: 4,
+    metrics: [
+      { label: 'Loop Condition', value: 'i < N (5 < 5 -> False)' },
+      { label: 'Status', value: 'Loop Exited' },
+      { label: 'Confirmed Max', value: 90 }
+    ],
+    formula: 'for (i = 1; i < n; i++) loop terminates at i = 5',
+    action: 'Loop termination condition met. Proceed to return result.',
+    explain: 'Pointer i has traversed all indices 1 through 4. No remaining elements to inspect.',
+    intuition: 'Array traversal complete in exactly N - 1 comparisons.',
+    variables: { i: 5, n: 5, maxVal: 90 }
   },
   {
-    i: 3,
-    ans: 1,
-    codeLine: 15,
-    title: "Advance to Index 3",
-    operation: "Incrementing pointer i to 3",
-    state: { current: 56, maxVal: 8, i: 3 },
-    decision: "3 < 5 → True",
-    result: "Inspect element arr[3] = 56",
-    msg: "Increment 'i' to index 3 (val = 56)."
-  },
-  {
-    i: 3,
-    ans: 1,
-    codeLine: 17,
-    title: "Compare: arr[3] (56) > maxVal (8)",
-    operation: "Comparing arr[3] against maxVal",
-    state: { current: 56, maxVal: 8, i: 3 },
-    decision: "56 > 8 → True",
-    result: "Condition met: arr[3] is greater than current max",
-    msg: "56 > 8 is True. Update 'maxVal'."
-  },
-  {
-    i: 3,
-    ans: 3,
-    codeLine: 19,
-    title: "Update maxVal = 56",
-    operation: "Update maxVal = arr[3]",
-    state: { current: 56, maxVal: 56, i: 3 },
-    decision: "State assignment executed",
-    result: "maxVal updated from 8 to 56",
-    msg: "Update 'maxVal' to 56 at index 3."
-  },
-  {
-    i: 4,
-    ans: 3,
-    codeLine: 15,
-    title: "Advance to Index 4",
-    operation: "Incrementing pointer i to 4",
-    state: { current: 90, maxVal: 56, i: 4 },
-    decision: "4 < 5 → True",
-    result: "Inspect element arr[4] = 90",
-    msg: "Increment 'i' to index 4 (val = 90)."
-  },
-  {
-    i: 4,
-    ans: 3,
-    codeLine: 17,
-    title: "Compare: arr[4] (90) > maxVal (56)",
-    operation: "Comparing arr[4] against maxVal",
-    state: { current: 90, maxVal: 56, i: 4 },
-    decision: "90 > 56 → True",
-    result: "Condition met: arr[4] is greater than current max",
-    msg: "90 > 56 is True. Update 'maxVal'."
-  },
-  {
-    i: 4,
-    ans: 4,
-    codeLine: 19,
-    title: "Update maxVal = 90",
-    operation: "Update maxVal = arr[4]",
-    state: { current: 90, maxVal: 90, i: 4 },
-    decision: "State assignment executed",
-    result: "maxVal updated from 56 to 90",
-    msg: "Update 'maxVal' to 90 at index 4."
-  },
-  {
-    i: null,
-    ans: 4,
-    codeLine: 24,
-    title: "Traversal Complete",
-    operation: "Return largest element found",
-    state: { current: null, maxVal: 90, i: "done" },
-    decision: "5 < 5 → False (loop finished)",
-    result: "Return final maxVal = 90",
-    msg: "Array traversal complete. Return maxVal = 90."
+    title: '7. Return Global Maximum: 90',
+    phase: 'COMPLETED',
+    track: {
+      label: 'Final Array with Maximum Highlighted',
+      items: [
+        { val: 1 },
+        { val: 8 },
+        { val: 7 },
+        { val: 56 },
+        { val: 90, status: 'match', badge: 'Result: 90' }
+      ],
+      pointers: [
+        { index: 4, label: 'Return 90' }
+      ]
+    },
+    activeI: 4,
+    activeJ: null,
+    metrics: [
+      { label: 'Result', value: 90, highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    formula: 'return maxVal; // 90',
+    action: 'Return 90 as the largest element in the array.',
+    explain: 'Single-pass scan successfully identified 90 as the global maximum in O(N) time and O(1) space.',
+    intuition: 'Simple, optimal, and robust against negative numbers.',
+    variables: { maxVal: 90, result: 90, time: 'O(N)', space: 'O(1)' }
   }
 ];
-
-export default function LargestElementVisualizer({ currentStep = 0 }) {
-  const array = [1, 8, 7, 56, 90];
-  const stepIdx = Math.min(Math.max(0, currentStep), steps.length - 1);
-  const stepData = steps[stepIdx] || steps[0];
-
-  return (
-    <div className="w-full flex flex-col items-center justify-center p-4">
-      {/* Visualizer Step Explanation Callout */}
-      <div className="w-full max-w-2xl mb-6 p-3.5 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center gap-3">
-        <div className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
-        <p className="text-xs sm:text-sm text-[var(--chalk)] font-sans leading-relaxed">
-          <span className="font-semibold text-indigo-600 dark:text-indigo-400 mr-1.5">
-            Step {stepIdx + 1}:
-          </span>
-          {stepData.msg}
-        </p>
-      </div>
-
-      {/* Array Canvas */}
-      <div className="relative w-full max-w-2xl min-h-[220px] flex flex-col justify-center items-center bg-[var(--board)] rounded-lg border border-[var(--line)] p-6 overflow-hidden">
-        <div className="relative flex gap-3 sm:gap-4.5 z-20">
-          {array.map((val, idx) => {
-            const isAns = stepData.ans === idx;
-            const isI = stepData.i === idx;
-
-            return (
-              <div key={idx} className="flex flex-col items-center">
-                {/* Fixed Top Indicator for 'i' iterator */}
-                <div className="h-7 mb-1.5 flex items-center justify-center">
-                  {isI ? (
-                    <div className="text-amber-500 font-mono text-xs font-bold flex flex-col items-center animate-bounce">
-                      <span>i</span>
-                      <span className="text-[10px] -mt-1">↓</span>
-                    </div>
-                  ) : (
-                    <span className="opacity-0 text-xs">·</span>
-                  )}
-                </div>
-
-                {/* Main Array Element Tile */}
-                <div
-                  className={`
-                    w-12 h-12 sm:w-14 sm:h-14 rounded-lg flex items-center justify-center text-lg sm:text-xl font-mono font-bold border transition-all duration-200
-                    ${isAns
-                      ? 'bg-emerald-500/15 border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400'
-                      : isI
-                      ? 'bg-amber-500/15 border-2 border-amber-500 text-amber-600 dark:text-amber-400'
-                      : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk)]'
-                    }
-                  `}
-                >
-                  {val}
-                </div>
-
-                {/* Index Sub-label */}
-                <div className="mt-1.5 text-[11px] text-[var(--chalk-faint)] font-mono">[{idx}]</div>
-
-                {/* Bottom Indicator for 'maxVal' variable */}
-                <div className="h-7 mt-1.5 flex items-center justify-center">
-                  {isAns ? (
-                    <div className="text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold flex flex-col items-center">
-                      <span className="text-[10px] -mb-1">↑</span>
-                      <span>maxVal</span>
-                    </div>
-                  ) : (
-                    <span className="opacity-0 text-xs">·</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Execution Diagnostics Bar */}
-      <div className="w-full max-w-2xl mt-4 flex items-center justify-between text-xs font-mono text-[var(--chalk-dim)] p-2.5 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)]">
-        <div>
-          Active Code Line:{' '}
-          <span className="text-indigo-600 dark:text-indigo-400 font-bold ml-1">
-            L{stepData.codeLine}
-          </span>
-        </div>
-        <div className="flex items-center gap-3 text-[11px]">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" /> maxVal
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-amber-500" /> i
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-[var(--board-hover)] border border-[var(--line)]" /> Unvisited
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}

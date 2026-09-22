@@ -151,8 +151,8 @@ export default function RecursiveInsertionSortVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Array Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           Array with Sorted Prefix Boundary
         </span>
 
@@ -169,12 +169,12 @@ export default function RecursiveInsertionSortVisualizer({ currentStep = 0 }) {
                       ? 'border-amber-400 bg-amber-400/25 text-amber-300 ring-2 ring-amber-400/50 scale-105 shadow-lg'
                       : isSorted
                       ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-500'
+                      : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]'
                   }`}
                 >
-                  <span className="text-[9px] text-[#8a8ea3]">[{idx}]</span>
+                  <span className="text-[9px] text-[var(--chalk-dim)]">[{idx}]</span>
                   <span className="text-base font-bold mt-1">{val}</span>
-                  <span className="text-[8px] text-slate-400 mt-0.5">
+                  <span className="text-[8px] text-[var(--chalk-dim)] mt-0.5">
                     {isSorted ? 'sorted' : 'pending'}
                   </span>
                 </div>
@@ -185,7 +185,7 @@ export default function RecursiveInsertionSortVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

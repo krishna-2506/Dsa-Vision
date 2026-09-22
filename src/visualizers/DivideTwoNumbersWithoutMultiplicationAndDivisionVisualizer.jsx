@@ -197,17 +197,17 @@ export default function DivideTwoNumbersWithoutMultiplicationAndDivisionVisualiz
       </div>
 
       {/* Visual State Canvas */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-4 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-4 font-mono">
         <div className="grid grid-cols-2 gap-4">
           {/* Remaining N */}
-          <div className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col items-center gap-1">
-            <span className="text-xs text-[#8a8ea3]">Remaining N:</span>
+          <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col items-center gap-1">
+            <span className="text-xs text-[var(--chalk-dim)]">Remaining N:</span>
             <span className="text-2xl font-bold text-amber-300">{step.remainingN}</span>
           </div>
 
           {/* Current Quotient */}
-          <div className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col items-center gap-1">
-            <span className="text-xs text-[#8a8ea3]">Current Quotient:</span>
+          <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col items-center gap-1">
+            <span className="text-xs text-[var(--chalk-dim)]">Current Quotient:</span>
             <span className="text-2xl font-bold text-emerald-400">{step.quotient}</span>
           </div>
         </div>
@@ -216,7 +216,7 @@ export default function DivideTwoNumbersWithoutMultiplicationAndDivisionVisualiz
         {step.subtractedChunk && (
           <div className="w-full p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-between text-xs px-4">
             <span className="text-cyan-300">Chunk Subtracted:</span>
-            <span className="text-white font-bold">
+            <span className="text-[var(--chalk)] font-bold">
               divisor &times; 2^{step.currentShift} = {step.subtractedChunk}
             </span>
           </div>

@@ -267,8 +267,8 @@ export default function WordSearchVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* 2D Grid Board */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Character Grid (3 × 4)</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Character Grid (3 × 4)</span>
 
         <div className="grid grid-cols-4 gap-3">
           {initialGrid.map((row, r) =>
@@ -277,7 +277,7 @@ export default function WordSearchVisualizer({ currentStep = 0 }) {
               const inPath = pathIndex !== -1;
               const isCurrent = inPath && pathIndex === step.path.length - 1;
 
-              let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-400';
+              let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
               if (isCurrent) {
                 borderClass = 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg animate-pulse';
               } else if (inPath) {
@@ -287,7 +287,7 @@ export default function WordSearchVisualizer({ currentStep = 0 }) {
               return (
                 <div key={`${r}-${c}`} className={`w-14 h-14 rounded-xl border flex flex-col items-center justify-center font-mono font-bold text-lg transition-all ${borderClass}`}>
                   <span>{char}</span>
-                  {inPath && <span className="text-[8px] text-slate-400">#{pathIndex + 1}</span>}
+                  {inPath && <span className="text-[8px] text-[var(--chalk-dim)]">#{pathIndex + 1}</span>}
                 </div>
               );
             })
@@ -296,7 +296,7 @@ export default function WordSearchVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

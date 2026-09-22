@@ -5,7 +5,7 @@ const DLLNode = ({ node, isCurr, isNxt, isAns }) => {
   return (
     <div className="flex flex-col items-center relative mx-2">
       {/* Address Badge */}
-      <div className="bg-slate-800/80 rounded-t-md text-[10px] px-2 py-0.5 font-mono text-slate-300 border border-slate-700/50 border-b-0 w-24 text-center z-10 shadow-md">
+      <div className="bg-slate-800/80 rounded-t-md text-[10px] px-2 py-0.5 font-mono text-[var(--chalk-dim)] border border-slate-700/50 border-b-0 w-24 text-center z-10 shadow-md">
         {node.id}
       </div>
       
@@ -14,7 +14,7 @@ const DLLNode = ({ node, isCurr, isNxt, isAns }) => {
         
         {/* Prev Pointer Block */}
         <div className={`flex-1 flex flex-col border-r border-slate-700 text-[10px] items-center justify-center ${node.prev === 'NULL' ? 'bg-rose-900/20' : 'bg-slate-800/40'} transition-colors`}>
-          <span className="text-slate-500 font-semibold mb-1">PREV</span>
+          <span className="text-[var(--chalk-faint)] font-semibold mb-1">PREV</span>
           <span className={`font-mono ${node.prev === 'NULL' ? 'text-rose-400' : 'text-emerald-400'}`}>
             {node.prev}
           </span>
@@ -22,13 +22,13 @@ const DLLNode = ({ node, isCurr, isNxt, isAns }) => {
         
         {/* Value Block */}
         <div className="flex-[1.2] flex flex-col items-center justify-center bg-slate-800/20">
-          <span className="text-[9px] text-slate-500 font-semibold mb-0.5">DATA</span>
-          <span className="font-bold text-white text-xl">{node.val}</span>
+          <span className="text-[9px] text-[var(--chalk-faint)] font-semibold mb-0.5">DATA</span>
+          <span className="font-bold text-[var(--chalk)] text-xl">{node.val}</span>
         </div>
         
         {/* Next Pointer Block */}
         <div className={`flex-1 flex flex-col border-l border-slate-700 text-[10px] items-center justify-center ${node.next === 'NULL' ? 'bg-rose-900/20' : 'bg-slate-800/40'} transition-colors`}>
-          <span className="text-slate-500 font-semibold mb-1">NEXT</span>
+          <span className="text-[var(--chalk-faint)] font-semibold mb-1">NEXT</span>
           <span className={`font-mono ${node.next === 'NULL' ? 'text-rose-400' : 'text-emerald-400'}`}>
             {node.next}
           </span>
@@ -38,17 +38,17 @@ const DLLNode = ({ node, isCurr, isNxt, isAns }) => {
       {/* Pointer Indicators */}
       <div className="mt-3 flex flex-wrap gap-1.5 justify-center min-h-[24px]">
         {isCurr && (
-          <span className="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded font-mono shadow-sm flex items-center gap-1 animate-pulse">
+          <span className="bg-indigo-600 text-[var(--chalk)] text-[10px] px-2 py-0.5 rounded font-mono shadow-sm flex items-center gap-1 animate-pulse">
             <span className="w-1.5 h-1.5 bg-white rounded-full"></span> CURR
           </span>
         )}
         {isNxt && (
-          <span className="bg-amber-600 text-white text-[10px] px-2 py-0.5 rounded font-mono shadow-sm flex items-center gap-1">
+          <span className="bg-amber-600 text-[var(--chalk)] text-[10px] px-2 py-0.5 rounded font-mono shadow-sm flex items-center gap-1">
             <span className="w-1.5 h-1.5 bg-white rounded-full"></span> NXT
           </span>
         )}
         {isAns && (
-          <span className="bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded font-mono shadow-sm flex items-center gap-1">
+          <span className="bg-emerald-600 text-[var(--chalk)] text-[10px] px-2 py-0.5 rounded font-mono shadow-sm flex items-center gap-1">
             <span className="w-1.5 h-1.5 bg-white rounded-full"></span> ANS
           </span>
         )}
@@ -522,16 +522,16 @@ export default function IntroductionToDoubleLlVisualizer({
           <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
             Step {stepIndex + 1} / {activeSteps.length}
           </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold bg-white/5 text-slate-300 border border-white/10">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded uppercase font-bold bg-white/5 text-[var(--chalk-dim)] border border-white/10">
             {activeApproach.badge}
           </span>
-          <h3 className="text-sm font-bold text-white font-mono truncate max-w-md hidden md:block">{stepData.title}</h3>
+          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono truncate max-w-md hidden md:block">{stepData.title}</h3>
         </div>
         <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition cursor-pointer">
+          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition cursor-pointer">
             ← Prev
           </button>
-          <button onClick={handleNext} disabled={stepIndex === activeSteps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition cursor-pointer">
+          <button onClick={handleNext} disabled={stepIndex === activeSteps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition cursor-pointer">
             Next →
           </button>
         </div>
@@ -543,14 +543,14 @@ export default function IntroductionToDoubleLlVisualizer({
         {/* Stack Visualization for Intuitive Approach */}
         {activeApproach.badge.includes('Space') && (
             <div className="absolute left-6 top-6 border border-white/10 rounded-lg p-3 bg-[#0c0e16]/80 backdrop-blur-sm shadow-xl z-20">
-                <h4 className="text-[10px] uppercase tracking-wider font-mono text-slate-400 mb-2 text-center">Stack</h4>
+                <h4 className="text-[10px] uppercase tracking-wider font-mono text-[var(--chalk-dim)] mb-2 text-center">Stack</h4>
                 <div className="flex flex-col-reverse gap-1 items-center min-w-[60px] min-h-[100px] justify-start bg-slate-900/50 p-2 rounded border border-slate-800">
                     {stepData.stack?.map((val, idx) => (
                         <div key={idx} className="bg-indigo-500/20 border border-indigo-500/40 text-indigo-200 font-mono text-xs px-4 py-1 rounded w-full text-center shadow-sm">
                             {val}
                         </div>
                     ))}
-                    {(!stepData.stack || stepData.stack.length === 0) && <span className="text-[10px] text-slate-600 font-mono mt-auto mb-auto">Empty</span>}
+                    {(!stepData.stack || stepData.stack.length === 0) && <span className="text-[10px] text-[var(--chalk-faint)] font-mono mt-auto mb-auto">Empty</span>}
                 </div>
             </div>
         )}
@@ -579,14 +579,14 @@ export default function IntroductionToDoubleLlVisualizer({
 
         {/* Real-time Comparison HUD */}
         <div className="mt-8 flex items-center gap-3 px-5 py-2.5 rounded-lg bg-[#0e111a] border border-slate-800 shadow-inner max-w-full overflow-x-auto">
-          <span className="text-slate-400 text-[11px] uppercase tracking-wider font-semibold">Status:</span>
+          <span className="text-[var(--chalk-dim)] text-[11px] uppercase tracking-wider font-semibold">Status:</span>
           <strong className="text-emerald-400 font-mono text-xs whitespace-nowrap">{stepData.hudText}</strong>
         </div>
       </div>
 
       {/* 3. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
+      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-xs text-[var(--chalk-dim)] leading-relaxed font-sans">
+        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
         <span className="opacity-90">{stepData.explanation}</span>
       </div>
     </div>

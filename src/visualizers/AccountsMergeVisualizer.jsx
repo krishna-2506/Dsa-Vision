@@ -146,8 +146,8 @@ export default function AccountsMergeVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>Merged Account Aggregations</span>
           <span className="text-cyan-400 font-bold">DSU Node = Account ID</span>
         </div>
@@ -159,9 +159,9 @@ export default function AccountsMergeVisualizer({ currentStep = 0 }) {
               <span className="text-emerald-400 font-semibold text-[11px]">DSU Root #0</span>
             </div>
             <div className="flex gap-2 flex-wrap text-[11px] text-cyan-300">
-              <span className="bg-[#12131b] px-2 py-0.5 rounded border border-cyan-500/40">john00@mail</span>
-              <span className="bg-[#12131b] px-2 py-0.5 rounded border border-cyan-500/40">john_newyork@mail</span>
-              <span className="bg-[#12131b] px-2 py-0.5 rounded border border-cyan-500/40">johnsmith@mail</span>
+              <span className="bg-[var(--board-raised)] px-2 py-0.5 rounded border border-cyan-500/40">john00@mail</span>
+              <span className="bg-[var(--board-raised)] px-2 py-0.5 rounded border border-cyan-500/40">john_newyork@mail</span>
+              <span className="bg-[var(--board-raised)] px-2 py-0.5 rounded border border-cyan-500/40">johnsmith@mail</span>
             </div>
           </div>
 
@@ -171,13 +171,13 @@ export default function AccountsMergeVisualizer({ currentStep = 0 }) {
               <span className="text-purple-400 font-semibold text-[11px]">DSU Root #2</span>
             </div>
             <div className="flex gap-2 flex-wrap text-[11px] text-purple-300">
-              <span className="bg-[#12131b] px-2 py-0.5 rounded border border-purple-500/40">mary@mail</span>
+              <span className="bg-[var(--board-raised)] px-2 py-0.5 rounded border border-purple-500/40">mary@mail</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

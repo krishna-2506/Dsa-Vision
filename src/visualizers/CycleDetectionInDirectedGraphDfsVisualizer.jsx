@@ -171,18 +171,18 @@ export default function CycleDetectionInDirectedGraphDfsVisualizer({ currentStep
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <span className="text-xs font-mono text-[#8a8ea3]">Dual Visited Arrays Tracking</span>
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <span className="text-xs font-mono text-[var(--chalk-dim)]">Dual Visited Arrays Tracking</span>
         
         <div className="space-y-3 font-mono text-xs">
           <div className="flex items-center gap-3">
-            <span className="w-24 text-slate-400 font-bold">vis[1..3]:</span>
+            <span className="w-24 text-[var(--chalk-dim)] font-bold">vis[1..3]:</span>
             <div className="flex gap-2">
               {[1, 2, 3].map(n => (
                 <span
                   key={n}
                   className={`w-12 py-1 rounded text-center font-bold ${
-                    step.vis[n] === 1 ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/30' : 'bg-[#161824] text-slate-500'
+                    step.vis[n] === 1 ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/30' : 'bg-[var(--board-raised-2)] text-[var(--chalk-faint)]'
                   }`}
                 >
                   {step.vis[n]}
@@ -198,7 +198,7 @@ export default function CycleDetectionInDirectedGraphDfsVisualizer({ currentStep
                 <span
                   key={n}
                   className={`w-12 py-1 rounded text-center font-bold ${
-                    step.pathVis[n] === 1 ? 'bg-purple-500/30 text-purple-200 border border-purple-500/50 shadow' : 'bg-[#161824] text-slate-500'
+                    step.pathVis[n] === 1 ? 'bg-purple-500/30 text-purple-200 border border-purple-500/50 shadow' : 'bg-[var(--board-raised-2)] text-[var(--chalk-faint)]'
                   }`}
                 >
                   {step.pathVis[n]}
@@ -209,7 +209,7 @@ export default function CycleDetectionInDirectedGraphDfsVisualizer({ currentStep
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.text}
       </div>
     </div>

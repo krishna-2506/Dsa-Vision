@@ -1,12 +1,27 @@
-import React from 'react';
+// DATA-ONLY — rendered by DualArrayRenderer via rendererType
 
 export const meta = {
   title: 'Longest String Chain',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N log N + N * L^2)',
+  timeComplexity: 'O(N log N + N × L²)',
   spaceComplexity: 'O(N)',
   description: 'Finds the length of the longest string chain where wordA is predecessor of wordB (inserting 1 character in wordA yields wordB). Sorting by string length reduces this to an LIS-style DP problem.'
+};
+
+export const rendererType = 'dual-array';
+
+export const ideaMap = {
+  title: 'Longest String Chain',
+  nodes: [
+    { id: 'root', label: 'Longest String Chain', children: ['sort', 'dp', 'pred'] },
+    { id: 'sort', label: 'Sort by Length', detail: 'Process shorter words first so predecessors are already computed' },
+    { id: 'dp', label: 'Hash Map DP', children: ['init', 'transition', 'answer'] },
+    { id: 'init', label: 'dp[word] = 1', detail: 'Every word alone forms a chain of length 1' },
+    { id: 'transition', label: 'Delete 1 Char', detail: 'For each position in word, remove that char to get a predecessor candidate' },
+    { id: 'answer', label: 'Max over all dp[word]', detail: 'The longest chain across all words' },
+    { id: 'pred', label: 'Predecessor Rule', detail: 'wordA is predecessor of wordB if adding exactly 1 character to wordA gives wordB' }
+  ]
 };
 
 export const solutions = {
@@ -61,13 +76,11 @@ class Solution:
         return max_chain`,
   java: `// Java Longest String Chain
 // Time: O(N log N + N * L^2) | Space: O(N)
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 class Solution {
     public int longestStrChain(String[] words) {
-        Arrays.sort(words, (a, b) -> Integer.compare(a.length(), b.length()));
+        Arrays.sort(words, (a, b) -> a.length() - b.length());
         Map<String, Integer> dp = new HashMap<>();
         int maxChain = 1;
 
@@ -93,152 +106,170 @@ var longestStrChain = function(words) {
     let maxChain = 1;
 
     for (const w of words) {
-        let best = 1;
+        dp.set(w, 1);
         for (let i = 0; i < w.length; i++) {
             const prev = w.slice(0, i) + w.slice(i + 1);
             if (dp.has(prev)) {
-                best = Math.max(best, 1 + dp.get(prev));
+                dp.set(w, Math.max(dp.get(w), 1 + dp.get(prev)));
             }
         }
-        dp.set(w, best);
-        maxChain = Math.max(maxChain, best);
+        maxChain = Math.max(maxChain, dp.get(w));
     }
 
     return maxChain;
 };`
 };
 
+// ─── 10 Micro-Steps: Input words = ["a", "b", "ba", "bca", "bda", "bdca"] ──
 export const steps = [
   {
-    title: '1. Sort Words by Length',
-    phase: 'SORT',
-    codeLine: 12,
-    words: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'],
-    currentWord: null,
-    dpMap: {},
-    maxChain: 1,
-    activeChain: [],
-    variables: { sorted: '["a", "b", "ba", "bca", "bda", "bdca"]' },
-    explain: 'Sorting words by ascending length guarantees that when checking a word of length L, all potential predecessors of length L - 1 have already been computed.',
-    intuition: 'A word of length L can only have predecessors of length L - 1.'
+    phase: 'SETUP',
+    tracks: [
+      { label: 'words (sorted)',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',            items: ['—', '—', '—', '—', '—', '—'] },
+    ],
+    activeI: null,
+    metrics: [{ label: 'Max Chain', value: '—' }],
+    formula: 'dp[word] = max(dp[word], 1 + dp[predecessor])',
+    action: 'Sort words by length; initialize dp map.',
+    explain: 'Sorting ensures that when we process a word, all possible predecessors (shorter by exactly 1 character) have already been computed. The dp map stores the longest chain ending at each word.',
+    intuition: 'This transforms the problem into a variant of Longest Increasing Subsequence — but on string lengths instead of numeric values.'
   },
   {
-    title: '2. Process Length 1 & 2: "a" (1), "b" (1), "ba" (2)',
     phase: 'EVALUATE',
-    codeLine: 20,
-    words: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'],
-    currentWord: 'ba',
-    dpMap: { 'a': 1, 'b': 1, 'ba': 2 },
-    maxChain: 2,
-    activeChain: ['b', 'ba'],
-    variables: { word: 'ba', deletions: '["a", "b"]', bestPredecessor: 'b (dp=1) -> dp[ba] = 2' },
-    explain: 'For "ba", deleting "a" gives "b" which is in dp. dp["ba"] = 1 + dp["b"] = 2. Chain so far: "b" -> "ba".',
-    intuition: 'Single character removal mirrors predecessor addition.'
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, '—', '—', '—', '—', '—'] },
+    ],
+    activeI: 0,
+    metrics: [{ label: 'Max Chain', value: 1 }],
+    formula: 'dp["a"] = 1 (no predecessors possible for single-char word)',
+    action: 'Process word "a" (length 1).',
+    explain: '"a" has only 1 character. Removing any character gives "" (empty string), which is not in our word list. So dp["a"] = 1 — the word itself forms a chain of length 1.',
+    intuition: 'Single-character words are always base cases with chain length 1.'
   },
   {
-    title: '3. Process Length 3: "bca" (dp=3) and "bda" (dp=3)',
     phase: 'EVALUATE',
-    codeLine: 20,
-    words: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'],
-    currentWord: 'bca',
-    dpMap: { 'a': 1, 'b': 1, 'ba': 2, 'bca': 3, 'bda': 3 },
-    maxChain: 3,
-    activeChain: ['b', 'ba', 'bca'],
-    variables: { 'bca minus c': 'ba (dp=2) -> dp[bca] = 3', 'bda minus d': 'ba (dp=2) -> dp[bda] = 3' },
-    explain: 'Both "bca" and "bda" can delete one character to reach "ba". Their chain lengths extend to 3.',
-    intuition: 'Multiple branches can extend from the same valid predecessor.'
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, '—', '—', '—', '—'] },
+    ],
+    activeI: 1,
+    metrics: [{ label: 'Max Chain', value: 1 }],
+    formula: 'dp["b"] = 1 (removing "b" gives "", not found)',
+    action: 'Process word "b" (length 1).',
+    explain: 'Same as "a" — removing "b" from "b" gives an empty string. No predecessor found. dp["b"] = 1.',
+    intuition: 'Both base words start as independent chains of length 1.'
   },
   {
-    title: '4. Process Length 4: "bdca" (dp=4) -> Max Chain = 4',
+    phase: 'EVALUATE',
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, 2, '—', '—', '—'] },
+    ],
+    activeI: 2,
+    activePrev: 1,
+    metrics: [{ label: 'Max Chain', value: 2 }],
+    formula: 'dp["ba"] = max(1, 1+dp["b"], 1+dp["a"]) = 2',
+    action: 'Process word "ba" (length 2): try removing each character.',
+    explain: 'Remove "b" → "a" (found, dp["a"]=1). Remove "a" → "b" (found, dp["b"]=1). dp["ba"] = max(1, 1+1, 1+1) = 2. Best chain: "b" → "ba".',
+    intuition: 'Both "a" and "b" are valid predecessors. Either gives chain length 2.'
+  },
+  {
+    phase: 'EVALUATE',
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, 2, 3, '—', '—'] },
+    ],
+    activeI: 3,
+    activePrev: 2,
+    metrics: [{ label: 'Max Chain', value: 3 }],
+    formula: 'dp["bca"] = max(1+dp["ca"], 1+dp["ba"], 1+dp["bc"]) = 3',
+    action: 'Process "bca" (length 3): delete each char to find predecessors.',
+    explain: 'Delete "b" → "ca" (not found ✗). Delete "c" → "ba" (found ✓, dp=2). Delete "a" → "bc" (not found ✗). dp["bca"] = 1 + dp["ba"] = 3. Chain: "b" → "ba" → "bca".',
+    intuition: '"ba" is the bridge — it connects the single-char base to the 3-char word.'
+  },
+  {
+    phase: 'EVALUATE',
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, 2, 3, 3, '—'] },
+    ],
+    activeI: 4,
+    activePrev: 2,
+    metrics: [{ label: 'Max Chain', value: 3 }],
+    formula: 'dp["bda"] = max(1+dp["da"], 1+dp["ba"], 1+dp["bd"]) = 3',
+    action: 'Process "bda" (length 3): same predecessor check pattern.',
+    explain: 'Delete "b" → "da" (not found ✗). Delete "d" → "ba" (found ✓, dp=2). Delete "a" → "bd" (not found ✗). dp["bda"] = 1 + dp["ba"] = 3. Chain: "b" → "ba" → "bda".',
+    intuition: 'Multiple words can branch from the same predecessor. "bca" and "bda" are sibling extensions of "ba".'
+  },
+  {
+    phase: 'EVALUATE',
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, 2, 3, 3, '—'] },
+    ],
+    activeI: 5,
+    metrics: [{ label: 'Processing', value: '"bdca"' }],
+    formula: 'Try: "dca", "bca", "bda", "bdc" — which are in dp?',
+    action: 'Process "bdca" (length 4): generate all 4 predecessor candidates.',
+    explain: 'By removing each character in turn: remove "b"→"dca", remove "d"→"bca", remove "c"→"bda", remove "a"→"bdc". We check each against the dp map.',
+    intuition: 'The key insight: we do not try to build up from shorter words. Instead, we break the current word down by removing one character at each position.'
+  },
+  {
+    phase: 'EVALUATE',
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, 2, 3, 3, 4] },
+    ],
+    activeI: 5,
+    activePrev: 4,
+    metrics: [{ label: 'Max Chain', value: 4 }],
+    formula: 'dp["bdca"] = max(1+dp["bca"], 1+dp["bda"]) = max(4, 4) = 4',
+    action: '"bdca" finds two predecessors: "bca" (dp=3) and "bda" (dp=3).',
+    explain: '"dca" not found ✗. "bca" found ✓ (dp=3). "bda" found ✓ (dp=3). "bdc" not found ✗. Both give dp["bdca"] = 4. Chain example: "b" → "ba" → "bda" → "bdca".',
+    intuition: 'When multiple predecessors tie, either chain is a valid longest chain.'
+  },
+  {
+    phase: 'MERGE',
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, 2, 3, 3, 4] },
+    ],
+    activeI: null,
+    metrics: [
+      { label: 'Max Chain', value: 4, highlight: true },
+    ],
+    formula: 'maxChain = max(dp[w] for all w) = 4',
+    action: 'Scan all dp values to find the global maximum.',
+    explain: 'dp values: a=1, b=1, ba=2, bca=3, bda=3, bdca=4. The maximum is 4.',
+    intuition: 'The answer is not necessarily at the last word — it is the maximum over the entire dp map.',
+    customCard: {
+      title: 'Chain Length Summary',
+      rows: [
+        { label: '"a"', value: 'dp = 1 (base)' },
+        { label: '"b"', value: 'dp = 1 (base)' },
+        { label: '"ba"', value: 'dp = 2 (← "b" or "a")' },
+        { label: '"bca"', value: 'dp = 3 (← "ba")' },
+        { label: '"bda"', value: 'dp = 3 (← "ba")' },
+        { label: '"bdca"', value: 'dp = 4 (← "bca" or "bda") ★', accent: true },
+      ]
+    }
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 26,
-    words: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'],
-    currentWord: 'bdca',
-    dpMap: { 'a': 1, 'b': 1, 'ba': 2, 'bca': 3, 'bda': 3, 'bdca': 4 },
-    maxChain: 4,
-    activeChain: ['b', 'ba', 'bda', 'bdca'],
-    variables: { 'bdca predecessors': '["dca", "bca", "bda", "bdc"]', found: '"bda" (dp=3)', maxChainLen: 4 },
-    explain: 'Removing "c" from "bdca" yields "bda" (chain length 3). Hence dp["bdca"] = 1 + 3 = 4! Longest string chain has length 4.',
-    intuition: 'Chain: "b" -> "ba" -> "bda" -> "bdca" (length 4).'
+    tracks: [
+      { label: 'words',  items: ['a', 'b', 'ba', 'bca', 'bda', 'bdca'] },
+      { label: 'dp[]',   items: [1, 1, 2, 3, 3, 4] },
+    ],
+    activeI: null,
+    metrics: [
+      { label: 'Longest String Chain', value: 4, highlight: true },
+      { label: 'Example Chain', value: '"b"→"ba"→"bda"→"bdca"' },
+    ],
+    formula: 'Answer = 4',
+    action: 'Longest String Chain found!',
+    explain: 'The longest string chain has length 4: "b" → "ba" → "bda" → "bdca". At each step, exactly one character is inserted to form the next word. The hash map DP approach runs in O(N × L²) where L is the max word length.',
+    intuition: 'Sorting by length + hash map predecessor lookup transforms this into an efficient LIS variant. No need for O(N²) pairwise comparison.'
   }
 ];
-
-export default function LongestStringChainVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Predecessor Search: Delete 1 Char
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Chain Length: {step.maxChain}
-        </span>
-      </div>
-
-      {/* Word Cards Grid */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Words and Chain DP States
-        </span>
-
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {step.words.map((w, idx) => {
-            const isCurrent = w === step.currentWord;
-            const inActiveChain = step.activeChain.includes(w);
-            const score = step.dpMap[w];
-
-            return (
-              <div
-                key={idx}
-                className={`min-w-[70px] h-20 px-3 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                  isCurrent
-                    ? 'border-cyan-500 bg-cyan-500/25 text-cyan-300 ring-2 ring-cyan-500/40 shadow-lg scale-105'
-                    : inActiveChain
-                    ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
-                    : score !== undefined
-                    ? 'border-[#3b4261] bg-[#161824] text-slate-300'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-600'
-                }`}
-              >
-                <span className="text-[10px] text-[#8a8ea3]">len {w.length}</span>
-                <span className="text-sm font-bold text-amber-300 mt-0.5">"{w}"</span>
-                <span className="text-[10px] text-emerald-400 font-semibold mt-1">
-                  {score !== undefined ? `chain: ${score}` : '-'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Longest Chain Ribbon */}
-        {step.activeChain.length > 0 && (
-          <div className="w-full border-t border-[#272b3c] pt-4 flex flex-col items-center gap-2">
-            <span className="text-[11px] font-mono text-purple-300">
-              Active Chain Flow:
-            </span>
-            <div className="flex items-center gap-2 font-mono text-xs text-emerald-300 font-semibold">
-              {step.activeChain.map((node, i) => (
-                <React.Fragment key={i}>
-                  <span className="px-2.5 py-1 bg-emerald-500/15 border border-emerald-500/30 rounded-lg">
-                    {node}
-                  </span>
-                  {i < step.activeChain.length - 1 && (
-                    <span className="text-slate-500">&rarr;</span>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

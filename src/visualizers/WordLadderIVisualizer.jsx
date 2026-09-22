@@ -185,8 +185,8 @@ export default function WordLadderIVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-5 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-5 w-full">
+        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
           <span>Transformation Pathway Sequence</span>
           <span className="text-cyan-400 font-bold">1-Letter Edit Distance</span>
         </div>
@@ -199,7 +199,7 @@ export default function WordLadderIVisualizer({ currentStep = 0 }) {
                 className={`px-3.5 py-2 rounded-xl font-mono font-bold text-sm tracking-widest border transition-all ${
                   idx === step.visitedPath.length - 1
                     ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-lg scale-105'
-                    : 'bg-[#161824] border-[#272b3c] text-slate-300'
+                    : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
                 }`}
               >
                 {word}
@@ -212,15 +212,15 @@ export default function WordLadderIVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Queue State */}
-        <div className="w-full p-3 rounded-xl bg-[#161824] border border-[#272b3c] flex items-center justify-between text-xs font-mono">
-          <span className="text-[#8a8ea3]">BFS Queue Head:</span>
+        <div className="w-full p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-between text-xs font-mono">
+          <span className="text-[var(--chalk-dim)]">BFS Queue Head:</span>
           <span className="text-purple-300 font-bold">
             {step.queue.length > 0 ? JSON.stringify(step.queue[0]) : 'Target Found (Empty)'}
           </span>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.explanation}
       </div>
     </div>

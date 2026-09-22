@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Longest Common Substring',
+  title: 'Longest Common Substring (DP-27)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * M)',
+  timeComplexity: 'O(N × M) Time',
   spaceComplexity: 'O(M) Space-Optimized',
-  description: 'Finds the length of the longest contiguous substring common to both text1 and text2. Unlike LCS, characters must be adjacent; any character mismatch resets the DP streak cell to 0.'
+  description: 'Finds the length of the longest contiguous substring common to both text1 and text2. Unlike Longest Common Subsequence, characters must be strictly adjacent; any mismatch immediately resets the streak in that cell to 0.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Longest Common Substring (DP-27)',
+  nodes: [
+    { id: 'root', label: 'Longest Common Substring', children: ['contiguity-rule', 'recurrence', 'global-max'] },
+    { id: 'contiguity-rule', label: '1. Contiguity Invariant', detail: 'Characters must form an unbroken contiguous block in both strings.' },
+    { id: 'recurrence', label: '2. DP Transition Rule', children: ['match-streak', 'mismatch-reset'] },
+    { id: 'match-streak', label: 'Match text1[i-1] == text2[j-1]', detail: 'dp[i][j] = 1 + dp[i-1][j-1]' },
+    { id: 'mismatch-reset', label: 'Mismatch text1[i-1] != text2[j-1]', detail: 'dp[i][j] = 0 (Contiguity broken, streak resets!)' },
+    { id: 'global-max', label: '3. Max Over All Cells', detail: 'Answer is max(dp[i][j]) across all (i, j), not necessarily dp[N][M].' }
+  ]
 };
 
 export const solutions = {
@@ -31,7 +45,7 @@ public:
                     cur[j] = 1 + prev[j - 1];
                     maxLen = max(maxLen, cur[j]);
                 } else {
-                    cur[j] = 0; // Contiguity broken: reset streak to 0
+                    cur[j] = 0; // Streak severed
                 }
             }
             prev = cur;
@@ -109,131 +123,192 @@ var longestCommonSubstring = function(text1, text2) {
 
 export const steps = [
   {
-    title: '1. S1 = "abcde", S2 = "abfde", Initialize Substring DP',
-    phase: 'INITIAL',
-    codeLine: 12,
-    s1: 'abcde',
-    s2: 'abfde',
-    currStreak: 0,
-    maxLen: 0,
-    matchedSubstring: '',
-    variables: { s1: 'abcde', s2: 'abfde', rule: 'Contiguous only! Mismatch resets cell to 0' },
-    explain: 'Unlike Subsequence which allows skipping letters, Substrings must be strictly consecutive.',
-    intuition: 'Contiguity requires checking immediately preceding diagonal element.'
+    phase: 'SETUP',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'Match: dp[i][j] = 1 + dp[i-1][j-1] | Mismatch: dp[i][j] = 0',
+    action: 'Initialize grid for text1 = "abcde" (rows) and text2 = "abfde" (columns).',
+    explain: 'dp[i][j] represents the length of the common contiguous substring ending exactly at text1[i-1] and text2[j-1]. If characters mismatch, the contiguous streak breaks and drops to 0.',
+    intuition: 'Substrings cannot skip characters like subsequences do.',
+    metrics: [
+      { label: '|text1|', value: 5 },
+      { label: '|text2|', value: 5 },
+      { label: 'Max Len', value: 0 }
+    ]
   },
   {
-    title: '2. Streak at Prefix: "ab" matches "ab" -> dp = 2',
-    phase: 'STREAK',
-    codeLine: 18,
-    s1: 'abcde',
-    s2: 'abfde',
-    currStreak: 2,
-    maxLen: 2,
-    matchedSubstring: 'ab',
-    variables: { char1: 'b', char2: 'b', streak: 'dp[2][2] = 1 + dp[1][1] = 2', maxLen: 2 },
-    explain: 'Characters "a" and "b" match in succession: streak reaches length 2 ("ab").',
-    intuition: 'Continuous diagonal chain.'
+    phase: 'ROW_1_MATCH',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [{ r: 0, c: 0, label: 'diag' }],
+    formula: 'text1[0] == text2[0] ("a" == "a") => dp[1][1] = 1 + dp[0][0] = 1',
+    action: 'Process row 1 (char "a"): match found at column 1 ("a").',
+    explain: 'At cell [1, 1], character "a" matches. dp[1][1] becomes 1 + 0 = 1. Remaining columns mismatch against "a" and reset to 0.',
+    intuition: 'A common substring of length 1 ("a") starts here.',
+    metrics: [
+      { label: 'Active Char', value: '"a"' },
+      { label: 'Current Streak', value: 1 },
+      { label: 'Max Len', value: 1, highlight: true }
+    ]
   },
   {
-    title: '3. Mismatch at Index 2: S1[2]=\'c\' != S2[2]=\'f\' -> RESET to 0!',
-    phase: 'RESET',
-    codeLine: 21,
-    s1: 'abcde',
-    s2: 'abfde',
-    currStreak: 0,
-    maxLen: 2,
-    matchedSubstring: 'ab',
-    variables: { char1: 'c', char2: 'f', state: 'MISMATCH -> Cell resets to 0' },
-    explain: 'Because \'c\' != \'f\', the continuous streak is severed. Cell value drops to 0!',
-    intuition: 'Crucial contrast with LCS which carries over max(prev, left).'
+    phase: 'ROW_2_EXTEND',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 2, c: 2 },
+    dependencyCells: [{ r: 1, c: 1, label: 'diag' }],
+    formula: 'text1[1] == text2[1] ("b" == "b") => dp[2][2] = 1 + dp[1][1] = 2',
+    action: 'Process row 2 (char "b"): matches column 2 ("b"). Streak extended to 2!',
+    explain: 'At cell [2, 2], character "b" matches. Diagonal predecessor dp[1][1] is 1, so dp[2][2] = 1 + 1 = 2! Substring "ab" is confirmed.',
+    intuition: 'Contiguous characters along diagonal step grow the streak to 2.',
+    metrics: [
+      { label: 'Active Char', value: '"b"' },
+      { label: 'Streak Substring', value: '"ab"' },
+      { label: 'Max Len', value: 2, highlight: true }
+    ]
   },
   {
-    title: '4. Match Streak Resumes: "de" matches "de" (len 2) -> Max = 2',
+    phase: 'ROW_3_RESET',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 3, c: 3 },
+    formula: 'text1[2] ("c") != text2[2] ("f") => dp[3][3] = 0 (Streak broken!)',
+    action: 'Process row 3 (char "c"): all columns mismatch. Entire row remains 0!',
+    explain: 'Character "c" does not match "f" or any other letter in column alignment. In LCS we would carry over 2 from max(top, left), but in substring we MUST reset to 0.',
+    intuition: 'A mismatch severs the contiguous chain immediately.',
+    metrics: [
+      { label: 'Active Char', value: '"c"' },
+      { label: 'Streak', value: 0 },
+      { label: 'Max Len', value: 2 }
+    ]
+  },
+  {
+    phase: 'ROW_4_NEW_STREAK',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 4, c: 4 },
+    dependencyCells: [{ r: 3, c: 3, label: 'diag=0' }],
+    formula: 'text1[3] == text2[3] ("d" == "d") => dp[4][4] = 1 + dp[3][3] = 1 + 0 = 1',
+    action: 'Process row 4 (char "d"): matches column 4 ("d"). New streak started.',
+    explain: 'At cell [4, 4], character "d" matches. Because diagonal cell dp[3][3] is 0, dp[4][4] becomes 1 + 0 = 1. A new substring streak starts.',
+    intuition: 'A fresh substring candidate begins.',
+    metrics: [
+      { label: 'Active Char', value: '"d"' },
+      { label: 'New Streak', value: 1 },
+      { label: 'Max Len', value: 2 }
+    ]
+  },
+  {
+    phase: 'ROW_5_EXTEND_STREAK',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 5, c: 5 },
+    dependencyCells: [{ r: 4, c: 4, label: 'diag=1' }],
+    formula: 'text1[4] == text2[4] ("e" == "e") => dp[5][5] = 1 + dp[4][4] = 2',
+    action: 'Process row 5 (char "e"): matches column 5 ("e"). Streak extends to 2.',
+    explain: 'At cell [5, 5], character "e" matches. 1 + dp[4][4] (1 + 1) = 2. Substring "de" also has length 2.',
+    intuition: 'Two distinct maximal common substrings found: "ab" and "de".',
+    metrics: [
+      { label: 'Active Char', value: '"e"' },
+      { label: 'Streak Substring', value: '"de"' },
+      { label: 'Max Len', value: 2 }
+    ]
+  },
+  {
+    phase: 'GLOBAL_MAX_EVAL',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 2, c: 2 },
+    dependencyCells: [{ r: 5, c: 5, label: 'max=2' }],
+    formula: 'Answer = max(dp[i][j]) over all cells = 2 ("ab" or "de")',
+    action: 'Scan entire matrix for global maximum. Peaks are at [2, 2] and [5, 5].',
+    explain: 'In Longest Common Substring, the result is not strictly at dp[N][M]. Any cell in the table can hold the global maximum streak. Here, both "ab" and "de" reach length 2.',
+    intuition: 'Global maximum scanning guarantees finding substrings located anywhere in the strings.',
+    metrics: [
+      { label: 'Peak 1', value: 'dp[2][2] = 2 ("ab")' },
+      { label: 'Peak 2', value: 'dp[5][5] = 2 ("de")' },
+      { label: 'Max Substring', value: 2, highlight: true }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 27,
-    s1: 'abcde',
-    s2: 'abfde',
-    currStreak: 2,
-    maxLen: 2,
-    matchedSubstring: '"ab" or "de"',
-    variables: { maxCommonSubstringLen: 2, validSubstrings: '"ab" and "de"' },
-    explain: '"de" matches with length 2. The longest common contiguous substring length is 2.',
-    intuition: 'Solved in O(N * M) time and O(M) space.'
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0],
+      [0, 0, 2, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'd', 'e'],
+    colLabels: ['∅', 'a', 'b', 'f', 'd', 'e'],
+    activeCell: { r: 2, c: 2 },
+    formula: 'Output: 2 | Optimal common substrings: "ab", "de"',
+    action: 'Algorithm complete! Maximum contiguous substring length is 2.',
+    explain: 'Longest common substring length is 2. (Note: LCS subsequence length would be 4 for "abde", highlighting the strict contiguity requirement). Space-optimized to O(M) using a rolling 1D array.',
+    intuition: 'Contiguity enforcement requires O(N × M) comparisons and constant memory per step.',
+    metrics: [
+      { label: 'text1', value: '"abcde"' },
+      { label: 'text2', value: '"abfde"' },
+      { label: 'Max Substring', value: 2, highlight: true }
+    ]
   }
 ];
-
-export default function LongestCommonSubstringVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          S1: "{step.s1}" | S2: "{step.s2}"
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Substring Len: {step.maxLen} ({step.matchedSubstring})
-        </span>
-      </div>
-
-      {/* String Comparison Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Contiguous Character Alignment
-        </span>
-
-        <div className="flex flex-col gap-3 py-2">
-          {/* S1 Row */}
-          <div className="flex items-center gap-2">
-            <span className="w-8 text-xs font-mono text-cyan-400 font-bold">S1:</span>
-            {step.s1.split('').map((ch, idx) => {
-              const isAb = (idx === 0 || idx === 1) && step.maxLen >= 2;
-              const isDe = (idx === 3 || idx === 4) && step.phase === 'COMPLETED';
-
-              return (
-                <span
-                  key={idx}
-                  className={`w-10 h-10 rounded-xl border flex items-center justify-center font-mono font-bold text-sm ${
-                    isAb || isDe
-                      ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-1 ring-emerald-500/30'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-400'
-                  }`}
-                >
-                  {ch}
-                </span>
-              );
-            })}
-          </div>
-
-          {/* S2 Row */}
-          <div className="flex items-center gap-2">
-            <span className="w-8 text-xs font-mono text-amber-400 font-bold">S2:</span>
-            {step.s2.split('').map((ch, idx) => {
-              const isAb = (idx === 0 || idx === 1) && step.maxLen >= 2;
-              const isDe = (idx === 3 || idx === 4) && step.phase === 'COMPLETED';
-
-              return (
-                <span
-                  key={idx}
-                  className={`w-10 h-10 rounded-xl border flex items-center justify-center font-mono font-bold text-sm ${
-                    isAb || isDe
-                      ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-1 ring-emerald-500/30'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-400'
-                  }`}
-                >
-                  {ch}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

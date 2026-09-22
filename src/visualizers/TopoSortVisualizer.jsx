@@ -154,8 +154,8 @@ export default function TopoSortVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>DFS Backtracking Stack &bull; Top to Bottom</span>
           <span className="text-purple-400 font-bold">LIFO Ordering</span>
         </div>
@@ -168,7 +168,7 @@ export default function TopoSortVisualizer({ currentStep = 0 }) {
               className={`p-2 rounded-lg font-mono text-xs font-bold text-center border transition-all ${
                 idx === step.stack.length - 1
                   ? 'bg-purple-500/30 border-purple-400 text-purple-200 shadow-md'
-                  : 'bg-[#161824] border-[#272b3c] text-slate-300'
+                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
               }`}
             >
               Vertex {item} {idx === step.stack.length - 1 && '◀ TOP'}
@@ -184,7 +184,7 @@ export default function TopoSortVisualizer({ currentStep = 0 }) {
         )}
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

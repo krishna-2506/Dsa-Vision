@@ -94,8 +94,8 @@ export default function FactorialOfAGivenNumberVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>Recursion Call Stack</span>
           <span className="text-purple-400 font-bold">Winding &rarr; Unwinding</span>
         </div>
@@ -118,7 +118,7 @@ export default function FactorialOfAGivenNumberVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.note}
       </div>
     </div>

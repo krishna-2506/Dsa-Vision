@@ -253,8 +253,8 @@ export default function BoundaryTraversalVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Boundary Pathway Breakdown</span>
           <span className="text-cyan-400 font-bold">3-Phase Perimeter</span>
         </div>
@@ -274,13 +274,13 @@ export default function BoundaryTraversalVisualizer({ currentStep = 0 }) {
         </div>
 
         <div className="grid grid-cols-3 gap-2 w-full text-center text-xs font-mono pt-2">
-          <div className="p-2.5 rounded-xl bg-[#161824] border border-[#26293a] text-cyan-300">
+          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-cyan-300">
             1. Left Boundary
           </div>
-          <div className="p-2.5 rounded-xl bg-[#161824] border border-[#26293a] text-purple-300">
+          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-purple-300">
             2. Leaf Nodes
           </div>
-          <div className="p-2.5 rounded-xl bg-[#161824] border border-[#26293a] text-emerald-300">
+          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-emerald-300">
             3. Right Boundary (Rev)
           </div>
         </div>

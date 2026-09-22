@@ -128,29 +128,29 @@ export default function MostStonesRemovedWithSameRowOrColumnVisualizer({ current
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>Component-to-Removal DSU Theorem</span>
           <span className="text-emerald-400 font-bold">Formula: N - Components</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col gap-2 font-mono text-xs">
-          <div className="flex justify-between text-slate-300">
+        <div className="p-4 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
+          <div className="flex justify-between text-[var(--chalk-dim)]">
             <span>Stones in Component:</span>
             <span className="text-cyan-300 font-bold">6 stones sharing lines</span>
           </div>
-          <div className="flex justify-between text-slate-300">
+          <div className="flex justify-between text-[var(--chalk-dim)]">
             <span>Survivor Anchor Stones:</span>
             <span className="text-purple-300 font-bold">1 per component</span>
           </div>
-          <div className="flex justify-between text-slate-300 border-t border-[#272b3c] pt-2">
+          <div className="flex justify-between text-[var(--chalk-dim)] border-t border-[var(--line)] pt-2">
             <span>Removable Stones:</span>
             <span className="text-emerald-400 font-extrabold text-sm">{step.removable} stones</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

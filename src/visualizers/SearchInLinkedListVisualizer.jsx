@@ -163,19 +163,19 @@ export default function SearchInLinkedListVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {step.nodes.map((val, idx) => {
           const isCurr = step.currIdx === idx;
           const isVisited = idx < step.currIdx;
           const isMatched = step.matched && step.currIdx === idx;
 
-          let style = 'bg-[#12131b] border-[#272b3c] text-white';
+          let style = 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]';
           if (isMatched) {
             style = 'bg-emerald-500/30 border-emerald-400 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/30';
           } else if (isCurr) {
             style = 'bg-indigo-500/25 border-indigo-400 text-indigo-200 scale-105 shadow-md shadow-indigo-500/20';
           } else if (isVisited) {
-            style = 'bg-[#0f1118] border-[#202436] text-[#555a73]';
+            style = 'bg-[#0f1118] border-[var(--line)] text-[var(--chalk-faint)]';
           }
 
           return (
@@ -208,7 +208,7 @@ export default function SearchInLinkedListVisualizer({ currentStep = 0 }) {
         })}
 
         {/* NULL */}
-        <div className="w-13 h-13 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[#8a8ea3]">
+        <div className="w-13 h-13 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[var(--chalk-dim)]">
           NULL
         </div>
       </div>

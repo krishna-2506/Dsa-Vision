@@ -188,7 +188,7 @@ export default function FindTheIntersectionPointOfYLlVisualizer({ currentStep = 
                   <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-mono text-xs transition-all ${ringClass}`}>
                     {val}
                   </div>
-                  {idx < step.listA.length - 1 && <span className="text-[#555a73] text-xs">→</span>}
+                  {idx < step.listA.length - 1 && <span className="text-[var(--chalk-faint)] text-xs">→</span>}
                 </React.Fragment>
               );
             })}
@@ -215,7 +215,7 @@ export default function FindTheIntersectionPointOfYLlVisualizer({ currentStep = 
                   <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-mono text-xs transition-all ${ringClass}`}>
                     {val}
                   </div>
-                  {idx < step.listB.length - 1 && <span className="text-[#555a73] text-xs">→</span>}
+                  {idx < step.listB.length - 1 && <span className="text-[var(--chalk-faint)] text-xs">→</span>}
                 </React.Fragment>
               );
             })}
@@ -224,8 +224,8 @@ export default function FindTheIntersectionPointOfYLlVisualizer({ currentStep = 
       </div>
 
       {/* Info notice */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Common tail: <strong className="text-emerald-400">[8, 4, 5]</strong></span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+        <span className="text-[var(--chalk-dim)]">Common tail: <strong className="text-emerald-400">[8, 4, 5]</strong></span>
         <span className="text-emerald-400 font-semibold">Dual Pointer Head-Swap</span>
       </div>
     </div>

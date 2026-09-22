@@ -176,8 +176,8 @@ export default function ConnectedComponentsVisualizer({ currentStep = 0 }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
         {/* SVG Graph Component clusters */}
-        <div className="md:col-span-2 flex flex-col items-center p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl">
-          <span className="text-xs font-mono text-[#8a8ea3] self-start mb-2">Multi-Component Graph</span>
+        <div className="md:col-span-2 flex flex-col items-center p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)] self-start mb-2">Multi-Component Graph</span>
           <svg width="280" height="230" className="overflow-visible">
             {edges.map((e, idx) => {
               const uNode = nodes.find(n => n.id === e.u);
@@ -227,9 +227,9 @@ export default function ConnectedComponentsVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Visited Array Panel */}
-        <div className="flex flex-col p-4 rounded-2xl bg-[#12131b] border border-[#242738] justify-between">
+        <div className="flex flex-col p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] justify-between">
           <div>
-            <span className="text-xs font-mono text-[#8a8ea3] block mb-2 font-semibold">vis[ 1 .. 7 ] Array</span>
+            <span className="text-xs font-mono text-[var(--chalk-dim)] block mb-2 font-semibold">vis[ 1 .. 7 ] Array</span>
             <div className="grid grid-cols-7 gap-1 font-mono text-center">
               {[1, 2, 3, 4, 5, 6, 7].map(idx => (
                 <div key={idx} className="flex flex-col gap-1">
@@ -240,7 +240,7 @@ export default function ConnectedComponentsVisualizer({ currentStep = 0 }) {
                     className={`py-1.5 rounded text-xs font-bold transition-all ${
                       step.vis[idx] === 1
                         ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                        : 'bg-[#161824] text-[#475569] border border-[#272b3c]'
+                        : 'bg-[var(--board-raised-2)] text-[#475569] border border-[var(--line)]'
                     }`}
                   >
                     {step.vis[idx]}
@@ -250,13 +250,13 @@ export default function ConnectedComponentsVisualizer({ currentStep = 0 }) {
             </div>
           </div>
 
-          <div className="mt-4 p-2.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[11px] font-mono text-[#94a3b8]">
+          <div className="mt-4 p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[11px] font-mono text-[#94a3b8]">
             Rule: If <span className="text-cyan-400">vis[i] == 0</span>, node i begins a brand new disconnected component!
           </div>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.highlight}
       </div>
     </div>

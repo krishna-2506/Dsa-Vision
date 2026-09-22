@@ -117,8 +117,8 @@ export default function GraphRepresentationJavaVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-3">
-        <div className="text-xs font-mono text-[#8a8ea3] flex justify-between items-center pb-2 border-b border-[#242738]">
+      <div className="w-full p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-3">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex justify-between items-center pb-2 border-b border-[var(--line)]">
           <span>Java Memory Pointer Hierarchy</span>
           <span className="text-amber-400 font-bold">{step.activeCode}</span>
         </div>
@@ -126,7 +126,7 @@ export default function GraphRepresentationJavaVisualizer({ currentStep = 0 }) {
         <div className="space-y-3 pt-2">
           {[1, 2, 3, 4].map(idx => (
             <div key={idx} className="flex items-center gap-3 font-mono text-xs">
-              <div className="w-24 px-3 py-1.5 rounded-lg bg-[#161824] border border-[#272b3c] text-amber-300 font-bold flex items-center justify-between">
+              <div className="w-24 px-3 py-1.5 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)] text-amber-300 font-bold flex items-center justify-between">
                 <span>adj[{idx}]</span>
                 <span className="text-[10px] text-[#6b7280]">&bull;</span>
               </div>
@@ -147,7 +147,7 @@ export default function GraphRepresentationJavaVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.actionDesc}
       </div>
     </div>

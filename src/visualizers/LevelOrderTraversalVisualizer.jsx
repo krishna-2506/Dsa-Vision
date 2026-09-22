@@ -206,8 +206,8 @@ export default function LevelOrderTraversalVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Levels Breakdown */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Level-by-Level Tree Breakdown</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Level-by-Level Tree Breakdown</span>
 
         <div className="flex flex-col gap-3 w-full max-w-md">
           {[
@@ -218,7 +218,7 @@ export default function LevelOrderTraversalVisualizer({ currentStep = 0 }) {
             const isCompleted = step.levels.length > row.lvl;
             const isActive = step.activeLevel === row.lvl && !isCompleted;
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-500';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]';
             if (isCompleted) {
               borderClass = 'border-emerald-500 bg-emerald-500/20 text-emerald-300';
             } else if (isActive) {
@@ -242,7 +242,7 @@ export default function LevelOrderTraversalVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

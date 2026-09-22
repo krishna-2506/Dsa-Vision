@@ -130,19 +130,19 @@ export default function ReverseANumberVisualizer({ currentStep = 0 }) {
     <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       {/* State Cards */}
       <div className="flex items-center gap-4 text-xs font-mono">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c]">
-          <span className="text-[#8a8ea3]">Remaining N:</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
+          <span className="text-[var(--chalk-dim)]">Remaining N:</span>
           <span className="text-amber-300 font-bold text-sm">{step.n}</span>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c]">
-          <span className="text-[#8a8ea3]">Reversed Total:</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
+          <span className="text-[var(--chalk-dim)]">Reversed Total:</span>
           <span className="text-emerald-300 font-bold text-sm">{step.rev}</span>
         </div>
       </div>
 
       {/* Extracted Digit Animation Box */}
-      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl">
-        <span className="text-xs font-mono text-[#8a8ea3]">Extracted Unit Digit (n % 10):</span>
+      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)]">Extracted Unit Digit (n % 10):</span>
         <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center font-mono text-2xl font-bold transition-all duration-300 ${
           step.extractedDigit !== null ? 'bg-amber-500/25 text-amber-300 border-amber-400 scale-110 shadow-lg shadow-amber-500/20' : 'bg-[#181a24] text-[#42465c] border-[#2b2e40]'
         }`}>
@@ -151,7 +151,7 @@ export default function ReverseANumberVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Formula Explanation */}
-      <div className="px-4 py-2 rounded-xl bg-[#141620] border border-[#262a3a] text-xs font-mono text-[#8a8ea3]">
+      <div className="px-4 py-2 rounded-xl bg-[#141620] border border-[#262a3a] text-xs font-mono text-[var(--chalk-dim)]">
         <span>Formula: </span>
         <code className="text-indigo-300 font-bold">rev = (rev * 10) + digit</code>
       </div>

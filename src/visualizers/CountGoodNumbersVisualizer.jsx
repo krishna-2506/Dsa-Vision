@@ -176,18 +176,18 @@ export default function CountGoodNumbersVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Digit Slots */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-around font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-around font-mono">
         {Array.from({ length: step.n }).map((_, idx) => {
           const isEven = idx % 2 === 0;
 
           return (
             <div key={idx} className="flex flex-col items-center gap-2">
-              <span className="text-xs text-[#8a8ea3]">Idx {idx}</span>
+              <span className="text-xs text-[var(--chalk-dim)]">Idx {idx}</span>
               <div className={`w-14 h-16 rounded-xl border-2 flex flex-col items-center justify-center gap-0.5 ${
                 isEven ? 'border-amber-400 bg-amber-500/15 text-amber-300' : 'border-cyan-400 bg-cyan-500/15 text-cyan-300'
               }`}>
                 <span className="text-xl font-bold">{isEven ? '5' : '4'}</span>
-                <span className="text-[9px] text-[#8a8ea3]">ways</span>
+                <span className="text-[9px] text-[var(--chalk-dim)]">ways</span>
               </div>
               <span className={`text-[10px] font-bold ${isEven ? 'text-amber-400' : 'text-cyan-400'}`}>
                 {isEven ? 'EVEN DIGIT' : 'PRIME DIGIT'}
@@ -198,17 +198,17 @@ export default function CountGoodNumbersVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Multiplication Formula Banner */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex items-center justify-around font-mono text-sm">
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-around font-mono text-sm">
         <div className="flex items-center gap-2">
           <span className="text-amber-300">Even Ways (5^{step.evenCount}):</span>
-          <strong className="text-white">{step.waysEven ?? '?'}</strong>
+          <strong className="text-[var(--chalk)]">{step.waysEven ?? '?'}</strong>
         </div>
-        <span className="text-[#8a8ea3]">&times;</span>
+        <span className="text-[var(--chalk-dim)]">&times;</span>
         <div className="flex items-center gap-2">
           <span className="text-cyan-300">Odd Ways (4^{step.oddCount}):</span>
-          <strong className="text-white">{step.waysOdd ?? '?'}</strong>
+          <strong className="text-[var(--chalk)]">{step.waysOdd ?? '?'}</strong>
         </div>
-        <span className="text-[#8a8ea3]">=</span>
+        <span className="text-[var(--chalk-dim)]">=</span>
         <div className="flex items-center gap-2">
           <strong className="text-emerald-400 text-lg">{step.totalGood ?? '?'}</strong>
         </div>

@@ -280,8 +280,8 @@ export default function PrintAllNodesAtADistanceOfKInBtVisualizer({ currentStep 
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Radial Distance Rings</span>
           <span className="text-purple-400 font-bold">Undirected Graph BFS</span>
         </div>
@@ -305,7 +305,7 @@ export default function PrintAllNodesAtADistanceOfKInBtVisualizer({ currentStep 
           ))}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           BFS traverses both downward to children and upward to parents using the parent hash map.
         </div>
       </div>

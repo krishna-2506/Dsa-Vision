@@ -239,14 +239,14 @@ export default function MaximumSumCombinationVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Heap & Extracted Stream */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           Max-Heap Active Candidates
         </span>
 
         <div className="flex flex-wrap items-center justify-center gap-3 py-2 font-mono">
           {step.heap.length === 0 ? (
-            <span className="text-xs text-slate-500 italic">Heap is empty</span>
+            <span className="text-xs text-[var(--chalk-faint)] italic">Heap is empty</span>
           ) : (
             step.heap.map((item, idx) => (
               <div
@@ -254,7 +254,7 @@ export default function MaximumSumCombinationVisualizer({ currentStep = 0 }) {
                 className="px-4 py-2.5 rounded-xl border border-cyan-500/40 bg-cyan-500/15 flex flex-col items-center gap-0.5"
               >
                 <span className="text-sm font-bold text-amber-300">Sum: {item.sum}</span>
-                <span className="text-[10px] text-slate-400">
+                <span className="text-[10px] text-[var(--chalk-dim)]">
                   (A[{item.i}], B[{item.j}])
                 </span>
               </div>
@@ -264,7 +264,7 @@ export default function MaximumSumCombinationVisualizer({ currentStep = 0 }) {
 
         {/* Extracted Result */}
         {step.result.length > 0 && (
-          <div className="w-full border-t border-[#272b3c] pt-3 flex flex-col items-center gap-2">
+          <div className="w-full border-t border-[var(--line)] pt-3 flex flex-col items-center gap-2">
             <span className="text-[11px] font-mono text-emerald-400 font-semibold">
               Max Sum Combinations (Top C):
             </span>
@@ -276,7 +276,7 @@ export default function MaximumSumCombinationVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

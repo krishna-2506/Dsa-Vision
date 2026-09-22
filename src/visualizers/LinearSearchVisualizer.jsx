@@ -1,217 +1,281 @@
-import React, { useState } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
-// 0. Multi-language production solution code with detailed educational comments
+export const meta = {
+  display_id: 'Q-005',
+  title: 'Linear Search in Array',
+  category: 'Arrays & Searching',
+  difficulty: 'Easy',
+  timeComplexity: 'O(N)',
+  spaceComplexity: 'O(1)',
+  description: 'Finds the index of a target element in an unsorted array by scanning sequentially from left to right, returning the index upon match or -1 if the target is absent.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Linear Search Strategy',
+  nodes: [
+    { id: 'root', label: 'Sequential Scanning Invariant', children: ['left-to-right', 'element-comparison', 'early-exit-match', 'not-found-sentinel', 'complexity'] },
+    { id: 'left-to-right', label: '1. Sequential Traversal', detail: 'Initialize index pointer i = 0 and step forward one element at a time through the array.' },
+    { id: 'element-comparison', label: '2. Equality Test (arr[i] == target)', detail: 'Compare current element against target. If unequal, advance to the next index.' },
+    { id: 'early-exit-match', label: '3. Immediate Early Exit', detail: 'The moment arr[i] == target is true, immediately return index i without evaluating remaining items.' },
+    { id: 'not-found-sentinel', label: '4. Fallback -1 Sentinel', detail: 'If the loop completes without finding a match, return -1 indicating element absence.' },
+    { id: 'complexity', label: '5. Linear Complexity Bounds', detail: 'Best-case O(1) when target is at head; worst-case O(N) when target is at tail or absent. O(1) space.' }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++ Optimal Solution for Linear Search
-// Time Complexity: O(N) where N is the size of the array
-// Space Complexity: O(1) as we are only using a few variables for tracking
+// Time Complexity: O(N) | Space Complexity: O(1)
+#include <vector>
+using namespace std;
 
 class Solution {
 public:
-    // Function to find the index of a target element 'k' in a given array
-    int search(int arr[], int n, int k) {
-        // Step 1: Iterate through the array sequentially using a for-loop.
-        // The loop starts at index 0 and continues until n-1.
-        for (int i = 0; i < n; i++) {
-            
-            // Step 2: Compare the current element arr[i] with the target k.
-            // If they are equal, it means we have found our target element.
-            if (arr[i] == k) {
-                // Return the current index immediately.
-                // This early exit ensures we don't do unnecessary checks.
-                return i; 
+    int search(vector<int>& arr, int target) {
+        for (int i = 0; i < (int)arr.size(); i++) {
+            if (arr[i] == target) {
+                return i; // Early exit upon discovery
             }
         }
-        
-        // Step 3: If the loop finishes without returning, the element is not present.
-        // Returning -1 is a standard convention to indicate 'not found'.
-        return -1; 
+        return -1; // Target not found
     }
 };`,
   python: `# Python 3 Optimal Solution for Linear Search
 # Time Complexity: O(N) | Space Complexity: O(1)
-
 class Solution:
-    def search(self, arr: list[int], n: int, k: int) -> int:
-        # Step 1: Iterate through the sequence using the enumerate function
-        # enumerate provides both the index (i) and the value (val) efficiently.
+    def search(self, arr: list[int], target: int) -> int:
         for i, val in enumerate(arr):
-            
-            # Step 2: Perform the comparison between the current value and target k.
-            # Python evaluates this equality check in constant O(1) time.
-            if val == k:
-                # If a match is found, immediately return the index 'i'
-                # and terminate the search process.
+            if val == target:
                 return i
-                
-        # Step 3: If the iteration completes and no match was encountered,
-        # return -1 to signal that the target 'k' does not exist in 'arr'.
         return -1`,
   java: `// Java Optimal Solution for Linear Search
 // Time Complexity: O(N) | Space Complexity: O(1)
-
 class Solution {
-    // Method to execute linear search on an integer array
-    public int search(int arr[], int n, int k) {
-        // Step 1: Begin a loop from index 0 up to n-1.
-        // We must inspect every element in the worst-case scenario.
-        for (int i = 0; i < n; i++) {
-            
-            // Step 2: Conditional check to see if the element at index i matches k.
-            if (arr[i] == k) {
-                // Target discovered! Return the index instantly.
-                // This breaks both the loop and the method execution.
+    public int search(int[] arr, int target) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == target) {
                 return i;
             }
         }
-        
-        // Step 3: Fallback return statement if the element remains undiscovered.
-        // Returning -1 clearly communicates the absence of the target value.
         return -1;
     }
 }`,
   javascript: `// JavaScript Optimal Solution for Linear Search
 // Time Complexity: O(N) | Space Complexity: O(1)
-
-/**
- * @param {number[]} arr - The input array of numbers
- * @param {number} n - The size of the array
- * @param {number} k - The target element to search for
- * @return {number} - The index of the element if found, otherwise -1
- */
-var search = function(arr, n, k) {
-    // Step 1: Utilize a standard for-loop to traverse the array from start to finish.
-    // Let 'i' be the pointer tracking our current index position.
-    for (let i = 0; i < n; i++) {
-        
-        // Step 2: Compare the element at the current pointer index 'i' with the target 'k'.
-        // Strict equality (===) is generally preferred in JS, but '==' works here for numbers.
-        if (arr[i] === k) {
-            // A matching element is found. Return the index 'i' to the caller.
+var search = function(arr, target) {
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === target) {
             return i;
         }
     }
-    
-    // Step 3: If the loop exhausts all elements without returning, 
-    // it implies the target 'k' is missing from the array. Return -1.
     return -1;
-};`,
+};`
 };
-
-export const meta = {
-  display_id: 'Q-008',
-  title: "Linear Search",
-  category: "1. Arrays",
-  difficulty: "Easy",
-  timeComplexity: "O(N)",
-  spaceComplexity: "O(1)",
-  description: "I don't think anyone needs it's solution. The idea is to traverse the array using loop and when the element\r\nis equal to k return the same"
-};
-
-// Realistic sample array for this problem. Searching for k = 56
-const SAMPLE_DATA = [1, 8, 7, 56, 90];
-const TARGET = 56;
 
 export const steps = [
   {
-    title: "1. Initialize State",
-    codeLine: 8, 
-    code: "for (int i = 0; i < n; i++) {",
-    explanation: "We begin our linear search by setting up a loop that will traverse the array from the very first element (index 0) to the last. Our target element to find is k = 56. We initialize our iterator 'i' to 0.",
-    pointers: [{ index: 0, label: 'i=0', color: 'indigo' }],
-    highlightIndices: [],
-    hudText: "Initialized pointer i at index 0. Target k = 56."
+    title: '1. Setup: Array arr = [6, 7, 8, 4, 1], Target = 4',
+    phase: 'SETUP',
+    track: {
+      label: 'Input Array arr',
+      items: [
+        { val: 6 },
+        { val: 7 },
+        { val: 8 },
+        { val: 4 },
+        { val: 1 }
+      ],
+      pointers: [
+        { index: 0, label: 'i = 0' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Target', value: 4, highlight: true },
+      { label: 'Pointer i', value: 0 },
+      { label: 'Status', value: 'Searching' }
+    ],
+    formula: 'for (int i = 0; i < n; i++)',
+    action: 'Initialize linear search pointer i = 0 to search for target 4.',
+    explain: 'Linear search is used when the array is unsorted. We inspect each element one by one from left to right.',
+    intuition: 'Works unconditionally on any data distribution without requiring ordering.',
+    variables: { i: 0, target: 4, 'arr[0]': 6, match: false }
   },
   {
-    title: "2. Check First Element",
-    codeLine: 12,
-    code: "if (arr[i] == k)",
-    explanation: "We look at the element at index 0, which is 1. We compare this value against our target k = 56. Since 1 is not equal to 56, the condition evaluates to false. We will move to the next element in the array.",
-    pointers: [{ index: 0, label: 'i=0', color: 'rose' }],
-    highlightIndices: [0],
-    hudText: "arr[0] is 1. 1 != 56. Move to next."
+    title: '2. Index 0: arr[0] = 6 != 4 -> Discarded',
+    phase: 'SCANNING',
+    track: {
+      label: 'Input Array arr',
+      items: [
+        { val: 6, status: 'discarded', badge: '!= 4' },
+        { val: 7 },
+        { val: 8 },
+        { val: 4 },
+        { val: 1 }
+      ],
+      pointers: [
+        { index: 0, label: 'i = 0' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'arr[0]', value: 6 },
+      { label: 'Target', value: 4 },
+      { label: '6 == 4 ?', value: 'False (Skip)' }
+    ],
+    formula: 'arr[0] != target (6 != 4) ==> i++;',
+    action: '6 != 4. Element does not match target. Advance pointer to index 1.',
+    explain: 'Index 0 rejected. Proceeding to inspect the next slot.',
+    intuition: 'Step forward.',
+    variables: { i: 0, 'arr[0]': 6, target: 4 }
   },
   {
-    title: "3. Check Second Element",
-    codeLine: 12,
-    code: "if (arr[i] == k)",
-    explanation: "The loop variable 'i' increments to 1. We now inspect the element at index 1, which is 8. Comparing 8 against our target 56 yields false again. The search must continue down the array.",
-    pointers: [{ index: 1, label: 'i=1', color: 'rose' }],
-    highlightIndices: [1],
-    hudText: "arr[1] is 8. 8 != 56. Move to next."
+    title: '3. Index 1: arr[1] = 7 != 4 -> Discarded',
+    phase: 'SCANNING',
+    track: {
+      label: 'Input Array arr',
+      items: [
+        { val: 6, status: 'discarded' },
+        { val: 7, status: 'discarded', badge: '!= 4' },
+        { val: 8 },
+        { val: 4 },
+        { val: 1 }
+      ],
+      pointers: [
+        { index: 1, label: 'i = 1' }
+      ]
+    },
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'arr[1]', value: 7 },
+      { label: 'Target', value: 4 },
+      { label: '7 == 4 ?', value: 'False (Skip)' }
+    ],
+    formula: 'arr[1] != target (7 != 4) ==> i++;',
+    action: '7 != 4. Advance pointer to index 2.',
+    explain: 'Index 1 rejected.',
+    intuition: 'Step forward.',
+    variables: { i: 1, 'arr[1]': 7, target: 4 }
   },
   {
-    title: "4. Check Third Element",
-    codeLine: 12,
-    code: "if (arr[i] == k)",
-    explanation: "The loop variable 'i' increments to 2. The element at index 2 is 7. We check if 7 is equal to 56. This is also false. In a linear search, the time complexity scales linearly because we must check every element one by one in the worst case.",
-    pointers: [{ index: 2, label: 'i=2', color: 'rose' }],
-    highlightIndices: [2],
-    hudText: "arr[2] is 7. 7 != 56. Move to next."
+    title: '4. Index 2: arr[2] = 8 != 4 -> Discarded',
+    phase: 'SCANNING',
+    track: {
+      label: 'Input Array arr',
+      items: [
+        { val: 6, status: 'discarded' },
+        { val: 7, status: 'discarded' },
+        { val: 8, status: 'discarded', badge: '!= 4' },
+        { val: 4 },
+        { val: 1 }
+      ],
+      pointers: [
+        { index: 2, label: 'i = 2' }
+      ]
+    },
+    activeI: 2,
+    activeJ: null,
+    metrics: [
+      { label: 'arr[2]', value: 8 },
+      { label: 'Target', value: 4 },
+      { label: '8 == 4 ?', value: 'False (Skip)' }
+    ],
+    formula: 'arr[2] != target (8 != 4) ==> i++;',
+    action: '8 != 4. Advance pointer to index 3.',
+    explain: 'Index 2 rejected.',
+    intuition: 'Target is just ahead.',
+    variables: { i: 2, 'arr[2]': 8, target: 4 }
   },
   {
-    title: "5. Match Found!",
-    codeLine: 12,
-    code: "if (arr[i] == k)",
-    explanation: "The loop variable 'i' increments to 3. The element at index 3 is 56. We compare this value with our target k = 56. The condition (56 == 56) evaluates to true! We have successfully located our target element.",
-    pointers: [{ index: 3, label: 'i=3', color: 'emerald' }],
-    highlightIndices: [3],
-    hudText: "arr[3] is 56. 56 == 56. Match found!"
+    title: '5. Index 3: arr[3] = 4 == Target (4) -> MATCH FOUND!',
+    phase: 'MATCH_FOUND',
+    track: {
+      label: 'Target Discovered at Index 3',
+      items: [
+        { val: 6, status: 'discarded' },
+        { val: 7, status: 'discarded' },
+        { val: 8, status: 'discarded' },
+        { val: 4, status: 'match', badge: 'Match! idx 3' },
+        { val: 1 }
+      ],
+      pointers: [
+        { index: 3, label: 'Found at i = 3' }
+      ]
+    },
+    activeI: 3,
+    activeJ: null,
+    metrics: [
+      { label: 'arr[3]', value: 4 },
+      { label: 'Target', value: 4 },
+      { label: '4 == 4 ?', value: 'TRUE (MATCH)', highlight: true }
+    ],
+    formula: 'if (arr[i] == target) return i; // 3',
+    action: 'arr[3] matches target 4! Trigger early exit and return index 3.',
+    explain: 'A match has been found. We immediately terminate search without inspecting remaining elements (like index 4).',
+    intuition: 'Early return saves time on average compared to full-pass algorithms.',
+    variables: { i: 3, 'arr[3]': 4, target: 4, matchFound: true, returnIndex: 3 }
   },
   {
-    title: "6. Return Index",
-    codeLine: 14,
-    code: "return i;",
-    explanation: "Since we found the element, we immediately return the current index 'i' which is 3. The function execution terminates here, preventing any unnecessary further traversal of the remaining elements (like 90). The algorithm completes in O(N) time.",
-    pointers: [{ index: 3, label: 'Result', color: 'emerald' }],
-    highlightIndices: [3],
-    hudText: "Returning index 3. Algorithm complete."
+    title: '6. Absent Target Analysis: What if Target Was Missing?',
+    phase: 'ANALYSIS',
+    track: {
+      label: 'Hypothetical Search for Target = 99',
+      items: [
+        { val: 6, status: 'discarded' },
+        { val: 7, status: 'discarded' },
+        { val: 8, status: 'discarded' },
+        { val: 4, status: 'discarded' },
+        { val: 1, status: 'discarded' }
+      ],
+      pointers: [
+        { index: 4, label: 'Exhausted' }
+      ]
+    },
+    activeI: null,
+    activeJ: 4,
+    metrics: [
+      { label: 'Hypothetical Target', value: 99 },
+      { label: 'Loop End', value: 'i reaches N' },
+      { label: 'Fallback Return', value: -1, highlight: true }
+    ],
+    formula: 'if loop finishes: return -1;',
+    action: 'Illustrate fallback behavior when target is absent.',
+    explain: 'If the target were 99, the loop would inspect all N elements, exhaust the array bounds, and execute return -1.',
+    intuition: '-1 is the universal convention signaling "element not found".',
+    variables: { targetAbsent: true, fallback: -1 }
+  },
+  {
+    title: '7. Complete: Return Index 3',
+    phase: 'COMPLETED',
+    track: {
+      label: 'Search Result',
+      items: [
+        { val: 6 },
+        { val: 7 },
+        { val: 8 },
+        { val: 4, status: 'match', badge: 'Index 3' },
+        { val: 1 }
+      ],
+      pointers: [
+        { index: 3, label: 'Return 3' }
+      ]
+    },
+    activeI: 3,
+    activeJ: null,
+    metrics: [
+      { label: 'Found Index', value: 3, highlight: true },
+      { label: 'Comparisons', value: 4 },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    formula: 'return 3;',
+    action: 'Algorithm concludes: Returns index 3.',
+    explain: 'Linear search located target 4 at index 3 in 4 comparisons using O(1) extra space.',
+    intuition: 'The simplest, universally applicable search strategy in computer science.',
+    variables: { result: 3, totalComparisons: 4, time: 'O(N)', space: 'O(1)' }
   }
 ];
-
-export default function LinearSearchVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
-        <ArrayView items={SAMPLE_DATA} pointers={stepData.pointers || []} matchIndices={stepData.highlightIndices || []} />
-        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-          <span>Status: <strong className={stepIndex >= 4 ? "text-emerald-400" : "text-indigo-400"}>{stepData.hudText || 'Processing...'}</strong></span>
-        </div>
-      </div>
-
-      {/* 4. Explanation Footer */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
-        {stepData.explanation}
-      </div>
-    </div>
-  );
-}

@@ -222,49 +222,49 @@ export default function FindMedianFromDataStreamVisualizer({ currentStep = 0 }) 
       {/* Two-Heap Seesaw Balance Container */}
       <div className="w-full grid grid-cols-2 gap-4">
         {/* Left: Max-Heap (Lower Half) */}
-        <div className="bg-[#12131b] border border-blue-500/30 rounded-2xl p-4 flex flex-col items-center gap-3">
-          <div className="flex items-center justify-between w-full text-xs font-mono text-blue-400 font-bold border-b border-[#272b3c] pb-2">
+        <div className="bg-[var(--board-raised)] border border-blue-500/30 rounded-2xl p-4 flex flex-col items-center gap-3">
+          <div className="flex items-center justify-between w-full text-xs font-mono text-blue-400 font-bold border-b border-[var(--line)] pb-2">
             <span>Max-Heap (Lower Half)</span>
-            <span className="text-[10px] text-slate-400">{step.maxHeap.length} items</span>
+            <span className="text-[10px] text-[var(--chalk-dim)]">{step.maxHeap.length} items</span>
           </div>
 
           <div className="flex items-center justify-center gap-2 py-2">
             {step.maxHeap.map((val, idx) => (
               <div key={idx} className={`w-12 h-14 rounded-xl border flex flex-col items-center justify-center font-mono font-bold ${
-                idx === 0 ? 'border-blue-400 bg-blue-500/25 text-blue-300 ring-2 ring-blue-400/40' : 'border-slate-700 bg-slate-800/40 text-slate-400'
+                idx === 0 ? 'border-blue-400 bg-blue-500/25 text-blue-300 ring-2 ring-blue-400/40' : 'border-slate-700 bg-slate-800/40 text-[var(--chalk-dim)]'
               }`}>
-                <span className="text-[9px] text-slate-400">{idx === 0 ? 'TOP' : 'VAL'}</span>
+                <span className="text-[9px] text-[var(--chalk-dim)]">{idx === 0 ? 'TOP' : 'VAL'}</span>
                 <span className="text-base">{val}</span>
               </div>
             ))}
-            {step.maxHeap.length === 0 && <span className="text-xs text-slate-500 italic">Empty</span>}
+            {step.maxHeap.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Empty</span>}
           </div>
         </div>
 
         {/* Right: Min-Heap (Upper Half) */}
-        <div className="bg-[#12131b] border border-emerald-500/30 rounded-2xl p-4 flex flex-col items-center gap-3">
-          <div className="flex items-center justify-between w-full text-xs font-mono text-emerald-400 font-bold border-b border-[#272b3c] pb-2">
+        <div className="bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col items-center gap-3">
+          <div className="flex items-center justify-between w-full text-xs font-mono text-emerald-400 font-bold border-b border-[var(--line)] pb-2">
             <span>Min-Heap (Upper Half)</span>
-            <span className="text-[10px] text-slate-400">{step.minHeap.length} items</span>
+            <span className="text-[10px] text-[var(--chalk-dim)]">{step.minHeap.length} items</span>
           </div>
 
           <div className="flex items-center justify-center gap-2 py-2">
             {step.minHeap.map((val, idx) => (
               <div key={idx} className={`w-12 h-14 rounded-xl border flex flex-col items-center justify-center font-mono font-bold ${
-                idx === 0 ? 'border-emerald-400 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-400/40' : 'border-slate-700 bg-slate-800/40 text-slate-400'
+                idx === 0 ? 'border-emerald-400 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-400/40' : 'border-slate-700 bg-slate-800/40 text-[var(--chalk-dim)]'
               }`}>
-                <span className="text-[9px] text-slate-400">{idx === 0 ? 'TOP' : 'VAL'}</span>
+                <span className="text-[9px] text-[var(--chalk-dim)]">{idx === 0 ? 'TOP' : 'VAL'}</span>
                 <span className="text-base">{val}</span>
               </div>
             ))}
-            {step.minHeap.length === 0 && <span className="text-xs text-slate-500 italic">Empty</span>}
+            {step.minHeap.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Empty</span>}
           </div>
         </div>
       </div>
 
       {/* Median Focal Indicator */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-4 flex items-center justify-center gap-4 font-mono text-xs">
-        <span className="text-[#8a8ea3]">Median Formula:</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex items-center justify-center gap-4 font-mono text-xs">
+        <span className="text-[var(--chalk-dim)]">Median Formula:</span>
         <span className="px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold text-sm">
           {step.maxHeap.length > step.minHeap.length
             ? `maxHeap.top() = ${step.maxHeap[0]}`
@@ -275,7 +275,7 @@ export default function FindMedianFromDataStreamVisualizer({ currentStep = 0 }) 
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

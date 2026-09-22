@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DualArrayRenderer via rendererType
 
 export const meta = {
   title: 'Print Longest Increasing Subsequence',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N^2) Tabulation + O(LIS) Backtrack',
+  timeComplexity: 'O(N²)',
   spaceComplexity: 'O(N)',
-  description: 'Constructs and returns the actual elements forming the Longest Increasing Subsequence. Uses a parent pointer hash array alongside the DP array to trace back the exact sequence from the maximum ending index.'
+  description: 'Constructs and returns the actual elements forming the Longest Increasing Subsequence. Maintains a parent pointer hash array alongside the DP array to track the exact predecessor index that maximized each state, enabling O(LIS) reconstruction.'
+};
+
+export const rendererType = 'dual-array';
+
+export const ideaMap = {
+  title: 'Print Longest Increasing Subsequence',
+  nodes: [
+    { id: 'root', label: 'Print LIS', children: ['state', 'pointers', 'backtrack'] },
+    { id: 'state', label: '1. Tabulate dp[i]', detail: 'dp[i] = length of LIS ending strictly at arr[i]' },
+    { id: 'pointers', label: '2. Parent Hash Array', children: ['self-init', 'update-rule'] },
+    { id: 'self-init', label: 'hash[i] = i', detail: 'Initialize each element pointing to itself' },
+    { id: 'update-rule', label: 'hash[i] = prev', detail: 'Whenever 1 + dp[prev] > dp[i] for arr[prev] < arr[i], record predecessor index' },
+    { id: 'backtrack', label: '3. Reconstruct & Reverse', detail: 'Follow parent pointers from index of max(dp) down to base, then reverse result' }
+  ]
 };
 
 export const solutions = {
@@ -148,109 +162,235 @@ var printingLongestIncreasingSubsequence = function(arr, n) {
 
 export const steps = [
   {
-    title: '1. Array: [10, 22, 9, 33, 21, 50, 41, 60], Setup Hash Array',
-    phase: 'INITIAL',
-    codeLine: 13,
-    arr: [10, 22, 9, 33, 21, 50, 41, 60],
-    n: 8,
-    dp: [1, 1, 1, 1, 1, 1, 1, 1],
-    hash: [0, 1, 2, 3, 4, 5, 6, 7],
-    backtrackSequence: [],
-    variables: { n: 8, hashFunction: 'hash[i] points to parent index that maximized dp[i]' },
-    explain: 'Parent hash array stores the preceding index that led to the maximum LIS at index i.',
-    intuition: 'Backtracking parent pointers yields the exact sequence elements.'
+    phase: 'SETUP',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 1, 1, 1, 1, 1, 1, 1] },
+      { label: 'hash', items: [0, 1, 2, 3, 4, 5, 6, 7] }
+    ],
+    activeI: null,
+    activePrev: null,
+    formula: 'Initialize dp[i] = 1, hash[i] = i for all i in [0..n-1]',
+    action: 'Initialize DP table and parent hash array with self-pointers.',
+    explain: 'Each number starts as a subsequence of length 1 pointing to itself. As we find longer increasing sequences, hash[i] will store the predecessor index that yields the maximum dp[i].',
+    intuition: 'The hash array records parent pointers for backtracking after tabulation.',
+    metrics: [
+      { label: 'Max LIS', value: 1, highlight: true },
+      { label: 'Best End Idx', value: 0 },
+      { label: 'Active State', value: 'Ready' }
+    ],
+    customCard: {
+      title: 'State Roles',
+      rows: [
+        { label: 'dp[i]', value: 'Length of LIS ending strictly at index i' },
+        { label: 'hash[i]', value: 'Predecessor index chosen to achieve dp[i]' }
+      ]
+    }
   },
   {
-    title: '2. Compute DP & Parents: 10 -> 22 (parent=0), 22 -> 33 (parent=1)',
-    phase: 'BUILD_HASH',
-    codeLine: 20,
-    arr: [10, 22, 9, 33, 21, 50, 41, 60],
-    n: 8,
-    dp: [1, 2, 1, 3, 2, 4, 4, 5],
-    hash: [0, 0, 2, 1, 2, 3, 3, 5],
-    backtrackSequence: [],
-    variables: { '33 parent': '22 (idx 1)', '50 parent': '33 (idx 3)', '60 parent': '50 (idx 5)' },
-    explain: 'Chain of parents: 60 (idx 7) points to 50 (idx 5), which points to 33 (idx 3), which points to 22 (idx 1), which points to 10 (idx 0).',
-    intuition: 'Backtrack tree links optimal predecessors.'
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 1, 1, 1, 1, 1] },
+      { label: 'hash', items: [0, 0, 2, 3, 4, 5, 6, 7] }
+    ],
+    activeI: 1,
+    activePrev: 0,
+    formula: 'arr[0] < arr[1] (10 < 22) => dp[1] = 1 + dp[0] = 2, hash[1] = 0',
+    action: 'Check i=1 (22) with prev=0 (10): 10 < 22, extend LIS to 2.',
+    explain: '22 is greater than 10. Since 1 + dp[0] = 2 > dp[1], we update dp[1] = 2 and record predecessor hash[1] = 0. Chain formed: 10 -> 22.',
+    intuition: 'Whenever an increasing step improves dp[i], update hash[i] to point to prev.',
+    metrics: [
+      { label: 'Max LIS', value: 2, highlight: true },
+      { label: 'Best End Idx', value: 1 },
+      { label: 'Reconstructed', value: '[10, 22]' }
+    ],
+    customCard: {
+      title: 'Transition at i=1',
+      rows: [
+        { label: 'Comparison', value: '10 < 22 -> TRUE', accent: true },
+        { label: 'Parent Update', value: 'hash[1] = 0 (points to 10)' }
+      ]
+    }
   },
   {
-    title: '3. Backtrack from Index 7 (Val 60): 60 -> 50 -> 33 -> 22 -> 10',
+    phase: 'SCAN',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 1, 1, 1, 1, 1] },
+      { label: 'hash', items: [0, 0, 2, 3, 4, 5, 6, 7] }
+    ],
+    activeI: 2,
+    activePrev: 1,
+    formula: 'arr[0]=10 > 9 and arr[1]=22 > 9 => dp[2] stays 1, hash[2] stays 2',
+    action: 'Check i=2 (9) against prev=0 and prev=1: 9 is smaller than both.',
+    explain: '9 cannot extend either 10 or 22. dp[2] remains 1 and hash[2] stays pointing to itself (index 2).',
+    intuition: 'Smaller numbers begin their own candidate chains but cannot extend larger predecessors.',
+    metrics: [
+      { label: 'Max LIS', value: 2 },
+      { label: 'Best End Idx', value: 1 },
+      { label: 'At i=2', value: 'No extension' }
+    ]
+  },
+  {
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 3, 1, 1, 1, 1] },
+      { label: 'hash', items: [0, 0, 2, 1, 4, 5, 6, 7] }
+    ],
+    activeI: 3,
+    activePrev: 1,
+    formula: 'arr[1] < arr[3] (22 < 33) => dp[3] = 1 + dp[1] = 3, hash[3] = 1',
+    action: 'Check i=3 (33) with prev=1 (22): 22 < 33, extend LIS to 3.',
+    explain: '33 is greater than 22. With dp[1] = 2, extending gives length 1 + 2 = 3. We record hash[3] = 1. Chain: 10 -> 22 -> 33.',
+    intuition: 'Optimal chain extends through 22, achieving maximum length so far.',
+    metrics: [
+      { label: 'Max LIS', value: 3, highlight: true },
+      { label: 'Best End Idx', value: 3 },
+      { label: 'Reconstructed', value: '[10, 22, 33]' }
+    ],
+    customCard: {
+      title: 'Transition at i=3',
+      rows: [
+        { label: 'Comparison', value: '22 < 33 -> TRUE', accent: true },
+        { label: 'Parent Update', value: 'hash[3] = 1 (points to 22)' }
+      ]
+    }
+  },
+  {
+    phase: 'SCAN',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 3, 2, 1, 1, 1] },
+      { label: 'hash', items: [0, 0, 2, 1, 0, 5, 6, 7] }
+    ],
+    activeI: 4,
+    activePrev: 0,
+    formula: 'arr[0] < arr[4] (10 < 21) => dp[4] = 2, hash[4] = 0',
+    action: 'Check i=4 (21) with prev=0 (10): 10 < 21, dp[4] reaches 2.',
+    explain: '21 can extend 10 (length 2) or 9 (length 2). It cannot extend 22 or 33. Best dp[4] = 2 with hash[4] = 0.',
+    intuition: '21 creates an alternate branch: 10 -> 21 of length 2.',
+    metrics: [
+      { label: 'Max LIS', value: 3 },
+      { label: 'Best End Idx', value: 3 },
+      { label: 'Branch Chain', value: '[10, 21]' }
+    ]
+  },
+  {
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 3, 2, 4, 1, 1] },
+      { label: 'hash', items: [0, 0, 2, 1, 0, 3, 6, 7] }
+    ],
+    activeI: 5,
+    activePrev: 3,
+    formula: 'arr[3] < arr[5] (33 < 50) => dp[5] = 1 + dp[3] = 4, hash[5] = 3',
+    action: 'Check i=5 (50) with prev=3 (33): 33 < 50, extend LIS to 4!',
+    explain: '50 extends the chain ending at 33 (dp[3]=3). New length = 4, hash[5] = 3. Chain: 10 -> 22 -> 33 -> 50.',
+    intuition: 'Each extension step links to the highest-scoring compatible predecessor.',
+    metrics: [
+      { label: 'Max LIS', value: 4, highlight: true },
+      { label: 'Best End Idx', value: 5 },
+      { label: 'Reconstructed', value: '[10, 22, 33, 50]' }
+    ]
+  },
+  {
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 3, 2, 4, 4, 1] },
+      { label: 'hash', items: [0, 0, 2, 1, 0, 3, 3, 7] }
+    ],
+    activeI: 6,
+    activePrev: 3,
+    formula: 'arr[3] < arr[6] (33 < 41) => dp[6] = 1 + dp[3] = 4, hash[6] = 3',
+    action: 'Check i=6 (41) with prev=3 (33): 33 < 41, alternative LIS of 4.',
+    explain: '41 also extends 33 to length 4 with hash[6] = 3. Both 50 and 41 form valid LIS chains of length 4.',
+    intuition: 'Multiple optimal subsequences can co-exist; parent pointers keep them unambiguous.',
+    metrics: [
+      { label: 'Max LIS', value: 4 },
+      { label: 'Best End Idx', value: 5 },
+      { label: 'Alt Chain', value: '[10, 22, 33, 41]' }
+    ]
+  },
+  {
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 3, 2, 4, 4, 5] },
+      { label: 'hash', items: [0, 0, 2, 1, 0, 3, 3, 5] }
+    ],
+    activeI: 7,
+    activePrev: 5,
+    formula: 'arr[5] < arr[7] (50 < 60) => dp[7] = 1 + dp[5] = 5, hash[7] = 5',
+    action: 'Check i=7 (60) with prev=5 (50): 50 < 60, global maximum LIS = 5!',
+    explain: '60 is greater than 50 (and also 41). Choosing 50 gives 1 + dp[5] = 5, updating dp[7] = 5, hash[7] = 5. lastIndex = 7.',
+    intuition: 'Global peak LIS of 5 attained at the last element.',
+    metrics: [
+      { label: 'Max LIS', value: 5, highlight: true },
+      { label: 'Best End Idx', value: 7, highlight: true },
+      { label: 'Reconstructed', value: '[10, 22, 33, 50, 60]' }
+    ],
+    customCard: {
+      title: 'Global Optimal Subsequence Found',
+      rows: [
+        { label: 'Optimal End', value: 'lastIndex = 7 (val = 60)', accent: true },
+        { label: 'Max LIS Length', value: '5 elements' }
+      ]
+    }
+  },
+  {
     phase: 'BACKTRACK',
-    codeLine: 33,
-    arr: [10, 22, 9, 33, 21, 50, 41, 60],
-    n: 8,
-    dp: [1, 2, 1, 3, 2, 4, 4, 5],
-    hash: [0, 0, 2, 1, 2, 3, 3, 5],
-    backtrackSequence: [60, 50, 33, 22, 10],
-    variables: { backtracked: '[60, 50, 33, 22, 10]', length: 5 },
-    explain: 'Starting at index 7 (val 60), follow hash pointers backwards to reconstruct the reversed sequence: [60, 50, 33, 22, 10].',
-    intuition: 'Linear backtrack in O(LIS) operations.'
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 3, 2, 4, 4, 5] },
+      { label: 'hash', items: [0, 0, 2, 1, 0, 3, 3, 5] }
+    ],
+    activeI: 7,
+    activePrev: 5,
+    formula: 'Trace: hash[7]=5 -> hash[5]=3 -> hash[3]=1 -> hash[1]=0 -> hash[0]=0 (stop)',
+    action: 'Follow hash parent pointers backwards starting at index 7.',
+    explain: 'From index 7 (60) -> jump to hash[7]=5 (50) -> hash[5]=3 (33) -> hash[3]=1 (22) -> hash[1]=0 (10). At index 0, hash[0]=0 (self-pointer), ending the trace.',
+    intuition: 'Parent pointers guarantee exact path recovery in O(LIS) time.',
+    metrics: [
+      { label: 'Raw Trace', value: '60 -> 50 -> 33 -> 22 -> 10', highlight: true },
+      { label: 'Trace Steps', value: '5 hops' },
+      { label: 'Status', value: 'Reconstructed' }
+    ],
+    customCard: {
+      title: 'Pointer Backtrack Sequence',
+      rows: [
+        { label: 'Trace Path', value: 'idx 7 (60) -> 5 (50) -> 3 (33) -> 1 (22) -> 0 (10)', accent: true },
+        { label: 'Reversed Order', value: '[60, 50, 33, 22, 10]' }
+      ]
+    }
   },
   {
-    title: '4. Final Result: Longest Increasing Subsequence = [10, 22, 33, 50, 60]',
     phase: 'COMPLETED',
-    codeLine: 38,
-    arr: [10, 22, 9, 33, 21, 50, 41, 60],
-    n: 8,
-    dp: [1, 2, 1, 3, 2, 4, 4, 5],
-    hash: [0, 0, 2, 1, 2, 3, 3, 5],
-    backtrackSequence: [10, 22, 33, 50, 60],
-    variables: { finalLIS: '[10, 22, 33, 50, 60]', length: 5 },
-    explain: 'Reversing gives the actual LIS: [10, 22, 33, 50, 60] with length 5!',
-    intuition: 'Complete sequence reconstructed in O(N^2) time and O(N) space.'
+    tracks: [
+      { label: 'arr', items: [10, 22, 9, 33, 21, 50, 41, 60] },
+      { label: 'dp[i]', items: [1, 2, 1, 3, 2, 4, 4, 5] },
+      { label: 'hash', items: [0, 0, 2, 1, 0, 3, 3, 5] }
+    ],
+    activeI: null,
+    activePrev: null,
+    formula: 'reverse([60, 50, 33, 22, 10]) => Final LIS: [10, 22, 33, 50, 60]',
+    action: 'Reverse the backtracked array to obtain the LIS in original chronological order.',
+    explain: 'Reversing [60, 50, 33, 22, 10] produces [10, 22, 33, 50, 60]. Verified: 10 < 22 < 33 < 50 < 60, strictly increasing with length 5.',
+    intuition: 'Combining O(N²) DP tabulation with O(k) parent pointer backtracking outputs the actual subsequence.',
+    metrics: [
+      { label: 'Final LIS', value: '[10, 22, 33, 50, 60]', highlight: true },
+      { label: 'Length', value: 5, highlight: true },
+      { label: 'Time Complexity', value: 'O(N²) + O(LIS)' }
+    ],
+    customCard: {
+      title: 'Final Output Verification',
+      rows: [
+        { label: 'Result Sequence', value: '[10, 22, 33, 50, 60]', accent: true },
+        { label: 'Strict Increase', value: '10 < 22 < 33 < 50 < 60 (All checks passed)' }
+      ]
+    }
   }
 ];
-
-export default function PrintLongestIncreasingSubsequenceVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          LIS Length: {step.backtrackSequence.length || 5}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Reconstructed: [{step.backtrackSequence.join(', ') || '...'}]
-        </span>
-      </div>
-
-      {/* Array Elements with Parent Links */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Array Elements & Backtrack Links
-        </span>
-
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-          {step.arr.map((val, idx) => {
-            const isInLIS = step.backtrackSequence.includes(val);
-
-            return (
-              <div key={idx} className="flex flex-col items-center gap-1.5">
-                <div
-                  className={`w-14 h-20 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                    isInLIS
-                      ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg scale-105'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-500'
-                  }`}
-                >
-                  <span className="text-[9px] text-[#8a8ea3]">#{idx}</span>
-                  <span className="text-sm font-bold text-amber-300 mt-0.5">{val}</span>
-                  <span className="text-[9px] text-purple-400 mt-1">
-                    P:{step.hash[idx]}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

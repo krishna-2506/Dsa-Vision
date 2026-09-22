@@ -332,7 +332,7 @@ export default function LruCacheVisualizer({ currentStep = 0 }) {
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Command: <strong className="text-cyan-400">{step.action}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -345,8 +345,8 @@ export default function LruCacheVisualizer({ currentStep = 0 }) {
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Doubly Linked List (Temporal Order)</span>
           <span className="text-cyan-400 font-bold">O(1) Splicing</span>
         </div>
@@ -374,7 +374,7 @@ export default function LruCacheVisualizer({ currentStep = 0 }) {
                         ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-md shadow-cyan-500/20'
                         : isLRU
                         ? 'bg-rose-500/20 border-rose-400/60 text-rose-200'
-                        : 'bg-[#181a26] border-[#31364d] text-white'
+                        : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                     }`}
                   >
                     {isMRU && (
@@ -383,7 +383,7 @@ export default function LruCacheVisualizer({ currentStep = 0 }) {
                       </span>
                     )}
                     {isLRU && (
-                      <span className="absolute -bottom-3 px-1.5 py-0.5 rounded text-[8px] bg-rose-500 text-white font-bold">
+                      <span className="absolute -bottom-3 px-1.5 py-0.5 rounded text-[8px] bg-rose-500 text-[var(--chalk)] font-bold">
                         LRU
                       </span>
                     )}
@@ -402,7 +402,7 @@ export default function LruCacheVisualizer({ currentStep = 0 }) {
           </div>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Hash Map provides O(1) node lookup. Doubly Linked List provides O(1) removal and head-insertion.
         </div>
       </div>

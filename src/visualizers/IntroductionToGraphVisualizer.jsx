@@ -140,8 +140,8 @@ export default function IntroductionToGraphVisualizer({ currentStep = 0 }) {
 
       {/* SVG Canvas and Degree Panel */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-        <div className="md:col-span-2 flex flex-col items-center p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl relative">
-          <span className="text-xs font-mono text-[#8a8ea3] self-start mb-2">Graph Topology Canvas</span>
+        <div className="md:col-span-2 flex flex-col items-center p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl relative">
+          <span className="text-xs font-mono text-[var(--chalk-dim)] self-start mb-2">Graph Topology Canvas</span>
           <svg width="280" height="260" className="overflow-visible">
             {/* Edges */}
             {edges.map((e, idx) => {
@@ -195,14 +195,14 @@ export default function IntroductionToGraphVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Degree Table */}
-        <div className="flex flex-col p-4 rounded-2xl bg-[#12131b] border border-[#242738] justify-between">
+        <div className="flex flex-col p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] justify-between">
           <div>
-            <span className="text-xs font-mono text-[#8a8ea3] block mb-3 font-semibold">Vertex Degrees (deg)</span>
+            <span className="text-xs font-mono text-[var(--chalk-dim)] block mb-3 font-semibold">Vertex Degrees (deg)</span>
             <div className="space-y-2 text-xs font-mono">
               {[1, 2, 3, 4, 5].map(v => (
-                <div key={v} className="flex justify-between items-center px-2 py-1 rounded bg-[#161824] border border-[#272b3c]">
+                <div key={v} className="flex justify-between items-center px-2 py-1 rounded bg-[var(--board-raised-2)] border border-[var(--line)]">
                   <span className="text-[#94a3b8]">Node {v}</span>
-                  <span className={`font-bold ${step.activeNode === v ? 'text-cyan-400' : 'text-slate-300'}`}>
+                  <span className={`font-bold ${step.activeNode === v ? 'text-cyan-400' : 'text-[var(--chalk-dim)]'}`}>
                     deg = {step.degrees[v]}
                   </span>
                 </div>
@@ -215,7 +215,7 @@ export default function IntroductionToGraphVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-4 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.highlight}
       </div>
     </div>

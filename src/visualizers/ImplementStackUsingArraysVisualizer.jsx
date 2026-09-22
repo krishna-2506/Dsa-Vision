@@ -237,7 +237,7 @@ export default function ImplementStackUsingArraysVisualizer({ currentStep = 0 })
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       {/* Status Bar */}
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Operation: <strong className="text-cyan-400">{step.action}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300">
@@ -251,8 +251,8 @@ export default function ImplementStackUsingArraysVisualizer({ currentStep = 0 })
       </div>
 
       {/* Array Slots Visualization */}
-      <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Array Memory Buffer (Capacity = 5)</span>
           <span className="text-[#595f7a]">LIFO Stack</span>
         </div>
@@ -268,8 +268,8 @@ export default function ImplementStackUsingArraysVisualizer({ currentStep = 0 })
                     isTop
                       ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-lg shadow-cyan-500/20 scale-105'
                       : isFilled
-                      ? 'bg-[#181a26] border-[#31364d] text-white'
-                      : 'bg-[#0f1016] border-dashed border-[#242738] text-[#3d425c]'
+                      ? 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
+                      : 'bg-[#0f1016] border-dashed border-[var(--line)] text-[#3d425c]'
                   }`}
                 >
                   {isTop && (
@@ -286,7 +286,7 @@ export default function ImplementStackUsingArraysVisualizer({ currentStep = 0 })
         </div>
 
         {/* Stack Pointer Indicator */}
-        <div className="mt-2 text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] flex items-center gap-2">
+        <div className="mt-2 text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] flex items-center gap-2">
           <span>Pointer Status:</span>
           {step.topIndex === -1 ? (
             <span className="text-rose-400 font-bold">Stack Empty (topIndex = -1)</span>

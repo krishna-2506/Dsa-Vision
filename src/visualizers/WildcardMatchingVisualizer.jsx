@@ -1,12 +1,27 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Wildcard Matching (DP 34)',
+  title: 'Wildcard Matching (DP-34)',
   category: 'Dynamic Programming',
   difficulty: 'Hard',
-  timeComplexity: 'O(N * M)',
+  timeComplexity: 'O(N × M)',
   spaceComplexity: 'O(M) Space-Optimized',
-  description: 'Implements regular wildcard pattern matching with support for "?" (matches any single character) and "*" (matches any sequence of characters, including empty string).'
+  description: 'Implements regular wildcard pattern matching supporting "?" (matches any single character) and "*" (matches any sequence of characters, including empty string) via 2D DP grid tabulation.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Wildcard Matching (DP-34)',
+  nodes: [
+    { id: 'root', label: 'Wildcard Matching', children: ['state', 'rules', 'star-insight'] },
+    { id: 'state', label: '1. 2D Table dp[i][j]', detail: 'dp[i][j] = true if s[0..i-1] matches p[0..j-1]' },
+    { id: 'rules', label: '2. Matching Rules', children: ['exact', 'question-mark', 'star'] },
+    { id: 'exact', label: 'Exact Match', detail: 's[i-1] == p[j-1] => dp[i][j] = dp[i-1][j-1]' },
+    { id: 'question-mark', label: 'Wildcard "?"', detail: 'Matches any single character => dp[i][j] = dp[i-1][j-1]' },
+    { id: 'star', label: 'Wildcard "*"', detail: 'dp[i][j] = dp[i-1][j] (match 1+) OR dp[i][j-1] (match 0)' },
+    { id: 'star-insight', label: '3. Star Branching Insight', detail: 'Top cell absorbs current character; left cell skips star entirely' }
+  ]
 };
 
 export const solutions = {
@@ -23,7 +38,6 @@ public:
         vector<bool> prev(m + 1, false);
         prev[0] = true;
 
-        // Base case: Leading stars match empty string
         for (int j = 1; j <= m; j++) {
             if (p[j - 1] == '*') prev[j] = prev[j - 1];
         }
@@ -121,101 +135,257 @@ var isMatch = function(s, p) {
 
 export const steps = [
   {
-    title: '1. Text s = "cb", Pattern p = "?a", Evaluate Initial State',
-    phase: 'INITIAL',
-    codeLine: 12,
-    s: 'cb',
-    p: '?a',
-    matched: false,
-    variables: { s: 'cb', p: '?a', wildcards: '? matches any char, * matches 0 or more' },
-    explain: 'Testing whether pattern "?a" matches string "cb".',
-    intuition: 'Character by character alignment.'
+    phase: 'SETUP',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'dp[0][0] = 1 (Empty text matches empty pattern)',
+    action: 'Initialize DP grid: s = "abceb" (rows), p = "a*c?b" (columns).',
+    explain: 'dp[i][j] represents whether prefix s[0..i-1] matches pattern prefix p[0..j-1]. The empty string matches empty pattern, so base cell dp[0][0] = 1 (True).',
+    intuition: 'Every string comparison problem begins with the empty-prefix boundary.',
+    metrics: [
+      { label: 's length', value: 5 },
+      { label: 'p length', value: 5 },
+      { label: 'dp[0][0]', value: 'TRUE', highlight: true }
+    ],
+    customCard: {
+      title: 'Wildcard Semantics',
+      rows: [
+        { label: 'Char "?"', value: 'Matches exactly 1 arbitrary character (diagonal move)' },
+        { label: 'Char "*"', value: 'Matches 0 chars (left cell) or 1+ chars (top cell)' }
+      ]
+    }
   },
   {
-    title: '2. Index 0: p[0]=\'?\' matches s[0]=\'c\'',
-    phase: 'MATCH_Q',
-    codeLine: 20,
-    s: 'cb',
-    p: '?a',
-    activeChar: 'c vs ?',
-    matched: false,
-    variables: { char1: 'c', charPattern: '?', result: 'MATCH (single character wildcard)' },
-    explain: '\'?\' can match any single character, so it matches \'c\'. Move to index 1.',
-    intuition: 'Valid step forward.'
+    phase: 'BASE_ROW',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 0, c: 1 },
+    formula: 'p[0] = "a" != ∅ => dp[0][1] = 0 | All subsequent dp[0][j] = 0',
+    action: 'Evaluate Row 0: Empty string cannot match literal "a".',
+    explain: 'Non-empty pattern starting with "a" cannot match empty string s="". Thus dp[0][1] = 0, and by extension all dp[0][j] = 0.',
+    intuition: 'Only leading asterisks can match an empty string.',
+    metrics: [
+      { label: 'Row', value: 'i = 0 (empty s)' },
+      { label: 'dp[0][1]', value: 'FALSE' },
+      { label: 'Base Row', value: 'Complete' }
+    ]
   },
   {
-    title: '3. Index 1 Mismatch: p[1]=\'a\' != s[1]=\'b\' -> FAILS',
-    phase: 'MISMATCH',
-    codeLine: 20,
-    s: 'cb',
-    p: '?a',
-    activeChar: 'b vs a',
-    matched: false,
-    variables: { char1: 'b', charPattern: 'a', result: 'MISMATCH: \'a\' != \'b\'' },
-    explain: 'Pattern requires letter \'a\', but string has \'b\'. Match fails. Result = false.',
-    intuition: 'No wildcard exists to forgive this mismatch.'
+    phase: 'MATCH_CHAR',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [{ r: 0, c: 0, label: 'diag' }],
+    formula: 's[0] == p[0] ("a" == "a") => dp[1][1] = dp[0][0] = 1',
+    action: 'Cell [1, 1]: "a" matches "a" diagonally. Then [1, 2]: "*" absorbs empty.',
+    explain: 'Character match: s[0]="a" matches p[0]="a", inheriting dp[0][0]=1 into dp[1][1]. Then at cell [1, 2] (pattern "*"), * can match empty string, taking left neighbor dp[1][1]=1.',
+    intuition: 'Literal match transfers truth along the diagonal.',
+    metrics: [
+      { label: 'Active Cell', value: '[1, 1]' },
+      { label: 'Match', value: '"a" == "a"', highlight: true },
+      { label: 'dp[1][1]', value: 'TRUE' }
+    ],
+    decision: {
+      label: 'Wildcard Transition at [1, 2] (*)',
+      left: 'Match empty: dp[1][1] = 1',
+      right: 'Match 1+: dp[0][2] = 0',
+      chosen: 'left'
+    }
   },
   {
-    title: '4. Case 2 Example: s = "aa", p = "*" -> MATCHES TRUE',
+    phase: 'STAR_ABSORB',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 2, c: 2 },
+    dependencyCells: [{ r: 1, c: 2, label: 'top' }],
+    formula: 'p[1] = "*" => dp[2][2] = dp[1][2] (top) || dp[2][1] (left) = 1 || 0 = 1',
+    action: 'Cell [2, 2]: Wildcard "*" absorbs character "b" from string s.',
+    explain: 'Because p[1]="*", it can absorb character "b" (extending the sequence) by inheriting from top cell dp[1][2]=1. Thus s="ab" matches pattern "a*".',
+    intuition: 'Top dependency allows the star wildcard to consume multiple characters sequentially.',
+    metrics: [
+      { label: 'Active Cell', value: '[2, 2]' },
+      { label: 'Char Absorbed', value: '"b"' },
+      { label: 'dp[2][2]', value: 'TRUE', highlight: true }
+    ],
+    decision: {
+      label: 'Star Decision at [2, 2]',
+      left: 'Match 0 chars: dp[2][1] = 0',
+      right: 'Match 1+ chars: dp[1][2] = 1',
+      chosen: 'right'
+    }
+  },
+  {
+    phase: 'MATCH_CHAR',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 3, c: 3 },
+    dependencyCells: [{ r: 2, c: 2, label: 'diag' }],
+    formula: 's[2] == p[2] ("c" == "c") => dp[3][3] = dp[2][2] = 1',
+    action: 'Cell [3, 3]: "c" matches "c" diagonally from [2, 2].',
+    explain: 'Both s[2] and p[2] are "c". The diagonal predecessor dp[2][2] is 1, so dp[3][3] becomes 1. s="abc" matches p="a*c".',
+    intuition: 'Resuming literal matching after a wildcard run.',
+    metrics: [
+      { label: 'Active Cell', value: '[3, 3]' },
+      { label: 'Matched', value: '"c" == "c"', highlight: true },
+      { label: 'dp[3][3]', value: 'TRUE' }
+    ]
+  },
+  {
+    phase: 'MATCH_QUESTION',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 4, c: 4 },
+    dependencyCells: [{ r: 3, c: 3, label: 'diag' }],
+    formula: 'p[3] = "?" matches s[3] = "e" => dp[4][4] = dp[3][3] = 1',
+    action: 'Cell [4, 4]: "?" matches character "e" diagonally.',
+    explain: 'The "?" wildcard accepts any single character. It accepts s[3]="e", inheriting dp[3][3]=1. Therefore s="abce" matches p="a*c?".',
+    intuition: '"?" acts as a universal single-character bridge.',
+    metrics: [
+      { label: 'Active Cell', value: '[4, 4]' },
+      { label: 'Wildcard', value: 'p[3] = "?"', highlight: true },
+      { label: 'Char Matched', value: 's[3] = "e"' }
+    ]
+  },
+  {
+    phase: 'MATCH_FINAL',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 1]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 5, c: 5 },
+    dependencyCells: [{ r: 4, c: 4, label: 'diag' }],
+    formula: 's[4] == p[4] ("b" == "b") => dp[5][5] = dp[4][4] = 1 (MATCH!)',
+    action: 'Cell [5, 5]: Final literal "b" matches "b", confirming full string match!',
+    explain: 'Final characters match: s[4]="b" == p[4]="b". Inheriting dp[4][4]=1 sets dp[5][5] = 1. The full string "abceb" matches pattern "a*c?b"!',
+    intuition: 'Bottom-right cell dp[N][M] holds the definitive boolean result.',
+    metrics: [
+      { label: 'Final Result', value: 'TRUE', highlight: true },
+      { label: 'Matched String', value: '"abceb"' },
+      { label: 'Pattern', value: '"a*c?b"' }
+    ],
+    customCard: {
+      title: 'Full Alignment Established',
+      rows: [
+        { label: 'String Alignment', value: 's: [a] [b] [c] [e] [b]' },
+        { label: 'Pattern Alignment', value: 'p: [a] [*] [c] [?] [b]', accent: true }
+      ]
+    }
+  },
+  {
+    phase: 'EVALUATE',
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 1]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: { r: 5, c: 5 },
+    dependencyCells: [
+      { r: 0, c: 0, label: 'start' },
+      { r: 1, c: 1, label: 'a' },
+      { r: 2, c: 2, label: '*' },
+      { r: 3, c: 3, label: 'c' },
+      { r: 4, c: 4, label: '?' },
+      { r: 5, c: 5, label: 'b' }
+    ],
+    formula: 'Optimal Path: [0,0] -> [1,1] -> [2,2] -> [3,3] -> [4,4] -> [5,5]',
+    action: 'Trace the valid state trajectory through the DP matrix.',
+    explain: 'Tracing dependencies backwards: [5,5] (char b) <- [4,4] (wildcard ?) <- [3,3] (char c) <- [2,2] (wildcard * absorbing b) <- [1,1] (char a) <- [0,0] (base).',
+    intuition: 'The DP path proves the existence of a valid alignment without exhaustive recursion.',
+    metrics: [
+      { label: 'Path Length', value: '5 transitions' },
+      { label: 'Result', value: 'Match Valid' },
+      { label: 'Complexity', value: 'O(N × M)' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 22,
-    s: 'aa',
-    p: '*',
-    matched: true,
-    variables: { s: 'aa', p: '*', starRule: '* matches any sequence including "aa"' },
-    explain: 'Star wildcard "*" matches any string sequence of arbitrary length, matching "aa" perfectly with true!',
-    intuition: 'DP transitions for \'*\' check cur[j-1] (empty) and prev[j] (1 or more).'
+    grid: [
+      [1, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0],
+      [0, 0, 0, 0, 1, 0],
+      [0, 0, 0, 0, 0, 1]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'c', 'e', 'b'],
+    colLabels: ['∅', 'a', '*', 'c', '?', 'b'],
+    activeCell: null,
+    formula: 'Result: isMatch("abceb", "a*c?b") = true',
+    action: 'Algorithm completed in O(N × M) time and O(M) auxiliary space.',
+    explain: 'By storing only the previous and current row of size M+1, wildcard matching runs in O(N × M) time and minimal O(M) memory. Output is true.',
+    intuition: '2D DP tabulation solves arbitrary wildcard patterns predictably in linear-matrix time.',
+    metrics: [
+      { label: 'Final Output', value: 'true', highlight: true },
+      { label: 'Time Complexity', value: 'O(N × M)' },
+      { label: 'Space Complexity', value: 'O(M)' }
+    ],
+    customCard: {
+      title: 'Algorithm Summary',
+      rows: [
+        { label: 'Input Text', value: '"abceb"' },
+        { label: 'Pattern', value: '"a*c?b"' },
+        { label: 'Decision', value: 'TRUE (Pattern matches text successfully)', accent: true }
+      ]
+    }
   }
 ];
-
-export default function WildcardMatchingVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Text: "{step.s}" | Pattern: "{step.p}"
-        </span>
-        <span className={`px-3 py-1.5 rounded-xl border font-bold ${
-          step.matched 
-            ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' 
-            : 'bg-rose-500/15 border-rose-500/30 text-rose-300'
-        }`}>
-          Pattern Match: {step.matched ? '✅ TRUE' : '❌ FALSE'}
-        </span>
-      </div>
-
-      {/* Wildcard Rule Card */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Wildcard Matching Rule Engine
-        </span>
-
-        <div className="flex items-center justify-around w-full max-w-md pt-2">
-          {/* Rule ? */}
-          <div className="flex-1 bg-[#161824] border border-blue-500/40 rounded-2xl p-4 flex flex-col items-center gap-1.5">
-            <span className="text-lg font-bold text-blue-400 font-mono">?</span>
-            <span className="text-xs text-slate-300 font-semibold">Single Char</span>
-            <span className="text-[10px] text-slate-500 text-center">Matches any 1 letter</span>
-          </div>
-
-          <div className="w-4" />
-
-          {/* Rule * */}
-          <div className="flex-1 bg-[#161824] border border-amber-500/40 rounded-2xl p-4 flex flex-col items-center gap-1.5">
-            <span className="text-lg font-bold text-amber-400 font-mono">*</span>
-            <span className="text-xs text-slate-300 font-semibold">Sequence</span>
-            <span className="text-[10px] text-slate-500 text-center">Matches 0 or more chars</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

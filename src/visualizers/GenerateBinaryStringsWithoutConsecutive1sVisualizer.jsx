@@ -175,8 +175,8 @@ export default function GenerateBinaryStringsWithoutConsecutive1sVisualizer({ cu
       </div>
 
       {/* Generated Strings Badges */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-3 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Valid Binary Strings:</span>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-3 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Valid Binary Strings:</span>
         <div className="flex flex-wrap items-center gap-3">
           {step.validStrings.map((str, idx) => (
             <div

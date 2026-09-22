@@ -276,8 +276,8 @@ export default function DesignTwitterVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Users and Timelines */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           User Timelines &amp; Global News Feed
         </span>
 
@@ -285,11 +285,11 @@ export default function DesignTwitterVisualizer({ currentStep = 0 }) {
           {step.users.map(u => (
             <div
               key={u.id}
-              className="p-3 rounded-xl border border-[#3b4261] bg-[#161824] flex flex-col items-center gap-1.5"
+              className="p-3 rounded-xl border border-[#3b4261] bg-[var(--board-raised-2)] flex flex-col items-center gap-1.5"
             >
               <span className="text-xs font-bold text-amber-300">User {u.id}</span>
               <div className="flex items-center gap-1.5 text-[10px]">
-                <span className="text-slate-400">Tweets:</span>
+                <span className="text-[var(--chalk-dim)]">Tweets:</span>
                 {u.tweets.map(t => (
                   <span
                     key={t.id}
@@ -305,7 +305,7 @@ export default function DesignTwitterVisualizer({ currentStep = 0 }) {
 
         {/* Current News Feed */}
         {step.feed.length > 0 && (
-          <div className="w-full border-t border-[#272b3c] pt-3 flex flex-col items-center gap-2">
+          <div className="w-full border-t border-[var(--line)] pt-3 flex flex-col items-center gap-2">
             <span className="text-[11px] font-mono text-emerald-400 font-semibold">
               Live News Feed (User 1):
             </span>
@@ -324,7 +324,7 @@ export default function DesignTwitterVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

@@ -213,8 +213,8 @@ export default function CombinationSumIiiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Path Display */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-4 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Current Backtracking Path (max {step.k} numbers):</span>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Current Backtracking Path (max {step.k} numbers):</span>
         <div className="flex items-center gap-3 py-2">
           {step.currentPath.length === 0 ? (
             <span className="text-xs text-[#5b6076]">Empty Path (Backtracked)</span>
@@ -234,8 +234,8 @@ export default function CombinationSumIiiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Discovered Combinations */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono text-xs">
-        <span className="text-[#8a8ea3]">Valid Combinations Found:</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
+        <span className="text-[var(--chalk-dim)]">Valid Combinations Found:</span>
         <div className="flex flex-wrap items-center gap-2">
           {step.results.map((res, idx) => (
             <span

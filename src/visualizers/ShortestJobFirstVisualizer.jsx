@@ -1,17 +1,31 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Shortest Job First (SJF) Scheduling',
   category: 'Greedy Algorithms',
   difficulty: 'Medium',
   timeComplexity: 'O(N log N)',
-  spaceComplexity: 'O(1)',
-  description: 'Calculates the average waiting time under non-preemptive Shortest Job First (SJF) scheduling by greedily executing processes in ascending order of burst time to minimize total queue delay.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Calculates the minimum average waiting time under non-preemptive Shortest Job First (SJF) scheduling by greedily executing processes in ascending order of burst time.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Rearrangement Inequality & Delay Minimization Invariant',
+  nodes: [
+    { id: 'root', label: 'SJF Scheduling Invariant', children: ['rearrangement-theorem', 'ascending-sort', 'clock-wait-accumulation', 'average-resolution', 'complexity'] },
+    { id: 'rearrangement-theorem', label: '1. Delay Multiplier Theorem', detail: 'The burst time of process i is endured by all (N - 1 - i) subsequent processes in queue: Total Wait = Σ (N - 1 - i) * bt[i].' },
+    { id: 'ascending-sort', label: '2. Ascending Burst Time Order', detail: 'By the Rearrangement Inequality, pairing the largest delay coefficients (N - 1, N - 2, ...) with the smallest burst times strictly minimizes total waiting time.' },
+    { id: 'clock-wait-accumulation', label: '3. Clock & Wait Accumulation', detail: 'Maintain currentTime tracking total elapsed CPU clock. Each arriving process waits exactly currentTime before execution begins.' },
+    { id: 'average-resolution', label: '4. Integer Average Return', detail: 'Divide total wait time by process count N using integer floor division: return totalWaitTime / N.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'O(N log N) sorting dominates the O(N) accumulation pass with strictly O(1) extra variables.' }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Shortest Job First (SJF) Scheduling
-// Time: O(N log N) | Space: O(1)
+// Time Complexity: O(N log N) | Space Complexity: O(1)
 #include <vector>
 #include <algorithm>
 using namespace std;
@@ -32,7 +46,7 @@ public:
     }
 };`,
   python: `# Python 3 Shortest Job First (SJF) Scheduling
-# Time: O(N log N) | Space: O(1)
+# Time Complexity: O(N log N) | Space Complexity: O(1)
 class Solution:
     def solve(self, bt: list[int]) -> int:
         bt.sort()
@@ -45,7 +59,7 @@ class Solution:
 
         return total_wait_time // len(bt)`,
   java: `// Java Shortest Job First (SJF) Scheduling
-// Time: O(N log N) | Space: O(1)
+// Time Complexity: O(N log N) | Space Complexity: O(1)
 import java.util.Arrays;
 
 class Solution {
@@ -63,7 +77,7 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Shortest Job First (SJF) Scheduling
-// Time: O(N log N) | Space: O(1)
+// Time Complexity: O(N log N) | Space Complexity: O(1)
 var solve = function(bt) {
     bt.sort((a, b) => a - b);
     let totalWaitTime = 0;
@@ -80,106 +94,294 @@ var solve = function(bt) {
 
 export const steps = [
   {
-    title: '1. Input Burst Times: [4, 3, 7, 1, 2]',
-    phase: 'INIT',
-    codeLine: 11,
-    bt: [4, 3, 7, 1, 2],
-    sortedBt: [1, 2, 3, 4, 7],
-    isSorted: false,
-    waitTimes: [],
-    variables: { originalBurstTimes: '[4, 3, 7, 1, 2]', processCount: 5 },
-    explain: 'Unordered burst times create unnecessary waiting overhead if long jobs run first. Greedy scheduling sorts jobs in ascending burst duration.',
-    intuition: 'Executing short jobs early allows them to leave the queue rapidly, minimizing cumulative wait.'
+    title: '1. Rearrangement Inequality: Sort Burst Times in Ascending Order',
+    phase: 'INITIAL',
+    codeLine: 13,
+    track: {
+      label: 'CPU Process Queue (Sorted Ascending by Burst Time)',
+      items: [
+        { val: 'P0 (1 ms)', status: 'current' },
+        { val: 'P1 (2 ms)', status: 'default' },
+        { val: 'P2 (3 ms)', status: 'default' },
+        { val: 'P3 (4 ms)', status: 'default' },
+        { val: 'P4 (7 ms)', status: 'default' }
+      ],
+      pointers: { nextProcess: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'CPU Clock & Timeline',
+      items: [
+        { val: 'Clock: t = 0 ms', status: 'dim' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Process Count', value: '5 processes' },
+      { label: 'CPU Clock', value: '0 ms' },
+      { label: 'Total Wait Time', value: '0 ms' },
+      { label: 'Shortest Burst', value: 'P0 (1 ms)' }
+    ],
+    formula: 'sort(bt.begin(), bt.end()); TotalWait = Σ (N - 1 - i) * bt[i];',
+    action: 'Sort burst times ascending: [1, 2, 3, 4, 7]. Initialize clock = 0 and totalWaitTime = 0.',
+    explain: 'Process 0\'s burst time is endured by all 4 subsequent processes. Thus, giving the shortest job the highest priority minimizes aggregate queue waiting.',
+    intuition: 'Sorting by shortest job first minimizes the sum of completion times.'
   },
   {
-    title: '2. Sort Ascending: [1, 2, 3, 4, 7]',
-    phase: 'SORT',
-    codeLine: 12,
-    bt: [1, 2, 3, 4, 7],
-    sortedBt: [1, 2, 3, 4, 7],
-    isSorted: true,
-    waitTimes: [0],
-    variables: { sorted: '[1, 2, 3, 4, 7]', 'Job 1 (len 1)': 'Waits 0 ms' },
-    explain: 'Job 1 begins immediately at t = 0. Its wait time is 0.',
-    intuition: 'The shortest job (1 ms) never waits.'
+    title: '2. Execute P0 (1 ms): Wait Time = 0 ms -> Clock: 1 ms',
+    phase: 'EXECUTE',
+    codeLine: 18,
+    track: {
+      label: 'CPU Process Queue',
+      items: [
+        { val: 'P0 (1 ms) Done', status: 'match' },
+        { val: 'P1 (2 ms)', status: 'current' },
+        { val: 'P2 (3 ms)', status: 'default' },
+        { val: 'P3 (4 ms)', status: 'default' },
+        { val: 'P4 (7 ms)', status: 'default' }
+      ],
+      pointers: { cpu: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'CPU Clock & Timeline',
+      items: [
+        { val: 'P0 runs [0..1 ms]', status: 'match' },
+        { val: 'Clock: t = 1 ms', status: 'selected' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'P0 Wait Time', value: '0 ms (Immediate)' },
+      { label: 'P0 Burst Time', value: '1 ms' },
+      { label: 'CPU Clock', value: '1 ms (0 + 1)', highlight: true },
+      { label: 'Total Wait Time', value: '0 ms' }
+    ],
+    formula: 'totalWait += currentTime (0); currentTime += 1; // wait: 0, clock: 1',
+    action: 'P0 executes from t = 0 to t = 1. Its wait time is 0 ms. Clock advances to 1 ms.',
+    explain: 'P0 began immediately upon system startup, incurring 0 delay.',
+    intuition: 'The first scheduled job always experiences zero waiting time.'
   },
   {
-    title: '3. Accumulate Waiting Times: 0 + 1 + 3 + 6 + 10 = 20',
-    phase: 'ACCUMULATE',
-    codeLine: 17,
-    bt: [1, 2, 3, 4, 7],
-    sortedBt: [1, 2, 3, 4, 7],
-    isSorted: true,
-    waitTimes: [0, 1, 3, 6, 10],
-    variables: { 'Job 2': 'waits 1', 'Job 3': 'waits 1+2=3', 'Job 4': 'waits 3+3=6', 'Job 5': 'waits 6+4=10', totalWait: 20 },
-    explain: 'Cumulative completion timeline: 0 -> 1 -> 3 -> 6 -> 10 -> 17. Total waiting time across all 5 jobs = 20 ms.',
-    intuition: 'Each job waits for the sum of all preceding burst times.'
+    title: '3. Execute P1 (2 ms): Wait Time = 1 ms -> Clock: 3 ms',
+    phase: 'EXECUTE',
+    codeLine: 18,
+    track: {
+      label: 'CPU Process Queue',
+      items: [
+        { val: 'P0 (1 ms)', status: 'visited' },
+        { val: 'P1 (2 ms) Done', status: 'match' },
+        { val: 'P2 (3 ms)', status: 'current' },
+        { val: 'P3 (4 ms)', status: 'default' },
+        { val: 'P4 (7 ms)', status: 'default' }
+      ],
+      pointers: { cpu: { idx: 1, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'CPU Clock & Timeline',
+      items: [
+        { val: 'P0 [0..1]', status: 'visited' },
+        { val: 'P1 [1..3 ms]', status: 'match' },
+        { val: 'Clock: t = 3 ms', status: 'selected' }
+      ]
+    },
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'P1 Wait Time', value: '1 ms', highlight: true },
+      { label: 'P1 Burst Time', value: '2 ms' },
+      { label: 'CPU Clock', value: '3 ms (1 + 2)', highlight: true },
+      { label: 'Total Wait Time', value: '1 ms (0 + 1)' }
+    ],
+    formula: 'totalWait += 1; currentTime += 2; // wait: 1, clock: 3',
+    action: 'P1 had to wait 1 ms for P0 to finish. Runs from t = 1 to t = 3. Total wait = 1 ms.',
+    explain: 'P1 incurs 1 ms of waiting delay. Clock reaches 3 ms.',
+    intuition: 'Each job\'s wait equals the current accumulated clock.'
   },
   {
-    title: '4. Average Waiting Time: 20 / 5 = 4 ms',
-    phase: 'COMPLETED',
+    title: '4. Execute P2 (3 ms): Wait Time = 3 ms -> Clock: 6 ms',
+    phase: 'EXECUTE',
+    codeLine: 18,
+    track: {
+      label: 'CPU Process Queue',
+      items: [
+        { val: 'P0 (1 ms)', status: 'visited' },
+        { val: 'P1 (2 ms)', status: 'visited' },
+        { val: 'P2 (3 ms) Done', status: 'match' },
+        { val: 'P3 (4 ms)', status: 'current' },
+        { val: 'P4 (7 ms)', status: 'default' }
+      ],
+      pointers: { cpu: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'CPU Clock & Timeline',
+      items: [
+        { val: 'P0 [0..1]', status: 'visited' },
+        { val: 'P1 [1..3]', status: 'visited' },
+        { val: 'P2 [3..6 ms]', status: 'match' },
+        { val: 'Clock: t = 6 ms', status: 'selected' }
+      ]
+    },
+    activeI: 2,
+    activeJ: null,
+    metrics: [
+      { label: 'P2 Wait Time', value: '3 ms (P0 + P1)', highlight: true },
+      { label: 'P2 Burst Time', value: '3 ms' },
+      { label: 'CPU Clock', value: '6 ms (3 + 3)', highlight: true },
+      { label: 'Total Wait Time', value: '4 ms (1 + 3)' }
+    ],
+    formula: 'totalWait += 3; currentTime += 3; // wait: 4, clock: 6',
+    action: 'P2 waited 3 ms (for P0 and P1). Runs from t = 3 to t = 6. Total wait reaches 4 ms.',
+    explain: 'P2 had to wait 1 ms + 2 ms = 3 ms. Total wait is now 0 + 1 + 3 = 4 ms.',
+    intuition: 'Waiting delays compound monotonically.'
+  },
+  {
+    title: '5. Execute P3 (4 ms): Wait Time = 6 ms -> Clock: 10 ms',
+    phase: 'EXECUTE',
+    codeLine: 18,
+    track: {
+      label: 'CPU Process Queue',
+      items: [
+        { val: 'P0 (1 ms)', status: 'visited' },
+        { val: 'P1 (2 ms)', status: 'visited' },
+        { val: 'P2 (3 ms)', status: 'visited' },
+        { val: 'P3 (4 ms) Done', status: 'match' },
+        { val: 'P4 (7 ms)', status: 'current' }
+      ],
+      pointers: { cpu: { idx: 3, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'CPU Clock & Timeline',
+      items: [
+        { val: 'P0 [0..1]', status: 'visited' },
+        { val: 'P1 [1..3]', status: 'visited' },
+        { val: 'P2 [3..6]', status: 'visited' },
+        { val: 'P3 [6..10 ms]', status: 'match' },
+        { val: 'Clock: t = 10 ms', status: 'selected' }
+      ]
+    },
+    activeI: 3,
+    activeJ: null,
+    metrics: [
+      { label: 'P3 Wait Time', value: '6 ms', highlight: true },
+      { label: 'P3 Burst Time', value: '4 ms' },
+      { label: 'CPU Clock', value: '10 ms (6 + 4)', highlight: true },
+      { label: 'Total Wait Time', value: '10 ms (4 + 6)' }
+    ],
+    formula: 'totalWait += 6; currentTime += 4; // wait: 10, clock: 10',
+    action: 'P3 waited 6 ms. Runs from t = 6 to t = 10. Total wait reaches 4 + 6 = 10 ms.',
+    explain: 'Four processes complete. Only the longest job (P4, 7 ms) remains.',
+    intuition: 'Deferring the longest job until the very end minimizes delay for all other processes.'
+  },
+  {
+    title: '6. Execute P4 (7 ms): Wait Time = 10 ms -> Clock: 17 ms',
+    phase: 'EXECUTE',
+    codeLine: 18,
+    track: {
+      label: 'CPU Process Queue (All 5 Processes Executed)',
+      items: [
+        { val: 'P0 (1 ms)', status: 'match' },
+        { val: 'P1 (2 ms)', status: 'match' },
+        { val: 'P2 (3 ms)', status: 'match' },
+        { val: 'P3 (4 ms)', status: 'match' },
+        { val: 'P4 (7 ms) Done', status: 'match' }
+      ],
+      pointers: { last: { idx: 4, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Final CPU Timeline [0..17 ms]',
+      items: [
+        { val: 'P0 [0..1]', status: 'match' },
+        { val: 'P1 [1..3]', status: 'match' },
+        { val: 'P2 [3..6]', status: 'match' },
+        { val: 'P3 [6..10]', status: 'match' },
+        { val: 'P4 [10..17 ms]', status: 'match' }
+      ]
+    },
+    activeI: 4,
+    activeJ: null,
+    metrics: [
+      { label: 'P4 Wait Time', value: '10 ms', highlight: true },
+      { label: 'Final CPU Clock', value: '17 ms' },
+      { label: 'Total Wait Time', value: '20 ms (10 + 10)', highlight: true },
+      { label: 'Processes Executed', value: '5 / 5' }
+    ],
+    formula: 'totalWait += 10; currentTime += 7; // wait: 20 ms, clock: 17 ms',
+    action: 'P4 waited 10 ms. Runs from t = 10 to t = 17. Cumulative wait time = 0 + 1 + 3 + 6 + 10 = 20 ms.',
+    explain: 'Because P4 was last, its large burst time (7 ms) delayed exactly 0 subsequent jobs!',
+    intuition: 'Zero delay was inflicted on any other job by P4.'
+  },
+  {
+    title: '7. Contrast Analysis: Optimal vs Inverted Schedule',
+    phase: 'THEORY',
     codeLine: 21,
-    bt: [1, 2, 3, 4, 7],
-    sortedBt: [1, 2, 3, 4, 7],
-    isSorted: true,
-    waitTimes: [0, 1, 3, 6, 10],
-    avgWait: 4,
-    variables: { totalWait: '20 ms', count: 5, avgWaitTime: '4 ms' },
-    explain: 'Average waiting time under SJF is 20 / 5 = 4 ms, which is provably the theoretical minimum for non-preemptive scheduling.',
-    intuition: 'Greedy ordering strictly minimizes average turnaround and wait times.'
+    track: {
+      label: 'Efficiency Comparison: Ascending vs Descending Order',
+      items: [
+        { val: 'SJF Ascending: Total 20 ms', status: 'match' },
+        { val: 'LJF Descending: Total 43 ms', status: 'dim' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Waiting Time Breakdowns',
+      items: [
+        { val: 'SJF: 0 + 1 + 3 + 6 + 10 = 20 ms', status: 'match' },
+        { val: 'LJF: 0 + 7 + 11 + 14 + 16 = 48 ms', status: 'dim' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Optimal SJF Total', value: '20 ms', highlight: true },
+      { label: 'Worst-Case LJF Total', value: '48 ms' },
+      { label: 'Delay Reduction', value: '58% faster waiting', highlight: true }
+    ],
+    formula: 'Δ = 48 ms - 20 ms = 28 ms delay saved by greedy ordering',
+    action: 'Contrast analysis confirms that sorting shortest jobs first saved 28 ms of aggregate waiting time.',
+    explain: 'Executing the 7 ms job first would have forced all 4 other jobs to wait 7 ms each, wasting 28 ms.',
+    intuition: 'Mathematical proof: SJF minimizes the weighted sum of completion times.',
+    customCard: {
+      title: 'Scheduling Comparison',
+      rows: [
+        { label: 'SJF Total Wait', value: '20 ms (Avg: 4 ms)', accent: true },
+        { label: 'LJF Total Wait', value: '48 ms (Avg: 9.6 ms)' },
+        { label: 'Greedy Proof', value: 'Rearrangement inequality Σ c_i * b_i minimized' }
+      ]
+    }
+  },
+  {
+    title: '8. Complete: Return Average Waiting Time = 20 / 5 = 4 ms',
+    phase: 'COMPLETED',
+    codeLine: 22,
+    track: {
+      label: 'SJF Execution Complete: Average Waiting Time = 4 ms',
+      items: [
+        { val: 'P0 (wait 0)', status: 'match' },
+        { val: 'P1 (wait 1)', status: 'match' },
+        { val: 'P2 (wait 3)', status: 'match' },
+        { val: 'P3 (wait 6)', status: 'match' },
+        { val: 'P4 (wait 10)', status: 'match' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Average Wait Time', value: '4 ms', highlight: true },
+      { label: 'Total Wait Time', value: '20 ms' },
+      { label: 'Time Complexity', value: 'O(N log N)' },
+      { label: 'Space Complexity', value: 'O(1) auxiliary' }
+    ],
+    formula: 'return totalWaitTime / bt.size(); // 20 / 5 = 4',
+    action: 'Algorithm concludes. Return integer average waiting time = 4 ms.',
+    explain: 'Average waiting time is 20 / 5 = 4 ms per process. Optimal non-preemptive schedule achieved.',
+    intuition: 'Shortest Job First is provably optimal for minimizing average waiting time.',
+    customCard: {
+      title: 'SJF Performance Summary',
+      rows: [
+        { label: 'Average Waiting Time', value: '4 ms', accent: true },
+        { label: 'Total Queue Delay', value: '20 ms across 5 processes' },
+        { label: 'Complexity', value: 'O(N log N) sort, O(N) sweep, O(1) space', accent: true }
+      ]
+    }
   }
 ];
-
-export default function ShortestJobFirstVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Ordering: {step.isSorted ? 'Ascending (SJF)' : 'Initial Unsorted'}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Avg Wait Time: {step.avgWait !== undefined ? `${step.avgWait} ms` : 'Computing...'}
-        </span>
-      </div>
-
-      {/* Jobs Gantt Representation */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Process Queue &amp; Waiting Times
-        </span>
-
-        <div className="flex items-center justify-center gap-3 py-2 font-mono">
-          {step.bt.map((burst, idx) => {
-            const wait = step.waitTimes[idx];
-
-            return (
-              <div key={idx} className="flex flex-col items-center gap-1">
-                <div
-                  className={`w-14 h-22 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 ${
-                    wait !== undefined
-                      ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-400'
-                  }`}
-                >
-                  <span className="text-[9px] text-[#8a8ea3]">P{idx + 1}</span>
-                  <span className="text-base font-bold text-amber-300 mt-0.5">{burst} ms</span>
-                  <span className="text-[10px] text-cyan-400 mt-1">
-                    {wait !== undefined ? `wait: ${wait}` : 'queued'}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

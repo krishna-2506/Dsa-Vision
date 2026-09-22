@@ -201,7 +201,7 @@ export default function MaximumPointsYouCanObtainFromCardsVisualizer({ currentSt
           const isLeftPick = step.leftCards.includes(idx);
           const isRightPick = step.rightCards.includes(idx);
 
-          let ringClass = 'border-[#272b3c] bg-[#12131b] text-slate-400 opacity-60';
+          let ringClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-dim)] opacity-60';
           if (isLeftPick) {
             ringClass = 'border-amber-500 bg-amber-500/20 text-amber-300 font-bold ring-2 ring-amber-500/40 shadow-lg';
           } else if (isRightPick) {
@@ -221,8 +221,8 @@ export default function MaximumPointsYouCanObtainFromCardsVisualizer({ currentSt
       </div>
 
       {/* Status banner */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Strategy: <strong className="text-emerald-400">Shift K boundary across ends</strong></span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+        <span className="text-[var(--chalk-dim)]">Strategy: <strong className="text-emerald-400">Shift K boundary across ends</strong></span>
         <span className="text-amber-400 font-semibold">O(K) Time</span>
       </div>
     </div>

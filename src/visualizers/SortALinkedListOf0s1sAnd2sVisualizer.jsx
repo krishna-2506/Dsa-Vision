@@ -252,7 +252,7 @@ export default function SortALinkedListOf0s1sAnd2sVisualizer({ currentStep = 0 }
         {step.nodes.map((val, idx) => {
           const isCurrent = idx === step.currIdx;
 
-          let colorClass = 'border-[#272b3c] bg-[#12131b] text-slate-200';
+          let colorClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
           if (isCurrent) {
             colorClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30';
           } else if (val === 0) {
@@ -272,7 +272,7 @@ export default function SortALinkedListOf0s1sAnd2sVisualizer({ currentStep = 0 }
                 <span className="text-[9px] font-mono text-[#5b6076]">[{idx}]</span>
               </div>
               {idx < step.nodes.length - 1 && (
-                <span className="text-[#555a73] font-mono text-xs">→</span>
+                <span className="text-[var(--chalk-faint)] font-mono text-xs">→</span>
               )}
             </React.Fragment>
           );
@@ -280,8 +280,8 @@ export default function SortALinkedListOf0s1sAnd2sVisualizer({ currentStep = 0 }
       </div>
 
       {/* Sublists display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex flex-col gap-2 text-xs font-mono">
-        <div className="flex items-center justify-between text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex flex-col gap-2 text-xs font-mono">
+        <div className="flex items-center justify-between text-[var(--chalk-dim)]">
           <span>Chains: <strong className="text-emerald-300">0s</strong> → <strong className="text-indigo-300">1s</strong> → <strong className="text-pink-300">2s</strong></span>
           <span className="text-amber-400 font-semibold">{step.stitched ? '✓ Stitched Together' : 'Relinking...'}</span>
         </div>

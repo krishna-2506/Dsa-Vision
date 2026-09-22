@@ -186,14 +186,14 @@ export default function CountPrimesInRangeLToRVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Sieve Grid */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-3 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Sieve of Eratosthenes Status (Numbers 2 to 15):</span>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-3 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Sieve of Eratosthenes Status (Numbers 2 to 15):</span>
         <div className="flex flex-wrap items-center justify-center gap-2">
           {step.sievedList.slice(2).map((num) => {
             const isPrime = step.primes.includes(num);
             const inRange = num >= step.l && num <= step.r;
 
-            let style = 'border-[#272b3c] bg-[#12131b] text-[#555a73]';
+            let style = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]';
             if (isPrime && inRange) {
               style = 'border-emerald-400 bg-emerald-500/25 text-emerald-200 scale-105 shadow-md shadow-emerald-500/20';
             } else if (isPrime) {

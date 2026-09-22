@@ -181,23 +181,23 @@ export default function KthSmallestElementInAnArrayUsePriorityQueueVisualizer({ 
       </div>
 
       {/* Array Stream */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-5 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Input Array Elements</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-5 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Input Array Elements</span>
         <div className="flex items-center justify-center gap-2 overflow-x-auto w-full py-1">
           {step.nums.map((val, idx) => {
             const isProcessed = idx <= step.currentIndex;
             const isCurrent = idx === step.currentIndex;
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-500';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]';
             if (isCurrent) {
               borderClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/40 animate-pulse';
             } else if (isProcessed) {
-              borderClass = 'border-slate-700 bg-slate-800/40 text-slate-400';
+              borderClass = 'border-slate-700 bg-slate-800/40 text-[var(--chalk-dim)]';
             }
 
             return (
               <div key={idx} className={`w-12 h-14 rounded-xl border flex flex-col items-center justify-center font-mono font-bold transition-all ${borderClass}`}>
-                <span className="text-xs text-slate-500">#{idx}</span>
+                <span className="text-xs text-[var(--chalk-faint)]">#{idx}</span>
                 <span className="text-sm font-black">{val}</span>
               </div>
             );
@@ -206,8 +206,8 @@ export default function KthSmallestElementInAnArrayUsePriorityQueueVisualizer({ 
       </div>
 
       {/* Max-Heap Container */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <div className="flex items-center justify-between w-full text-xs font-mono text-[#8a8ea3] border-b border-[#272b3c] pb-2">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <div className="flex items-center justify-between w-full text-xs font-mono text-[var(--chalk-dim)] border-b border-[var(--line)] pb-2">
           <span>Max-Heap (Holds K Smallest Elements)</span>
           {step.popped !== null && (
             <span className="text-rose-400 font-bold">Evicted Max: {step.popped}</span>
@@ -221,16 +221,16 @@ export default function KthSmallestElementInAnArrayUsePriorityQueueVisualizer({ 
                 ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg' 
                 : 'border-blue-500/50 bg-blue-500/15 text-blue-300'
             }`}>
-              <span className="text-[10px] text-slate-400">{idx === 0 ? 'ROOT (MAX)' : 'NODE'}</span>
+              <span className="text-[10px] text-[var(--chalk-dim)]">{idx === 0 ? 'ROOT (MAX)' : 'NODE'}</span>
               <span className="text-xl font-black">{item}</span>
             </div>
           ))}
-          {step.maxHeap.length === 0 && <span className="text-xs text-slate-500 italic">Empty Heap</span>}
+          {step.maxHeap.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Empty Heap</span>}
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

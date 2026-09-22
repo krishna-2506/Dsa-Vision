@@ -210,12 +210,12 @@ export default function RemoveDuplicatesFromSortedDllVisualizer({ currentStep = 
       </div>
 
       {/* Visual DLL Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {step.nodes.map((val, idx) => {
           const isCurr = step.currIdx === idx;
           const isDuplicate = step.activeDuplicates.includes(idx);
 
-          let style = 'border-[#272b3c] bg-[#12131b] text-white';
+          let style = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
           if (isDuplicate) {
             style = 'border-rose-500/50 bg-rose-500/20 text-rose-300 line-through scale-95 opacity-60';
           } else if (isCurr) {

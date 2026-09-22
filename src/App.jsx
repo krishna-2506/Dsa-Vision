@@ -363,7 +363,10 @@ export default function App() {
           <SandboxWorkbench />
         ) : activeView === 'article' && activeQuestion ? (
           <ProblemArticlePage
+            key={activeQuestion?.id}
             question={activeQuestion}
+            questions={questions}
+            onNavigateArticle={handleOpenArticle}
             onBack={handleBackToLibrary}
             onLaunchStudio={handleOpenStudio}
             onStatusChange={handleStatusChange}

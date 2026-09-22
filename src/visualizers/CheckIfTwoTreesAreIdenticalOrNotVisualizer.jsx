@@ -130,8 +130,8 @@ export default function CheckIfTwoTreesAreIdenticalOrNotVisualizer({ currentStep
       {/* Side by side tree display */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         {/* Tree A */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Tree A</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Tree A</span>
 
           <div className="flex flex-col items-center gap-4 py-2">
             <div
@@ -140,7 +140,7 @@ export default function CheckIfTwoTreesAreIdenticalOrNotVisualizer({ currentStep
                   ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200'
                   : step.checkedNodes.includes(1)
                   ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                  : 'bg-[#181a26] border-[#31364d] text-white'
+                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               1
@@ -155,7 +155,7 @@ export default function CheckIfTwoTreesAreIdenticalOrNotVisualizer({ currentStep
                       ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200'
                       : step.checkedNodes.includes(v)
                       ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                      : 'bg-[#181a26] border-[#31364d] text-white'
+                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                   }`}
                 >
                   {v}
@@ -166,8 +166,8 @@ export default function CheckIfTwoTreesAreIdenticalOrNotVisualizer({ currentStep
         </div>
 
         {/* Tree B */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Tree B</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Tree B</span>
 
           <div className="flex flex-col items-center gap-4 py-2">
             <div
@@ -176,7 +176,7 @@ export default function CheckIfTwoTreesAreIdenticalOrNotVisualizer({ currentStep
                   ? 'bg-purple-500/25 border-purple-400 text-purple-200'
                   : step.checkedNodes.includes(1)
                   ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                  : 'bg-[#181a26] border-[#31364d] text-white'
+                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               1
@@ -191,7 +191,7 @@ export default function CheckIfTwoTreesAreIdenticalOrNotVisualizer({ currentStep
                       ? 'bg-purple-500/25 border-purple-400 text-purple-200'
                       : step.checkedNodes.includes(v)
                       ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                      : 'bg-[#181a26] border-[#31364d] text-white'
+                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                   }`}
                 >
                   {v}
@@ -202,7 +202,7 @@ export default function CheckIfTwoTreesAreIdenticalOrNotVisualizer({ currentStep
         </div>
       </div>
 
-      <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+      <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
         Synchronized recursion checks: value match AND left subtree match AND right subtree match.
       </div>
     </div>

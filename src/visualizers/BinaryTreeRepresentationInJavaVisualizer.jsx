@@ -126,7 +126,7 @@ export default function BinaryTreeRepresentationInJavaVisualizer({ currentStep =
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Memory Phase: <strong className="text-cyan-400">{step.phase}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -135,8 +135,8 @@ export default function BinaryTreeRepresentationInJavaVisualizer({ currentStep =
       </div>
 
       {/* Tree Visualization */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Heap Object Memory Representation</span>
           <span className="text-cyan-400 font-bold">Pointers &amp; References</span>
         </div>
@@ -195,7 +195,7 @@ export default function BinaryTreeRepresentationInJavaVisualizer({ currentStep =
           </div>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Each node is a heap object with integer payload `data` and reference pointers `left` and `right`.
         </div>
       </div>

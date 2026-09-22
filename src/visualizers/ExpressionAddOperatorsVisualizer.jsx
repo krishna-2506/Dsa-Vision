@@ -248,16 +248,16 @@ export default function ExpressionAddOperatorsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Expression Canvas */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-4 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Expression Under Evaluation:</span>
-        <div className="text-3xl font-bold text-white tracking-widest px-6 py-3 rounded-2xl bg-[#12131b] border border-cyan-500/30 text-cyan-200">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Expression Under Evaluation:</span>
+        <div className="text-3xl font-bold text-[var(--chalk)] tracking-widest px-6 py-3 rounded-2xl bg-[var(--board-raised)] border border-cyan-500/30 text-cyan-200">
           {step.activeExpr || step.num}
         </div>
       </div>
 
       {/* Valid Expressions List */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono text-xs">
-        <span className="text-[#8a8ea3]">Target Matching Expressions:</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
+        <span className="text-[var(--chalk-dim)]">Target Matching Expressions:</span>
         <div className="flex flex-wrap items-center gap-2">
           {step.validExpressions.map((expr, idx) => (
             <span

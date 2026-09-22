@@ -96,23 +96,23 @@ export default function MergeSortVisualizer({ currentStep: externalStep, onStepC
               <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-violet-500/20 text-violet-400 border border-violet-500/30">
                 Phase {stepIndex + 1} of {steps.length}
               </span>
-              <h3 className="text-lg font-bold text-white">{stepData.title}</h3>
+              <h3 className="text-lg font-bold text-[var(--chalk)]">{stepData.title}</h3>
             </div>
-            <p className="text-slate-400 text-xs mt-0.5">Divide & Conquer Tree View</p>
+            <p className="text-[var(--chalk-dim)] text-xs mt-0.5">Divide & Conquer Tree View</p>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrev}
               disabled={stepIndex === 0}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-[var(--chalk)] text-xs font-medium rounded-lg border border-slate-700 transition"
             >
               ← Prev
             </button>
             <button
               onClick={handleNext}
               disabled={stepIndex === steps.length - 1}
-              className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-xs font-semibold rounded-lg shadow-lg shadow-violet-500/20 transition"
+              className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-[var(--chalk)] text-xs font-semibold rounded-lg shadow-lg shadow-violet-500/20 transition"
             >
               Next →
             </button>
@@ -122,21 +122,21 @@ export default function MergeSortVisualizer({ currentStep: externalStep, onStepC
         <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
           <div className="lg:col-span-5 p-6 bg-slate-950/40 flex flex-col gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2">Recursive Logic</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-[var(--chalk-dim)] block mb-2">Recursive Logic</span>
               <pre className="bg-slate-950 p-3.5 rounded-xl text-emerald-400 text-xs font-mono overflow-x-auto border border-slate-800 shadow-inner">
                 {stepData.code}
               </pre>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">State Breakdown</h4>
-              <p className="text-slate-300 text-xs leading-relaxed bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--chalk-dim)] mb-1">State Breakdown</h4>
+              <p className="text-[var(--chalk-dim)] text-xs leading-relaxed bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
                 {stepData.explanation}
               </p>
             </div>
 
             <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-400">Current Phase:</span>
+              <span className="text-[var(--chalk-dim)]">Current Phase:</span>
               <span className="uppercase px-2.5 py-1 rounded bg-violet-500/20 text-violet-300 font-bold">
                 {stepData.stage}
               </span>
@@ -147,17 +147,17 @@ export default function MergeSortVisualizer({ currentStep: externalStep, onStepC
             <div className="w-full flex flex-col items-center gap-6">
               {stepData.tree.map((block) => (
                 <div key={block.id} className="flex flex-col items-center gap-2">
-                  <span className="text-[11px] font-mono text-slate-400">{block.label}</span>
+                  <span className="text-[11px] font-mono text-[var(--chalk-dim)]">{block.label}</span>
                   <div className="flex items-center gap-2">
                     {block.items.map((num, i) => (
                       <div
                         key={i}
                         className={`w-11 h-12 rounded-xl flex items-center justify-center font-mono font-bold text-sm shadow-md transition-all duration-300 ${
                           stepData.stage === 'complete'
-                            ? 'bg-emerald-600 text-white ring-2 ring-emerald-400/40'
+                            ? 'bg-emerald-600 text-[var(--chalk)] ring-2 ring-emerald-400/40'
                             : block.active
-                            ? 'bg-violet-600 text-white ring-2 ring-violet-400/40 scale-105'
-                            : 'bg-slate-800 text-slate-400 border border-slate-700'
+                            ? 'bg-violet-600 text-[var(--chalk)] ring-2 ring-violet-400/40 scale-105'
+                            : 'bg-slate-800 text-[var(--chalk-dim)] border border-slate-700'
                         }`}
                       >
                         {num}

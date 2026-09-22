@@ -200,8 +200,8 @@ export default function PowerSetVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Decision String Display */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-3 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Characters In String:</span>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-3 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Characters In String:</span>
         <div className="flex items-center gap-4">
           {step.s.split('').map((ch, idx) => {
             const isProcessing = step.i === idx;
@@ -211,7 +211,7 @@ export default function PowerSetVisualizer({ currentStep = 0 }) {
               <div key={idx} className="flex flex-col items-center gap-1">
                 <div className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center text-xl font-bold transition-all ${
                   isProcessing ? 'border-amber-400 bg-amber-500/25 text-amber-200 scale-105 shadow-md shadow-amber-500/20' :
-                  isPast ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200' : 'border-[#272b3c] bg-[#12131b] text-[#555a73]'
+                  isPast ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]'
                 }`}>
                   {ch}
                 </div>
@@ -223,8 +223,8 @@ export default function PowerSetVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Subsets Collection */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono text-xs">
-        <span className="text-[#8a8ea3]">Subsets Produced ({step.subsets.length} / 8):</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
+        <span className="text-[var(--chalk-dim)]">Subsets Produced ({step.subsets.length} / 8):</span>
         <div className="flex flex-wrap items-center gap-2">
           {step.subsets.map((sub, idx) => (
             <span

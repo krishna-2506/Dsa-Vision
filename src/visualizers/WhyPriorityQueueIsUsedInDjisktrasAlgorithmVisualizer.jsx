@@ -78,43 +78,43 @@ export default function WhyPriorityQueueIsUsedInDjisktrasAlgorithmVisualizer({ c
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         {/* Priority Queue Column */}
-        <div className="p-5 rounded-2xl bg-[#12131b] border border-cyan-500/40 shadow-xl flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[var(--board-raised)] border border-cyan-500/40 shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-3">
               <span className="text-xs font-mono font-bold text-cyan-300">Priority Queue (Min-Heap)</span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/40">Optimal</span>
             </div>
-            <p className="text-xs font-mono text-slate-300 leading-relaxed">
+            <p className="text-xs font-mono text-[var(--chalk-dim)] leading-relaxed">
               &bull; Pops minimum distance node first.<br />
               &bull; Guarantees shortest distance is finalized upon pop.<br />
               &bull; Total edge relaxations: <strong>{step.pqIterations}</strong>
             </p>
           </div>
-          <div className="text-xs font-mono text-cyan-400 font-bold mt-4 pt-2 border-t border-[#242738]">
+          <div className="text-xs font-mono text-cyan-400 font-bold mt-4 pt-2 border-t border-[var(--line)]">
             Time: O(E log V)
           </div>
         </div>
 
         {/* Standard Queue Column */}
-        <div className="p-5 rounded-2xl bg-[#12131b] border border-amber-500/30 shadow-xl flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[var(--board-raised)] border border-amber-500/30 shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-3">
               <span className="text-xs font-mono font-bold text-amber-300">Standard Queue (FIFO)</span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800/40">Inefficient</span>
             </div>
-            <p className="text-xs font-mono text-slate-300 leading-relaxed">
+            <p className="text-xs font-mono text-[var(--chalk-dim)] leading-relaxed">
               &bull; Pops arbitrary order regardless of cost.<br />
               &bull; Suboptimal paths overwrite already relaxed nodes.<br />
               &bull; Total edge relaxations: <strong>{step.plainQueueIterations}</strong>
             </p>
           </div>
-          <div className="text-xs font-mono text-amber-400 font-bold mt-4 pt-2 border-t border-[#242738]">
+          <div className="text-xs font-mono text-amber-400 font-bold mt-4 pt-2 border-t border-[var(--line)]">
             Redundant Re-relaxations!
           </div>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.comparison}
       </div>
     </div>

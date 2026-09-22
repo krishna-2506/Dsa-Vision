@@ -222,7 +222,7 @@ export default function SegregateOddAndEvenNodesInLinkedListVisualizer({ current
       </div>
 
       {/* Visual Sublists Display */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-6">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-6">
         {/* Odd Sublist */}
         <div className="flex flex-col gap-2">
           <span className="text-xs font-mono text-amber-400 font-bold">Odd Indices Chain:</span>
@@ -259,7 +259,7 @@ export default function SegregateOddAndEvenNodesInLinkedListVisualizer({ current
                 )}
               </React.Fragment>
             ))}
-            <span className="text-xs font-mono text-[#8a8ea3] ml-2">&rarr; NULL</span>
+            <span className="text-xs font-mono text-[var(--chalk-dim)] ml-2">&rarr; NULL</span>
           </div>
         </div>
       </div>

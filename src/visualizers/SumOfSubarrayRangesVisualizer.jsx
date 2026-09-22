@@ -221,8 +221,8 @@ export default function SumOfSubarrayRangesVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Array &amp; Duality Subtraction</span>
           <span className="text-emerald-400 font-bold">O(N) Double-Monotonic</span>
         </div>
@@ -231,7 +231,7 @@ export default function SumOfSubarrayRangesVisualizer({ currentStep = 0 }) {
           {step.nums.map((v, i) => (
             <div
               key={i}
-              className="w-16 h-16 rounded-xl border-2 border-[#363c54] bg-[#181a26] flex flex-col items-center justify-center font-mono font-bold text-xl text-white shadow-md"
+              className="w-16 h-16 rounded-xl border-2 border-[#363c54] bg-[#181a26] flex flex-col items-center justify-center font-mono font-bold text-xl text-[var(--chalk)] shadow-md"
             >
               {v}
               <span className="text-[10px] text-[#606786] font-normal">[{i}]</span>

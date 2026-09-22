@@ -164,7 +164,7 @@ export default function CheckForPrimeNumberVisualizer({ currentStep = 0, onStepC
       <div className="flex items-center gap-4">
         <div className="px-6 py-3 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 text-center">
           <span className="text-[10px] font-mono text-indigo-400 uppercase font-semibold block">Target Integer N</span>
-          <span className="text-3xl font-mono font-bold text-white">{step.n}</span>
+          <span className="text-3xl font-mono font-bold text-[var(--chalk)]">{step.n}</span>
         </div>
 
         <div className="px-5 py-3 rounded-2xl bg-[#14151c] border border-[#262834] text-center">
@@ -191,7 +191,7 @@ export default function CheckForPrimeNumberVisualizer({ currentStep = 0, onStepC
             return (
               <div key={divisor} className={`p-3 rounded-xl border flex flex-col items-center gap-1 font-mono transition-all ${cardStyle}`}>
                 <span className="text-xs text-[#8e92a4]">i = {divisor}</span>
-                <span className="text-base font-bold text-white">37 % {divisor}</span>
+                <span className="text-base font-bold text-[var(--chalk)]">37 % {divisor}</span>
                 <span className="text-[11px] font-semibold">
                   {isTested ? 'rem = ' + (37 % divisor) + ' ✗' : isCurrent ? 'testing...' : 'waiting'}
                 </span>

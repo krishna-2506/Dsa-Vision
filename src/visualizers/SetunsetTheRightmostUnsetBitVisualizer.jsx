@@ -120,10 +120,10 @@ export default function SetunsetTheRightmostUnsetBitVisualizer({ currentStep = 0
       </div>
 
       {/* Bit Register Table */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-4 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-4 font-mono">
         {/* Row 1: N */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#8a8ea3] w-28">N (9):</span>
+          <span className="text-xs text-[var(--chalk-dim)] w-28">N (9):</span>
           <div className="flex items-center gap-1.5">
             {step.binaryN.split('').map((bit, idx) => {
               const bitPos = 7 - idx;
@@ -133,7 +133,7 @@ export default function SetunsetTheRightmostUnsetBitVisualizer({ currentStep = 0
                 <div
                   key={idx}
                   className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                    isTarget ? 'border-amber-400 bg-amber-500/20 text-amber-200' : 'border-[#272b3c] bg-[#12131b] text-white'
+                    isTarget ? 'border-amber-400 bg-amber-500/20 text-amber-200' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
                   }`}
                 >
                   {bit}
@@ -145,12 +145,12 @@ export default function SetunsetTheRightmostUnsetBitVisualizer({ currentStep = 0
 
         {/* Row 2: N + 1 */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#8a8ea3] w-28">| (N + 1) (10):</span>
+          <span className="text-xs text-[var(--chalk-dim)] w-28">| (N + 1) (10):</span>
           <div className="flex items-center gap-1.5">
             {step.binaryNext.split('').map((bit, idx) => (
               <div
                 key={idx}
-                className="w-9 h-10 rounded-lg border border-[#272b3c] bg-[#12131b] text-[#5b6076] flex items-center justify-center font-bold text-sm"
+                className="w-9 h-10 rounded-lg border border-[var(--line)] bg-[var(--board-raised)] text-[#5b6076] flex items-center justify-center font-bold text-sm"
               >
                 {bit}
               </div>
@@ -173,7 +173,7 @@ export default function SetunsetTheRightmostUnsetBitVisualizer({ currentStep = 0
                   <div
                     key={idx}
                     className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                      isTarget ? 'border-emerald-400 bg-emerald-500/30 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/30' : 'border-[#272b3c] bg-[#12131b] text-white'
+                      isTarget ? 'border-emerald-400 bg-emerald-500/30 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/30' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
                     }`}
                   >
                     {bit}

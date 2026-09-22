@@ -184,7 +184,7 @@ export default function SortAStackUsingRecursionVisualizer({ currentStep = 0 }) 
       </div>
 
       {/* Visual Stack Tower */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-3 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-3 font-mono">
         <span className="text-xs text-amber-400 font-bold">Stack State:</span>
         <div className="w-44 h-56 border-b-4 border-l-2 border-r-2 border-amber-400/50 rounded-b-xl flex flex-col-reverse items-center p-3 gap-2 bg-[#0e1017]">
           {step.stack.length === 0 ? (
@@ -196,7 +196,7 @@ export default function SortAStackUsingRecursionVisualizer({ currentStep = 0 }) 
                 <div
                   key={idx}
                   className={`w-full py-2.5 rounded-xl border text-center font-bold text-sm transition-all ${
-                    isTop ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[#272b3c] bg-[#161824] text-white'
+                    isTop ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk)]'
                   }`}
                 >
                   {val} {isTop && <span className="text-[10px] text-amber-300 font-normal">&larr; TOP</span>}
@@ -205,7 +205,7 @@ export default function SortAStackUsingRecursionVisualizer({ currentStep = 0 }) 
             })
           )}
         </div>
-        <span className="text-[10px] text-[#8a8ea3]">BOTTOM OF STACK (MINIMUM)</span>
+        <span className="text-[10px] text-[var(--chalk-dim)]">BOTTOM OF STACK (MINIMUM)</span>
       </div>
 
       {/* Result Card */}

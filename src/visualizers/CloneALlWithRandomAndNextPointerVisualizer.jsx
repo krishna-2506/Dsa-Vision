@@ -284,7 +284,7 @@ export default function CloneALlWithRandomAndNextPointerVisualizer({ currentStep
       </div>
 
       {/* Visual Interleaved / Separated Display */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-4">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-4">
         {step.mode !== 'SEPARATED' && step.mode !== 'COMPLETE' ? (
           <div className="flex items-center justify-center overflow-x-auto gap-2 py-4">
             {step.nodes.map((node, idx) => {
@@ -300,7 +300,7 @@ export default function CloneALlWithRandomAndNextPointerVisualizer({ currentStep
                     </span>
 
                     <div className={`w-13 h-13 rounded-xl border flex flex-col items-center justify-center font-mono font-bold text-sm ${
-                      isCopy ? 'border-amber-400 bg-amber-500/15 text-amber-200' : 'border-blue-400/50 bg-[#12131b] text-white'
+                      isCopy ? 'border-amber-400 bg-amber-500/15 text-amber-200' : 'border-blue-400/50 bg-[var(--board-raised)] text-[var(--chalk)]'
                     }`}>
                       <span>{node.val}</span>
                       {node.randomTarget && (
@@ -310,7 +310,7 @@ export default function CloneALlWithRandomAndNextPointerVisualizer({ currentStep
                   </div>
 
                   {idx < step.nodes.length - 1 && (
-                    <span className="text-xs font-mono text-[#8a8ea3]">&rarr;</span>
+                    <span className="text-xs font-mono text-[var(--chalk-dim)]">&rarr;</span>
                   )}
                 </React.Fragment>
               );
@@ -319,7 +319,7 @@ export default function CloneALlWithRandomAndNextPointerVisualizer({ currentStep
         ) : (
           <div className="flex flex-col gap-4">
             {/* Cloned List */}
-            <div className="p-3 rounded-xl bg-[#12131b] border border-emerald-500/30 flex flex-col gap-2">
+            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-emerald-500/30 flex flex-col gap-2">
               <span className="text-xs font-mono text-emerald-400 font-bold">Cloned Deep Copy List:</span>
               <div className="flex items-center gap-3 overflow-x-auto py-1">
                 {step.clonedList.map((node, idx) => (
@@ -334,7 +334,7 @@ export default function CloneALlWithRandomAndNextPointerVisualizer({ currentStep
                     {idx < step.clonedList.length - 1 && <span className="text-emerald-400">&rarr;</span>}
                   </React.Fragment>
                 ))}
-                <span className="text-xs font-mono text-[#8a8ea3] ml-2">&rarr; NULL</span>
+                <span className="text-xs font-mono text-[var(--chalk-dim)] ml-2">&rarr; NULL</span>
               </div>
             </div>
           </div>

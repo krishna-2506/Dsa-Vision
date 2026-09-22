@@ -285,8 +285,8 @@ export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ cu
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Radial Fire Propagation Wavefront</span>
           <span className="text-amber-400 font-bold">BFS with Parent Pointers</span>
         </div>
@@ -298,7 +298,7 @@ export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ cu
             className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm transition-all ${
               step.burning.includes(1)
                 ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-lg shadow-amber-500/30'
-                : 'bg-[#181a26] border-[#31364d] text-white'
+                : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
             }`}
           >
             1
@@ -310,7 +310,7 @@ export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ cu
               className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
                 step.burning.includes(2)
                   ? 'bg-rose-500/35 border-rose-400 text-rose-200 shadow-xl shadow-rose-500/30 ring-2 ring-rose-400/40'
-                  : 'bg-[#181a26] border-[#31364d] text-white'
+                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               2 (Target)
@@ -319,7 +319,7 @@ export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ cu
               className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
                 step.burning.includes(3)
                   ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-md'
-                  : 'bg-[#181a26] border-[#31364d] text-white'
+                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               3
@@ -335,7 +335,7 @@ export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ cu
                   className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
                     step.burning.includes(v)
                       ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-md'
-                      : 'bg-[#181a26] border-[#31364d] text-white'
+                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                   }`}
                 >
                   {v}
@@ -347,7 +347,7 @@ export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ cu
               className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
                 step.burning.includes(6)
                   ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-md'
-                  : 'bg-[#181a26] border-[#31364d] text-white'
+                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               6
@@ -355,7 +355,7 @@ export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ cu
           </div>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Fire spreads simultaneously in 3 directions per node: left child, right child, and parent.
         </div>
       </div>

@@ -285,11 +285,11 @@ export default function SortLlVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Sublists Display */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-6">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-6">
         {step.stage !== 'COMPLETE' ? (
           <div className="grid grid-cols-2 gap-4">
             {/* Left Sublist */}
-            <div className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col gap-2">
+            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2">
               <span className="text-xs font-mono text-amber-400 font-bold">Left Sublist:</span>
               <div className="flex items-center gap-2">
                 {step.leftHalf.map((val, idx) => (
@@ -301,7 +301,7 @@ export default function SortLlVisualizer({ currentStep = 0 }) {
             </div>
 
             {/* Right Sublist */}
-            <div className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col gap-2">
+            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2">
               <span className="text-xs font-mono text-cyan-400 font-bold">Right Sublist:</span>
               <div className="flex items-center gap-2">
                 {step.rightHalf.map((val, idx) => (
@@ -316,7 +316,7 @@ export default function SortLlVisualizer({ currentStep = 0 }) {
 
         {/* Merged Chain */}
         {step.merged.length > 0 && (
-          <div className="p-4 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col gap-2">
+          <div className="p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2">
             <span className="text-xs font-mono text-emerald-400 font-bold">Sorted Merged Chain:</span>
             <div className="flex items-center gap-2 overflow-x-auto py-2">
               {step.merged.map((val, idx) => (
@@ -327,7 +327,7 @@ export default function SortLlVisualizer({ currentStep = 0 }) {
                   <span className="text-emerald-400 font-bold">&rarr;</span>
                 </React.Fragment>
               ))}
-              <span className="text-xs font-mono text-[#8a8ea3]">NULL</span>
+              <span className="text-xs font-mono text-[var(--chalk-dim)]">NULL</span>
             </div>
           </div>
         )}

@@ -217,8 +217,8 @@ export default function MaximumRectanglesVisualizer({ currentStep = 0 }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         {/* Matrix Grid */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Binary Matrix (4&times;5)</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Binary Matrix (4&times;5)</span>
 
           <div className="flex flex-col gap-1.5 p-2 bg-[#0f1016] rounded-xl border border-[#26293a]">
             {matrix.map((row, rIdx) => {
@@ -238,7 +238,7 @@ export default function MaximumRectanglesVisualizer({ currentStep = 0 }) {
                             : isRowActive && isOne
                             ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200'
                             : isOne
-                            ? 'bg-[#1c1f2e] border-[#31364d] text-white'
+                            ? 'bg-[#1c1f2e] border-[#31364d] text-[var(--chalk)]'
                             : 'bg-[#10121a] border-[#202331] text-[#424761]'
                         }`}
                       >
@@ -253,8 +253,8 @@ export default function MaximumRectanglesVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Histogram per Column */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Column Height Accumulator</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Column Height Accumulator</span>
 
           <div className="flex items-end justify-center gap-2 w-full h-36 pt-2 px-2 border-b border-[#26293a]">
             {step.heights.map((h, col) => (

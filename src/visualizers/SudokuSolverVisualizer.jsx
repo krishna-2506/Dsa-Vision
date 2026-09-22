@@ -259,8 +259,8 @@ export default function SudokuSolverVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* 9x9 Sudoku Grid Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">9 × 9 Sudoku Grid</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">9 × 9 Sudoku Grid</span>
 
         <div className="grid grid-cols-9 border-2 border-[#3b415a] rounded-xl overflow-hidden shadow-2xl">
           {step.sampleGrid.map((row, r) =>
@@ -270,17 +270,17 @@ export default function SudokuSolverVisualizer({ currentStep = 0 }) {
               const isThickRight = c === 2 || c === 5;
               const isThickBottom = r === 2 || r === 5;
 
-              let bgClass = 'bg-[#161824] text-slate-300';
+              let bgClass = 'bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
               if (isCell) {
                 bgClass = 'bg-amber-500/30 text-amber-300 ring-2 ring-amber-500/50 animate-pulse font-black';
               } else if (isEmpty) {
-                bgClass = 'bg-[#12131b] text-slate-600';
+                bgClass = 'bg-[var(--board-raised)] text-[var(--chalk-faint)]';
               }
 
               return (
                 <div
                   key={`${r}-${c}`}
-                  className={`w-7 h-7 sm:w-9 sm:h-9 border border-[#272b3c] flex items-center justify-center font-mono text-xs sm:text-sm font-bold ${bgClass} ${
+                  className={`w-7 h-7 sm:w-9 sm:h-9 border border-[var(--line)] flex items-center justify-center font-mono text-xs sm:text-sm font-bold ${bgClass} ${
                     isThickRight ? 'border-r-2 border-r-[#4f5677]' : ''
                   } ${isThickBottom ? 'border-b-2 border-b-[#4f5677]' : ''}`}
                 >
@@ -293,7 +293,7 @@ export default function SudokuSolverVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

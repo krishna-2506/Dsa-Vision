@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Longest Repeating Character Replacement',
-  category: 'Sliding Window',
+  category: 'Sliding Window & Two Pointers',
   difficulty: 'Hard',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(26) = O(1)',
   description: 'Finds the length of the longest substring containing the same letter after at most K character replacements using a sliding window tracking peak character frequency.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Character Replacement Window Invariant',
+  nodes: [
+    { id: 'root', label: 'Frequency-Based Replacement Invariant', children: ['replacements-formula', 'peak-frequency', 'contract-window', 'grow-window', 'complexity'] },
+    { id: 'replacements-formula', label: '1. Replacements Needed Formula', detail: 'In any window of length L with dominant character frequency maxFreq, the number of replacements needed to convert all letters is L - maxFreq.' },
+    { id: 'peak-frequency', label: '2. Track Peak Frequency', detail: 'Maintain maxFreq = max(maxFreq, freq[s[right]]); we only care when a window beats the global peak length.' },
+    { id: 'contract-window', label: '3. One-Step Slide on Violation', detail: 'If (windowLen - maxFreq) > K, decrement freq[s[left]] and slide left++ by 1 step to maintain the maximum valid window size.' },
+    { id: 'grow-window', label: '4. Non-Decreasing Window Size', detail: 'The window size never shrinks below the best valid length found so far, yielding an elegant O(N) sweep.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Single pass O(N) time with O(26) = O(1) auxiliary frequency array.' }
+  ]
 };
 
 export const solutions = {
@@ -30,7 +44,7 @@ public:
             freq[s[right] - 'A']++;
             maxFreq = max(maxFreq, freq[s[right] - 'A']);
 
-            // If changes required (windowLen - maxFreq) exceed k, shrink
+            // If changes needed (windowLen - maxFreq) exceed k, slide left
             if ((right - left + 1) - maxFreq > k) {
                 freq[s[left] - 'A']--;
                 left++;
@@ -44,6 +58,7 @@ public:
     }
 };`,
   python: `# Python 3 Longest Repeating Character Replacement
+# Time Complexity: O(N) | Space Complexity: O(26) = O(1)
 class Solution:
     def characterReplacement(self, s: str, k: int) -> int:
         counts = {}
@@ -55,6 +70,7 @@ class Solution:
             counts[ch] = counts.get(ch, 0) + 1
             max_freq = max(max_freq, counts[ch])
 
+            # If replacements needed exceed k, slide left
             if (right - left + 1) - max_freq > k:
                 counts[s[left]] -= 1
                 left += 1
@@ -63,12 +79,16 @@ class Solution:
 
         return max_len`,
   java: `// Java Longest Repeating Character Replacement
+// Time Complexity: O(N) | Space Complexity: O(26) = O(1)
 class Solution {
     public int characterReplacement(String s, int k) {
         int[] freq = new int[26];
-        int left = 0, maxFreq = 0, maxLen = 0;
+        int left = 0, right = 0;
+        int maxFreq = 0;
+        int maxLen = 0;
+        int n = s.length();
 
-        for (int right = 0; right < s.length(); right++) {
+        while (right < n) {
             freq[s.charAt(right) - 'A']++;
             maxFreq = Math.max(maxFreq, freq[s.charAt(right) - 'A']);
 
@@ -78,20 +98,24 @@ class Solution {
             }
 
             maxLen = Math.max(maxLen, right - left + 1);
+            right++;
         }
 
         return maxLen;
     }
 }`,
   javascript: `// JavaScript Longest Repeating Character Replacement
+// Time Complexity: O(N) | Space Complexity: O(26) = O(1)
 var characterReplacement = function(s, k) {
     const freq = new Array(26).fill(0);
-    let left = 0, maxFreq = 0, maxLen = 0;
+    let left = 0;
+    let maxFreq = 0;
+    let maxLen = 0;
 
     for (let right = 0; right < s.length; right++) {
-        const idx = s.charCodeAt(right) - 65;
-        freq[idx]++;
-        maxFreq = Math.max(maxFreq, freq[idx]);
+        const code = s.charCodeAt(right) - 65;
+        freq[code]++;
+        maxFreq = Math.max(maxFreq, freq[code]);
 
         if ((right - left + 1) - maxFreq > k) {
             freq[s.charCodeAt(left) - 65]--;
@@ -107,121 +131,295 @@ var characterReplacement = function(s, k) {
 
 export const steps = [
   {
-    title: '1. String: "AABABBA", Allowed Replacements K = 1',
+    title: '1. Problem Setup & Replacement Invariant',
     phase: 'INITIAL',
-    codeLine: 13,
-    s: 'AABABBA',
-    k: 1,
-    left: 0,
-    right: 0,
-    maxFreq: 1,
-    maxLen: 1,
-    variables: { left: 0, right: 0, maxFreq: 1, k: 1, maxLen: 1 },
-    explain: 'Number of replacements needed in window is (windowLen - maxFreq). Must be <= K.',
-    intuition: 'Keep the most frequent character unchanged, replace the remaining.'
+    track: {
+      label: 's = "AABABBA" (N = 7, Allowed Replacements K = 1)',
+      items: [
+        { val: 'A' },
+        { val: 'A' },
+        { val: 'B' },
+        { val: 'A' },
+        { val: 'B' },
+        { val: 'B' },
+        { val: 'A' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 0,
+    windowStart: 0,
+    windowEnd: 0,
+    metrics: [
+      { label: 'Replacements (K)', value: 1 },
+      { label: 'maxFreq (Peak Count)', value: 0 },
+      { label: 'Condition', value: 'len - maxFreq <= K', highlight: true },
+      { label: 'maxLen', value: 0 }
+    ],
+    formula: 'int left = 0, right = 0; int maxFreq = 0, maxLen = 0;',
+    action: 'Initialize window pointers and frequency counters.',
+    explain: 'Goal: Find the length of the longest substring where all letters can be made identical by replacing at most K = 1 character.',
+    intuition: 'In any window, we keep the most frequent character (count maxFreq) and replace all others. Replacements required = windowLength - maxFreq <= K.',
+    variables: {
+      's': 'AABABBA',
+      'K': 1,
+      'left': 0,
+      'right': 0,
+      'maxFreq': 0,
+      'maxLen': 0
+    }
   },
   {
-    title: '2. R = 3: Window [0...3] is "AABA" -> maxFreq = 3 (\'A\'), replacements = 4 - 3 = 1 ≤ 1',
-    phase: 'FEASIBLE',
-    codeLine: 25,
-    s: 'AABABBA',
-    k: 1,
-    left: 0,
-    right: 3,
-    maxFreq: 3,
-    maxLen: 4,
-    variables: { window: '"AABA"', windowLen: 4, maxFreq: 3, replacementsNeeded: 1, maxLen: 4 },
-    explain: 'Inside "AABA", \'A\' appears 3 times. Changing 1 \'B\' to \'A\' makes all four characters \'A\'. Feasible! maxLen = 4.',
-    intuition: 'Single replacement transforms window into "AAAA".'
+    title: '2. Expand "AA": Window [0..1] (Pure "A"s, 0 Replacements)',
+    phase: 'EXPANDING',
+    track: {
+      label: 'Window [0..1] = "AA": 2 \'A\'s, 0 Replacements needed',
+      items: [
+        { val: 'A', status: 'match', badge: 'L = 0' },
+        { val: 'A', status: 'match', badge: 'R = 1' },
+        { val: 'B' },
+        { val: 'A' },
+        { val: 'B' },
+        { val: 'B' },
+        { val: 'A' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 1,
+    windowStart: 0,
+    windowEnd: 1,
+    metrics: [
+      { label: 'Window', value: '"AA"' },
+      { label: 'maxFreq', value: 2 },
+      { label: 'Replacements Needed', value: '2 - 2 = 0 <= 1' },
+      { label: 'maxLen', value: 2, highlight: true }
+    ],
+    formula: 'maxFreq = 2; changesNeeded = 2 - 2 = 0 <= K; maxLen = 2;',
+    action: 'Add first two "A"s to window. Both characters are identical.',
+    explain: 'Window length is 2. Dominant character "A" has count 2. No replacement required (0 <= 1). maxLen = 2.',
+    intuition: 'Uniform substrings require 0 replacements.',
+    variables: {
+      'left': 0,
+      'right': 1,
+      'maxFreq': 2,
+      'changesNeeded': 0,
+      'maxLen': 2
+    }
   },
   {
-    title: '3. R = 4 (char \'B\'): Window "AABAB" -> 5 - 3 = 2 > 1! Shrink L = 1',
-    phase: 'SHRINK_WINDOW',
-    codeLine: 20,
-    s: 'AABABBA',
-    k: 1,
-    left: 1,
-    right: 4,
-    maxFreq: 3,
-    maxLen: 4,
-    variables: { windowLen: 5, maxFreq: 3, replacements: 2, action: 'Exceeds K=1, advance left to 1' },
-    explain: '5 - 3 = 2 replacements needed, which exceeds K=1. Advance left pointer to index 1.',
-    intuition: 'Too many distinct characters to fix.'
+    title: '3. Add "B" at Index 2: Window [0..2] = "AAB" (1 Replacement)',
+    phase: 'EXPANDING',
+    track: {
+      label: 'Window [0..2] = "AAB": 1 replacement converts \'B\' -> \'A\'',
+      items: [
+        { val: 'A', status: 'match', badge: 'L = 0' },
+        { val: 'A', status: 'match' },
+        { val: 'B', status: 'active', badge: 'Replace -> A' },
+        { val: 'A' },
+        { val: 'B' },
+        { val: 'B' },
+        { val: 'A' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 2,
+    windowStart: 0,
+    windowEnd: 2,
+    metrics: [
+      { label: 'Window', value: '"AAB"' },
+      { label: 'maxFreq (\'A\')', value: 2 },
+      { label: 'Replacements Needed', value: '3 - 2 = 1 <= 1', highlight: true },
+      { label: 'maxLen', value: 3, highlight: true }
+    ],
+    formula: 'changesNeeded = 3 - 2 = 1 <= K(1); maxLen = max(2, 3) = 3;',
+    action: 'Encounter "B". Window [0..2] has two "A"s and one "B". Changes needed = 3 - 2 = 1.',
+    explain: 'Since K = 1, we can flip "B" to "A" to make the entire window "AAA". Valid! maxLen updates to 3.',
+    intuition: 'One replacement is permitted by the budget K = 1.',
+    variables: {
+      'left': 0,
+      'right': 2,
+      'maxFreq': 2,
+      'changesNeeded': 1,
+      'maxLen': 3
+    }
   },
   {
-    title: '4. R = 6: Window [2...6] -> "BABBA" has 4 \'B\'s -> maxLen = 4',
-    phase: 'EVALUATE',
-    codeLine: 25,
-    s: 'AABABBA',
-    k: 1,
-    left: 3,
-    right: 6,
-    maxFreq: 3,
-    maxLen: 4,
-    variables: { window: '"ABBA"', windowLen: 4, maxLen: 4 },
-    explain: 'Window maintains max allowable length of 4.',
-    intuition: 'Peak length stabilized.'
+    title: '4. Add "A" at Index 3: Window [0..3] = "AABA" (Len 4 Peak!)',
+    phase: 'EXPANDING',
+    track: {
+      label: 'Window [0..3] = "AABA": 3 \'A\'s + 1 \'B\' -> Replace \'B\' -> "AAAA"!',
+      items: [
+        { val: 'A', status: 'match', badge: 'L = 0' },
+        { val: 'A', status: 'match' },
+        { val: 'B', status: 'match', badge: 'Flip' },
+        { val: 'A', status: 'match', badge: 'R = 3' },
+        { val: 'B' },
+        { val: 'B' },
+        { val: 'A' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 3,
+    windowStart: 0,
+    windowEnd: 3,
+    metrics: [
+      { label: 'Window', value: '"AABA"' },
+      { label: 'maxFreq (\'A\')', value: '3 (increased)' },
+      { label: 'Replacements Needed', value: '4 - 3 = 1 <= 1' },
+      { label: 'maxLen', value: 4, highlight: true }
+    ],
+    formula: 'maxFreq = 3; changesNeeded = 4 - 3 = 1 <= K(1); maxLen = 4;',
+    action: 'Encounter "A" at index 3. Frequency of "A" becomes 3. maxFreq updates to 3.',
+    explain: 'Window length is 4. Dominant count is 3. Only 1 replacement needed (4 - 3 = 1 <= 1). Converts to "AAAA" of length 4!',
+    intuition: 'Window reaches length 4 with only 1 replacement.',
+    variables: {
+      'left': 0,
+      'right': 3,
+      'maxFreq': 3,
+      'changesNeeded': 1,
+      'maxLen': 4
+    }
   },
   {
-    title: '5. Completed: Longest Repeating Substring Length = 4',
+    title: '5. Add "B" at Index 4: Window [0..4] (2 Replacements > 1 Violation)',
+    phase: 'OVERFLOW',
+    track: {
+      label: 'Window [0..4] = "AABAB": 2 \'B\'s require 2 flips > K=1 (Violation!)',
+      items: [
+        { val: 'A', status: 'match', badge: 'L = 0' },
+        { val: 'A', status: 'match' },
+        { val: 'B', status: 'mismatch', badge: 'B #1' },
+        { val: 'A', status: 'match' },
+        { val: 'B', status: 'mismatch', badge: 'B #2 (R = 4)' },
+        { val: 'B' },
+        { val: 'A' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 4,
+    windowStart: 0,
+    windowEnd: 4,
+    metrics: [
+      { label: 'Window', value: '"AABAB" (len 5)' },
+      { label: 'maxFreq', value: 3 },
+      { label: 'Changes Needed', value: '5 - 3 = 2 > 1 (Invalid!)', highlight: true },
+      { label: 'Action Required', value: 'Slide left pointer' }
+    ],
+    formula: 'changesNeeded = 5 - 3 = 2 > K(1); // Budget exceeded!',
+    action: 'Window [0..4] has three "A"s and two "B"s. Changes required = 5 - 3 = 2 > 1.',
+    explain: 'Replacing both "B"s requires 2 edits, exceeding budget K = 1. Window is invalid and must slide left.',
+    intuition: 'Cannot maintain all identical characters with only 1 replacement.',
+    variables: {
+      'left': 0,
+      'right': 4,
+      'maxFreq': 3,
+      'changesNeeded': 2,
+      'maxLen': 4
+    }
+  },
+  {
+    title: '6. Slide Left: left moves 0 -> 1 to Window [1..4] = "ABAB"',
+    phase: 'SLIDING',
+    track: {
+      label: 'Slide left to 1: window [1..4] has length 4',
+      items: [
+        { val: 'A', status: 'mismatch', badge: 'Dropped' },
+        { val: 'A', status: 'match', badge: 'New L = 1' },
+        { val: 'B', status: 'match' },
+        { val: 'A', status: 'match' },
+        { val: 'B', status: 'match', badge: 'R = 4' },
+        { val: 'B' },
+        { val: 'A' }
+      ]
+    },
+    activeI: 1,
+    activeJ: 4,
+    windowStart: 1,
+    windowEnd: 4,
+    metrics: [
+      { label: 'left advanced', value: '0 -> 1' },
+      { label: 'New Window', value: '"ABAB"' },
+      { label: 'Window Size', value: '4 - 1 + 1 = 4' },
+      { label: 'maxLen', value: 4 }
+    ],
+    formula: 'freq[s[left]]--; left++; // Window size restored to 4',
+    action: 'Decrement frequency of s[0] ("A") and advance left to 1.',
+    explain: 'Window size is now 4. We do not shrink below 4 because our goal is to beat the maximum length 4.',
+    intuition: 'The sliding window never needs to contract smaller than the current best answer.',
+    variables: {
+      'left': 1,
+      'right': 4,
+      'maxLen': 4
+    }
+  },
+  {
+    title: '7. Process Remaining "B" and "A": Slide Window [2..5] and [3..6]',
+    phase: 'SLIDING',
+    track: {
+      label: 'Window slides to tail: [3..6] = "BBA" (Valid length 4 with B->B->B->B)',
+      items: [
+        { val: 'A' },
+        { val: 'A' },
+        { val: 'B' },
+        { val: 'A', status: 'mismatch', badge: 'Drop' },
+        { val: 'B', status: 'match', badge: 'L = 3' },
+        { val: 'B', status: 'match' },
+        { val: 'B', status: 'match' },
+        { val: 'A', status: 'match', badge: 'R = 6 (Flip A->B)' }
+      ]
+    },
+    activeI: 3,
+    activeJ: 6,
+    windowStart: 3,
+    windowEnd: 6,
+    metrics: [
+      { label: 'Tail Window', value: '"BBBA"' },
+      { label: 'Dominant Char', value: "'B' (count 3)" },
+      { label: 'Replacements', value: '4 - 3 = 1 <= 1' },
+      { label: 'maxLen', value: 4, highlight: true }
+    ],
+    formula: 'Window [3..6] contains 3 \'B\'s and 1 \'A\'; replace \'A\' -> "BBBB"; len = 4;',
+    action: 'Window [3..6] contains three "B"s and one "A". Replacing "A" with "B" yields "BBBB" of length 4.',
+    explain: 'Both "AAAA" (from window [0..3]) and "BBBB" (from window [3..6]) achieve the optimal length of 4.',
+    intuition: 'String is fully traversed.',
+    variables: {
+      'left': 3,
+      'right': 6,
+      'maxLen': 4
+    }
+  },
+  {
+    title: '8. Result: Longest Repeating Substring Length = 4',
     phase: 'COMPLETED',
-    codeLine: 29,
-    s: 'AABABBA',
-    k: 1,
-    left: 3,
-    right: 6,
-    maxFreq: 3,
-    maxLen: 4,
-    variables: { maxSubstringLength: 4, optimalForm: '"AAAA" or "BBBB"', timeComplexity: 'O(N)' },
-    explain: 'Longest repeating character replacement has length 4.',
-    intuition: 'O(N) single-pass complete.'
+    track: {
+      label: 'Optimal Substring: "AABA" -> "AAAA" (or "BBBA" -> "BBBB") of Length 4',
+      items: [
+        { val: 'A', status: 'match', badge: '1' },
+        { val: 'A', status: 'match', badge: '2' },
+        { val: 'B', status: 'match', badge: 'Flip->A' },
+        { val: 'A', status: 'match', badge: '4 (Len=4)' },
+        { val: 'B' },
+        { val: 'B' },
+        { val: 'A' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: 0,
+    windowEnd: 3,
+    metrics: [
+      { label: 'Longest Window', value: '"AABA"' },
+      { label: 'Max Uniform Length', value: 4, highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(26) = O(1)' }
+    ],
+    formula: 'return maxLen = 4;',
+    action: 'Return global maximum length 4.',
+    explain: 'After replacing at most 1 character, the longest contiguous uniform letter substring is 4. Computed in a single O(N) pass.',
+    intuition: 'Tracking peak frequency avoids re-scanning the frequency array, giving optimal linear runtime.',
+    variables: {
+      'result': 4,
+      'timeComplexity': 'O(N)',
+      'spaceComplexity': 'O(1)'
+    }
   }
 ];
-
-export default function LongestRepeatingCharacterReplacementVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Peak Char Frequency: {step.maxFreq}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
-          Max Flips K = {step.k}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Length = {step.maxLen}
-        </span>
-      </div>
-
-      {/* Characters Stream */}
-      <div className="w-full flex items-center justify-center gap-1.5 py-4 overflow-x-auto">
-        {step.s.split('').map((ch, idx) => {
-          const inWindow = idx >= step.left && idx <= step.right;
-
-          let ringClass = 'border-[#272b3c] bg-[#12131b] text-slate-400';
-          if (inWindow) {
-            ringClass = 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300 font-bold';
-          }
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1 min-w-[36px]">
-              <div className={`w-9 h-11 rounded-xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${ringClass}`}>
-                {ch}
-              </div>
-              <span className="text-[8px] font-mono text-[#5b6076]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Formula notice */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Condition: <strong className="text-amber-400">(windowLen - maxFreq) &le; K</strong></span>
-        <span className="text-emerald-400 font-semibold">Current Window: {step.s.slice(step.left, step.right + 1)}</span>
-      </div>
-    </div>
-  );
-}

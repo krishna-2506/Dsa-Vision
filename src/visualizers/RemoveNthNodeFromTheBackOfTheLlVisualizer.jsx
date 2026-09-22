@@ -180,10 +180,10 @@ export default function RemoveNthNodeFromTheBackOfTheLlVisualizer({ currentStep 
         <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
           N = {step.n}th from end
         </span>
-        <span className="px-3 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <span className="px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Slow: {step.slowPos === -1 ? 'dummy' : `Node(${step.nodes[step.slowPos]})`}
         </span>
-        <span className="px-3 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <span className="px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Fast: {step.fastPos === -1 ? 'dummy' : `Node(${step.nodes[step.fastPos]})`}
         </span>
       </div>
@@ -195,7 +195,7 @@ export default function RemoveNthNodeFromTheBackOfTheLlVisualizer({ currentStep 
           const isFast = idx === step.fastPos;
           const isDeleted = idx === step.deletedIdx;
 
-          let ringClass = 'border-[#272b3c] bg-[#12131b] text-slate-200';
+          let ringClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
           if (isDeleted) {
             ringClass = 'border-rose-500/50 bg-rose-500/10 text-rose-300 line-through opacity-50';
           } else if (isSlow) {
@@ -217,7 +217,7 @@ export default function RemoveNthNodeFromTheBackOfTheLlVisualizer({ currentStep 
                 </div>
               </div>
               {idx < step.nodes.length - 1 && (
-                <span className="text-[#555a73] font-mono text-sm">→</span>
+                <span className="text-[var(--chalk-faint)] font-mono text-sm">→</span>
               )}
             </React.Fragment>
           );
@@ -225,8 +225,8 @@ export default function RemoveNthNodeFromTheBackOfTheLlVisualizer({ currentStep 
       </div>
 
       {/* Single pass notice */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Window Gap: <strong className="text-indigo-300">N = {step.n} nodes</strong></span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+        <span className="text-[var(--chalk-dim)]">Window Gap: <strong className="text-indigo-300">N = {step.n} nodes</strong></span>
         <span className="text-emerald-400 font-semibold">Single Pass O(N)</span>
       </div>
     </div>

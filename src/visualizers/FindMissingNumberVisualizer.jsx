@@ -88,13 +88,13 @@ export default function MissingNumberVisualizer({ currentStep: externalStep, onS
           <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
             Step {stepIndex + 1} / {steps.length}
           </span>
-          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
+          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
         </div>
         <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition">
+          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
             ← Prev
           </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition">
+          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
             Next →
           </button>
         </div>
@@ -111,17 +111,17 @@ export default function MissingNumberVisualizer({ currentStep: externalStep, onS
         {/* 3. Real-Time HUD */}
         <div className="mt-5 flex flex-col gap-2 w-full max-w-md">
           <div className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-            <span className="text-slate-400">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
+            <span className="text-[var(--chalk-dim)]">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
           </div>
           <div className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-            <span className="text-slate-400">Executing: <strong className="text-emerald-400">{stepData.code}</strong></span>
+            <span className="text-[var(--chalk-dim)]">Executing: <strong className="text-emerald-400">{stepData.code}</strong></span>
           </div>
         </div>
       </div>
 
       {/* 4. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
+      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-[var(--chalk-dim)] leading-relaxed font-sans">
+        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
         {stepData.explanation}
       </div>
     </div>

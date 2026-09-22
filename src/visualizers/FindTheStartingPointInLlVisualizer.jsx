@@ -1,23 +1,39 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
-  title: 'Find Starting Point of Loop in Linked List',
-  category: 'Linked List & Two Pointers',
+  title: 'Find Starting Point of Loop in Linked List (Floyd Cycle II)',
+  category: 'Linked List & Cycle Detection',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1)',
-  description: "Detects the exact entry node of a cycle in a linked list using Floyd's Tortoise and Hare algorithm followed by equal-paced synchronization from head."
+  description: "Finds the exact entry node of a cycle in a linked list using Floyd's two-phase algorithm. Phase 1 detects meeting point; Phase 2 resets one pointer to head and advances both by 1 step until they meet at the cycle entrance."
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Cycle Starting Point Strategy',
+  nodes: [
+    { id: 'root', label: 'Floyd Cycle II (Entry Detection)', children: ['phase1-detect', 'math-invariant', 'phase2-sync', 'entrance-found', 'complexity'] },
+    { id: 'phase1-detect', label: '1. Phase 1: Meeting Detection', detail: 'Advance slow by 1 and fast by 2 until they collide at node M inside the loop.' },
+    { id: 'math-invariant', label: '2. Distance Proof (L1 = C - d)', detail: 'Algebra proves distance from Head to Cycle Start equals distance from Meeting Point to Cycle Start.' },
+    { id: 'phase2-sync', label: '3. Phase 2: Head Reset', detail: 'Reset slow to head; keep fast at meeting node M. Advance both at 1 step per turn.' },
+    { id: 'entrance-found', label: '4. Entrance Convergence', detail: 'Because speeds and remaining distances are equal, they must collide exactly at the cycle entrance.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Completes in linear time O(N) using strictly O(1) auxiliary pointer memory.' }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++ Find Starting Point of Loop in Linked List
+  cpp: `// C++ Floyd's Cycle II: Find Starting Point of Loop
 // Time Complexity: O(N) | Space Complexity: O(1)
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(nullptr) {}
-};
-
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
 class Solution {
 public:
     ListNode *detectCycle(ListNode *head) {
@@ -26,44 +42,51 @@ public:
         ListNode *slow = head;
         ListNode *fast = head;
 
-        // Phase 1: Detect if a cycle exists
-        while (fast && fast->next) {
-            slow = slow->next;
-            fast = fast->next->next;
+        // Phase 1: Detect whether a cycle exists
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;          // 1 step
+            fast = fast->next->next;    // 2 steps
+
             if (slow == fast) {
-                // Phase 2: Find cycle start
-                slow = head;
-                while (slow != fast) {
+                // Phase 2: Find the exact cycle entry point
+                slow = head;            // Reset slow to head
+                while (slow != fast) {  // Both move 1 step at a time
                     slow = slow->next;
                     fast = fast->next;
                 }
-                return slow; // Cycle start node!
+                return slow;            // Entrance node where they meet!
             }
         }
 
-        return nullptr;
+        return nullptr; // No cycle found
     }
 };`,
-  python: `# Python 3 Find Starting Point of Loop in Linked List
+  python: `# Python 3 Floyd's Cycle II: Find Starting Point of Loop
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
         if not head or not head.next:
             return None
 
-        slow, fast = head, head
+        slow = head
+        fast = head
 
+        # Phase 1: Locate meeting point in cycle
         while fast and fast.next:
             slow = slow.next
             fast = fast.next.next
+
             if slow == fast:
+                # Phase 2: Reset slow to head and move at equal pace
                 slow = head
                 while slow != fast:
                     slow = slow.next
                     fast = fast.next
-                return slow
+                return slow             # Cycle start node
 
         return None`,
-  java: `// Java Find Starting Point of Loop in Linked List
+  java: `// Java Floyd's Cycle II: Find Starting Point of Loop
+// Time Complexity: O(N) | Space Complexity: O(1)
 public class Solution {
     public ListNode detectCycle(ListNode head) {
         if (head == null || head.next == null) return null;
@@ -71,39 +94,46 @@ public class Solution {
         ListNode slow = head;
         ListNode fast = head;
 
+        // Phase 1: Detect cycle meeting point
         while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
+
             if (slow == fast) {
+                // Phase 2: Synchronize from head
                 slow = head;
                 while (slow != fast) {
                     slow = slow.next;
                     fast = fast.next;
                 }
-                return slow;
+                return slow;            // Collision at cycle start
             }
         }
 
         return null;
     }
 }`,
-  javascript: `// JavaScript Find Starting Point of Loop in Linked List
+  javascript: `// JavaScript Floyd's Cycle II: Find Starting Point of Loop
+// Time Complexity: O(N) | Space Complexity: O(1)
 var detectCycle = function(head) {
     if (!head || !head.next) return null;
 
     let slow = head;
     let fast = head;
 
-    while (fast && fast.next) {
+    // Phase 1: Locate meeting point
+    while (fast !== null && fast.next !== null) {
         slow = slow.next;
         fast = fast.next.next;
+
         if (slow === fast) {
+            // Phase 2: Synchronize from head
             slow = head;
             while (slow !== fast) {
                 slow = slow.next;
                 fast = fast.next;
             }
-            return slow;
+            return slow;                // Cycle start
         }
     }
 
@@ -113,151 +143,269 @@ var detectCycle = function(head) {
 
 export const steps = [
   {
-    title: '1. Linked List: 1 -> 2 -> 3 -> 4 -> 5 -> [points back to 3]',
-    phase: 'INITIAL',
-    codeLine: 16,
-    nodes: [1, 2, 3, 4, 5],
-    loopTarget: 3,
-    slowIdx: 0,
-    fastIdx: 0,
-    collision: false,
-    startingNode: null,
-    variables: { slow: 'Node(1)', fast: 'Node(1)', phase: '1: Cycle Detection' },
-    explain: 'Tortoise (slow) moves 1 step; Hare (fast) moves 2 steps. If a loop exists, they must collide inside the cycle.',
-    intuition: 'Fast gains 1 relative node per step on slow.'
+    title: '1. Problem Anatomy: Linked List with Cycle (5 loops back to 3)',
+    phase: 'SETUP',
+    track: {
+      label: 'Linked List Structure',
+      items: [
+        { val: '1 (Head)', status: 'active' },
+        { val: '2' },
+        { val: '3 (Cycle Start)', badge: '🎯 Target' },
+        { val: '4' },
+        { val: '5 (Tail -> 3)', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 0, label: '🐢 slow' },
+        { index: 0, label: '🐇 fast' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 0,
+    metrics: [
+      { label: 'Phase', value: '1: Find Meeting Point' },
+      { label: 'Linear Path L1', value: '2 edges (1 -> 2 -> 3)' },
+      { label: 'Cycle Length C', value: '3 nodes (3, 4, 5)' }
+    ],
+    formula: 'slow = head; fast = head;',
+    action: 'Initialize Phase 1: Start slow and fast at head (Node 1).',
+    explain: 'Goal: Find the starting entry node of the cycle (Node 3). Linear distance L1 = 2 edges, cycle length C = 3 nodes.',
+    intuition: 'We first use Tortoise and Hare (slow moves 1 step, fast moves 2 steps) to locate an arbitrary meeting node inside the loop.',
+    variables: { head: 1, cycleEntry: 3, L1: 2, C: 3, phase: 'Cycle Detection' }
   },
   {
-    title: '2. Fast & Slow advance: slow at Node 2, fast at Node 3',
-    phase: 'SEEKING',
-    codeLine: 19,
-    nodes: [1, 2, 3, 4, 5],
-    loopTarget: 3,
-    slowIdx: 1,
-    fastIdx: 2,
-    collision: false,
-    startingNode: null,
-    variables: { slow: 'Node(2)', fast: 'Node(3)' },
-    explain: 'Slow advanced to index 1 (val 2). Fast leaped two steps to index 2 (val 3).',
-    intuition: 'Pointers enter the cycle.'
+    title: '2. Phase 1 - Iteration 1: slow -> Node 2, fast -> Node 3',
+    phase: 'TRAVERSAL',
+    track: {
+      label: 'Phase 1: Approaching the Cycle',
+      items: [
+        { val: '1' },
+        { val: '2', status: 'active' },
+        { val: '3 (Cycle Start)', status: 'active', badge: '🎯 Target' },
+        { val: '4' },
+        { val: '5 (Tail -> 3)', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 1, label: '🐢 slow' },
+        { index: 2, label: '🐇 fast' }
+      ]
+    },
+    activeI: 1,
+    activeJ: 2,
+    metrics: [
+      { label: 'slow.val', value: 2 },
+      { label: 'fast.val', value: 3 },
+      { label: 'Status', value: 'fast entered cycle' }
+    ],
+    formula: 'slow = slow.next; fast = fast.next.next;',
+    action: 'slow advances 1 step to Node 2; fast leaps 2 steps to Node 3.',
+    explain: 'fast enters the cycle at Node 3. slow is 1 node behind the entrance.',
+    intuition: 'Fast begins circulating inside the cycle while slow approaches the entrance threshold.',
+    variables: { 'slow.val': 2, 'fast.val': 3 }
   },
   {
-    title: '3. Fast & Slow advance: slow at Node 4, fast at Node 4 -> Collision Detected!',
+    title: '3. Phase 1 - Iteration 2: slow -> Node 3, fast -> Node 5',
+    phase: 'TRAVERSAL',
+    track: {
+      label: 'Phase 1: Both Pointers in Cycle',
+      items: [
+        { val: '1' },
+        { val: '2' },
+        { val: '3 (Cycle Start)', status: 'active', badge: '🎯 Target' },
+        { val: '4' },
+        { val: '5 (Tail -> 3)', status: 'active', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 2, label: '🐢 slow' },
+        { index: 4, label: '🐇 fast' }
+      ]
+    },
+    activeI: 2,
+    activeJ: 4,
+    metrics: [
+      { label: 'slow.val', value: 3 },
+      { label: 'fast.val', value: 5 },
+      { label: 'Relative Gap', value: '1 step' }
+    ],
+    formula: 'slow = slow.next; fast = fast.next.next;',
+    action: 'slow reaches cycle entry (Node 3); fast moves to tail (Node 5).',
+    explain: 'Both pointers are now circulating in the loop {3, 4, 5}. Node 5 connects back to Node 3.',
+    intuition: 'Inside the loop, fast closes the gap by 1 node per turn.',
+    variables: { 'slow.val': 3, 'fast.val': 5, inLoop: true }
+  },
+  {
+    title: '4. Phase 1 Collision: Both Meet at Node 4!',
     phase: 'COLLISION',
-    codeLine: 23,
-    nodes: [1, 2, 3, 4, 5],
-    loopTarget: 3,
-    slowIdx: 3,
-    fastIdx: 3,
-    collision: true,
-    startingNode: null,
-    variables: { slow: 'Node(4)', fast: 'Node(4)', status: 'Collision at Node(4)!' },
-    explain: 'Both slow and fast meet at Node 4 inside the loop! By Floyd\'s theorem, dist(Head to Start) = dist(Collision to Start).',
-    intuition: 'Reset slow to head, keep fast at collision point, move both 1 step at a time.'
+    track: {
+      label: 'Phase 1 Complete: Collision Node Detected',
+      items: [
+        { val: '1' },
+        { val: '2' },
+        { val: '3 (Cycle Start)', badge: '🎯 Target' },
+        { val: '4 (MEETING POINT)', status: 'match', badge: '💥 Meet' },
+        { val: '5 (Tail -> 3)', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 3, label: '💥 slow == fast' }
+      ]
+    },
+    activeI: 3,
+    activeJ: 3,
+    metrics: [
+      { label: 'Meeting Node', value: 'Node 4', highlight: true },
+      { label: 'Meeting Offset d', value: '1 node past entrance' },
+      { label: 'Phase 1', value: 'Complete' }
+    ],
+    formula: 'slow == fast (4 == 4)',
+    action: 'slow moves to Node 4; fast wraps around (5 -> 3 -> 4) and collides at Node 4.',
+    explain: 'Both pointers collide at Node 4. The offset from cycle start (Node 3) to meeting node (Node 4) is d = 1 step.',
+    intuition: 'Collision confirms the cycle and pinpoints the reference anchor required for Phase 2.',
+    variables: { meetingNode: 4, d: 1, collision: true }
   },
   {
-    title: '4. Reset slow = head (Node 1), fast remains at Node 4. Both move 1 step each',
-    phase: 'RESET_SLOW',
-    codeLine: 25,
-    nodes: [1, 2, 3, 4, 5],
-    loopTarget: 3,
-    slowIdx: 0,
-    fastIdx: 3,
-    collision: false,
-    startingNode: null,
-    variables: { slow: 'Node(1) [HEAD]', fast: 'Node(4) [COLLISION]', speed: '1 step each' },
-    explain: 'Slow is reset to Head (Node 1). Fast stays at collision point Node 4. Now both will advance at 1 step/iteration.',
-    intuition: 'Synchronizing distances.'
+    title: '5. Mathematical Proof: Distance(Head -> Start) = Distance(Meet -> Start)',
+    phase: 'ANALYSIS',
+    track: {
+      label: 'Mathematical Derivation',
+      items: [
+        { val: 'L1: Head -> Entry', status: 'match' },
+        { val: 'd: Entry -> Meet' },
+        { val: 'C - d: Meet -> Entry', status: 'match' },
+        { val: 'Result: L1 = C - d', badge: 'Invariant' }
+      ],
+      pointers: [
+        { index: 0, label: 'L1 = 2 steps' },
+        { index: 2, label: 'C - d = 2 steps' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 2,
+    metrics: [
+      { label: 'Linear Dist L1', value: '2 steps (1 -> 2 -> 3)' },
+      { label: 'Cycle Remainder C - d', value: '2 steps (4 -> 5 -> 3)' },
+      { label: 'Equal Distances', value: 'L1 == C - d', highlight: true }
+    ],
+    formula: '2(L1 + d) = L1 + k*C + d  ==>  L1 = k*C - d',
+    action: 'Analyze Floyd’s Cycle equation relating linear distance to cycle perimeter.',
+    explain: 'Since fast traveled twice the distance of slow: 2*(L1 + d) = L1 + k*C + d. Simplifying yields L1 = k*C - d. For k = 1, L1 = C - d = 3 - 1 = 2 steps!',
+    intuition: 'This is the breakthrough: Walking from Head takes the EXACT same number of steps as walking from the Meeting Point to reach the Cycle Entrance!',
+    variables: { L1: 2, C: 3, d: 1, 'C - d': 2, identity: 'L1 == C - d' }
   },
   {
-    title: '5. Advance both 1 step: slow moves to Node 2, fast moves to Node 5',
-    phase: 'SYNCHRONIZING',
-    codeLine: 27,
-    nodes: [1, 2, 3, 4, 5],
-    loopTarget: 3,
-    slowIdx: 1,
-    fastIdx: 4,
-    collision: false,
-    startingNode: null,
-    variables: { slow: 'Node(2)', fast: 'Node(5)' },
-    explain: 'Slow moves to Node 2. Fast moves from Node 4 to Node 5.',
-    intuition: 'Converging on cycle entrance.'
+    title: '6. Phase 2 Setup: Reset slow = Head (1), Keep fast at Meeting Point (4)',
+    phase: 'RESET',
+    track: {
+      label: 'Phase 2: Reset slow to Head',
+      items: [
+        { val: '1 (slow reset)', status: 'active', badge: 'Head' },
+        { val: '2' },
+        { val: '3 (Cycle Start)', badge: '🎯 Target' },
+        { val: '4 (fast stays)', status: 'match', badge: 'Meet' },
+        { val: '5 (Tail -> 3)', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 0, label: '🐢 slow (head)' },
+        { index: 3, label: '🐇 fast (meet)' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 3,
+    metrics: [
+      { label: 'Phase', value: '2: Synchronize' },
+      { label: 'slow Speed', value: '1 step / iter' },
+      { label: 'fast Speed', value: '1 step / iter (Equal!)' }
+    ],
+    formula: 'slow = head;  // fast remains at meeting node',
+    action: 'Reset slow to head (Node 1); leave fast at collision node (Node 4). Now both advance 1 step each!',
+    explain: 'Crucial speed change: fast drops from 2 steps/turn down to 1 step/turn. Both pointers now advance at the identical pace of 1 node per iteration.',
+    intuition: 'Because both pointers move at 1 step/iteration and their distances to the entrance are identical (2 steps each), they must arrive at the entrance simultaneously!',
+    variables: { slow: 1, fast: 4, slowSpeed: 1, fastSpeed: 1 }
   },
   {
-    title: '6. Advance both 1 step: slow moves to Node 3, fast moves to Node 3 -> Cycle Entrance Found!',
+    title: '7. Phase 2 - Step 1: Advance both 1 step (slow -> 2, fast -> 5)',
+    phase: 'SYNCHRONIZATION',
+    track: {
+      label: 'Phase 2: Advancing Toward Entrance',
+      items: [
+        { val: '1' },
+        { val: '2 (slow)', status: 'active' },
+        { val: '3 (Cycle Start)', badge: '🎯 Target' },
+        { val: '4' },
+        { val: '5 (fast)', status: 'active', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 1, label: '🐢 slow' },
+        { index: 4, label: '🐇 fast' }
+      ]
+    },
+    activeI: 1,
+    activeJ: 4,
+    metrics: [
+      { label: 'slow.val', value: 2 },
+      { label: 'fast.val', value: 5 },
+      { label: 'Remaining to Target', value: '1 step each' }
+    ],
+    formula: 'slow = slow.next; fast = fast.next;',
+    action: 'Both pointers advance 1 step: slow moves from 1 to 2; fast moves from 4 to 5.',
+    explain: 'slow is 1 step away from Cycle Entry (Node 3). fast is at Node 5, whose next pointer loops directly back to Node 3!',
+    intuition: 'Both pointers are now exactly 1 step away from the cycle entrance.',
+    variables: { 'slow.val': 2, 'fast.val': 5, remainingSteps: 1 }
+  },
+  {
+    title: '8. Phase 2 - Step 2: Both Land on Node 3 — Cycle Entrance Found!',
     phase: 'COMPLETED',
-    codeLine: 30,
-    nodes: [1, 2, 3, 4, 5],
-    loopTarget: 3,
-    slowIdx: 2,
-    fastIdx: 2,
-    collision: true,
-    startingNode: 3,
-    variables: { cycleStartNode: 'Node(3)', val: 3, timeComplexity: 'O(N)', spaceComplexity: 'O(1)' },
-    explain: 'Both slow and fast meet at Node 3! Node 3 is the exact starting entry point of the loop.',
-    intuition: 'Proved via L1 = C - L2.'
+    track: {
+      label: 'Convergence at Cycle Start',
+      items: [
+        { val: '1' },
+        { val: '2' },
+        { val: '3 (CYCLE ENTRANCE)', status: 'match', badge: '🎯 Start' },
+        { val: '4' },
+        { val: '5 (Tail -> 3)', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 2, label: '🎯 slow == fast == Cycle Start' }
+      ]
+    },
+    activeI: 2,
+    activeJ: 2,
+    metrics: [
+      { label: 'Cycle Entry Node', value: 'Node 3', highlight: true },
+      { label: 'Phase 2 Steps', value: '2 steps (== L1)' },
+      { label: 'slow == fast', value: 'True' }
+    ],
+    formula: 'while (slow != fast) exited: slow == fast == Node 3',
+    action: 'slow moves to Node 3; fast follows cycle back-edge (5 -> 3) and lands on Node 3!',
+    explain: 'Both pointers collide at Node 3! Node 3 is mathematically confirmed as the exact starting entry point of the loop.',
+    intuition: 'The proof holds: L1 steps from head and C - d steps from collision point meet precisely at the entry node.',
+    variables: { cycleStart: 3, val: 3, status: 'ENTRANCE_FOUND' }
+  },
+  {
+    title: '9. Completion & Complexity Summary: Return Node 3',
+    phase: 'COMPLETED',
+    track: {
+      label: 'Final Result: Cycle Entrance Identified',
+      items: [
+        { val: '1 (Head)' },
+        { val: '2' },
+        { val: '3 (Cycle Start)', status: 'match', badge: '🎯 Result' },
+        { val: '4' },
+        { val: '5 (Tail -> 3)', badge: '↩ Loop' }
+      ],
+      pointers: [
+        { index: 2, label: 'Return Node(3)' }
+      ]
+    },
+    activeI: 2,
+    activeJ: 2,
+    metrics: [
+      { label: 'Return Value', value: 'Node(3)', highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    formula: 'return slow; // Node 3',
+    action: 'Algorithm concludes: Returns pointer to Node 3.',
+    explain: 'Phase 1 takes O(L1 + C) steps. Phase 2 takes O(L1) steps. Total time is strictly O(N) operations with O(1) auxiliary memory.',
+    intuition: 'Floyd Cycle II is widely considered the optimal standard solution for cycle entry identification in singly linked lists.',
+    variables: { result: 'Node(3)', timeComplexity: 'O(N)', spaceComplexity: 'O(1)' }
   }
 ];
-
-export default function FindTheStartingPointInLlVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Slow: Node({step.nodes[step.slowIdx]})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-semibold">
-          Fast: Node({step.nodes[step.fastIdx]})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Cycle Start = {step.startingNode ? `Node(${step.startingNode})` : 'Searching'}
-        </span>
-      </div>
-
-      {/* Linked List Flow */}
-      <div className="w-full flex items-center justify-center gap-2 py-4 overflow-x-auto">
-        {step.nodes.map((val, idx) => {
-          const isSlow = idx === step.slowIdx;
-          const isFast = idx === step.fastIdx;
-          const isStart = val === step.startingNode;
-
-          let ringClass = 'border-[#272b3c] bg-[#12131b] text-slate-200';
-          if (isStart) {
-            ringClass = 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg shadow-emerald-500/10';
-          } else if (isSlow && isFast) {
-            ringClass = 'border-pink-500 bg-pink-500/20 text-pink-300 ring-2 ring-pink-500/40';
-          } else if (isSlow) {
-            ringClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30';
-          } else if (isFast) {
-            ringClass = 'border-indigo-500 bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-500/30';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="flex flex-col items-center gap-1 min-w-[50px]">
-                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${ringClass}`}>
-                  {val}
-                </div>
-                <div className="flex gap-1 text-[8px] font-mono">
-                  {isSlow && <span className="text-amber-400">slow</span>}
-                  {isFast && <span className="text-indigo-400">fast</span>}
-                </div>
-              </div>
-              {idx < step.nodes.length - 1 && (
-                <span className="text-[#555a73] font-mono text-sm">→</span>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* Loop cycle connector notice */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Cycle Loop: Node(5) connects back to <strong className="text-emerald-400">Node(3)</strong></span>
-        <span className="text-amber-400 font-semibold">{step.collision ? '⚡ Collision Point!' : 'Advancing...'}</span>
-      </div>
-    </div>
-  );
-}

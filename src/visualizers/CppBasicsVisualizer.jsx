@@ -126,33 +126,33 @@ export default function CppBasicsVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Memory & Type Layout</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Memory & Type Layout</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             Phase: {step.phase}
           </span>
         </div>
 
         {step.memoryView.length === 0 ? (
-          <div className="text-center py-6 text-slate-400 text-sm italic">
+          <div className="text-center py-6 text-[var(--chalk-dim)] text-sm italic">
             Parsing program directives and main() entry point...
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {step.memoryView.map((item, idx) => (
-              <div key={idx} className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col justify-between space-y-2">
+              <div key={idx} className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col justify-between space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-bold text-slate-200 font-mono">{item.name}</span>
+                  <span className="text-sm font-bold text-[var(--chalk)] font-mono">{item.name}</span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30">
                     {item.type} ({item.size})
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-slate-400">Value:</span>
+                  <span className="text-[var(--chalk-dim)]">Value:</span>
                   <span className="font-mono font-semibold text-emerald-400">{item.value}</span>
                 </div>
-                <div className="text-[10px] text-slate-500 font-mono truncate">
+                <div className="text-[10px] text-[var(--chalk-faint)] font-mono truncate">
                   Range: {item.range}
                 </div>
               </div>
@@ -160,7 +160,7 @@ export default function CppBasicsVisualizer({ currentStep = 0 }) {
           </div>
         )}
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

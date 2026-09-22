@@ -216,14 +216,14 @@ export default function ImplementMinStackVisualizer({ currentStep = 0 }) {
           <span className="text-emerald-400 font-bold">O(1) getMin():</span>
           <span className="text-emerald-200 text-base font-extrabold">{step.currentMin ?? 'None'}</span>
         </div>
-        <div className="px-3 py-2 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#8a8ea3]">
+        <div className="px-3 py-2 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)]">
           Last Action: <strong className="text-amber-300">{step.action}</strong>
         </div>
       </div>
 
       {/* Stack Container with Dual Values (val & min) */}
-      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl min-w-[280px]">
-        <span className="text-xs font-mono text-[#8a8ea3]">Stack Frame Storage:</span>
+      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl min-w-[280px]">
+        <span className="text-xs font-mono text-[var(--chalk-dim)]">Stack Frame Storage:</span>
 
         <div className="w-60 h-56 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2.5 gap-2 bg-[#0f1016]">
           {step.stack.length === 0 ? (
@@ -239,7 +239,7 @@ export default function ImplementMinStackVisualizer({ currentStep = 0 }) {
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    {isTop && <span className="text-[9px] px-1 rounded bg-amber-500 text-white font-bold">TOP</span>}
+                    {isTop && <span className="text-[9px] px-1 rounded bg-amber-500 text-[var(--chalk)] font-bold">TOP</span>}
                     <span className="font-bold text-base">{item.val}</span>
                   </div>
                   <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#10121a] border border-[#262a3c] text-emerald-400">

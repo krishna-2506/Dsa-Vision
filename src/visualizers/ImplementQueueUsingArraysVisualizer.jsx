@@ -261,7 +261,7 @@ export default function ImplementQueueUsingArraysVisualizer({ currentStep = 0 })
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       {/* Metrics Bar */}
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Action: <strong className="text-emerald-400">{step.action}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300">
@@ -281,8 +281,8 @@ export default function ImplementQueueUsingArraysVisualizer({ currentStep = 0 })
       </div>
 
       {/* Circular Array Visualizer */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Circular Array Ring Buffer</span>
           <span className="text-emerald-400 font-bold">FIFO Model</span>
         </div>
@@ -300,17 +300,17 @@ export default function ImplementQueueUsingArraysVisualizer({ currentStep = 0 })
                     isFront
                       ? 'bg-blue-500/25 border-blue-400 text-blue-200 shadow-lg shadow-blue-500/20'
                       : isOccupied
-                      ? 'bg-[#181a26] border-[#343a54] text-white'
-                      : 'bg-[#0f1016] border-dashed border-[#242738] text-[#3d425c]'
+                      ? 'bg-[#181a26] border-[#343a54] text-[var(--chalk)]'
+                      : 'bg-[#0f1016] border-dashed border-[var(--line)] text-[#3d425c]'
                   }`}
                 >
                   {isFront && (
-                    <span className="absolute -top-3 px-1 py-0.5 rounded text-[8px] bg-blue-500 text-white font-bold">
+                    <span className="absolute -top-3 px-1 py-0.5 rounded text-[8px] bg-blue-500 text-[var(--chalk)] font-bold">
                       FRONT
                     </span>
                   )}
                   {isRearNext && !isFront && step.currSize < 5 && (
-                    <span className="absolute -bottom-3 px-1 py-0.5 rounded text-[8px] bg-indigo-600 text-white font-bold">
+                    <span className="absolute -bottom-3 px-1 py-0.5 rounded text-[8px] bg-indigo-600 text-[var(--chalk)] font-bold">
                       REAR
                     </span>
                   )}
@@ -322,7 +322,7 @@ export default function ImplementQueueUsingArraysVisualizer({ currentStep = 0 })
           })}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] flex items-center gap-3">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] flex items-center gap-3">
           <span>Formula:</span>
           <span className="text-blue-300">enqueue at (rear % cap)</span>
           <span className="text-[#3b4261]">|</span>

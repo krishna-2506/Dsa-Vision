@@ -146,8 +146,8 @@ export default function MaximumDepthInBtVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Binary Tree Heights View */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Binary Tree & Evaluated Heights</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Binary Tree & Evaluated Heights</span>
 
         <div className="flex flex-col items-center gap-4 py-2 w-full">
           {/* Root 3 */}
@@ -164,7 +164,7 @@ export default function MaximumDepthInBtVisualizer({ currentStep = 0 }) {
           <div className="flex justify-center gap-24">
             {[9, 20].map((val) => (
               <div key={val} className={`w-14 h-14 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[#272b3c] bg-[#161824] text-slate-300'
+                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
               }`}>
                 <span className="text-sm">Val: {val}</span>
                 <span className="text-[10px] text-amber-400">h={step.nodeHeights[val]}</span>
@@ -176,7 +176,7 @@ export default function MaximumDepthInBtVisualizer({ currentStep = 0 }) {
           <div className="flex justify-end gap-6 pr-12">
             {[15, 7].map((val) => (
               <div key={val} className={`w-13 h-13 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[#272b3c] bg-[#161824] text-slate-300'
+                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
               }`}>
                 <span className="text-sm">Val: {val}</span>
                 <span className="text-[10px] text-amber-400">h={step.nodeHeights[val]}</span>
@@ -187,7 +187,7 @@ export default function MaximumDepthInBtVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

@@ -172,12 +172,12 @@ export default function MinimumBitFlipsToConvertNumberVisualizer({ currentStep =
       </div>
 
       {/* Bit Register Table */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-3 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-3 font-mono">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#8a8ea3] w-28">Start (10):</span>
+          <span className="text-xs text-[var(--chalk-dim)] w-28">Start (10):</span>
           <div className="flex items-center gap-2">
             {step.binaryStart.split('').map((b, i) => (
-              <div key={i} className="w-10 h-10 rounded-lg border border-[#272b3c] bg-[#12131b] text-white flex items-center justify-center font-bold">
+              <div key={i} className="w-10 h-10 rounded-lg border border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)] flex items-center justify-center font-bold">
                 {b}
               </div>
             ))}
@@ -185,10 +185,10 @@ export default function MinimumBitFlipsToConvertNumberVisualizer({ currentStep =
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#8a8ea3] w-28">Goal (7):</span>
+          <span className="text-xs text-[var(--chalk-dim)] w-28">Goal (7):</span>
           <div className="flex items-center gap-2">
             {step.binaryGoal.split('').map((b, i) => (
-              <div key={i} className="w-10 h-10 rounded-lg border border-[#272b3c] bg-[#12131b] text-white flex items-center justify-center font-bold">
+              <div key={i} className="w-10 h-10 rounded-lg border border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)] flex items-center justify-center font-bold">
                 {b}
               </div>
             ))}
@@ -203,7 +203,7 @@ export default function MinimumBitFlipsToConvertNumberVisualizer({ currentStep =
             <div className="flex items-center gap-2">
               {step.binaryXor.split('').map((b, i) => (
                 <div key={i} className={`w-10 h-10 rounded-lg border flex items-center justify-center font-bold ${
-                  b === '1' ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[#272b3c] bg-[#12131b] text-[#555a73]'
+                  b === '1' ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]'
                 }`}>
                   {b}
                 </div>

@@ -166,7 +166,7 @@ export default function BottomViewOfBtVisualizer({ currentStep = 0 }) {
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Active: <strong className="text-cyan-400">Node {step.currNode} (line {step.currLine})</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -174,8 +174,8 @@ export default function BottomViewOfBtVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Vertical Columns Map</span>
           <span className="text-emerald-400 font-bold">Bottom View Vector</span>
         </div>
@@ -192,8 +192,8 @@ export default function BottomViewOfBtVisualizer({ currentStep = 0 }) {
           ))}
         </div>
 
-        <div className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-[#0f1016] border border-[#242738] text-xs font-mono">
-          <span className="text-[#8a8ea3]">Result:</span>
+        <div className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-[#0f1016] border border-[var(--line)] text-xs font-mono">
+          <span className="text-[var(--chalk-dim)]">Result:</span>
           <span className="text-emerald-300 font-bold">[{sortedLines.map(l => step.lineMap[l]).join(', ')}]</span>
         </div>
       </div>

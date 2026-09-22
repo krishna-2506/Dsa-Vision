@@ -197,8 +197,8 @@ export default function PathWithMinimumEffortVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
           <span>Terrain Elevations Matrix [3 &times; 3]</span>
           <span className="text-cyan-400 font-bold">Minimax Metric</span>
         </div>
@@ -216,7 +216,7 @@ export default function PathWithMinimumEffortVisualizer({ currentStep = 0 }) {
                       ? 'bg-cyan-500/30 border-cyan-400 text-cyan-200 ring-2 ring-cyan-400 scale-105 shadow-lg'
                       : isPath
                       ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                      : 'bg-[#161824] border-[#272b3c] text-slate-400'
+                      : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
                   }`}
                 >
                   <span className="text-base">{h}</span>
@@ -228,7 +228,7 @@ export default function PathWithMinimumEffortVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

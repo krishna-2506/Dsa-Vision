@@ -173,7 +173,7 @@ export default function PostorderTraversalOfBinaryTreeUsing2StackVisualizer({ cu
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Active: <strong className="text-cyan-400">{step.activeNode ? `Node ${step.activeNode}` : 'Popping St2'}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -183,8 +183,8 @@ export default function PostorderTraversalOfBinaryTreeUsing2StackVisualizer({ cu
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         {/* Stack 1 */}
-        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Stack 1 (Traversal)</span>
+        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Stack 1 (Traversal)</span>
 
           <div className="w-36 h-36 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2 gap-1.5 bg-[#0f1016]">
             {step.st1.length === 0 ? (
@@ -203,8 +203,8 @@ export default function PostorderTraversalOfBinaryTreeUsing2StackVisualizer({ cu
         </div>
 
         {/* Stack 2 */}
-        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Stack 2 (Reverse Output)</span>
+        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Stack 2 (Reverse Output)</span>
 
           <div className="w-36 h-36 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2 gap-1.5 bg-[#0f1016]">
             {step.st2.length === 0 ? (
@@ -224,8 +224,8 @@ export default function PostorderTraversalOfBinaryTreeUsing2StackVisualizer({ cu
       </div>
 
       {/* Output Stream */}
-      <div className="w-full flex items-center justify-between p-4 rounded-xl bg-[#12131b] border border-[#242738]">
-        <span className="text-xs font-mono text-[#8a8ea3]">Postorder Array:</span>
+      <div className="w-full flex items-center justify-between p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
+        <span className="text-xs font-mono text-[var(--chalk-dim)]">Postorder Array:</span>
         <div className="flex gap-2">
           {step.output.length === 0 ? (
             <span className="text-xs font-mono text-[#525774]">Collecting in Stack 2...</span>

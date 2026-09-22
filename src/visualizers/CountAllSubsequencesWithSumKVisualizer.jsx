@@ -165,7 +165,7 @@ export default function CountAllSubsequencesWithSumKVisualizer({ currentStep = 0
       </div>
 
       {/* Array Elements */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center gap-4 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center gap-4 font-mono">
         {step.array.map((val, idx) => (
           <div key={idx} className="flex flex-col items-center gap-1">
             <div className="w-14 h-14 rounded-xl border border-cyan-500/30 bg-cyan-500/15 text-cyan-200 flex items-center justify-center text-xl font-bold">
@@ -177,8 +177,8 @@ export default function CountAllSubsequencesWithSumKVisualizer({ currentStep = 0
       </div>
 
       {/* Valid Subsequences Found List */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono text-xs">
-        <span className="text-[#8a8ea3]">Matching Subsequences Found:</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
+        <span className="text-[var(--chalk-dim)]">Matching Subsequences Found:</span>
         <div className="flex flex-wrap items-center gap-2">
           {step.validSubsequences.map((sub, idx) => (
             <span

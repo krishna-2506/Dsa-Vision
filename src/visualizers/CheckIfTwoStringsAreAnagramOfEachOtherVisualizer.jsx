@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DualArrayRenderer via rendererType
 
 export const meta = {
   title: 'Check if Two Strings are Anagrams (Valid Anagram)',
   category: 'Strings & Hashing',
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1) 26 Characters',
-  description: 'Determines whether string T is an anagram of string S by comparing character frequencies using a fixed-size 26-character frequency counter.'
+  spaceComplexity: 'O(1) (26 English lowercase characters)',
+  description: 'Determines whether string T is an anagram of string S by comparing character frequencies using a single fixed-size 26-element frequency delta buffer in one pass.'
+};
+
+export const rendererType = 'dual-array';
+
+export const ideaMap = {
+  title: 'Character Frequency Delta Invariant',
+  nodes: [
+    { id: 'root', label: 'Frequency Balancing Strategy', children: ['length-guard', 'single-pass-delta', 'hash-cancellation', 'zero-verification', 'complexity'] },
+    { id: 'length-guard', label: '1. Cardinality Guard', detail: 'If len(s) != len(t), string T cannot be a rearrangement of S; terminate immediately with false.' },
+    { id: 'single-pass-delta', label: '2. Synchronized Delta Pass', detail: 'Increment freq[s[i] - "a"] for S while simultaneously decrementing freq[t[i] - "a"] for T in the same loop.' },
+    { id: 'hash-cancellation', label: '3. Mutual Cancellation', detail: 'Characters appearing with identical frequencies in both strings cancel out to net 0 in the count table.' },
+    { id: 'zero-verification', label: '4. Non-Zero Check', detail: 'After the traversal, if any element in freq[26] != 0, a frequency discrepancy exists; return false.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'O(N) time with strictly O(1) auxiliary space (fixed 26-entry integer table).' }
+  ]
 };
 
 export const solutions = {
@@ -23,7 +37,7 @@ public:
 
         vector<int> freq(26, 0);
 
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < (int)s.length(); i++) {
             freq[s[i] - 'a']++;
             freq[t[i] - 'a']--;
         }
@@ -36,6 +50,7 @@ public:
     }
 };`,
   python: `# Python 3 Optimal Frequency Array Anagram Check
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
         if len(s) != len(t):
@@ -49,6 +64,7 @@ class Solution:
 
         return all(count == 0 for count in freq)`,
   java: `// Java Optimal 26-element Frequency Array
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public boolean isAnagram(String s, String t) {
         if (s.length() != t.length()) return false;
@@ -68,14 +84,16 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Optimal 26-element Frequency Array
+// Time Complexity: O(N) | Space Complexity: O(1)
 var isAnagram = function(s, t) {
     if (s.length !== t.length) return false;
 
     const freq = new Array(26).fill(0);
+    const base = 'a'.charCodeAt(0);
 
     for (let i = 0; i < s.length; i++) {
-        freq[s.charCodeAt(i) - 97]++;
-        freq[t.charCodeAt(i) - 97]--;
+        freq[s.charCodeAt(i) - base]++;
+        freq[t.charCodeAt(i) - base]--;
     }
 
     return freq.every(count => count === 0);
@@ -84,134 +102,368 @@ var isAnagram = function(s, t) {
 
 export const steps = [
   {
-    title: '1. Initialize: String S = "anagram", String T = "nagaram"',
+    title: '1. Length Validation & Frequency Array Initialization',
     phase: 'INITIAL',
-    codeLine: 11,
-    s: 'anagram',
-    t: 'nagaram',
-    processedIdx: null,
-    freqMap: {},
-    variables: { sLen: 7, tLen: 7, lengthsMatch: true },
-    explain: 'Both strings have identical length (7). We populate a single frequency counter: increment for chars in S, decrement for chars in T.',
-    intuition: 'If all characters have identical counts, every increment will be cancelled by an equal decrement.'
+    codeLine: 13,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'default' },
+          { val: 'n', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'g', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'g', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      }
+    ],
+    activeI: null,
+    activePrev: null,
+    metrics: [
+      { label: 'Length S', value: '7' },
+      { label: 'Length T', value: '7' },
+      { label: 'Length Match', value: 'true' },
+      { label: 'Delta Table', value: 'freq[26] = 0' }
+    ],
+    formula: 'if (s.length() != t.length()) return false; freq[26] = 0;',
+    action: 'Verify lengths match (7 == 7). Allocate 26-entry integer delta array initialized to 0.',
+    explain: 'Both strings have identical length 7. If lengths differed, they could never be anagrams.',
+    intuition: 'A fixed 26-integer table avoids the overhead of dynamic hash maps and provides O(1) indexing.'
   },
   {
-    title: '2. Process Index 0: s[0]="a" (+1), t[0]="n" (-1)',
-    phase: 'COUNTING',
-    codeLine: 16,
-    s: 'anagram',
-    t: 'nagaram',
-    processedIdx: 0,
-    freqMap: { a: 1, n: -1 },
-    variables: { 'freq[a]': '+1', 'freq[n]': '-1' },
-    explain: 'Encountered "a" in s and "n" in t.',
-    intuition: 'Balances adjust.'
+    title: '2. Index 0: s[0] = "a" (+1) and t[0] = "n" (-1)',
+    phase: 'SCANNING',
+    codeLine: 18,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'current' },
+          { val: 'n', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'g', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'current' },
+          { val: 'a', status: 'default' },
+          { val: 'g', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      }
+    ],
+    activeI: 0,
+    activePrev: null,
+    metrics: [
+      { label: 'Current s[0]', value: "'a' (+1)" },
+      { label: 'Current t[0]', value: "'n' (-1)" },
+      { label: "freq['a']", value: '+1' },
+      { label: "freq['n']", value: '-1' }
+    ],
+    formula: "freq[s[0]-'a']++; freq[t[0]-'a']--;",
+    action: 'Increment bucket for "a" to +1. Decrement bucket for "n" to -1.',
+    explain: 'String S contributes one "a", while string T consumes one "n". Frequencies diverge temporarily.',
+    intuition: 'Any valid anagram will cancel out these temporary positive and negative deltas before the end.',
+    customCard: {
+      title: 'Frequency Delta Status',
+      rows: [
+        { label: "freq['a']", value: '+1 (pending match in T)', accent: true },
+        { label: "freq['n']", value: '-1 (pending match in S)', accent: true }
+      ]
+    }
   },
   {
-    title: '3. Process Index 1: s[1]="n" (+1 cancels -1), t[1]="a" (-1 cancels +1)',
-    phase: 'BALANCING',
-    codeLine: 16,
-    s: 'anagram',
-    t: 'nagaram',
-    processedIdx: 1,
-    freqMap: { a: 0, n: 0 },
-    variables: { 'freq[a]': 0, 'freq[n]': 0, status: 'Balanced to 0!' },
-    explain: '"n" in s cancels earlier -1 to 0. "a" in t cancels earlier +1 to 0.',
-    intuition: 'Equilibrium achieved for letters a and n.'
+    title: '3. Index 1: s[1] = "n" (+1) and t[1] = "a" (-1) -> Mutual Cancellation',
+    phase: 'SCANNING',
+    codeLine: 18,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'visited' },
+          { val: 'n', status: 'match' },
+          { val: 'a', status: 'default' },
+          { val: 'g', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'match' },
+          { val: 'g', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      }
+    ],
+    activeI: 1,
+    activePrev: 0,
+    metrics: [
+      { label: 'Current s[1]', value: "'n' (+1)" },
+      { label: 'Current t[1]', value: "'a' (-1)" },
+      { label: "freq['a']", value: '0 (Balanced)', highlight: true },
+      { label: "freq['n']", value: '0 (Balanced)', highlight: true }
+    ],
+    formula: "freq['n']++ => (-1 + 1 = 0); freq['a']-- => (1 - 1 = 0);",
+    action: 'Characters "n" and "a" in opposite strings cancel out existing deltas, restoring both buckets to 0.',
+    explain: 'S has now supplied one "a" and one "n"; T has consumed one "n" and one "a". Net balance is 0.',
+    intuition: 'Opposing occurrences naturally restore the net balance without sorting.',
+    customCard: {
+      title: 'Frequency Delta Status',
+      rows: [
+        { label: "freq['a']", value: '0 (Perfect cancellation)' },
+        { label: "freq['n']", value: '0 (Perfect cancellation)' }
+      ]
+    }
   },
   {
-    title: '4. Fast Forward: Process remaining indices 2 to 6',
-    phase: 'COUNTING',
-    codeLine: 16,
-    s: 'anagram',
-    t: 'nagaram',
-    processedIdx: 6,
-    freqMap: { a: 0, g: 0, m: 0, n: 0, r: 0 },
-    variables: { processed: 'All 7 characters', allZero: true },
-    explain: 'All remaining letters (a, g, r, a, m) are countered by identical occurrences in t.',
-    intuition: 'Every character pair zeroes out.'
+    title: '4. Index 2: s[2] = "a" (+1) and t[2] = "g" (-1)',
+    phase: 'SCANNING',
+    codeLine: 18,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'visited' },
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'current' },
+          { val: 'g', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'g', status: 'current' },
+          { val: 'a', status: 'default' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      }
+    ],
+    activeI: 2,
+    activePrev: 1,
+    metrics: [
+      { label: 'Current s[2]', value: "'a' (+1)" },
+      { label: 'Current t[2]', value: "'g' (-1)" },
+      { label: "freq['a']", value: '+1' },
+      { label: "freq['g']", value: '-1' }
+    ],
+    formula: "freq['a']++; freq['g']--;",
+    action: 'Second "a" in S increments freq[0] to +1. Character "g" in T decrements freq[6] to -1.',
+    explain: 'S holds an excess "a"; T holds an excess "g". Pending subsequent matching positions.',
+    intuition: 'The order of characters does not matter; only the aggregate count per letter matters.'
   },
   {
-    title: '5. Verification: All frequencies == 0 -> Valid Anagram!',
+    title: '5. Index 3: s[3] = "g" (+1) and t[3] = "a" (-1) -> Mutual Cancellation',
+    phase: 'SCANNING',
+    codeLine: 18,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'visited' },
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'g', status: 'match' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'g', status: 'visited' },
+          { val: 'a', status: 'match' },
+          { val: 'r', status: 'default' },
+          { val: 'a', status: 'default' },
+          { val: 'm', status: 'default' }
+        ]
+      }
+    ],
+    activeI: 3,
+    activePrev: 2,
+    metrics: [
+      { label: 'Current s[3]', value: "'g' (+1)" },
+      { label: 'Current t[3]', value: "'a' (-1)" },
+      { label: "freq['a']", value: '0 (Balanced)', highlight: true },
+      { label: "freq['g']", value: '0 (Balanced)', highlight: true }
+    ],
+    formula: "freq['g']++ => (-1 + 1 = 0); freq['a']-- => (1 - 1 = 0);",
+    action: '"g" in S cancels -1 on "g"; "a" in T cancels +1 on "a". Both return to 0.',
+    explain: 'Indices 0-3 now completely balance all counts for characters "a", "g", and "n".',
+    intuition: 'Each letter subset reaches equilibrium as its matching partner is encountered.'
+  },
+  {
+    title: '6. Indices 4 & 5: Characters "r" and "a" Match In-Place',
+    phase: 'SCANNING',
+    codeLine: 18,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'visited' },
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'g', status: 'visited' },
+          { val: 'r', status: 'match' },
+          { val: 'a', status: 'match' },
+          { val: 'm', status: 'default' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'g', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'r', status: 'match' },
+          { val: 'a', status: 'match' },
+          { val: 'm', status: 'default' }
+        ]
+      }
+    ],
+    activeI: 5,
+    activePrev: 4,
+    metrics: [
+      { label: 's[4], t[4]', value: "'r' == 'r' (net 0)" },
+      { label: 's[5], t[5]', value: "'a' == 'a' (net 0)" },
+      { label: "freq['r']", value: '0' },
+      { label: "freq['a']", value: '0 (3rd a matched)' }
+    ],
+    formula: "freq['r'](+1-1=0); freq['a'](+1-1=0);",
+    action: 'Both positions 4 and 5 contain identical characters in both strings, incurring net 0 delta.',
+    explain: 'All 3 occurrences of letter "a" in both strings have now been mutually resolved.',
+    intuition: 'Identical characters at identical indices keep delta at 0 without deviation.'
+  },
+  {
+    title: '7. Index 6: Final Character "m" Balanced -> Pass Complete',
+    phase: 'SCANNING',
+    codeLine: 18,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'visited' },
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'g', status: 'visited' },
+          { val: 'r', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'm', status: 'match' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'g', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'r', status: 'visited' },
+          { val: 'a', status: 'visited' },
+          { val: 'm', status: 'match' }
+        ]
+      }
+    ],
+    activeI: 6,
+    activePrev: 5,
+    metrics: [
+      { label: 's[6], t[6]', value: "'m' == 'm' (net 0)" },
+      { label: "freq['m']", value: '0' },
+      { label: 'Scanned', value: '7 / 7 characters' },
+      { label: 'Discrepancies', value: '0' }
+    ],
+    formula: "freq['m']++ and freq['m']--; => net 0",
+    action: 'Final character "m" processed. Both strings fully consumed. Proceed to zero check.',
+    explain: 'Every character pair across both strings has been processed through the delta table.',
+    intuition: 'The single-pass traversal finishes in exactly N iterations.'
+  },
+  {
+    title: '8. Frequency Verification: All 26 Entries Zero -> Valid Anagram',
     phase: 'COMPLETED',
-    codeLine: 20,
-    s: 'anagram',
-    t: 'nagaram',
-    processedIdx: 6,
-    freqMap: { a: 0, g: 0, m: 0, n: 0, r: 0 },
-    variables: { isAnagram: true, timeComplexity: 'O(N)', spaceComplexity: 'O(1) 26 bytes' },
-    explain: 'Every frequency in the table is exactly 0. Strings S and T are confirmed valid anagrams!',
-    intuition: 'Strictly linear single-pass verification.'
+    codeLine: 24,
+    tracks: [
+      {
+        label: 'String S: "anagram"',
+        items: [
+          { val: 'a', status: 'match' },
+          { val: 'n', status: 'match' },
+          { val: 'a', status: 'match' },
+          { val: 'g', status: 'match' },
+          { val: 'r', status: 'match' },
+          { val: 'a', status: 'match' },
+          { val: 'm', status: 'match' }
+        ]
+      },
+      {
+        label: 'String T: "nagaram"',
+        items: [
+          { val: 'n', status: 'match' },
+          { val: 'a', status: 'match' },
+          { val: 'g', status: 'match' },
+          { val: 'a', status: 'match' },
+          { val: 'r', status: 'match' },
+          { val: 'a', status: 'match' },
+          { val: 'm', status: 'match' }
+        ]
+      }
+    ],
+    activeI: null,
+    activePrev: null,
+    metrics: [
+      { label: 'Result', value: 'true (Valid Anagram)', highlight: true },
+      { label: 'Non-zero Buckets', value: '0 / 26' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1) (26 buckets)' }
+    ],
+    formula: 'for (int c : freq) if (c != 0) return false; return true;',
+    action: 'All 26 character buckets verified to be exactly 0. Return true.',
+    explain: 'Strings "anagram" and "nagaram" have identical character multisets. They are valid anagrams.',
+    intuition: 'One pass O(N) frequency counting beats O(N log N) string sorting in both time and space.',
+    customCard: {
+      title: 'Algorithm Verification Summary',
+      rows: [
+        { label: 'Outcome', value: 'true (Anagram Confirmed)', accent: true },
+        { label: 'Efficiency', value: 'O(N) linear time, O(1) auxiliary memory', accent: true }
+      ]
+    }
   }
 ];
-
-export default function CheckIfTwoStringsAreAnagramOfEachOtherVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Both Strings Display */}
-      <div className="flex items-center gap-8">
-        {/* String S */}
-        <div className="flex flex-col items-center gap-1.5">
-          <span className="text-xs font-mono text-[#8a8ea3]">String S (+):</span>
-          <div className="flex items-center gap-1">
-            {step.s.split('').map((c, idx) => {
-              const isCurrent = step.processedIdx === idx;
-              return (
-                <div
-                  key={idx}
-                  className={`w-9 h-9 rounded-lg border flex items-center justify-center font-mono text-sm font-bold transition-all duration-300 ${
-                    isCurrent ? 'bg-amber-500/25 text-amber-300 border-amber-400 scale-105' : 'bg-[#181a24] text-white border-[#2b2e40]'
-                  }`}
-                >
-                  {c}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* String T */}
-        <div className="flex flex-col items-center gap-1.5">
-          <span className="text-xs font-mono text-[#8a8ea3]">String T (-):</span>
-          <div className="flex items-center gap-1">
-            {step.t.split('').map((c, idx) => {
-              const isCurrent = step.processedIdx === idx;
-              return (
-                <div
-                  key={idx}
-                  className={`w-9 h-9 rounded-lg border flex items-center justify-center font-mono text-sm font-bold transition-all duration-300 ${
-                    isCurrent ? 'bg-indigo-500/25 text-indigo-300 border-indigo-400 scale-105' : 'bg-[#181a24] text-white border-[#2b2e40]'
-                  }`}
-                >
-                  {c}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Net Frequency Balance Cards */}
-      <div className="w-full flex flex-col items-center gap-2">
-        <span className="text-xs font-mono text-[#8a8ea3]">Character Net Balance (must all be 0):</span>
-        <div className="flex items-center gap-2.5 flex-wrap justify-center">
-          {Object.entries(step.freqMap).map(([char, count]) => (
-            <div
-              key={char}
-              className={`px-3 py-1.5 rounded-xl border flex items-center gap-2 font-mono text-xs font-bold transition-all ${
-                count === 0 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' :
-                count > 0 ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
-                'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
-              }`}
-            >
-              <span>'{char}':</span>
-              <span>{count > 0 ? `+${count}` : count}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

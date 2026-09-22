@@ -137,8 +137,8 @@ export default function LcaInBtVisualizer({ currentStep = 0 }) {
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Binary Tree Search &amp; Convergence</span>
           <span className="text-emerald-400 font-bold">LCA Node Discovery</span>
         </div>
@@ -151,7 +151,7 @@ export default function LcaInBtVisualizer({ currentStep = 0 }) {
                 ? 'bg-emerald-500/30 border-emerald-400 text-emerald-100 shadow-xl shadow-emerald-500/30 scale-110'
                 : step.activeNode === 3
                 ? 'bg-amber-500/25 border-amber-400 text-amber-200'
-                : 'bg-[#181a26] border-[#31364d] text-white'
+                : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
             }`}
           >
             3
@@ -181,7 +181,7 @@ export default function LcaInBtVisualizer({ currentStep = 0 }) {
           </div>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           If left returns p and right returns q, current node is the lowest common ancestor where paths diverge.
         </div>
       </div>

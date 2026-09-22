@@ -217,11 +217,11 @@ export default function LearnAllPatternsOfSubsequencesTheoryVisualizer({ current
         <div className={`p-4 rounded-xl border flex flex-col gap-2 transition-all ${
           step.pattern === 'COLLECT_ALL' || step.pattern === 'SUMMARY'
             ? 'border-amber-400 bg-amber-500/15 text-amber-200 shadow-md shadow-amber-500/20'
-            : 'border-[#272b3c] bg-[#12131b] text-[#8a8ea3]'
+            : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-dim)]'
         }`}>
-          <span className="font-bold text-sm text-white">Pattern 1: Collect All</span>
+          <span className="font-bold text-sm text-[var(--chalk)]">Pattern 1: Collect All</span>
           <span className="text-amber-400 font-bold">Return: void</span>
-          <p className="text-[11px] text-[#8a8ea3]">
+          <p className="text-[11px] text-[var(--chalk-dim)]">
             Explores entire tree. Adds to result list at leaf: ds.push() &rarr; f() &rarr; ds.pop() &rarr; f().
           </p>
         </div>
@@ -230,11 +230,11 @@ export default function LearnAllPatternsOfSubsequencesTheoryVisualizer({ current
         <div className={`p-4 rounded-xl border flex flex-col gap-2 transition-all ${
           step.pattern === 'FIND_ANY' || step.pattern === 'SUMMARY'
             ? 'border-cyan-400 bg-cyan-500/15 text-cyan-200 shadow-md shadow-cyan-500/20'
-            : 'border-[#272b3c] bg-[#12131b] text-[#8a8ea3]'
+            : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-dim)]'
         }`}>
-          <span className="font-bold text-sm text-white">Pattern 2: Find Any</span>
+          <span className="font-bold text-sm text-[var(--chalk)]">Pattern 2: Find Any</span>
           <span className="text-cyan-400 font-bold">Return: bool</span>
-          <p className="text-[11px] text-[#8a8ea3]">
+          <p className="text-[11px] text-[var(--chalk-dim)]">
             Short-circuit evaluation: if (f()) return true; Stops search immediately on first valid path.
           </p>
         </div>
@@ -243,19 +243,19 @@ export default function LearnAllPatternsOfSubsequencesTheoryVisualizer({ current
         <div className={`p-4 rounded-xl border flex flex-col gap-2 transition-all ${
           step.pattern === 'COUNT_ALL' || step.pattern === 'SUMMARY'
             ? 'border-emerald-400 bg-emerald-500/15 text-emerald-200 shadow-md shadow-emerald-500/20'
-            : 'border-[#272b3c] bg-[#12131b] text-[#8a8ea3]'
+            : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-dim)]'
         }`}>
-          <span className="font-bold text-sm text-white">Pattern 3: Count All</span>
+          <span className="font-bold text-sm text-[var(--chalk)]">Pattern 3: Count All</span>
           <span className="text-emerald-400 font-bold">Return: int</span>
-          <p className="text-[11px] text-[#8a8ea3]">
+          <p className="text-[11px] text-[var(--chalk-dim)]">
             Aggregates branch results: return f(pick) + f(notPick). Leaves return 1 on match, 0 on failure.
           </p>
         </div>
       </div>
 
       {/* Summary Card */}
-      <div className="w-full p-4 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col gap-1 font-mono text-xs text-[#8a8ea3]">
-        <span className="text-white font-bold">Recursive Rule of Thumb:</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-1 font-mono text-xs text-[var(--chalk-dim)]">
+        <span className="text-[var(--chalk)] font-bold">Recursive Rule of Thumb:</span>
         <span>&bull; Need all subsets? Use <strong>void</strong> + backtracking list.</span>
         <span>&bull; Need just one solution? Use <strong>boolean</strong> with if (f()) return true.</span>
         <span>&bull; Need total number of ways? Use <strong>int</strong> with return left + right.</span>

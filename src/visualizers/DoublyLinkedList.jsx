@@ -176,9 +176,9 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
               <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
                 Step {stepIndex + 1} of {steps.length}
               </span>
-              <h3 className="text-lg font-bold text-white tracking-wide">{stepData.title}</h3>
+              <h3 className="text-lg font-bold text-[var(--chalk)] tracking-wide">{stepData.title}</h3>
             </div>
-            <p className="text-slate-400 text-xs mt-0.5">Heap & Stack Memory Allocation View</p>
+            <p className="text-[var(--chalk-dim)] text-xs mt-0.5">Heap & Stack Memory Allocation View</p>
           </div>
 
           {/* Standalone step buttons (in case Studio controls aren't used) */}
@@ -186,14 +186,14 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
             <button
               onClick={handlePrev}
               disabled={stepIndex === 0}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 transition"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-[var(--chalk)] text-xs font-medium rounded-lg border border-slate-700 transition"
             >
               ← Prev
             </button>
             <button
               onClick={handleNext}
               disabled={stepIndex === steps.length - 1}
-              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white text-xs font-semibold rounded-lg shadow-lg shadow-blue-500/20 transition"
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-[var(--chalk)] text-xs font-semibold rounded-lg shadow-lg shadow-blue-500/20 transition"
             >
               Next →
             </button>
@@ -206,7 +206,7 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
           <div className="lg:col-span-5 p-6 bg-slate-950/40 flex flex-col gap-5">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Executing C++ Snippet</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--chalk-dim)]">Executing C++ Snippet</span>
                 <span className="text-[10px] font-mono text-emerald-400">active</span>
               </div>
               <pre className="bg-slate-950 p-3.5 rounded-xl text-emerald-400 text-xs font-mono overflow-x-auto border border-slate-800 shadow-inner leading-relaxed">
@@ -215,8 +215,8 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Action & Mechanics</h4>
-              <p className="text-slate-300 text-xs leading-relaxed bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--chalk-dim)] mb-1.5">Action & Mechanics</h4>
+              <p className="text-[var(--chalk-dim)] text-xs leading-relaxed bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
                 {stepData.explanation}
               </p>
             </div>
@@ -231,7 +231,7 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
                 <div className="bg-slate-900/90 rounded-xl p-3 border border-purple-500/20 grid grid-cols-2 gap-2 text-xs font-mono">
                   {Object.entries(stepData.stackState).map(([varName, val]) => (
                     <div key={varName} className="flex items-center justify-between bg-slate-950/60 px-2.5 py-1.5 rounded border border-slate-800">
-                      <span className="text-slate-400">{varName}:</span>
+                      <span className="text-[var(--chalk-dim)]">{varName}:</span>
                       <span className="text-purple-300 font-semibold">{val}</span>
                     </div>
                   ))}
@@ -242,13 +242,13 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
 
           {/* Right Column: Heap Memory & Doubly Linked List Graphic */}
           <div className="lg:col-span-7 p-6 flex flex-col items-center justify-center min-h-[360px] bg-slate-900/50 relative">
-            <div className="absolute top-3 left-4 text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+            <div className="absolute top-3 left-4 text-[11px] font-mono text-[var(--chalk-faint)] uppercase tracking-wider">
               HEAP MEMORY (Dynamic Nodes)
             </div>
 
             {stepData.nodes.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-slate-500 py-12">
-                <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center text-slate-600 mb-3">
+              <div className="flex flex-col items-center justify-center text-[var(--chalk-faint)] py-12">
+                <div className="w-12 h-12 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center text-[var(--chalk-faint)] mb-3">
                   ∅
                 </div>
                 <p className="text-sm italic">Heap memory is empty. (head = NULL)</p>
@@ -288,7 +288,7 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
                         }`}
                       >
                         {/* Memory Address Header */}
-                        <div className="px-2 py-1 bg-slate-950 text-center font-mono text-[11px] text-slate-400 rounded-t-xl border-b border-slate-700/80 flex items-center justify-between">
+                        <div className="px-2 py-1 bg-slate-950 text-center font-mono text-[11px] text-[var(--chalk-dim)] rounded-t-xl border-b border-slate-700/80 flex items-center justify-between">
                           <span>Addr</span>
                           <span className="text-blue-400 font-bold">{node.id}</span>
                         </div>
@@ -296,18 +296,18 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
                         {/* Node Triad: [prev | data | next] */}
                         <div className="grid grid-cols-3 text-center font-mono text-xs divide-x divide-slate-700/80 h-12">
                           <div className="flex flex-col items-center justify-center bg-slate-900/60 p-1">
-                            <span className="text-[9px] text-slate-400 uppercase">prev</span>
-                            <span className="text-[10px] text-slate-300 truncate max-w-full">
+                            <span className="text-[9px] text-[var(--chalk-dim)] uppercase">prev</span>
+                            <span className="text-[10px] text-[var(--chalk-dim)] truncate max-w-full">
                               {node.prev ? node.prev : 'NULL'}
                             </span>
                           </div>
                           <div className="flex flex-col items-center justify-center bg-blue-900/30 p-1">
                             <span className="text-[9px] text-blue-300 uppercase font-semibold">val</span>
-                            <span className="text-base font-bold text-white">{node.val}</span>
+                            <span className="text-base font-bold text-[var(--chalk)]">{node.val}</span>
                           </div>
                           <div className="flex flex-col items-center justify-center bg-slate-900/60 p-1">
-                            <span className="text-[9px] text-slate-400 uppercase">next</span>
-                            <span className="text-[10px] text-slate-300 truncate max-w-full">
+                            <span className="text-[9px] text-[var(--chalk-dim)] uppercase">next</span>
+                            <span className="text-[10px] text-[var(--chalk-dim)] truncate max-w-full">
                               {node.next ? node.next : 'NULL'}
                             </span>
                           </div>
@@ -316,7 +316,7 @@ export default function DoublyLinkedList({ currentStep: externalStep, onStepChan
 
                       {/* Bidirectional Arrow between nodes */}
                       {idx < stepData.nodes.length - 1 && (
-                        <div className="flex flex-col items-center justify-center px-1 text-slate-400 select-none">
+                        <div className="flex flex-col items-center justify-center px-1 text-[var(--chalk-dim)] select-none">
                           <div className="flex flex-col items-center bg-slate-800/80 px-1.5 py-1 rounded-md border border-slate-700 text-xs font-mono">
                             <span className="text-emerald-400 font-bold leading-none">⇄</span>
                           </div>

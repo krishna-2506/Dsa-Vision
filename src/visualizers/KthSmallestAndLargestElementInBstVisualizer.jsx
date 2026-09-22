@@ -247,8 +247,8 @@ export default function KthSmallestAndLargestElementInBstVisualizer({ currentSte
       </div>
 
       {/* BST SVG Canvas */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           BST Rank Traversal Highlighting
         </span>
 
@@ -288,7 +288,7 @@ export default function KthSmallestAndLargestElementInBstVisualizer({ currentSte
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

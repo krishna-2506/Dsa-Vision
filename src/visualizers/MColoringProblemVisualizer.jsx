@@ -232,7 +232,7 @@ export default function MColoringProblemVisualizer({ currentStep = 0 }) {
   const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
 
   const colorMap = {
-    0: { border: 'border-[#272b3c]', bg: 'bg-[#12131b]', text: 'text-[#5b6076]', name: 'None' },
+    0: { border: 'border-[var(--line)]', bg: 'bg-[var(--board-raised)]', text: 'text-[#5b6076]', name: 'None' },
     1: { border: 'border-emerald-400', bg: 'bg-emerald-500/25', text: 'text-emerald-200', name: 'Emerald (1)' },
     2: { border: 'border-amber-400', bg: 'bg-amber-500/25', text: 'text-amber-200', name: 'Amber (2)' },
     3: { border: 'border-cyan-400', bg: 'bg-cyan-500/25', text: 'text-cyan-200', name: 'Cyan (3)' }
@@ -253,14 +253,14 @@ export default function MColoringProblemVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Graph Nodes */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-around font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-around font-mono">
         {step.colors.map((c, idx) => {
           const cInfo = colorMap[c] || colorMap[0];
           const isActive = step.activeNode === idx;
 
           return (
             <div key={idx} className="flex flex-col items-center gap-2">
-              <span className="text-xs text-[#8a8ea3]">V{idx}</span>
+              <span className="text-xs text-[var(--chalk-dim)]">V{idx}</span>
               <div className={`w-16 h-16 rounded-2xl border-2 flex flex-col items-center justify-center font-bold text-lg transition-all ${
                 isActive ? 'scale-110 shadow-lg shadow-amber-500/25 ' + cInfo.border + ' ' + cInfo.bg + ' ' + cInfo.text :
                 cInfo.border + ' ' + cInfo.bg + ' ' + cInfo.text

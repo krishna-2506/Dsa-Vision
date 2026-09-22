@@ -216,8 +216,8 @@ export default function SumOfSubarrayMinimumsVisualizer({ currentStep = 0 }) {
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Array &amp; Boundary Multipliers</span>
           <span className="text-cyan-400 font-bold">Contribution Model</span>
         </div>
@@ -231,7 +231,7 @@ export default function SumOfSubarrayMinimumsVisualizer({ currentStep = 0 }) {
                   className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center font-mono font-bold text-lg transition-all ${
                     isCurr
                       ? 'bg-amber-500/20 border-amber-400 text-amber-200 scale-105 shadow-md shadow-amber-500/20'
-                      : 'bg-[#181a26] border-[#31364d] text-white'
+                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                   }`}
                 >
                   {val}
@@ -247,7 +247,7 @@ export default function SumOfSubarrayMinimumsVisualizer({ currentStep = 0 }) {
           })}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Formula: Subarrays where arr[i] is min = left[i] &times; right[i]. Total = &Sigma; (arr[i] &times; count).
         </div>
       </div>

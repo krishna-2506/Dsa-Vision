@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by StockTradingRenderer via rendererType
 
 export const meta = {
   title: 'Best Time to Buy and Sell Stock with Cooldown',
@@ -7,6 +7,21 @@ export const meta = {
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1) Space-Optimized',
   description: 'Finds the maximum profit from multiple stock transactions with a mandatory 1-day cooldown period immediately after selling. If sold on day i, the next buy can only occur on day i + 2.'
+};
+
+export const rendererType = 'stock-trading';
+
+export const ideaMap = {
+  title: 'Stock with Cooldown',
+  nodes: [
+    { id: 'root', label: 'Stock with Cooldown', children: ['states', 'transitions', 'advantage'] },
+    { id: 'states', label: '1. Three States', detail: 'Hold (owns share), Sold (just sold today), Rest (idle / cooldown)' },
+    { id: 'transitions', label: '2. Allowed Transitions', children: ['t-hold', 't-sold', 't-rest'] },
+    { id: 't-hold', label: 'Hold State', detail: 'hold = max(hold, rest - price) — can ONLY buy from Rest state!' },
+    { id: 't-sold', label: 'Sold State', detail: 'sold = hold + price — entering mandatory cooldown tomorrow' },
+    { id: 't-rest', label: 'Rest State', detail: 'rest = max(rest, sold) — absorbs cooldown day and unlocks next buy' },
+    { id: 'advantage', label: '3. Optimal Strategy', detail: 'Early sell at $2 frees capital to buy the huge $0 dip on Day 3' }
+  ]
 };
 
 export const solutions = {
@@ -19,201 +34,255 @@ using namespace std;
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
-        int n = prices.size();
-        vector<int> front2(2, 0);
-        vector<int> front1(2, 0);
-        vector<int> cur(2, 0);
+        if (prices.empty()) return 0;
+        int hold = -prices[0];
+        int sold = 0;
+        int rest = 0;
 
-        for (int i = n - 1; i >= 0; i--) {
-            cur[1] = max(-prices[i] + front1[0], front1[1]);
-            cur[0] = max(prices[i] + front2[1], front1[0]);
-
-            front2 = front1;
-            front1 = cur;
+        for (int i = 1; i < prices.size(); i++) {
+            int prevHold = hold;
+            int prevSold = sold;
+            hold = max(hold, rest - prices[i]);
+            sold = prevHold + prices[i];
+            rest = max(rest, prevSold);
         }
 
-        return cur[1];
+        return max(sold, rest);
     }
 };`,
   python: `# Python 3 Stock with Cooldown
 # Time: O(N) | Space: O(1)
 class Solution:
     def maxProfit(self, prices: list[int]) -> int:
-        n = len(prices)
-        front2 = [0, 0]
-        front1 = [0, 0]
-        cur = [0, 0]
+        if not prices:
+            return 0
+        hold = -prices[0]
+        sold = 0
+        rest = 0
 
-        for i in range(n - 1, -1, -1):
-            cur[1] = max(-prices[i] + front1[0], front1[1])
-            cur[0] = max(prices[i] + front2[1], front1[0])
+        for price in prices[1:]:
+            prev_hold = hold
+            prev_sold = sold
+            hold = max(hold, rest - price)
+            sold = prev_hold + price
+            rest = max(rest, prev_sold)
 
-            front2 = list(front1)
-            front1 = list(cur)
-
-        return cur[1]`,
+        return max(sold, rest)`,
   java: `// Java Stock with Cooldown
 // Time: O(N) | Space: O(1)
 class Solution {
     public int maxProfit(int[] prices) {
-        int n = prices.length;
-        int[] front2 = new int[2];
-        int[] front1 = new int[2];
-        int[] cur = new int[2];
+        if (prices.length == 0) return 0;
+        int hold = -prices[0];
+        int sold = 0;
+        int rest = 0;
 
-        for (int i = n - 1; i >= 0; i--) {
-            cur[1] = Math.max(-prices[i] + front1[0], front1[1]);
-            cur[0] = Math.max(prices[i] + front2[1], front1[0]);
-
-            front2[0] = front1[0]; front2[1] = front1[1];
-            front1[0] = cur[0]; front1[1] = cur[1];
+        for (int i = 1; i < prices.length; i++) {
+            int prevHold = hold;
+            int prevSold = sold;
+            hold = Math.max(hold, rest - prices[i]);
+            sold = prevHold + prices[i];
+            rest = Math.max(rest, prevSold);
         }
 
-        return cur[1];
+        return Math.max(sold, rest);
     }
 }`,
   javascript: `// JavaScript Stock with Cooldown
 // Time: O(N) | Space: O(1)
 var maxProfit = function(prices) {
-    const n = prices.length;
-    let front2 = [0, 0];
-    let front1 = [0, 0];
-    let cur = [0, 0];
+    if (!prices.length) return 0;
+    let hold = -prices[0];
+    let sold = 0;
+    let rest = 0;
 
-    for (let i = n - 1; i >= 0; i--) {
-        cur[1] = Math.max(-prices[i] + front1[0], front1[1]);
-        cur[0] = Math.max(prices[i] + front2[1], front1[0]);
-
-        front2 = [...front1];
-        front1 = [...cur];
+    for (let i = 1; i < prices.length; i++) {
+        const prevHold = hold;
+        const prevSold = sold;
+        hold = Math.max(hold, rest - prices[i]);
+        sold = prevHold + prices[i];
+        rest = Math.max(rest, prevSold);
     }
 
-    return cur[1];
+    return Math.max(sold, rest);
 };`
 };
 
 export const steps = [
   {
-    title: '1. Prices: [1, 2, 3, 0, 2], Cooldown Rule (1 Day Gap After Selling)',
-    phase: 'INITIAL',
-    codeLine: 12,
+    phase: 'SETUP',
     prices: [1, 2, 3, 0, 2],
-    activeDay: 0,
+    currentDay: null,
     trades: [],
-    cooldownDays: [],
-    profit: 0,
-    variables: { prices: '[1, 2, 3, 0, 2]', rule: 'Sell at day i -> cannot buy at day i+1 (cooldown)' },
-    explain: 'Whenever we sell a stock, the immediately following day is locked into a mandatory rest/cooldown state.',
-    intuition: 'DP transitions jump to i + 2 upon selling: cur[0] = max(prices[i] + front2[1], front1[0]).'
-  },
-  {
-    title: '2. Trade 1: Buy Day 0 ($1) and Sell Day 1 ($2) -> Profit $1',
-    phase: 'TRADE_1',
-    codeLine: 18,
-    prices: [1, 2, 3, 0, 2],
-    activeDay: 1,
-    trades: [{ buy: 0, sell: 1, profit: 1 }],
-    cooldownDays: [2],
-    profit: 1,
-    variables: { trade: 'Buy Day 0 ($1), Sell Day 1 ($2)', cooldown: 'Day 2 is FROZEN' },
-    explain: 'If we sell on Day 1, Day 2 enters cooldown and cannot be used to buy stock.',
-    intuition: 'Selling triggers immediate cooldown lock on day i + 1.'
-  },
-  {
-    title: '3. Alternative: Buy Day 0 ($1), Sell Day 2 ($3) -> Cooldown on Day 3',
-    phase: 'BETTER_TRADE',
-    codeLine: 18,
-    prices: [1, 2, 3, 0, 2],
-    activeDay: 2,
-    trades: [{ buy: 0, sell: 2, profit: 2 }],
-    cooldownDays: [3],
-    profit: 2,
-    variables: { trade: 'Buy Day 0 ($1), Sell Day 2 ($3)', cooldown: 'Day 3 Cooldown' },
-    explain: 'Holding through Day 1 to sell at Day 2 yields 3 - 1 = 2 profit. Day 3 becomes cooldown.',
-    intuition: 'Avoid early sell to ride higher price momentum.'
-  },
-  {
-    title: '4. Re-Buy Day 3 ($0) after Cooldown and Sell Day 4 ($2) -> Max Profit = $3',
-    phase: 'COMPLETED',
-    codeLine: 23,
-    prices: [1, 2, 3, 0, 2],
-    activeDay: 4,
-    trades: [
-      { buy: 0, sell: 1, profit: 1 },
-      { buy: 3, sell: 4, profit: 2 }
+    dpState: { holdProfit: -1, notHoldProfit: 0, cooldownProfit: 0 },
+    formula: 'Three States: Hold (bought), Sold (just sold), Rest (idle/cooldown)',
+    action: 'Initialize state machine: hold = -1, sold = 0, rest = 0.',
+    explain: 'Cooldown rule: Selling today freezes buying tomorrow. To model this, we split into 3 states: Hold (owns share), Sold (sold today, forced to rest next day), and Rest (cooldown completed or already idle, eligible to buy).',
+    intuition: 'The cooldown forces a mandatory rest step between selling and the next purchase.',
+    metrics: [
+      { label: 'Max Profit', value: '$0', highlight: true },
+      { label: 'Cooldown Period', value: '1 day' },
+      { label: 'Hold State', value: '-$1' }
     ],
-    cooldownDays: [2],
-    profit: 3,
-    variables: { optimalSequence: 'Buy D0($1) -> Sell D1($2) -> Rest D2 -> Buy D3($0) -> Sell D4($2)', totalProfit: 3 },
-    explain: 'Optimal plan: Buy Day 0 ($1) -> Sell Day 1 ($2) [+1] -> Rest Day 2 (cooldown) -> Buy Day 3 ($0) -> Sell Day 4 ($2) [+2]. Total profit = 1 + 2 = 3!',
-    intuition: 'Cooldown DP allows tactical dips to be exploited after required rest days.'
+    customCard: {
+      title: 'State Machine Transitions',
+      rows: [
+        { label: 'Buy Transition', value: 'hold = max(hold, rest - price)  [Only from Rest!]' },
+        { label: 'Sell Transition', value: 'sold = hold + price  [Unlocks Rest tomorrow]' },
+        { label: 'Rest Transition', value: 'rest = max(rest, sold_prev)  [Absorbs cooldown]' }
+      ]
+    }
+  },
+  {
+    phase: 'BUY',
+    prices: [1, 2, 3, 0, 2],
+    currentDay: 0,
+    trades: [],
+    dpState: { holdProfit: -1, notHoldProfit: 0, cooldownProfit: 0 },
+    formula: 'Day 0 ($1): hold = -1, sold = 0, rest = 0',
+    action: 'Day 0 (Price $1): Buy share at $1.',
+    explain: 'Starting position: buying 1 share costs $1, leaving hold = -1. sold = 0, rest = 0.',
+    intuition: 'Enter position at lowest available starting price.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 0' },
+      { label: 'Price', value: '$1' },
+      { label: 'Hold', value: '-$1' }
+    ]
+  },
+  {
+    phase: 'SCAN',
+    prices: [1, 2, 3, 0, 2],
+    currentDay: 1,
+    trades: [{ buy: 0, sell: 1, net: 1 }],
+    dpState: { holdProfit: -1, notHoldProfit: 1, cooldownProfit: 0 },
+    formula: 'Day 1 ($2): sold = hold(-1) + 2 = $1 | hold = max(-1, rest(0) - 2) = -1',
+    action: 'Day 1 (Price $2): Selling yields +$1, while continuing to hold preserves the position.',
+    explain: 'If we sell today: sold = -1 + 2 = $1. This enters Trade 1 candidate (Buy D0 -> Sell D1 for +$1). Notice: selling today forces Day 2 to be cooldown.',
+    intuition: 'Selling locks Day 2, but locks in $1 profit immediately.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 1' },
+      { label: 'Price', value: '$2' },
+      { label: 'Sold State', value: '+$1' }
+    ]
+  },
+  {
+    phase: 'COOLDOWN',
+    prices: [1, 2, 3, 0, 2],
+    currentDay: 2,
+    trades: [{ buy: 0, sell: 1, net: 1 }],
+    dpState: { holdProfit: -1, notHoldProfit: 2, cooldownProfit: 1 },
+    formula: 'Day 2 ($3): rest = max(0, sold(1)) = 1 (Cooldown active) | sold = hold(-1) + 3 = 2',
+    action: 'Day 2 (Price $3): Day 2 absorbs cooldown from Day 1 sale (rest = $1).',
+    explain: 'If we sold on Day 1, Day 2 is mandatory cooldown: rest = max(0, sold_prev=1) = $1. Alternatively, if we held from Day 0, selling at Day 2 yields 3 - 1 = $2.',
+    intuition: 'The DP evaluates both paths: Sell Day 1 vs Sell Day 2.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 2' },
+      { label: 'Price', value: '$3' },
+      { label: 'Rest / Cooldown', value: '+$1 (Cooldown)' }
+    ],
+    customCard: {
+      title: 'Cooldown Divergence',
+      rows: [
+        { label: 'Path A (Sell D1)', value: 'Day 2 in Cooldown (rest = $1), ready to buy on Day 3!', accent: true },
+        { label: 'Path B (Hold to D2)', value: 'Sell D2 for $2, but Day 3 will be frozen in cooldown!' }
+      ]
+    }
+  },
+  {
+    phase: 'BUY',
+    prices: [1, 2, 3, 0, 2],
+    currentDay: 3,
+    trades: [{ buy: 0, sell: 1, net: 1 }],
+    dpState: { holdProfit: 1, notHoldProfit: -1, cooldownProfit: 2 },
+    formula: 'Day 3 ($0): hold = max(-1, rest(1) - 0) = +$1! (Buy at bottom!)',
+    action: 'Day 3 (Price $0): Path A buys the bottom at $0 using accumulated $1 profit!',
+    explain: 'Because Path A rested on Day 2, it is fully unlocked to buy on Day 3! hold = rest(1) - 0 = +$1. Path B sold on Day 2 and is stuck in cooldown on Day 3 (cannot buy at $0)!',
+    intuition: 'Selling early at Day 1 was genius: it freed us from cooldown just in time to buy the $0 bottom.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 3' },
+      { label: 'Price', value: '$0' },
+      { label: 'Hold State', value: '+$1 (holding share free)' }
+    ],
+    customCard: {
+      title: 'Crucial Tactic Unlocked',
+      rows: [
+        { label: 'Path A Advantage', value: 'Cooldown on Day 2 allowed buying Day 3 at $0!', accent: true },
+        { label: 'Path B Penalty', value: 'Selling at $3 locked Day 3 into cooldown, missing the $0 bargain' }
+      ]
+    }
+  },
+  {
+    phase: 'TRADE',
+    prices: [1, 2, 3, 0, 2],
+    currentDay: 4,
+    trades: [
+      { buy: 0, sell: 1, net: 1 },
+      { buy: 3, sell: 4, net: 2 }
+    ],
+    dpState: { holdProfit: 1, notHoldProfit: 3, cooldownProfit: 2 },
+    formula: 'Day 4 ($2): sold = hold(1) + 2 = $3 => Execute Final Sell!',
+    action: 'Day 4 (Price $2): Sell share bought at $0 for additional +$2 profit! Total = $3.',
+    explain: 'Selling at Day 4 yields: hold(1) + 2 = $3. Trade 2: Bought Day 3 ($0) and sold Day 4 ($2) for +$2. Total combined profit = $1 + $2 = $3.',
+    intuition: 'Harvesting maximum profit of $3 across the two decoupled cycles.',
+    metrics: [
+      { label: 'Current Profit', value: '$3', highlight: true },
+      { label: 'Trade 2 Profit', value: '+$2' },
+      { label: 'Total Net Profit', value: '$3' }
+    ],
+    customCard: {
+      title: 'Trade 2 Executed',
+      rows: [
+        { label: 'Trade 2', value: 'Buy Day 3 ($0) -> Sell Day 4 ($2) = +$2', accent: true },
+        { label: 'Grand Total', value: 'Trade 1 ($1) + Trade 2 ($2) = $3' }
+      ]
+    }
+  },
+  {
+    phase: 'EVALUATE',
+    prices: [1, 2, 3, 0, 2],
+    currentDay: 4,
+    trades: [
+      { buy: 0, sell: 1, net: 1 },
+      { buy: 3, sell: 4, net: 2 }
+    ],
+    dpState: { holdProfit: 1, notHoldProfit: 3, cooldownProfit: 2 },
+    formula: 'Comparison: Strategy A (3 trades with cooldown) vs Single Trade ($2)',
+    action: 'Compare strategy with and without cooldown foresight.',
+    explain: 'Greedy single-trade holding from Day 0 ($1) to Day 2 ($3) makes only $2 profit. The 3-state DP realizes that selling on Day 1 enables purchasing the deep $0 dip on Day 3, securing 50% more profit ($3 total).',
+    intuition: 'Dynamic programming balances immediate gain with future opportunity costs.',
+    metrics: [
+      { label: 'Greedy Profit', value: '$2' },
+      { label: 'DP Optimal Profit', value: '$3', highlight: true },
+      { label: 'Gain', value: '+50%' }
+    ]
+  },
+  {
+    phase: 'COMPLETED',
+    prices: [1, 2, 3, 0, 2],
+    currentDay: null,
+    trades: [
+      { buy: 0, sell: 1, net: 1 },
+      { buy: 3, sell: 4, net: 2 }
+    ],
+    dpState: { holdProfit: 1, notHoldProfit: 3, cooldownProfit: 2 },
+    formula: 'Result: max(sold, rest) = max(3, 2) = $3',
+    action: 'Algorithm completed in O(N) time and O(1) auxiliary space.',
+    explain: 'Optimal trade schedule: Buy D0 ($1) -> Sell D1 ($2) [+1] -> Cooldown D2 -> Buy D3 ($0) -> Sell D4 ($2) [+2]. Total profit is $3.',
+    intuition: 'Three-variable state machine provides optimal O(N) solution with zero array allocations.',
+    metrics: [
+      { label: 'Final Max Profit', value: '$3', highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Full Schedule Breakdown',
+      rows: [
+        { label: 'Day 0: BUY ($1)', value: 'Capital invested: -$1' },
+        { label: 'Day 1: SELL ($2)', value: 'Bank +$1 profit' },
+        { label: 'Day 2: COOLDOWN', value: 'Mandatory rest day (rest = $1)' },
+        { label: 'Day 3: BUY ($0)', value: 'Enter at bottom (net equity = +$1)' },
+        { label: 'Day 4: SELL ($2)', value: 'Bank +$2 profit -> Total = $3' }
+      ]
+    }
   }
 ];
-
-export default function BestTimeToBuyAndSellStockWithCooldownVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-semibold">
-          Cooldown Lock: 1 Day Rest
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Total Profit: ${step.profit}
-        </span>
-      </div>
-
-      {/* Stock Timeline with Cooldown Indicator */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Stock Timeline & Mandatory Cooldown Lock
-        </span>
-
-        <div className="w-full flex items-end justify-around gap-2 h-44 pt-4 px-2">
-          {step.prices.map((p, idx) => {
-            const heightPx = Math.max(16, p * 34);
-            const isBuy = step.trades.some(t => t.buy === idx);
-            const isSell = step.trades.some(t => t.sell === idx);
-            const isCooldown = step.cooldownDays.includes(idx);
-
-            return (
-              <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full">
-                <div className="text-[10px] font-mono mb-1 font-bold text-amber-300">
-                  ${p}
-                </div>
-
-                <div
-                  style={{ height: `${heightPx}px` }}
-                  className={`w-full max-w-[44px] rounded-t-xl border-t border-x flex flex-col items-center justify-between p-1 font-mono transition-all duration-300 ${
-                    isBuy
-                      ? 'border-emerald-500 bg-emerald-500/30 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg'
-                      : isSell
-                      ? 'border-amber-500 bg-amber-500/30 text-amber-300 ring-2 ring-amber-500/40 shadow-lg'
-                      : isCooldown
-                      ? 'border-cyan-500/60 bg-cyan-500/20 text-cyan-300 ring-2 ring-cyan-500/30'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-500'
-                  }`}
-                >
-                  <span className="text-[8px] font-bold">
-                    {isBuy ? 'BUY' : isSell ? 'SELL' : isCooldown ? 'REST' : ''}
-                  </span>
-                </div>
-
-                <span className="text-[9px] font-mono text-[#8a8ea3] mt-1.5">
-                  Day {idx}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

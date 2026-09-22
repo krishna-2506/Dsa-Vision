@@ -210,7 +210,7 @@ export default function ImplementStackUsingQueueVisualizer({ currentStep = 0 }) 
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Stack Op: <strong className="text-purple-400">{step.action}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
@@ -222,8 +222,8 @@ export default function ImplementStackUsingQueueVisualizer({ currentStep = 0 }) 
       </div>
 
       {/* Queue Visualization */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Internal Queue Buffer</span>
           <span className="text-purple-400 font-bold">Single-Queue Trick</span>
         </div>
@@ -243,11 +243,11 @@ export default function ImplementStackUsingQueueVisualizer({ currentStep = 0 }) 
                         ? 'bg-purple-500/20 border-purple-400 text-purple-200 shadow-lg shadow-purple-500/20 scale-105'
                         : isRotating
                         ? 'bg-amber-500/20 border-amber-400 text-amber-200 animate-pulse'
-                        : 'bg-[#181a26] border-[#31364d] text-white'
+                        : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                     }`}
                   >
                     {isFront && (
-                      <span className="absolute -top-3 px-1.5 py-0.5 rounded text-[8px] bg-purple-500 text-white font-black uppercase">
+                      <span className="absolute -top-3 px-1.5 py-0.5 rounded text-[8px] bg-purple-500 text-[var(--chalk)] font-black uppercase">
                         TOP (Front)
                       </span>
                     )}
@@ -263,7 +263,7 @@ export default function ImplementStackUsingQueueVisualizer({ currentStep = 0 }) 
           )}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Invariant: Queue front always points to the Stack top. Pop and Top are always O(1).
         </div>
       </div>

@@ -242,7 +242,7 @@ export default function FourSumVisualizer({ currentStep = 0 }) {
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       {/* Quadruplets Results */}
       <div className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-[#141620] border border-[#262a3a]">
-        <span className="text-xs font-mono text-[#8a8ea3]">Found Quadruplets:</span>
+        <span className="text-xs font-mono text-[var(--chalk-dim)]">Found Quadruplets:</span>
         <div className="flex items-center gap-2 flex-wrap">
           {step.quadruplets.length === 0 ? (
             <span className="text-xs font-mono text-[#5b6076]">None yet</span>
@@ -264,7 +264,7 @@ export default function FourSumVisualizer({ currentStep = 0 }) {
           const isK = step.k === idx;
           const isL = step.l === idx;
 
-          let style = 'bg-[#181a24] text-white border-[#2b2e40]';
+          let style = 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]';
           if (isI) style = 'bg-rose-500/20 text-rose-300 border-rose-500 scale-105';
           else if (isJ) style = 'bg-orange-500/20 text-orange-300 border-orange-500 scale-105';
           else if (isK) style = 'bg-amber-500/20 text-amber-300 border-amber-500 scale-105';
@@ -273,10 +273,10 @@ export default function FourSumVisualizer({ currentStep = 0 }) {
           return (
             <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[50px]">
               <div className="h-5 flex items-center gap-1 text-[9px] font-mono font-bold">
-                {isI && <span className="px-1.5 py-0.5 rounded bg-rose-500 text-white">i</span>}
-                {isJ && <span className="px-1.5 py-0.5 rounded bg-orange-500 text-white">j</span>}
-                {isK && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">k</span>}
-                {isL && <span className="px-1.5 py-0.5 rounded bg-indigo-500 text-white">l</span>}
+                {isI && <span className="px-1.5 py-0.5 rounded bg-rose-500 text-[var(--chalk)]">i</span>}
+                {isJ && <span className="px-1.5 py-0.5 rounded bg-orange-500 text-[var(--chalk)]">j</span>}
+                {isK && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">k</span>}
+                {isL && <span className="px-1.5 py-0.5 rounded bg-indigo-500 text-[var(--chalk)]">l</span>}
               </div>
 
               <div className={`w-13 h-13 rounded-xl border flex items-center justify-center font-mono text-lg font-bold transition-all duration-300 ${style}`}>
@@ -291,8 +291,8 @@ export default function FourSumVisualizer({ currentStep = 0 }) {
 
       {/* Sum Indicator */}
       {step.currentSum !== null && (
-        <div className="px-4 py-2 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono">
-          <span className="text-[#8a8ea3]">nums[i] + nums[j] + nums[k] + nums[l] = </span>
+        <div className="px-4 py-2 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono">
+          <span className="text-[var(--chalk-dim)]">nums[i] + nums[j] + nums[k] + nums[l] = </span>
           <span className={`font-bold ${step.currentSum === 0 ? 'text-emerald-400' : 'text-amber-300'}`}>
             {step.currentSum}
           </span>

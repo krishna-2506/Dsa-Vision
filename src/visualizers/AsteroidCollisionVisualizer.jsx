@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Asteroid Collision',
@@ -9,8 +9,36 @@ export const meta = {
   description: 'Simulates the collision of bidirectional asteroids using a stack where right-moving positive asteroids smash into incoming left-moving negative asteroids.'
 };
 
+export const ideaMap = [
+  {
+    id: 'collision-condition',
+    title: 'Directional Collision Condition',
+    description: 'A collision happens if and only if the top of the stack is moving right (top > 0) and the incoming asteroid is moving left (incoming < 0).'
+  },
+  {
+    id: 'stack-simulation',
+    title: 'LIFO Collision Resolution',
+    description: 'When collision occurs, compare absolute weights: smaller explodes; equal sizes both explode; larger survives and continues colliding.'
+  },
+  {
+    id: 'left-moving-stability',
+    title: 'Left-Moving Safety',
+    description: 'If a negative asteroid finds no positive asteroids to its left (stack empty or stack top < 0), it will never collide and safely enters the stack.'
+  },
+  {
+    id: 'right-moving-stability',
+    title: 'Right-Moving Addition',
+    description: 'Any positive asteroid is pushed directly onto the stack because it moves right away from preceding asteroids.'
+  },
+  {
+    id: 'linear-amortization',
+    title: 'Amortized Complexity Proof',
+    description: 'Each asteroid is pushed onto the stack at most once and destroyed at most once, providing guaranteed O(N) linear time.'
+  }
+];
+
 export const solutions = {
-  cpp: `// C++ Asteroid Collision
+  cpp: `// C++: Asteroid Collision using Vector Stack
 // Time Complexity: O(N) | Space Complexity: O(N)
 #include <vector>
 using namespace std;
@@ -23,10 +51,9 @@ public:
         for (int a : asteroids) {
             bool alive = true;
 
-            // Collision only happens when top is moving right (+) and incoming is moving left (-)
             while (alive && !st.empty() && st.back() > 0 && a < 0) {
                 if (st.back() < -a) {
-                    st.pop_back(); // Top asteroid explodes, incoming continues
+                    st.pop_back(); // Stack top explodes, incoming continues
                 } else if (st.back() == -a) {
                     st.pop_back(); // Both explode
                     alive = false;
@@ -39,46 +66,25 @@ public:
                 st.push_back(a);
             }
         }
-
         return st;
     }
 };`,
-  python: `# Python 3 Asteroid Collision
-class Solution:
-    def asteroidCollision(self, asteroids: list[int]) -> list[int]:
-        stack = []
-
-        for a in asteroids:
-            alive = True
-
-            while alive and stack and stack[-1] > 0 and a < 0:
-                if stack[-1] < -a:
-                    stack.pop()
-                elif stack[-1] == -a:
-                    stack.pop()
-                    alive = False
-                else:
-                    alive = False
-
-            if alive:
-                stack.append(a)
-
-        return stack`,
-  java: `// Java Asteroid Collision
-import java.util.Stack;
+  java: `// Java: Asteroid Collision using ArrayDeque / Stack
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 class Solution {
     public int[] asteroidCollision(int[] asteroids) {
-        Stack<Integer> st = new Stack<>();
+        Deque<Integer> st = new ArrayDeque<>();
 
         for (int a : asteroids) {
             boolean alive = true;
 
-            while (alive && !st.isEmpty() && st.peek() > 0 && a < 0) {
-                if (st.peek() < -a) {
-                    st.pop();
-                } else if (st.peek() == -a) {
-                    st.pop();
+            while (alive && !st.isEmpty() && st.peekLast() > 0 && a < 0) {
+                if (st.peekLast() < -a) {
+                    st.pollLast();
+                } else if (st.peekLast() == -a) {
+                    st.pollLast();
                     alive = false;
                 } else {
                     alive = false;
@@ -86,19 +92,38 @@ class Solution {
             }
 
             if (alive) {
-                st.push(a);
+                st.addLast(a);
             }
         }
 
-        int[] result = new int[st.size()];
-        for (int i = result.length - 1; i >= 0; i--) {
-            result[i] = st.pop();
-        }
-        return result;
+        int[] res = new int[st.size()];
+        int idx = 0;
+        for (int x : st) res[idx++] = x;
+        return res;
     }
 }`,
-  javascript: `// JavaScript Asteroid Collision
-var asteroidCollision = function(asteroids) {
+  python: `# Python 3: Asteroid Collision using List Stack
+class Solution:
+    def asteroidCollision(self, asteroids: list[int]) -> list[int]:
+        st = []
+
+        for a in asteroids:
+            alive = True
+            while alive and st and st[-1] > 0 and a < 0:
+                if st[-1] < -a:
+                    st.pop()
+                elif st[-1] == -a:
+                    st.pop()
+                    alive = False
+                else:
+                    alive = False
+
+            if alive:
+                st.append(a)
+
+        return st`,
+  javascript: `// JavaScript: Asteroid Collision using Array Stack
+function asteroidCollision(asteroids) {
     const st = [];
 
     for (const a of asteroids) {
@@ -122,133 +147,168 @@ var asteroidCollision = function(asteroids) {
     }
 
     return st;
-};`
+}`
 };
 
 export const steps = [
   {
-    title: '1. Asteroids: [5, 10, -5], Stack = []',
-    phase: 'INITIAL',
-    codeLine: 10,
-    asteroids: [5, 10, -5],
-    currIdx: -1,
-    stack: [],
-    event: 'Ready for incoming asteroids',
-    variables: { incoming: 'None', stack: '[]' },
-    explain: 'Positive (+) asteroids move right; negative (-) asteroids move left. Collisions only occur when (+) meets incoming (-).',
-    intuition: 'LIFO stack models rightmost asteroid meeting incoming leftward asteroid.'
+    stepIndex: 1,
+    title: 'Initialize Empty Asteroid Simulation Stack',
+    explanation: 'Prepare input array asteroids = [5, 10, -5, -10, 8, -8, 6, 2]. Positive values move right (+), negative move left (-).',
+    activeLine: 9,
+    activeIdeaId: 'collision-condition',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [],
+    highlightIndices: [0],
+    pointers: { i: 0 },
+    variables: { incoming: 5, stackSize: 0, alive: true },
+    customCard: {
+      title: 'Simulation Stack',
+      rows: [
+        { label: 'Incoming Asteroid', value: '+5 (moving right)' },
+        { label: 'Stack Top', value: 'Empty' },
+        { label: 'Action', value: 'Push +5 onto stack' }
+      ]
+    }
   },
   {
-    title: '2. Process 5: Moving right (+) -> Push to stack [5]',
-    phase: 'PUSH',
-    codeLine: 26,
-    asteroids: [5, 10, -5],
-    currIdx: 0,
-    stack: [5],
-    event: 'Pushed +5 (moving right)',
-    variables: { incoming: 5, stack: '[5]' },
-    explain: '5 is positive. No collision possible. Pushed to stack.',
-    intuition: 'Rightward asteroid placed.'
+    stepIndex: 2,
+    title: 'Push +5 and +10: Moving in Same Direction',
+    explanation: 'Asteroid 5 is pushed. Next asteroid +10 is moving right. Because top > 0 and incoming > 0, they never collide. Push +10.',
+    activeLine: 24,
+    activeIdeaId: 'right-moving-stability',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [5, 10],
+    highlightIndices: [1],
+    pointers: { i: 1 },
+    variables: { incoming: 10, stackSize: 2, alive: true },
+    customCard: {
+      title: 'Parallel Motion',
+      rows: [
+        { label: 'Stack State', value: '[5, 10]' },
+        { label: 'Incoming Asteroid', value: '+10 (moving right)' },
+        { label: 'Collision Check', value: 'None (same direction)' }
+      ]
+    }
   },
   {
-    title: '3. Process 10: Moving right (+) -> Push to stack [5, 10]',
-    phase: 'PUSH',
-    codeLine: 26,
-    asteroids: [5, 10, -5],
-    currIdx: 1,
-    stack: [5, 10],
-    event: 'Pushed +10 (moving right)',
-    variables: { incoming: 10, stack: '[5, 10]' },
-    explain: '10 is also moving right. No collision with 5. Pushed to stack.',
-    intuition: 'Moving in parallel.'
+    stepIndex: 3,
+    title: 'Incoming -5 vs Top +10: Collision, -5 Explodes',
+    explanation: 'Incoming is -5 (left). Stack top is +10 (right). Collision occurs! Since |+10| > |-5|, incoming -5 explodes and +10 survives intact.',
+    activeLine: 18,
+    activeIdeaId: 'stack-simulation',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [5, 10],
+    highlightIndices: [2],
+    pointers: { i: 2 },
+    variables: { incoming: -5, top: 10, alive: false },
+    customCard: {
+      title: 'Collision Encounter #1',
+      rows: [
+        { label: 'Contenders', value: 'Top (+10) vs Incoming (-5)' },
+        { label: 'Comparison', value: '10 > 5 -> Top wins' },
+        { label: 'Outcome', value: 'Incoming -5 destroyed; +10 preserved' }
+      ]
+    }
   },
   {
-    title: '4. Process -5: Moving left (-) -> Collides with top +10! |10| > |-5| -> Incoming -5 explodes!',
-    phase: 'COLLISION',
-    codeLine: 21,
-    asteroids: [5, 10, -5],
-    currIdx: 2,
-    stack: [5, 10],
-    event: '💥 Collision: 10 destroys -5',
-    variables: { incoming: -5, top: 10, result: '-5 explodes, 10 survives' },
-    explain: 'Incoming -5 collides with +10. Since 10 > |-5|=5, the smaller asteroid (-5) explodes. +10 survives on stack.',
-    intuition: 'Larger asteroid withstands impact.'
+    stepIndex: 4,
+    title: 'Incoming -10 vs Top +10: Mutual Annihilation',
+    explanation: 'Incoming is -10 (left). Stack top is +10 (right). Collision occurs! Since |+10| == |-10|, both asteroids explode. Pop +10; -10 is destroyed.',
+    activeLine: 15,
+    activeIdeaId: 'stack-simulation',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [5],
+    highlightIndices: [3],
+    pointers: { i: 3 },
+    variables: { incoming: -10, top: 10, alive: false },
+    customCard: {
+      title: 'Collision Encounter #2 (Tied Mass)',
+      rows: [
+        { label: 'Contenders', value: 'Top (+10) vs Incoming (-10)' },
+        { label: 'Comparison', value: '10 == 10 -> Both explode' },
+        { label: 'Remaining Stack', value: '[5]' }
+      ]
+    }
   },
   {
-    title: '5. Completed: Surviving Asteroids = [5, 10]',
-    phase: 'COMPLETED',
-    codeLine: 30,
-    asteroids: [5, 10, -5],
-    currIdx: 2,
-    stack: [5, 10],
-    event: 'All collisions resolved',
-    variables: { surviving: '[5, 10]', timeComplexity: 'O(N)', spaceComplexity: 'O(N)' },
-    explain: 'Final surviving asteroids are [5, 10].',
-    intuition: 'Stack simulation complete.'
+    stepIndex: 5,
+    title: 'Push +8: Stable Forward Flight',
+    explanation: 'Next asteroid is +8 (right). Stack top is +5. No collision possible. Push +8 onto the stack.',
+    activeLine: 24,
+    activeIdeaId: 'right-moving-stability',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [5, 8],
+    highlightIndices: [4],
+    pointers: { i: 4 },
+    variables: { incoming: 8, stackSize: 2, alive: true },
+    customCard: {
+      title: 'Stack State',
+      rows: [
+        { label: 'Stack Top', value: '+8' },
+        { label: 'Stack Vector', value: '[5, 8]' },
+        { label: 'Action', value: 'Pushed +8' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Incoming -8 vs Top +8: Mutual Annihilation',
+    explanation: 'Incoming is -8 (left). Stack top is +8 (right). Collision! Since |+8| == |-8|, both explode. Pop +8; stack reverts to [5].',
+    activeLine: 15,
+    activeIdeaId: 'stack-simulation',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [5],
+    highlightIndices: [5],
+    pointers: { i: 5 },
+    variables: { incoming: -8, top: 8, alive: false },
+    customCard: {
+      title: 'Collision Encounter #3',
+      rows: [
+        { label: 'Contenders', value: 'Top (+8) vs Incoming (-8)' },
+        { label: 'Comparison', value: '8 == 8 -> Both explode' },
+        { label: 'Remaining Stack', value: '[5]' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Push +6 and +2: Final Right-Moving Wave',
+    explanation: 'Process +6 (pushed) and +2 (pushed). Since all subsequent asteroids are moving right (+), no further collisions occur.',
+    activeLine: 24,
+    activeIdeaId: 'right-moving-stability',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [5, 6, 2],
+    highlightIndices: [6, 7],
+    pointers: { i: 7 },
+    variables: { incoming: 2, stackSize: 3, alive: true },
+    customCard: {
+      title: 'Final Trajectory Alignment',
+      rows: [
+        { label: 'Pushed Elements', value: '+6, then +2' },
+        { label: 'Stack Vector', value: '[5, 6, 2]' },
+        { label: 'Collision Risk', value: 'Zero (all moving right)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Simulation Complete: Surviving Asteroids Returned',
+    explanation: 'All asteroids processed in O(N) time. The final surviving asteroids traveling across the cosmos are [5, 6, 2].',
+    activeLine: 28,
+    activeIdeaId: 'linear-amortization',
+    track: [5, 10, -5, -10, 8, -8, 6, 2],
+    auxiliaryTrack: [5, 6, 2],
+    highlightIndices: [],
+    pointers: {},
+    variables: { finalStack: '[5, 6, 2]', totalAsteroidsProcessed: 8 },
+    customCard: {
+      title: 'Final Surviving Asteroids',
+      rows: [
+        { label: 'Result Array', value: '[5, 6, 2]' },
+        { label: 'Time Complexity', value: 'O(N) Amortized' },
+        { label: 'Space Complexity', value: 'O(N) Stack' }
+      ]
+    }
   }
 ];
-
-export default function AsteroidCollisionVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Status: {step.event}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Surviving Count = {step.stack.length}
-        </span>
-      </div>
-
-      {/* Asteroids Stream */}
-      <div className="w-full flex items-center justify-center gap-3 py-3 overflow-x-auto">
-        {step.asteroids.map((val, idx) => {
-          const isCurrent = idx === step.currIdx;
-          const isMovingRight = val > 0;
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1 min-w-[50px]">
-              <div
-                className={`w-13 h-14 rounded-2xl border flex flex-col items-center justify-center font-mono font-bold text-sm transition-all ${
-                  isCurrent
-                    ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-200'
-                }`}
-              >
-                <span>{val}</span>
-                <span className="text-[10px]">{isMovingRight ? '→' : '←'}</span>
-              </div>
-              <span className="text-[8px] font-mono text-[#5b6076]">ast[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Stack State Container */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
-        <span className="text-[11px] text-indigo-400 font-semibold uppercase tracking-wider">
-          Active Asteroid Stack:
-        </span>
-        <div className="flex items-center gap-2">
-          {step.stack.length === 0 ? (
-            <span className="text-slate-500 italic">Empty Stack</span>
-          ) : (
-            step.stack.map((ast, idx) => (
-              <div
-                key={idx}
-                className="px-3.5 py-2 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-200 font-bold text-sm flex items-center gap-1 shadow-md"
-              >
-                <span>🪨</span>
-                <span>{ast}</span>
-                <span className="text-xs">{ast > 0 ? '→' : '←'}</span>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

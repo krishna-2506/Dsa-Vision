@@ -26,7 +26,8 @@ import {
   Plus,
   Flag,
   Code2,
-  Keyboard
+  Keyboard,
+  Compass
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../services/audio';
@@ -38,8 +39,8 @@ import ReportSolutionModal from './ReportSolutionModal';
 import AiQuestionEnhancerModal from './AiQuestionEnhancerModal';
 import VisualizerErrorBoundary from './VisualizerErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
-import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
 import BetaCodeVisualizer from './sandbox/BetaCodeVisualizer';
+import IdeaMapView from './IdeaMapView';
 
 function isArrayQuestion(q) {
   if (!q) return false;
@@ -119,6 +120,8 @@ export default function VisualizerStudio({
 
   const visualizerEntry = loadedModule || (currentKey ? visualizersRegistry[currentKey] : null);
   const Component = visualizerEntry?.Component || null;
+  const ideaMap = visualizerEntry?.ideaMap || loadedModule?.ideaMap || null;
+  const hasIdeaMap = Boolean(ideaMap);
   const [activeTier, setActiveTier] = useState('optimal'); // 'intuitive' | 'better' | 'optimal'
   const [showReportModal, setShowReportModal] = useState(false);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
@@ -629,6 +632,22 @@ export default function VisualizerStudio({
               <option value="mastered">Mastered</option>
             </select>
 
+            {/* Idea Map Toggle Button */}
+            {hasIdeaMap && (
+              <button
+                onClick={() => setViewMode((prev) => (prev === 'idea_map' ? 'split' : 'idea_map'))}
+                className={`btn-secondary h-8 px-2.5 text-xs flex items-center gap-1.5 transition-all ${
+                  viewMode === 'idea_map'
+                    ? 'bg-purple-600/25 border-purple-500/50 text-purple-300'
+                    : 'text-purple-300 hover:text-purple-200'
+                }`}
+                title="Toggle Idea Map & Mental Model"
+              >
+                <Compass className="w-3.5 h-3.5 text-purple-400" />
+                <span className="hidden sm:inline">Idea Map</span>
+              </button>
+            )}
+
             {/* Export Study Sheet */}
             <button
               onClick={handleDownloadStudySheet}
@@ -817,11 +836,12 @@ export default function VisualizerStudio({
             })}
           </div>
 
-          {/* Right: View Mode Toggle (Split, Canvas, Code) */}
+          {/* Right: View Mode Toggle (Split, Canvas, Idea Map, Code) */}
           <div className="segmented-control">
             {[
               ['split', 'Split View'],
               ['visualizer_only', 'Canvas'],
+              ...(hasIdeaMap ? [['idea_map', '🗺️ Idea Map']] : []),
               ['code_only', 'Code']
             ].map(([mode, label]) => (
               <button
@@ -853,19 +873,14 @@ export default function VisualizerStudio({
           {/* Canvas Column */}
           {viewMode !== 'code_only' && (
             <div className="canvas-col">
-              <div className="flex items-center justify-between gap-3 mb-4 pb-2.5 border-b border-[var(--line)]">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2 h-2 rounded-full bg-indigo-500 shrink-0" />
-                  <span className="text-xs font-mono font-semibold text-indigo-400 uppercase tracking-wider shrink-0">
-                    Step {currentStep + 1} of {maxSteps}
-                  </span>
-                  <span className="text-[var(--chalk-faint)] shrink-0">·</span>
-                  <h2 className="text-sm font-semibold font-sans text-[var(--chalk)] truncate" id="stepTitle">
-                    {currentStepData?.title || `Step ${currentStep + 1} Execution`}
-                  </h2>
-                </div>
-              </div>
-
+              {viewMode === 'idea_map' ? (
+                <IdeaMapView
+                  ideaMap={ideaMap}
+                  question={question}
+                  onLaunchVisualizer={() => setViewMode('split')}
+                />
+              ) : (
+                <>
               {Component ? (
                 <VisualizerErrorBoundary
                   onReset={() => setCurrentStep(0)}
@@ -992,7 +1007,8 @@ export default function VisualizerStudio({
                   )}
                 </div>
               )}
-
+                </>
+              )}
             </div>
           )}
 
@@ -1089,16 +1105,18 @@ export default function VisualizerStudio({
           )}
         </div>
 
-        {/* ── Step progress bar ── */}
-        <div className="step-progress-track" style={{ margin: '0' }}>
-          <div
-            className="step-progress-fill"
-            style={{ width: `${maxSteps > 1 ? (currentStep / (maxSteps - 1)) * 100 : 100}%` }}
-          />
-        </div>
+        {/* ── Step progress bar & Transport HUD (hidden in idea_map mode) ── */}
+        {viewMode !== 'idea_map' && (
+          <>
+            <div className="step-progress-track" style={{ margin: '0' }}>
+              <div
+                className="step-progress-fill"
+                style={{ width: `${maxSteps > 1 ? (currentStep / (maxSteps - 1)) * 100 : 100}%` }}
+              />
+            </div>
 
-        {/* ── Docked Transport HUD (VS Code Debugger Control Bar) ── */}
-        <div className="transport-hud px-4 py-2.5 border-t border-[var(--line)] bg-[var(--board-raised)] flex items-center justify-between gap-3 flex-wrap">
+            {/* ── Docked Transport HUD (VS Code Debugger Control Bar) ── */}
+            <div className="transport-hud px-4 py-2.5 border-t border-[var(--line)] bg-[var(--board-raised)] flex items-center justify-between gap-3 flex-wrap">
           {/* Scrubber Ticks */}
           <div className="flex items-center gap-1.5" id="ticks">
             {Array.from({ length: maxSteps }).map((_, idx) => {
@@ -1236,6 +1254,8 @@ export default function VisualizerStudio({
             <span>Keys: <kbd>Space</kbd> <kbd>←</kbd> <kbd>→</kbd> <kbd>R</kbd></span>
           </div>
         </div>
+          </>
+        )}
           </>
         )}
       </section>

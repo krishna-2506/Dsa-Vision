@@ -137,48 +137,48 @@ export default function FunctionsPassByReferenceAndValueVisualizer({ currentStep
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Stack Frame & Memory Visualizer</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Stack Frame & Memory Visualizer</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-          <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] space-y-2">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Caller Frame (main)</span>
+          <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] space-y-2">
+            <span className="text-[10px] text-[var(--chalk-dim)] uppercase tracking-wider block">Caller Frame (main)</span>
             <div className="space-y-1.5">
               <div className="flex justify-between items-center p-2 rounded bg-black/30 border border-white/5">
-                <span className="text-slate-300">int a (0x100):</span>
+                <span className="text-[var(--chalk-dim)]">int a (0x100):</span>
                 <span className="text-cyan-300 font-bold">{step.mainVarA}</span>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-black/30 border border-white/5">
-                <span className="text-slate-300">int b (0x200):</span>
+                <span className="text-[var(--chalk-dim)]">int b (0x200):</span>
                 <span className="text-purple-300 font-bold">{step.mainVarB}</span>
               </div>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] space-y-2">
-            <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Callee Frame (Function)</span>
+          <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] space-y-2">
+            <span className="text-[10px] text-[var(--chalk-dim)] uppercase tracking-wider block">Callee Frame (Function)</span>
             {step.calledParam ? (
               <div className="p-2 rounded bg-indigo-500/15 border border-indigo-500/30 space-y-1">
                 <div className="flex justify-between">
                   <span className="text-indigo-300 font-bold">{step.calledParam.name}</span>
                   <span className="text-emerald-400 font-bold">{step.calledParam.val}</span>
                 </div>
-                <div className="text-[9px] text-slate-400">{step.calledParam.addr}</div>
+                <div className="text-[9px] text-[var(--chalk-dim)]">{step.calledParam.addr}</div>
               </div>
             ) : (
-              <div className="text-slate-500 text-center py-5 italic text-[11px]">
+              <div className="text-[var(--chalk-faint)] text-center py-5 italic text-[11px]">
                 No active callee frame
               </div>
             )}
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

@@ -151,7 +151,7 @@ export default function NumberOfProvincesVisualizer({ currentStep = 0 }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         {/* Matrix View */}
-        <div className="p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
+        <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
           <span className="text-xs font-mono font-semibold text-cyan-400 block mb-3">isConnected[3][3] Matrix</span>
           <div className="grid grid-cols-4 gap-1 text-center font-mono text-xs">
             <div className="text-[#525777] p-1 font-bold">City</div>
@@ -167,7 +167,7 @@ export default function NumberOfProvincesVisualizer({ currentStep = 0 }) {
                     className={`p-2 rounded font-bold transition-all ${
                       val === 1
                         ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                        : 'bg-[#161824] text-[#475569]'
+                        : 'bg-[var(--board-raised-2)] text-[#475569]'
                     }`}
                   >
                     {val}
@@ -179,7 +179,7 @@ export default function NumberOfProvincesVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Visited & Province Clusters */}
-        <div className="p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl flex flex-col justify-between">
           <div>
             <span className="text-xs font-mono font-semibold text-purple-400 block mb-3">Province Allotment</span>
             <div className="space-y-2 text-xs font-mono">
@@ -190,7 +190,7 @@ export default function NumberOfProvincesVisualizer({ currentStep = 0 }) {
               <div className={`p-2.5 rounded-xl border transition-all flex justify-between items-center ${
                 step.provinces >= 2
                   ? 'bg-purple-950/40 border-purple-800/40 text-purple-200'
-                  : 'bg-[#161824] border-[#272b3c] text-[#525777]'
+                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[#525777]'
               }`}>
                 <span>Province #2:</span>
                 <span className="font-bold text-purple-300">
@@ -200,14 +200,14 @@ export default function NumberOfProvincesVisualizer({ currentStep = 0 }) {
             </div>
           </div>
 
-          <div className="pt-3 border-t border-[#242738] flex justify-between text-xs font-mono text-[#8a8ea3]">
+          <div className="pt-3 border-t border-[var(--line)] flex justify-between text-xs font-mono text-[var(--chalk-dim)]">
             <span>vis Array:</span>
             <span className="text-emerald-400 font-bold">[{step.vis.join(', ')}]</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.explanation}
       </div>
     </div>

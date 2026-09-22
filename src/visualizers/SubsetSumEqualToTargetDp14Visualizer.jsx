@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Subset Sum Equal to Target (DP 14)',
+  title: 'Subset Sum Equal to Target (DP-14)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * Target)',
+  timeComplexity: 'O(N × Target) Time',
   spaceComplexity: 'O(Target) Space-Optimized',
-  description: 'Determines whether a subset of numbers exists whose sum equals the given target. At each element, we evaluate whether to pick or not pick it to form sub-targets.'
+  description: 'Determines whether any subset of numbers exists whose sum equals the given target K. At each element, we evaluate whether taking or not taking it can achieve target sum: dp[i][t] = dp[i-1][t] || dp[i-1][t - arr[i-1]].'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Subset Sum Equal to Target (DP-14)',
+  nodes: [
+    { id: 'root', label: 'Subset Sum Feasibility', children: ['base-state', 'recurrence-boolean', 'space-compression'] },
+    { id: 'base-state', label: '1. Boundary Initialization', detail: 'dp[0][0] = True (empty set produces sum 0) | dp[0][t] = False for t > 0' },
+    { id: 'recurrence-boolean', label: '2. Boolean OR Transition', children: ['exclude-elem', 'include-elem'] },
+    { id: 'exclude-elem', label: 'Exclude Element', detail: 'dp[i-1][t] (Target t already formed by earlier elements)' },
+    { id: 'include-elem', label: 'Include Element', detail: 'dp[i-1][t - arr[i-1]] (Target t formed by adding arr[i-1])' },
+    { id: 'space-compression', label: '3. 1D Reverse Traversal', detail: 'dp[t] = dp[t] || dp[t - num] traversing right-to-left preserves previous row state in O(Target) space.' }
+  ]
 };
 
 export const solutions = {
@@ -111,106 +125,157 @@ var subsetSumToK = function(n, k, arr) {
 
 export const steps = [
   {
-    title: '1. Array: [1, 2, 3, 4], Target = 4',
-    phase: 'INITIAL',
-    codeLine: 11,
-    arr: [1, 2, 3, 4],
-    k: 4,
-    activeIdx: 0,
-    dp: [true, true, false, false, false],
-    variables: { arr: '[1, 2, 3, 4]', target: 4, base: 'target 0 is always true, arr[0]=1 is true' },
-    explain: 'Base case: sum = 0 is always achievable with the empty set. arr[0] = 1 achieves sum 1.',
-    intuition: 'DP array dp[s] tracks boolean reachability for each sum s up to target.'
+    phase: 'SETUP',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['0', '1', '2', '3', '4'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'dp[i][0] = True (Empty subset achieves sum 0)',
+    action: 'Initialize DP matrix for arr = [1, 2, 3, 4] with target sum K = 4.',
+    explain: 'dp[i][t] is a boolean flag indicating whether a subset of the first i elements can sum up to exactly t. Sum 0 is always achievable (empty set).',
+    intuition: 'Each row records newly achievable sums by introducing one more element.',
+    metrics: [
+      { label: 'Array', value: '[1, 2, 3, 4]' },
+      { label: 'Target K', value: 4 },
+      { label: 'Is Achievable', value: 'Testing...' }
+    ]
   },
   {
-    title: '2. Process arr[1] = 2: Target 2 and Target 3 become True',
-    phase: 'PROCESS',
-    codeLine: 17,
-    arr: [1, 2, 3, 4],
-    k: 4,
-    activeIdx: 1,
-    dp: [true, true, true, true, false],
-    variables: { num: 2, reachableTargets: '0, 1, 2, 3' },
-    explain: 'Using 2: target 2 = true (pick 2 alone). Target 3 = true (pick 1 + 2). Target 4 remains false.',
-    intuition: 'New reachable sums = previous reachable sums + current element value.'
+    phase: 'ROW_1_NUM_1',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['0', '1', '2', '3', '4'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [{ r: 0, c: 0, label: 'incl=T' }],
+    formula: 't = 1: dp[1][1] = dp[0][0] = True ({1})',
+    action: 'Process num = 1: sums 0 and 1 are achievable.',
+    explain: 'With element 1 alone, we can form sum 0 (empty set) and sum 1 ({1}). All other targets remain False.',
+    intuition: 'Single element base row.',
+    metrics: [
+      { label: 'Active Num', value: 1 },
+      { label: 'Reachable', value: '{0, 1}' }
+    ]
   },
   {
-    title: '3. Process arr[2] = 3: Target 4 Achieved (1 + 3 = 4)!',
-    phase: 'PROCESS',
-    codeLine: 21,
-    arr: [1, 2, 3, 4],
-    k: 4,
-    activeIdx: 2,
-    dp: [true, true, true, true, true],
-    variables: { num: 3, 'target 4': 'prev[4 - 3] = prev[1] is TRUE!' },
-    explain: 'Testing target 4: taken = prev[4 - 3] = prev[1] which is true (subset [1, 3]). Target 4 is now reachable!',
-    intuition: 'Target condition met early.'
+    phase: 'ROW_2_NUM_2',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 1, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['0', '1', '2', '3', '4'],
+    activeCell: { r: 2, c: 3 },
+    dependencyCells: [{ r: 1, c: 3, label: 'excl=F' }, { r: 1, c: 1, label: 'incl=T' }],
+    formula: 't = 3: dp[1][3] || dp[1][1] = False || True = True ({1, 2})',
+    action: 'Process num = 2: reachable sums expand to {0, 1, 2, 3}.',
+    explain: 'Adding 2 enables forming sum 2 (0 + 2 = {2}) and sum 3 (1 + 2 = {1, 2}). Target 4 is not yet reachable.',
+    intuition: 'New reachable sums = previous sums + current element value.',
+    metrics: [
+      { label: 'Active Num', value: 2 },
+      { label: 'Reachable', value: '{0, 1, 2, 3}', highlight: true }
+    ]
   },
   {
-    title: '4. Final Result: Subset Sum Equal to 4 Exists (TRUE)',
+    phase: 'ROW_3_NUM_3_TARGET_HIT',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['0', '1', '2', '3', '4'],
+    activeCell: { r: 3, c: 4 },
+    dependencyCells: [{ r: 2, c: 4, label: 'excl=F' }, { r: 2, c: 1, label: 'incl=T (1+3=4)' }],
+    formula: 't = 4: dp[2][4] || dp[2][1] = False || True = True ({1, 3})',
+    action: 'Process num = 3: Target K = 4 is achieved for the first time ({1, 3})!',
+    explain: 'At target 4: excluding 3 was False. Including 3 looks at dp[2][4 - 3] = dp[2][1], which is True ({1}). Adding 3 gives 1 + 3 = 4! Cell [3, 4] turns True.',
+    intuition: 'Target sum 4 is confirmed possible.',
+    metrics: [
+      { label: 'Active Num', value: 3 },
+      { label: 'Target K=4', value: 'TRUE', highlight: true },
+      { label: 'Formed By', value: '{1, 3}' }
+    ]
+  },
+  {
+    phase: 'ROW_4_NUM_4_TERMINAL',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['0', '1', '2', '3', '4'],
+    activeCell: { r: 4, c: 4 },
+    dependencyCells: [{ r: 3, c: 4, label: 'excl=T' }, { r: 3, c: 0, label: 'incl=T (4)' }],
+    formula: 't = 4: dp[3][4] || dp[3][0] = True || True = True ({1, 3} or {4})',
+    action: 'Process num = 4: standalone {4} also forms target 4. Terminal cell = True!',
+    explain: 'Target 4 can now be formed in two independent ways: {1, 3} (from row 3) or {4} (num 4 alone). Terminal cell [4, 4] confirms True.',
+    intuition: 'Multiple subsets satisfy target sum 4.',
+    metrics: [
+      { label: 'Terminal Cell', value: '[4, 4]' },
+      { label: 'Result', value: 'TRUE', highlight: true }
+    ]
+  },
+  {
+    phase: 'TRACEBACK_SUBSETS',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['0', '1', '2', '3', '4'],
+    activeCell: { r: 4, c: 4 },
+    formula: 'Subset 1: {1, 3} (1 + 3 = 4) | Subset 2: {4} (4 = 4)',
+    action: 'Traceback valid subsets summing to 4.',
+    explain: '1. Path 1: num 4 alone ➔ sum = 4\n2. Path 2: num 3 + num 1 ➔ 1 + 3 = 4\nBoth subsets confirm that target 4 is achievable.',
+    intuition: 'Concrete proof of existence.',
+    metrics: [
+      { label: 'Subset 1', value: '{1, 3}' },
+      { label: 'Subset 2', value: '{4}' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 27,
-    arr: [1, 2, 3, 4],
-    k: 4,
-    activeIdx: 3,
-    dp: [true, true, true, true, true],
-    variables: { target: 4, isPossible: 'TRUE', validSubsets: '[1, 3] and [4]' },
-    explain: 'Both subsets [1, 3] and [4] sum to target 4. Returning true.',
-    intuition: 'O(N * Target) time complexity with O(Target) auxiliary boolean space.'
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 1, 1, 1, 0],
+      [1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['0', '1', '2', '3', '4'],
+    activeCell: { r: 4, c: 4 },
+    formula: 'Output: true | O(N × Target) Time, O(Target) Space',
+    action: 'Algorithm complete! Subset sum equal to target exists.',
+    explain: 'Using 1D boolean array dp[t] = dp[t] || dp[t - num] with reverse traversal, the algorithm runs in O(N × Target) time and O(Target) space.',
+    intuition: 'Classic 0/1 knapsack feasibility solution.',
+    metrics: [
+      { label: 'Array', value: '[1, 2, 3, 4]' },
+      { label: 'Target', value: 4 },
+      { label: 'Exists', value: 'true', highlight: true }
+    ]
   }
 ];
-
-export default function SubsetSumEqualToTargetDp14Visualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Target K = {step.k}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Target 4 Reachable: {step.dp[step.k] ? '✅ YES' : '⏳ No yet'}
-        </span>
-      </div>
-
-      {/* Target Reachability Array */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Subset Sum DP Reachability Table
-        </span>
-
-        <div className="flex items-center justify-center gap-3 pt-2">
-          {step.dp.map((isReachable, s) => {
-            const isTarget = s === step.k;
-
-            return (
-              <div key={s} className="flex flex-col items-center gap-1.5">
-                <div
-                  className={`w-16 h-20 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                    isTarget && isReachable
-                      ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg scale-105'
-                      : isReachable
-                      ? 'border-blue-500/40 bg-blue-500/15 text-blue-300'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-600'
-                  }`}
-                >
-                  <span className="text-[10px] text-[#8a8ea3]">Sum {s}</span>
-                  <span className="text-sm font-bold mt-1">
-                    {isReachable ? 'TRUE' : 'FALSE'}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

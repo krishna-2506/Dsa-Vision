@@ -35,8 +35,8 @@ import { api } from '../services/api';
 import { visualizersRegistry, loadVisualizer } from '../visualizers';
 import VisualizerErrorBoundary from './VisualizerErrorBoundary';
 import CodeViewer from './CodeViewer';
-import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
 import BetaCodeVisualizer from './sandbox/BetaCodeVisualizer';
+import IdeaMapView from './IdeaMapView';
 
 function isArrayQuestion(q) {
   if (!q) return false;
@@ -133,6 +133,8 @@ const DIFF_CONFIG = {
 
 export default function ProblemArticlePage({
   question,
+  questions = [],
+  onNavigateArticle,
   onBack,
   onLaunchStudio,
   onStatusChange,
@@ -149,6 +151,61 @@ export default function ProblemArticlePage({
   const [personalNotes, setPersonalNotes] = useState(question?.notes || '');
   const [savingNotes, setSavingNotes] = useState(false);
   const [notesSavedAlert, setNotesSavedAlert] = useState(false);
+
+  // Compute Adjacent Problem Navigation in Curriculum Order
+  const currentIndex = useMemo(() => {
+    if (!questions || !questions.length || !question) return -1;
+    return questions.findIndex((q) => {
+      if (!q) return false;
+      if (q.id === question.id) return true;
+      if (q.slug && question.slug && q.slug === question.slug) return true;
+      if (q.title && question.title && q.title.toLowerCase() === question.title.toLowerCase()) return true;
+      const qNorm = (q.slug || q.id || '').toLowerCase().replace(/[-_]/g, ' ').trim();
+      const curNorm = (question.slug || question.id || '').toLowerCase().replace(/[-_]/g, ' ').trim();
+      return Boolean(qNorm && curNorm && qNorm === curNorm);
+    });
+  }, [questions, question]);
+
+  const prevQuestion = useMemo(() => {
+    if (currentIndex > 0 && questions[currentIndex - 1]) {
+      return questions[currentIndex - 1];
+    }
+    return null;
+  }, [questions, currentIndex]);
+
+  const nextQuestion = useMemo(() => {
+    if (currentIndex >= 0 && currentIndex < questions.length - 1 && questions[currentIndex + 1]) {
+      return questions[currentIndex + 1];
+    }
+    return null;
+  }, [questions, currentIndex]);
+
+  // Keyboard navigation shortcuts: [ for previous problem, ] for next problem
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (
+        ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName) ||
+        document.activeElement?.isContentEditable
+      ) {
+        return;
+      }
+      if (e.key === '[' || (e.altKey && e.key === 'ArrowLeft')) {
+        if (prevQuestion && onNavigateArticle) {
+          e.preventDefault();
+          sound?.playStep?.(520);
+          onNavigateArticle(prevQuestion);
+        }
+      } else if (e.key === ']' || (e.altKey && e.key === 'ArrowRight')) {
+        if (nextQuestion && onNavigateArticle) {
+          e.preventDefault();
+          sound?.playStep?.(580);
+          onNavigateArticle(nextQuestion);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [prevQuestion, nextQuestion, onNavigateArticle]);
 
   // Normalize YouTube videos array with strict deduplication
   const videoList = useMemo(() => {
@@ -275,6 +332,8 @@ export default function ProblemArticlePage({
   const visualizerEntry = loadedModule || (currentKey ? visualizersRegistry[currentKey] : null);
   const VisualizerComponent = visualizerEntry?.Component || null;
   const hasVisualizer = Boolean(VisualizerComponent);
+  const ideaMap = visualizerEntry?.ideaMap || loadedModule?.ideaMap || null;
+  const hasIdeaMap = Boolean(ideaMap);
 
   const activeApproachData = visualizerEntry?.approaches?.[selectedTier] || null;
   const stepsList = activeApproachData?.steps || visualizerEntry?.steps || null;
@@ -417,6 +476,53 @@ export default function ProblemArticlePage({
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Sheet</span>
             </button>
+
+            {/* Prev / Next Problem Switcher */}
+            {questions && questions.length > 1 && onNavigateArticle && (
+              <div className="flex items-center bg-[var(--board-raised)] border border-[var(--line)] rounded-lg p-0.5 shadow-sm">
+                <button
+                  onClick={() => {
+                    if (prevQuestion) {
+                      sound?.playStep?.(520);
+                      onNavigateArticle(prevQuestion);
+                    }
+                  }}
+                  disabled={!prevQuestion}
+                  className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded transition-all ${
+                    prevQuestion
+                      ? 'text-[var(--ink)] hover:bg-[var(--board-raised-2)] hover:text-[var(--accent-bright)] cursor-pointer'
+                      : 'text-[var(--ink-muted)]/30 cursor-not-allowed'
+                  }`}
+                  title={prevQuestion ? `Previous: ${prevQuestion.title} (Hotkeys: [ or Alt+Left)` : 'First problem in curriculum'}
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Prev</span>
+                </button>
+
+                <span className="text-[11px] font-mono text-[var(--ink-muted)] px-2 border-x border-[var(--line)] select-none">
+                  {currentIndex >= 0 ? `${currentIndex + 1} / ${questions.length}` : '—'}
+                </span>
+
+                <button
+                  onClick={() => {
+                    if (nextQuestion) {
+                      sound?.playStep?.(580);
+                      onNavigateArticle(nextQuestion);
+                    }
+                  }}
+                  disabled={!nextQuestion}
+                  className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded transition-all ${
+                    nextQuestion
+                      ? 'text-[var(--ink)] hover:bg-[var(--board-raised-2)] hover:text-[var(--accent-bright)] cursor-pointer'
+                      : 'text-[var(--ink-muted)]/30 cursor-not-allowed'
+                  }`}
+                  title={nextQuestion ? `Next: ${nextQuestion.title} (Hotkeys: ] or Alt+Right)` : 'Last problem in curriculum'}
+                >
+                  <span className="hidden md:inline">Next</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
 
             <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[var(--ink-muted)] truncate">
               <span>Step {question.step_no || 1}</span>
@@ -654,6 +760,7 @@ export default function ProblemArticlePage({
                 {[
                   { id: 'split', label: 'Split ◫' },
                   { id: 'canvas', label: 'Canvas ▭' },
+                  ...(hasIdeaMap ? [{ id: 'idea_map', label: '🗺️ Idea Map' }] : []),
                   { id: 'code', label: 'Code 📄' }
                 ].map((mode) => (
                   <button
@@ -718,7 +825,13 @@ export default function ProblemArticlePage({
 
           {/* Visualizer Canvas Body */}
           <div className="p-5 sm:p-6 bg-[var(--board)] min-h-[280px]">
-            {selectedTier === 'beta' ? (
+            {visViewMode === 'idea_map' && hasIdeaMap ? (
+              <IdeaMapView
+                ideaMap={ideaMap}
+                question={question}
+                onLaunchVisualizer={() => setVisViewMode('split')}
+              />
+            ) : selectedTier === 'beta' ? (
               <BetaCodeVisualizer question={question} />
             ) : hasVisualizer && VisualizerComponent ? (
               <div>
@@ -1635,6 +1748,73 @@ export default function ProblemArticlePage({
               rows={8}
               className="w-full p-3.5 rounded-md bg-[var(--board)] border border-[var(--line)] focus:border-[var(--indigo)] text-sm text-[var(--ink)] placeholder-[var(--ink-muted)] focus:outline-none font-mono resize-y"
             />
+          </div>
+        )}
+
+        {/* ── Bottom Problem Navigation Footer ── */}
+        {questions && questions.length > 1 && onNavigateArticle && (
+          <div className="pt-8 mt-10 border-t border-[var(--line)] grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {prevQuestion ? (
+              <button
+                onClick={() => {
+                  sound?.playStep?.(520);
+                  onNavigateArticle(prevQuestion);
+                }}
+                className="flex flex-col text-left p-4 rounded-xl bg-[var(--board-raised)] hover:bg-[var(--board-raised-2)] border border-[var(--line)] hover:border-[var(--accent-bright)]/40 transition-all duration-200 group cursor-pointer shadow-sm"
+              >
+                <div className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)] group-hover:text-[var(--accent-bright)] mb-1.5">
+                  <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  <span className="font-semibold uppercase tracking-wider text-[10px]">Previous Problem ( [ )</span>
+                </div>
+                <span className="font-semibold text-sm text-[var(--ink)] line-clamp-1 group-hover:text-[var(--accent-bright)] transition-colors">
+                  {prevQuestion.title}
+                </span>
+                <div className="flex items-center gap-2 mt-2 text-[11px] text-[var(--ink-muted)] font-mono">
+                  <span className="capitalize px-1.5 py-0.5 rounded bg-[var(--board)] border border-[var(--line)] text-[10px]">
+                    {prevQuestion.difficulty || 'Medium'}
+                  </span>
+                  <span>•</span>
+                  <span>Step {prevQuestion.step_no || 'DSA'}</span>
+                  <span>•</span>
+                  <span className="truncate max-w-[160px]">{prevQuestion.category || prevQuestion.substep_name || ''}</span>
+                </div>
+              </button>
+            ) : (
+              <div className="p-4 rounded-xl border border-[var(--line)]/40 bg-[var(--board-raised)]/30 opacity-40 flex flex-col justify-center">
+                <span className="text-xs text-[var(--ink-muted)] font-mono">Beginning of DSA Sheet</span>
+              </div>
+            )}
+
+            {nextQuestion ? (
+              <button
+                onClick={() => {
+                  sound?.playStep?.(580);
+                  onNavigateArticle(nextQuestion);
+                }}
+                className="flex flex-col text-right p-4 rounded-xl bg-[var(--board-raised)] hover:bg-[var(--board-raised-2)] border border-[var(--line)] hover:border-[var(--accent-bright)]/40 transition-all duration-200 group cursor-pointer sm:items-end shadow-sm"
+              >
+                <div className="flex items-center gap-1.5 text-xs text-[var(--ink-muted)] group-hover:text-[var(--accent-bright)] mb-1.5">
+                  <span className="font-semibold uppercase tracking-wider text-[10px]">Next Problem ( ] )</span>
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </div>
+                <span className="font-semibold text-sm text-[var(--ink)] line-clamp-1 group-hover:text-[var(--accent-bright)] transition-colors">
+                  {nextQuestion.title}
+                </span>
+                <div className="flex items-center gap-2 mt-2 text-[11px] text-[var(--ink-muted)] font-mono">
+                  <span className="capitalize px-1.5 py-0.5 rounded bg-[var(--board)] border border-[var(--line)] text-[10px]">
+                    {nextQuestion.difficulty || 'Medium'}
+                  </span>
+                  <span>•</span>
+                  <span>Step {nextQuestion.step_no || 'DSA'}</span>
+                  <span>•</span>
+                  <span className="truncate max-w-[160px]">{nextQuestion.category || nextQuestion.substep_name || ''}</span>
+                </div>
+              </button>
+            ) : (
+              <div className="p-4 rounded-xl border border-[var(--line)]/40 bg-[var(--board-raised)]/30 opacity-40 flex flex-col justify-center items-end">
+                <span className="text-xs text-[var(--ink-muted)] font-mono">End of DSA Sheet</span>
+              </div>
+            )}
           </div>
         )}
       </div>

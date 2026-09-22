@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Check if String is Palindrome or Not',
@@ -6,7 +6,21 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1)',
-  description: 'Validates whether a string reads identically forward and backward using two pointers converging from both ends toward the center.'
+  description: 'Validates whether a string reads identically forward and backward using two pointers converging from opposite ends toward the center.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Two-Pointer Palindrome Verification Strategy',
+  nodes: [
+    { id: 'root', label: 'Bidirectional Inward Convergence', children: ['boundary-pointers', 'symmetric-match', 'mismatch-early-exit', 'center-termination', 'complexity'] },
+    { id: 'boundary-pointers', label: '1. Boundary Initialization', detail: 'Initialize left = 0 at start and right = n - 1 at end of the string.' },
+    { id: 'symmetric-match', label: '2. Pairwise Character Equality', detail: 'Check if s[left] == s[right]. If equal, advance left++ and right-- inwards.' },
+    { id: 'mismatch-early-exit', label: '3. Early Exit on Mismatch', detail: 'If s[left] != s[right] at any point, terminate immediately returning false.' },
+    { id: 'center-termination', label: '4. Center Meeting (left >= right)', detail: 'When pointers cross or meet at the middle character, the string is proven to be a palindrome.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Inspects at most N/2 character pairs in O(N) time with strictly O(1) auxiliary space.' }
+  ]
 };
 
 export const solutions = {
@@ -18,11 +32,12 @@ using namespace std;
 class Solution {
 public:
     bool isPalindrome(string s) {
-        int left = 0, right = s.length() - 1;
+        int left = 0;
+        int right = (int)s.length() - 1;
 
         while (left < right) {
             if (s[left] != s[right]) {
-                return false; // Mismatch found
+                return false; // Mismatch found: not a palindrome
             }
             left++;
             right--;
@@ -31,10 +46,12 @@ public:
         return true; // All symmetric pairs matched!
     }
 };`,
-  python: `# Python 3 Optimal Two-Pointer Palindrome Check
+  python: `# Python 3 Optimal Two-Pointer Palindrome Verification
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def isPalindrome(self, s: str) -> bool:
-        left, right = 0, len(s) - 1
+        left = 0
+        right = len(s) - 1
 
         while left < right:
             if s[left] != s[right]:
@@ -43,10 +60,12 @@ class Solution:
             right -= 1
 
         return True`,
-  java: `// Java Optimal Two-Pointer Palindrome Check
+  java: `// Java Optimal Two-Pointer Palindrome Verification
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public boolean isPalindrome(String s) {
-        int left = 0, right = s.length() - 1;
+        int left = 0;
+        int right = s.length() - 1;
 
         while (left < right) {
             if (s.charAt(left) != s.charAt(right)) {
@@ -59,9 +78,11 @@ class Solution {
         return true;
     }
 }`,
-  javascript: `// JavaScript Optimal Two-Pointer Palindrome Check
+  javascript: `// JavaScript Optimal Two-Pointer Palindrome Verification
+// Time Complexity: O(N) | Space Complexity: O(1)
 var isPalindrome = function(s) {
-    let left = 0, right = s.length - 1;
+    let left = 0;
+    let right = s.length - 1;
 
     while (left < right) {
         if (s[left] !== s[right]) {
@@ -77,124 +98,223 @@ var isPalindrome = function(s) {
 
 export const steps = [
   {
-    title: '1. Initialize: left=0 ("R"), right=6 ("R")',
-    phase: 'INITIALIZATION',
-    codeLine: 11,
-    chars: ['R', 'A', 'C', 'E', 'C', 'A', 'R'],
-    left: 0,
-    right: 6,
-    variables: { left: 0, right: 6, 's[left]': 'R', 's[right]': 'R' },
-    explain: 'String is "RACECAR". left starts at 0, right starts at 6. Compare s[left] and s[right].',
-    intuition: 'A palindrome requires every character at index i to match the character at index (n - 1 - i).'
+    title: '1. Setup: String s = "RACECAR" (Length = 7)',
+    phase: 'SETUP',
+    track: {
+      label: 'Character Array s',
+      items: [
+        { val: 'R' },
+        { val: 'A' },
+        { val: 'C' },
+        { val: 'E' },
+        { val: 'C' },
+        { val: 'A' },
+        { val: 'R' }
+      ],
+      pointers: [
+        { index: 0, label: 'left = 0' },
+        { index: 6, label: 'right = 6' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 6,
+    metrics: [
+      { label: 'String Length', value: 7 },
+      { label: 'left', value: 0 },
+      { label: 'right', value: 6 }
+    ],
+    formula: 'int left = 0; int right = s.length() - 1;',
+    action: 'Initialize left pointer at index 0 and right pointer at index 6.',
+    explain: 'A string is a palindrome if it reads the same forward and backward. We verify this by testing characters from outside inwards.',
+    intuition: 'If any pair fails to match, we can reject the string immediately in O(1) time.',
+    variables: { left: 0, right: 6, 's[left]': 'R', 's[right]': 'R' }
   },
   {
-    title: '2. Pair Match: s[0] == s[6] ("R" == "R")',
+    title: '2. Pair 1: s[0] == s[6] ("R" == "R") -> Match!',
     phase: 'MATCH',
-    codeLine: 16,
-    chars: ['R', 'A', 'C', 'E', 'C', 'A', 'R'],
-    left: 1,
-    right: 5,
-    variables: { matchedPair: 'R == R', left: 1, right: 5 },
-    explain: 'Both characters are "R". Valid! Advance left to 1 and right to 5.',
-    intuition: 'Outer boundary matches. Step inwards.'
+    track: {
+      label: 'Character Array s',
+      items: [
+        { val: 'R', status: 'match', badge: 'Match' },
+        { val: 'A' },
+        { val: 'C' },
+        { val: 'E' },
+        { val: 'C' },
+        { val: 'A' },
+        { val: 'R', status: 'match', badge: 'Match' }
+      ],
+      pointers: [
+        { index: 0, label: 'left = 0' },
+        { index: 6, label: 'right = 6' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 6,
+    metrics: [
+      { label: 'Pair Checked', value: '"R" == "R"', highlight: true },
+      { label: 'Matches so far', value: '1 pair' },
+      { label: 'Action', value: 'left++, right--' }
+    ],
+    formula: 's[left] == s[right] ("R" == "R") ==> left++; right--;',
+    action: 's[0] matches s[6]. Advance left to 1 and right to 5.',
+    explain: 'The outermost characters are identical. The outer boundary satisfies the palindrome invariant.',
+    intuition: 'Step inward to the next concentric layer.',
+    variables: { left: 1, right: 5, 's[0]': 'R', 's[6]': 'R', isMatch: true }
   },
   {
-    title: '3. Pair Match: s[1] == s[5] ("A" == "A")',
+    title: '3. Pair 2: s[1] == s[5] ("A" == "A") -> Match!',
     phase: 'MATCH',
-    codeLine: 16,
-    chars: ['R', 'A', 'C', 'E', 'C', 'A', 'R'],
-    left: 2,
-    right: 4,
-    variables: { matchedPair: 'A == A', left: 2, right: 4 },
-    explain: 'Both characters are "A". Valid! Advance left to 2 and right to 4.',
-    intuition: 'Second symmetric layer matches.'
+    track: {
+      label: 'Character Array s',
+      items: [
+        { val: 'R', status: 'match' },
+        { val: 'A', status: 'match', badge: 'Match' },
+        { val: 'C' },
+        { val: 'E' },
+        { val: 'C' },
+        { val: 'A', status: 'match', badge: 'Match' },
+        { val: 'R', status: 'match' }
+      ],
+      pointers: [
+        { index: 1, label: 'left = 1' },
+        { index: 5, label: 'right = 5' }
+      ]
+    },
+    activeI: 1,
+    activeJ: 5,
+    metrics: [
+      { label: 'Pair Checked', value: '"A" == "A"', highlight: true },
+      { label: 'Matches so far', value: '2 pairs' },
+      { label: 'Action', value: 'left++, right--' }
+    ],
+    formula: 's[left] == s[right] ("A" == "A") ==> left++; right--;',
+    action: 's[1] matches s[5]. Advance left to 2 and right to 4.',
+    explain: 'Second concentric character pair matches.',
+    intuition: 'Continuing symmetric inward traversal.',
+    variables: { left: 2, right: 4, 's[1]': 'A', 's[5]': 'A', isMatch: true }
   },
   {
-    title: '4. Pair Match: s[2] == s[4] ("C" == "C")',
+    title: '4. Pair 3: s[2] == s[4] ("C" == "C") -> Match!',
     phase: 'MATCH',
-    codeLine: 16,
-    chars: ['R', 'A', 'C', 'E', 'C', 'A', 'R'],
-    left: 3,
-    right: 3,
-    variables: { matchedPair: 'C == C', left: 3, right: 3 },
-    explain: 'Both characters are "C". Valid! Advance left to 3 and right to 3.',
-    intuition: 'Third layer matches.'
+    track: {
+      label: 'Character Array s',
+      items: [
+        { val: 'R', status: 'match' },
+        { val: 'A', status: 'match' },
+        { val: 'C', status: 'match', badge: 'Match' },
+        { val: 'E' },
+        { val: 'C', status: 'match', badge: 'Match' },
+        { val: 'A', status: 'match' },
+        { val: 'R', status: 'match' }
+      ],
+      pointers: [
+        { index: 2, label: 'left = 2' },
+        { index: 4, label: 'right = 4' }
+      ]
+    },
+    activeI: 2,
+    activeJ: 4,
+    metrics: [
+      { label: 'Pair Checked', value: '"C" == "C"', highlight: true },
+      { label: 'Matches so far', value: '3 pairs' },
+      { label: 'Action', value: 'left++, right--' }
+    ],
+    formula: 's[left] == s[right] ("C" == "C") ==> left++; right--;',
+    action: 's[2] matches s[4]. Advance left to 3 and right to 3.',
+    explain: 'Third concentric pair matches. left and right now converge at the middle index 3.',
+    intuition: 'Only the center character remains.',
+    variables: { left: 3, right: 3, 's[2]': 'C', 's[4]': 'C', isMatch: true }
   },
   {
-    title: '5. Convergence: left == right (3 == 3, Center "E")',
+    title: '5. Center Reached: left == right == 3 ("E")',
+    phase: 'CENTER_REACHED',
+    track: {
+      label: 'Center Element Isolated',
+      items: [
+        { val: 'R', status: 'match' },
+        { val: 'A', status: 'match' },
+        { val: 'C', status: 'match' },
+        { val: 'E', status: 'match', badge: 'Center' },
+        { val: 'C', status: 'match' },
+        { val: 'A', status: 'match' },
+        { val: 'R', status: 'match' }
+      ],
+      pointers: [
+        { index: 3, label: 'left == right == 3' }
+      ]
+    },
+    activeI: 3,
+    activeJ: 3,
+    metrics: [
+      { label: 'Convergence', value: 'left == right (3 == 3)' },
+      { label: 'Center Character', value: '"E"' },
+      { label: 'Loop Condition', value: 'left < right -> False' }
+    ],
+    formula: 'while (left < right) exits because 3 < 3 is False',
+    action: 'left and right meet at the center element. The while loop cleanly terminates.',
+    explain: 'Because left is no longer strictly less than right, every symmetric pair has been checked and verified.',
+    intuition: 'Odd-length strings have a single center character that doesn’t need a partner.',
+    variables: { left: 3, right: 3, loopExited: true }
+  },
+  {
+    title: '6. Negative Case Analysis: What if Mismatch Occurred?',
+    phase: 'ANALYSIS',
+    track: {
+      label: 'Counter-Example: s = "ROBOT"',
+      items: [
+        { val: 'R', status: 'discarded', badge: 'left' },
+        { val: 'O' },
+        { val: 'B' },
+        { val: 'O' },
+        { val: 'T', status: 'discarded', badge: 'right' }
+      ],
+      pointers: [
+        { index: 0, label: 'R' },
+        { index: 4, label: 'T (!= R)' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 4,
+    metrics: [
+      { label: 'Mismatch', value: '"R" != "T"', highlight: true },
+      { label: 'Immediate Exit', value: 'Returns false' },
+      { label: 'Best-case Time', value: 'O(1)' }
+    ],
+    formula: 'if (s[left] != s[right]) return false;',
+    action: 'Demonstrate early-exit efficiency on non-palindromes.',
+    explain: 'If the string were "ROBOT", comparing s[0] ("R") and s[4] ("T") immediately fails, returning false after a single comparison.',
+    intuition: 'Early exit prevents wasted computations on asymmetric inputs.',
+    variables: { mismatchDetected: true, earlyExit: true }
+  },
+  {
+    title: '7. Complete: Return TRUE (Palindrome Verified)',
     phase: 'COMPLETED',
-    codeLine: 20,
-    chars: ['R', 'A', 'C', 'E', 'C', 'A', 'R'],
-    left: 3,
-    right: 3,
-    variables: { isPalindrome: true, timeComplexity: 'O(N/2)', spaceComplexity: 'O(1)' },
-    explain: 'left and right meet at the center character "E". Loop ends: string is confirmed a valid Palindrome!',
-    intuition: 'Strictly O(N) single-pass symmetry verification.'
+    track: {
+      label: 'Verified Palindrome String',
+      items: [
+        { val: 'R', status: 'match' },
+        { val: 'A', status: 'match' },
+        { val: 'C', status: 'match' },
+        { val: 'E', status: 'match' },
+        { val: 'C', status: 'match' },
+        { val: 'A', status: 'match' },
+        { val: 'R', status: 'match' }
+      ],
+      pointers: [
+        { index: 3, label: 'Verified True' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Result', value: 'true (Palindrome)', highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    formula: 'return true;',
+    action: 'Algorithm concludes: Returns true.',
+    explain: 'All character pairs matched their mirror positions across the center. The string is confirmed to be a palindrome in O(N) time and O(1) space.',
+    intuition: 'Two-pointer convergence is the textbook gold standard for palindrome verification.',
+    variables: { isPalindrome: true, result: 'true', time: 'O(N)', space: 'O(1)' }
   }
 ];
-
-export default function CheckIfStringIsPalindromeOrNotVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Pointers Legend */}
-      <div className="flex items-center gap-4 text-xs font-mono">
-        <span className="px-3 py-1 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Left: {step.left}
-        </span>
-        <span className="px-3 py-1 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Right: {step.right}
-        </span>
-        {step.phase === 'COMPLETED' && (
-          <span className="px-3 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
-            ✓ Valid Palindrome
-          </span>
-        )}
-      </div>
-
-      {/* String Characters Box */}
-      <div className="w-full flex items-center justify-center gap-2.5 py-4">
-        {step.chars.map((char, idx) => {
-          const isLeft = step.left === idx;
-          const isRight = step.right === idx;
-          const isBoth = isLeft && isRight;
-
-          let style = 'bg-[#181a24] text-white border-[#2b2e40]';
-          if (step.phase === 'COMPLETED') {
-            style = 'bg-emerald-500/20 text-emerald-200 border-emerald-500/50 shadow-sm';
-          } else if (isBoth) {
-            style = 'bg-amber-500/25 text-amber-300 border-amber-400 scale-110 shadow-md';
-          } else if (isLeft) {
-            style = 'bg-blue-500/25 text-blue-300 border-blue-400 scale-105 shadow-md';
-          } else if (isRight) {
-            style = 'bg-purple-500/25 text-purple-300 border-purple-400 scale-105 shadow-md';
-          }
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[50px]">
-              {/* Pointer Marker */}
-              <div className="h-5 flex items-center gap-1 text-[9px] font-mono font-bold">
-                {isBoth ? (
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">Center</span>
-                ) : (
-                  <>
-                    {isLeft && <span className="px-1.5 py-0.5 rounded bg-blue-500 text-white">L</span>}
-                    {isRight && <span className="px-1.5 py-0.5 rounded bg-purple-500 text-white">R</span>}
-                  </>
-                )}
-              </div>
-
-              {/* Character Box */}
-              <div className={`w-13 h-13 rounded-xl border flex items-center justify-center font-mono text-xl font-bold transition-all duration-300 ${style}`}>
-                {char}
-              </div>
-
-              <span className="text-[10px] font-mono text-[#5b6076]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}

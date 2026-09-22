@@ -157,8 +157,8 @@ export default function ConnectedComponentsProblemInMatrixVisualizer({ currentSt
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <span className="text-xs font-mono text-[#8a8ea3] self-start">Grid State [3 &times; 4]</span>
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] self-start">Grid State [3 &times; 4]</span>
         <div className="grid grid-cols-4 gap-2">
           {grid.map((row, r) =>
             row.map((val, c) => {
@@ -173,8 +173,8 @@ export default function ConnectedComponentsProblemInMatrixVisualizer({ currentSt
                       : isVisited
                       ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200'
                       : val === 1
-                      ? 'bg-[#1e2235] border-[#3b4261] text-slate-300'
-                      : 'bg-[#0f1017] border-[#1e2235] text-[#475569]'
+                      ? 'bg-[var(--board-raised-2)] border-[#3b4261] text-[var(--chalk-dim)]'
+                      : 'bg-[#0f1017] border-[var(--line)] text-[#475569]'
                   }`}
                 >
                   <span>{val}</span>
@@ -186,7 +186,7 @@ export default function ConnectedComponentsProblemInMatrixVisualizer({ currentSt
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

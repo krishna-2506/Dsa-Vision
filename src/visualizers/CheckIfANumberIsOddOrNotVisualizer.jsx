@@ -99,16 +99,16 @@ export default function CheckIfANumberIsOddOrNotVisualizer({ currentStep = 0 }) 
       </div>
 
       {/* Bit Register Table */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-4 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-4 font-mono">
         {/* Row 1: N */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#8a8ea3] w-24">N ({step.n}):</span>
+          <span className="text-xs text-[var(--chalk-dim)] w-24">N ({step.n}):</span>
           <div className="flex items-center gap-1.5">
             {step.binaryN.split('').map((bit, idx) => (
               <div
                 key={idx}
                 className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                  idx === 7 ? 'border-amber-400 bg-amber-500/20 text-amber-200 scale-105' : 'border-[#272b3c] bg-[#12131b] text-white'
+                  idx === 7 ? 'border-amber-400 bg-amber-500/20 text-amber-200 scale-105' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
                 }`}
               >
                 {bit}
@@ -119,13 +119,13 @@ export default function CheckIfANumberIsOddOrNotVisualizer({ currentStep = 0 }) 
 
         {/* Row 2: Mask 1 */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#8a8ea3] w-24">&amp; Mask (1):</span>
+          <span className="text-xs text-[var(--chalk-dim)] w-24">&amp; Mask (1):</span>
           <div className="flex items-center gap-1.5">
             {step.mask.split('').map((bit, idx) => (
               <div
                 key={idx}
                 className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                  idx === 7 ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 scale-105' : 'border-[#272b3c] bg-[#12131b] text-[#5b6076]'
+                  idx === 7 ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 scale-105' : 'border-[var(--line)] bg-[var(--board-raised)] text-[#5b6076]'
                 }`}
               >
                 {bit}
@@ -145,7 +145,7 @@ export default function CheckIfANumberIsOddOrNotVisualizer({ currentStep = 0 }) 
                 <div
                   key={idx}
                   className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                    idx === 7 ? 'border-emerald-400 bg-emerald-500/30 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/30' : 'border-[#272b3c] bg-[#12131b] text-[#5b6076]'
+                    idx === 7 ? 'border-emerald-400 bg-emerald-500/30 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/30' : 'border-[var(--line)] bg-[var(--board-raised)] text-[#5b6076]'
                   }`}
                 >
                   {bit}
@@ -157,7 +157,7 @@ export default function CheckIfANumberIsOddOrNotVisualizer({ currentStep = 0 }) 
       </div>
 
       {/* Decision Summary */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex items-center justify-around font-mono text-xs text-[#8a8ea3]">
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-around font-mono text-xs text-[var(--chalk-dim)]">
         <div>LSB Bit 0 = <strong className="text-amber-300">1</strong> (Odd)</div>
         <div>CPU Cost: <strong className="text-emerald-400">1 Clock Cycle (O(1))</strong></div>
       </div>

@@ -231,21 +231,21 @@ export default function BinarySearchVisualizer({
           <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
             Step {stepIndex + 1} / {activeSteps.length}
           </span>
-          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
+          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
         </div>
 
         <div className="flex items-center gap-1.5">
           <button
             onClick={handlePrev}
             disabled={stepIndex === 0}
-            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition cursor-pointer"
+            className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition cursor-pointer"
           >
             ← Prev
           </button>
           <button
             onClick={handleNext}
             disabled={stepIndex === activeSteps.length - 1}
-            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition cursor-pointer"
+            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition cursor-pointer"
           >
             Next →
           </button>
@@ -271,13 +271,13 @@ export default function BinarySearchVisualizer({
           <span className="text-slate-700">|</span>
           <span className="text-indigo-400 font-bold">HIGH: {stepData.high}</span>
           <span className="text-slate-700">|</span>
-          <span className="text-slate-400">Target: <strong className="text-white">{activeTarget}</strong></span>
+          <span className="text-[var(--chalk-dim)]">Target: <strong className="text-[var(--chalk)]">{activeTarget}</strong></span>
         </div>
       </div>
 
       {/* Footer Explanation */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-slate-300 leading-relaxed font-sans">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold">Analysis:</span>
+      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-[var(--chalk-dim)] leading-relaxed font-sans">
+        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold">Analysis:</span>
         {stepData.explanation}
       </div>
     </div>

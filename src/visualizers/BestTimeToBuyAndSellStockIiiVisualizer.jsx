@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by StockTradingRenderer via rendererType
 
 export const meta = {
   title: 'Best Time to Buy and Sell Stock III (At Most 2 Transactions)',
   category: 'Dynamic Programming',
   difficulty: 'Hard',
-  timeComplexity: 'O(N * 2 * 3) = O(N)',
+  timeComplexity: 'O(N)',
   spaceComplexity: 'O(1) Space-Optimized',
-  description: 'Calculates the maximum profit achievable with at most 2 completed buy/sell transactions. State machine DP tracks 3 dimensions: Day index, Buy eligibility (1 or 0), and Remaining Transaction Capacity (2, 1, or 0).'
+  description: 'Calculates the maximum profit achievable with at most 2 completed buy/sell transactions. Solvable in O(N) time and O(1) space by tracking 4 sequential state variables: buy1, sell1, buy2, and sell2.'
+};
+
+export const rendererType = 'stock-trading';
+
+export const ideaMap = {
+  title: 'Stock III (At Most 2 Transactions)',
+  nodes: [
+    { id: 'root', label: 'Stock III (2 Trades)', children: ['four-states', 'recurrence', 'optimal'] },
+    { id: 'four-states', label: '1. Four State Variables', detail: 'buy1 (1st buy), sell1 (1st sell), buy2 (2nd buy), sell2 (2nd sell)' },
+    { id: 'recurrence', label: '2. Sequential Updates', children: ['t1', 't2'] },
+    { id: 't1', label: 'Trade 1', detail: 'buy1 = max(buy1, -price); sell1 = max(sell1, buy1 + price)' },
+    { id: 't2', label: 'Trade 2 (Reinvests)', detail: 'buy2 = max(buy2, sell1 - price); sell2 = max(sell2, buy2 + price)' },
+    { id: 'optimal', label: '3. Max Result', detail: 'sell2 captures combined profit of up to 2 optimal non-overlapping trades in O(1) space' }
+  ]
 };
 
 export const solutions = {
@@ -14,225 +28,278 @@ export const solutions = {
 // Time: O(N) | Space: O(1)
 #include <vector>
 #include <algorithm>
+#include <climits>
 using namespace std;
 
 class Solution {
 public:
     int maxProfit(vector<int>& prices) {
-        int n = prices.size();
-        vector<vector<int>> ahead(2, vector<int>(3, 0));
-        vector<vector<int>> cur(2, vector<int>(3, 0));
+        int buy1 = INT_MIN, sell1 = 0;
+        int buy2 = INT_MIN, sell2 = 0;
 
-        for (int i = n - 1; i >= 0; i--) {
-            for (int buy = 0; buy <= 1; buy++) {
-                for (int cap = 1; cap <= 2; cap++) {
-                    if (buy == 1) {
-                        cur[buy][cap] = max(-prices[i] + ahead[0][cap], ahead[1][cap]);
-                    } else {
-                        cur[buy][cap] = max(prices[i] + ahead[1][cap - 1], ahead[0][cap]);
-                    }
-                }
-            }
-            ahead = cur;
+        for (int price : prices) {
+            buy1 = max(buy1, -price);
+            sell1 = max(sell1, buy1 + price);
+            buy2 = max(buy2, sell1 - price);
+            sell2 = max(sell2, buy2 + price);
         }
 
-        return ahead[1][2];
+        return sell2;
     }
 };`,
   python: `# Python 3 Best Time to Buy and Sell Stock III
 # Time: O(N) | Space: O(1)
 class Solution:
     def maxProfit(self, prices: list[int]) -> int:
-        n = len(prices)
-        ahead = [[0] * 3 for _ in range(2)]
+        buy1 = float('-inf')
+        sell1 = 0
+        buy2 = float('-inf')
+        sell2 = 0
 
-        for price in reversed(prices):
-            cur = [[0] * 3 for _ in range(2)]
-            for buy in (0, 1):
-                for cap in (1, 2):
-                    if buy == 1:
-                        cur[buy][cap] = max(-price + ahead[0][cap], ahead[1][cap])
-                    else:
-                        cur[buy][cap] = max(price + ahead[1][cap - 1], ahead[0][cap])
-            ahead = cur
+        for price in prices:
+            buy1 = max(buy1, -price)
+            sell1 = max(sell1, buy1 + price)
+            buy2 = max(buy2, sell1 - price)
+            sell2 = max(sell2, buy2 + price)
 
-        return ahead[1][2]`,
+        return sell2`,
   java: `// Java Best Time to Buy and Sell Stock III
 // Time: O(N) | Space: O(1)
 class Solution {
     public int maxProfit(int[] prices) {
-        int n = prices.length;
-        int[][] ahead = new int[2][3];
+        int buy1 = Integer.MIN_VALUE, sell1 = 0;
+        int buy2 = Integer.MIN_VALUE, sell2 = 0;
 
-        for (int i = n - 1; i >= 0; i--) {
-            int[][] cur = new int[2][3];
-            for (int buy = 0; buy <= 1; buy++) {
-                for (int cap = 1; cap <= 2; cap++) {
-                    if (buy == 1) {
-                        cur[buy][cap] = Math.max(-prices[i] + ahead[0][cap], ahead[1][cap]);
-                    } else {
-                        cur[buy][cap] = Math.max(prices[i] + ahead[1][cap - 1], ahead[0][cap]);
-                    }
-                }
-            }
-            ahead = cur;
+        for (int price : prices) {
+            buy1 = Math.max(buy1, -price);
+            sell1 = Math.max(sell1, buy1 + price);
+            buy2 = Math.max(buy2, sell1 - price);
+            sell2 = Math.max(sell2, buy2 + price);
         }
 
-        return ahead[1][2];
+        return sell2;
     }
 }`,
   javascript: `// JavaScript Best Time to Buy and Sell Stock III
 // Time: O(N) | Space: O(1)
 var maxProfit = function(prices) {
-    let ahead = Array.from({ length: 2 }, () => new Array(3).fill(0));
+    let buy1 = -Infinity, sell1 = 0;
+    let buy2 = -Infinity, sell2 = 0;
 
-    for (let i = prices.length - 1; i >= 0; i--) {
-        const cur = Array.from({ length: 2 }, () => new Array(3).fill(0));
-        for (let buy = 0; buy <= 1; buy++) {
-            for (let cap = 1; cap <= 2; cap++) {
-                if (buy === 1) {
-                    cur[buy][cap] = Math.max(-prices[i] + ahead[0][cap], ahead[1][cap]);
-                } else {
-                    cur[buy][cap] = Math.max(prices[i] + ahead[1][cap - 1], ahead[0][cap]);
-                }
-            }
-        }
-        ahead = cur;
+    for (const price of prices) {
+        buy1 = Math.max(buy1, -price);
+        sell1 = Math.max(sell1, buy1 + price);
+        buy2 = Math.max(buy2, sell1 - price);
+        sell2 = Math.max(sell2, buy2 + price);
     }
 
-    return ahead[1][2];
+    return sell2;
 };`
 };
 
 export const steps = [
   {
-    title: '1. Prices: [3, 3, 5, 0, 0, 3, 1, 4], Capacity = 2 Transactions',
-    phase: 'INITIAL',
-    codeLine: 12,
+    phase: 'SETUP',
     prices: [3, 3, 5, 0, 0, 3, 1, 4],
-    cap: 2,
+    currentDay: null,
     trades: [],
-    totalProfit: 0,
-    variables: { pricesCount: 8, maxTransactions: 2 },
-    explain: 'Constraint: At most 2 non-overlapping completed transactions. Must sell before buying again.',
-    intuition: 'DP state dp[i][buy][cap] determines whether to hold, buy, or sell with remaining quota cap.'
-  },
-  {
-    title: '2. Transaction 1: Buy Day 3 ($0) and Sell Day 5 ($3) -> Profit $3',
-    phase: 'TX_1',
-    codeLine: 19,
-    prices: [3, 3, 5, 0, 0, 3, 1, 4],
-    cap: 1,
-    trades: [{ buy: 3, sell: 5, profit: 3 }],
-    totalProfit: 3,
-    variables: { tx1: 'Day 3 ($0) -> Day 5 ($3) = +$3', remainingCap: 1 },
-    explain: 'Completing first trade: remaining capacity decrements from 2 to 1.',
-    intuition: 'First transaction locks in 3 profit.'
-  },
-  {
-    title: '3. Transaction 2: Buy Day 6 ($1) and Sell Day 7 ($4) -> Profit $3',
-    phase: 'TX_2',
-    codeLine: 19,
-    prices: [3, 3, 5, 0, 0, 3, 1, 4],
-    cap: 0,
-    trades: [
-      { buy: 3, sell: 5, profit: 3 },
-      { buy: 6, sell: 7, profit: 3 }
+    dpState: { holdProfit: 0, notHoldProfit: 0, transactionsLeft: 2 },
+    formula: 'Capacity: at most 2 completed transactions | prices = [3, 3, 5, 0, 0, 3, 1, 4]',
+    action: 'Initialize 4 state variables: buy1, sell1, buy2, sell2.',
+    explain: 'Instead of full 3D tabulation, Stock III is cleanly solved with 4 state variables: buy1 (cost of 1st buy), sell1 (profit after 1st sell), buy2 (effective capital after 2nd buy), and sell2 (total profit after 2nd sell).',
+    intuition: 'Each variable tracks the maximum equity achieved at that stage of trading.',
+    metrics: [
+      { label: 'Max Profit', value: '$0', highlight: true },
+      { label: 'Allowed Trades', value: '2' },
+      { label: 'Status', value: 'Ready' }
     ],
-    totalProfit: 6,
-    variables: { tx2: 'Day 6 ($1) -> Day 7 ($4) = +$3', remainingCap: 0 },
-    explain: 'Completing second trade: remaining capacity reaches 0. Total profit = 3 + 3 = 6.',
-    intuition: 'Two transactions fully utilized.'
+    customCard: {
+      title: 'Four-Variable State Machine',
+      rows: [
+        { label: 'Trade 1 States', value: 'buy1 = max(buy1, -price); sell1 = max(sell1, buy1 + price)' },
+        { label: 'Trade 2 States', value: 'buy2 = max(buy2, sell1 - price); sell2 = max(sell2, buy2 + price)' }
+      ]
+    }
   },
   {
-    title: '4. Final Optimal Result: Max Profit = $6 (Two Trades of +$3 Each)',
+    phase: 'SCAN',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 0,
+    trades: [],
+    dpState: { holdProfit: -3, notHoldProfit: 0, transactionsLeft: 2 },
+    formula: 'Day 0 ($3): buy1 = -3, sell1 = 0, buy2 = -3, sell2 = 0',
+    action: 'Day 0 (Price $3): First purchase establishes initial position at $3.',
+    explain: 'Purchasing 1 share costs $3. buy1 = -3. No sales made yet.',
+    intuition: 'Initial entry point established.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 0' },
+      { label: 'Price', value: '$3' },
+      { label: 'buy1', value: '-$3' }
+    ]
+  },
+  {
+    phase: 'SCAN',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 1,
+    trades: [],
+    dpState: { holdProfit: -3, notHoldProfit: 0, transactionsLeft: 2 },
+    formula: 'Day 1 ($3): Price flat at $3 => States unchanged',
+    action: 'Day 1 (Price $3): Price unchanged; hold states maintain value.',
+    explain: 'Flat price gives identical transitions. buy1 remains -3, sell1 = 0.',
+    intuition: 'Holding position awaiting price movement.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 1' },
+      { label: 'Price', value: '$3' },
+      { label: 'buy1', value: '-$3' }
+    ]
+  },
+  {
+    phase: 'TRADE',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 2,
+    trades: [{ buy: 1, sell: 2, net: 2 }],
+    dpState: { holdProfit: -3, notHoldProfit: 2, transactionsLeft: 1 },
+    formula: 'Day 2 ($5): sell1 = max(0, -3 + 5) = $2 | sell2 = $2',
+    action: 'Day 2 (Price $5): Surge to $5! Trade 1 candidate gains +$2.',
+    explain: 'Selling at $5 yields $5 - $3 = $2 profit. sell1 becomes $2. If a second buy is attempted today, buy2 = 2 - 5 = -3.',
+    intuition: 'First upward crest banked: +$2.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 2' },
+      { label: 'Price', value: '$5' },
+      { label: 'sell1', value: '+$2' }
+    ],
+    customCard: {
+      title: 'First Profit Banked',
+      rows: [
+        { label: 'Trade 1 Execution', value: 'Buy D1 ($3) -> Sell D2 ($5)', accent: true },
+        { label: 'Profit', value: '+$2' }
+      ]
+    }
+  },
+  {
+    phase: 'BUY',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 3,
+    trades: [],
+    dpState: { holdProfit: 0, notHoldProfit: 2, transactionsLeft: 2 },
+    formula: 'Day 3 ($0): buy1 = max(-3, -0) = $0! | buy2 = max(-3, 2 - 0) = +$2!',
+    action: 'Day 3 (Price $0): Market bottom! buy1 improves to $0, buy2 reaches +$2.',
+    explain: 'Price plunges to $0. Entering Trade 1 at $0 costs $0 (buy1 = 0). Simultaneously, using the $2 from Day 2 to buy at $0 gives buy2 = sell1(2) - 0 = +$2.',
+    intuition: 'The $0 price provides an exceptional entry for both Trade 1 and Trade 2.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 3' },
+      { label: 'Price', value: '$0' },
+      { label: 'buy1', value: '$0 (free entry)' }
+    ],
+    customCard: {
+      title: 'Dual Opportunity at $0',
+      rows: [
+        { label: 'Trade 1 Reset', value: 'buy1 = $0 (better than buying at $3)', accent: true },
+        { label: 'Trade 2 Entry', value: 'buy2 = sell1($2) - $0 = +$2 net equity' }
+      ]
+    }
+  },
+  {
+    phase: 'TRADE',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 5,
+    trades: [{ buy: 3, sell: 5, net: 3 }],
+    dpState: { holdProfit: 0, notHoldProfit: 3, transactionsLeft: 1 },
+    formula: 'Day 5 ($3): sell1 = max(2, 0 + 3) = $3 | sell2 = max(2, buy2(2) + 3) = $5',
+    action: 'Day 5 (Price $3): Rebound to $3! sell1 reaches $3, sell2 reaches $5.',
+    explain: 'Selling Trade 1 at $3 yields 3 - 0 = $3 profit. Alternatively, selling Trade 2 (carried from Day 2) yields 2 + 3 = $5. The DP maintains both tracks.',
+    intuition: 'Capital expands as price bounces from $0 to $3.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 5' },
+      { label: 'Price', value: '$3' },
+      { label: 'sell1', value: '+$3' }
+    ]
+  },
+  {
+    phase: 'BUY',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 6,
+    trades: [{ buy: 3, sell: 5, net: 3 }],
+    dpState: { holdProfit: 0, notHoldProfit: 3, transactionsLeft: 1 },
+    formula: 'Day 6 ($1): buy2 = max(2, sell1(3) - 1) = +$2',
+    action: 'Day 6 (Price $1): Pullback to $1 provides optimal launchpad for Trade 2.',
+    explain: 'Price dips to $1. Reinvesting our $3 profit from Trade 1 to buy at $1 gives buy2 = sell1(3) - 1 = $2. We hold a share with $2 net banked cash.',
+    intuition: 'Re-entering on the dip before the final push.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 6' },
+      { label: 'Price', value: '$1' },
+      { label: 'buy2 State', value: '+$2 equity' }
+    ]
+  },
+  {
+    phase: 'TRADE',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 7,
+    trades: [
+      { buy: 3, sell: 5, net: 3 },
+      { buy: 6, sell: 7, net: 3 }
+    ],
+    dpState: { holdProfit: 0, notHoldProfit: 6, transactionsLeft: 0 },
+    formula: 'Day 7 ($4): sell2 = max(5, buy2(2) + 4) = $6! Global Maximum!',
+    action: 'Day 7 (Price $4): Final peak! Sell Trade 2 share for +$3 profit. Total = $6.',
+    explain: 'Selling at $4 yields buy2($2) + $4 = $6. Trade 1: Buy D3 ($0) -> Sell D5 ($3) [+$3]. Trade 2: Buy D6 ($1) -> Sell D7 ($4) [+$3]. Combined total profit = $6.',
+    intuition: 'Two non-overlapping trades executed at peak efficiency: $3 + $3 = $6.',
+    metrics: [
+      { label: 'Total Profit', value: '$6', highlight: true },
+      { label: 'Trade 1 Profit', value: '+$3' },
+      { label: 'Trade 2 Profit', value: '+$3' }
+    ],
+    customCard: {
+      title: 'Optimal Dual-Trade Portfolio',
+      rows: [
+        { label: 'Trade 1 (D3 -> D5)', value: 'Buy $0, Sell $3 (+$3 profit)', accent: true },
+        { label: 'Trade 2 (D6 -> D7)', value: 'Buy $1, Sell $4 (+$3 profit)', accent: true }
+      ]
+    }
+  },
+  {
+    phase: 'EVALUATE',
+    prices: [3, 3, 5, 0, 0, 3, 1, 4],
+    currentDay: 7,
+    trades: [
+      { buy: 3, sell: 5, net: 3 },
+      { buy: 6, sell: 7, net: 3 }
+    ],
+    dpState: { holdProfit: 0, notHoldProfit: 6, transactionsLeft: 0 },
+    formula: 'Single Trade vs Two Trades: Single Trade = $4 | Two Trades = $6 (+$2 extra)',
+    action: 'Compare single-transaction maximum with dual-transaction maximum.',
+    explain: 'If restricted to 1 trade, the best possible gain is Buy D3 ($0) -> Sell D7 ($4) = $4. By allowing at most 2 trades, the DP captures two separate troughs and crests, boosting profit by 50% to $6.',
+    intuition: 'Multiple transaction capacity harvests intra-stream price oscillations.',
+    metrics: [
+      { label: '1 Trade Max', value: '$4' },
+      { label: '2 Trades Max', value: '$6', highlight: true },
+      { label: 'Advantage', value: '+50%' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 24,
     prices: [3, 3, 5, 0, 0, 3, 1, 4],
-    cap: 0,
+    currentDay: null,
     trades: [
-      { buy: 3, sell: 5, profit: 3 },
-      { buy: 6, sell: 7, profit: 3 }
+      { buy: 3, sell: 5, net: 3 },
+      { buy: 6, sell: 7, net: 3 }
     ],
-    totalProfit: 6,
-    variables: { totalMaxProfit: 6, transactionsUsed: '2 / 2' },
-    explain: 'Total profit is 6. Alternative trade [3, 5] gives only 2, which is sub-optimal compared to (0->3) + (1->4) = 6.',
-    intuition: 'State DP naturally filters out inferior single trade alternatives.'
+    dpState: { holdProfit: 0, notHoldProfit: 6, transactionsLeft: 0 },
+    formula: 'Result: maxProfit(prices) = $6',
+    action: 'Algorithm completed in O(N) time and O(1) auxiliary space.',
+    explain: 'The final answer is stored in sell2 = $6. Four variables processed in a single pass achieve the global maximum without auxiliary arrays or recursion stack.',
+    intuition: 'Constant-space state machine captures multi-stage trading decisions cleanly.',
+    metrics: [
+      { label: 'Final Max Profit', value: '$6', highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Final Summary',
+      rows: [
+        { label: 'Trade 1 (D3 -> D5)', value: 'Buy at $0, Sell at $3 (Net +$3)' },
+        { label: 'Trade 2 (D6 -> D7)', value: 'Buy at $1, Sell at $4 (Net +$3)' }
+      ]
+    }
   }
 ];
-
-export default function BestTimeToBuyAndSellStockIiiVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Remaining Cap: {step.cap} / 2
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Profit: ${step.totalProfit}
-        </span>
-      </div>
-
-      {/* Stock Timeline Card */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Dual-Transaction Stock Trajectory
-        </span>
-
-        <div className="w-full flex items-end justify-around gap-1 h-44 pt-4 px-2">
-          {step.prices.map((p, idx) => {
-            const heightPx = Math.max(16, p * 24);
-            const isBuy = step.trades.some(t => t.buy === idx);
-            const isSell = step.trades.some(t => t.sell === idx);
-
-            return (
-              <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full">
-                <div className="text-[10px] font-mono mb-1 font-bold text-amber-300">
-                  ${p}
-                </div>
-
-                <div
-                  style={{ height: `${heightPx}px` }}
-                  className={`w-full max-w-[36px] rounded-t-xl border-t border-x flex flex-col items-center justify-between p-1 font-mono transition-all duration-300 ${
-                    isBuy
-                      ? 'border-emerald-500 bg-emerald-500/30 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg'
-                      : isSell
-                      ? 'border-amber-500 bg-amber-500/30 text-amber-300 ring-2 ring-amber-500/40 shadow-lg'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-500'
-                  }`}
-                >
-                  <span className="text-[7px] font-bold">
-                    {isBuy ? 'B' : isSell ? 'S' : ''}
-                  </span>
-                </div>
-
-                <span className="text-[9px] font-mono text-[#8a8ea3] mt-1">
-                  D{idx}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Executed Trades Info */}
-        {step.trades.length > 0 && (
-          <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 flex flex-wrap items-center justify-around gap-3 text-xs font-mono">
-            {step.trades.map((t, tidx) => (
-              <span key={tidx} className="px-2.5 py-1 rounded bg-[#12131b] border border-emerald-500/30 text-emerald-300">
-                Tx {tidx + 1}: Day {t.buy} (${step.prices[t.buy]}) ➔ Day {t.sell} (${step.prices[t.sell]}) = <strong className="text-amber-300">+${t.profit}</strong>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

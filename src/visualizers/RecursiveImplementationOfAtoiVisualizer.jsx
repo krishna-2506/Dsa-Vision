@@ -248,13 +248,13 @@ export default function RecursiveImplementationOfAtoiVisualizer({ currentStep = 
       </div>
 
       {/* Visual String Character Strip */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {step.s.split('').map((ch, idx) => {
           const isCurrent = step.idx === idx;
           const isConsumed = idx < step.idx;
           const isDigit = ch >= '0' && ch <= '9';
 
-          let style = 'border-[#272b3c] bg-[#12131b] text-white';
+          let style = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
           if (isCurrent) {
             style = 'border-amber-400 bg-amber-500/25 text-amber-200 scale-105 shadow-md shadow-amber-500/20';
           } else if (isConsumed && isDigit) {

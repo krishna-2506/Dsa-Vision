@@ -201,7 +201,7 @@ export default function PostorderTraversalOfBinaryTreeUsing1StackVisualizer({ cu
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Active: <strong className="text-amber-400">{step.currVal ? `Node ${step.currVal}` : 'null'}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -214,8 +214,8 @@ export default function PostorderTraversalOfBinaryTreeUsing1StackVisualizer({ cu
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         {/* Tree Topology */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Binary Tree</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Binary Tree</span>
 
           <div className="flex flex-col items-center gap-4 py-2">
             <div
@@ -224,7 +224,7 @@ export default function PostorderTraversalOfBinaryTreeUsing1StackVisualizer({ cu
                   ? 'bg-amber-500/25 border-amber-400 text-amber-200'
                   : step.output.includes(1)
                   ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                  : 'bg-[#181a26] border-[#31364d] text-white'
+                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               1
@@ -239,7 +239,7 @@ export default function PostorderTraversalOfBinaryTreeUsing1StackVisualizer({ cu
                       ? 'bg-amber-500/25 border-amber-400 text-amber-200'
                       : step.output.includes(v)
                       ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                      : 'bg-[#181a26] border-[#31364d] text-white'
+                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                   }`}
                 >
                   {v}
@@ -256,7 +256,7 @@ export default function PostorderTraversalOfBinaryTreeUsing1StackVisualizer({ cu
                       ? 'bg-amber-500/25 border-amber-400 text-amber-200'
                       : step.output.includes(v)
                       ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                      : 'bg-[#181a26] border-[#31364d] text-white'
+                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                   }`}
                 >
                   {v}
@@ -267,8 +267,8 @@ export default function PostorderTraversalOfBinaryTreeUsing1StackVisualizer({ cu
         </div>
 
         {/* Stack */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Single Stack</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Single Stack</span>
 
           <div className="w-36 h-36 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2 gap-1.5 bg-[#0f1016]">
             {step.stack.length === 0 ? (

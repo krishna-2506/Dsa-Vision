@@ -197,8 +197,8 @@ export default function MaximumWidthOfBtVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Level Index Span (Including Nulls)</span>
           <span className="text-cyan-400 font-bold">Overflow-Safe BFS</span>
         </div>
@@ -214,7 +214,7 @@ export default function MaximumWidthOfBtVisualizer({ currentStep = 0 }) {
                   className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center font-mono font-bold text-base transition-all ${
                     node
                       ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-md'
-                      : 'bg-[#12131b] border-dashed border-[#272b3c] text-[#444862]'
+                      : 'bg-[var(--board-raised)] border-dashed border-[var(--line)] text-[#444862]'
                   }`}
                 >
                   {node ? node.val : 'null'}
@@ -224,7 +224,7 @@ export default function MaximumWidthOfBtVisualizer({ currentStep = 0 }) {
           })}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Width spans from the leftmost non-null node to the rightmost non-null node on the same level.
         </div>
       </div>

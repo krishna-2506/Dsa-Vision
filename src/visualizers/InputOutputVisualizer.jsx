@@ -128,32 +128,32 @@ export default function InputOutputVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Stream & Buffer Simulator</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Stream & Buffer Simulator</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             Phase: {step.phase}
           </span>
         </div>
 
         <div className="space-y-3">
-          <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col space-y-1.5">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Standard Input Buffer (stdin)</span>
+          <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col space-y-1.5">
+            <span className="text-[11px] font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Standard Input Buffer (stdin)</span>
             <div className="font-mono text-xs text-amber-400 bg-amber-500/10 px-3 py-2 rounded-lg border border-amber-500/20 break-all">
               {step.streamBuffer}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c]">
-              <span className="text-[10px] uppercase font-mono text-slate-400 block mb-1">Last Read Token</span>
+            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
+              <span className="text-[10px] uppercase font-mono text-[var(--chalk-dim)] block mb-1">Last Read Token</span>
               <span className="text-xs font-mono font-bold text-cyan-400">
                 {step.consumedToken || 'None yet'}
               </span>
             </div>
-            <div className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c]">
-              <span className="text-[10px] uppercase font-mono text-slate-400 block mb-1">Variable State</span>
-              <div className="text-xs font-mono text-slate-300 space-y-0.5">
+            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
+              <span className="text-[10px] uppercase font-mono text-[var(--chalk-dim)] block mb-1">Variable State</span>
+              <div className="text-xs font-mono text-[var(--chalk-dim)] space-y-0.5">
                 <div>age: <span className="text-emerald-400 font-semibold">{step.variableState.age}</span></div>
                 <div>bio: <span className="text-emerald-400 font-semibold">{step.variableState.bio}</span></div>
               </div>
@@ -161,7 +161,7 @@ export default function InputOutputVisualizer({ currentStep = 0 }) {
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

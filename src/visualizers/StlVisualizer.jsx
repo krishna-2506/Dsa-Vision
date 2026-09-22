@@ -136,16 +136,16 @@ export default function StlVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">C++ STL Architecture</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">C++ STL Architecture</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] space-y-2">
-          <span className="text-[10px] uppercase font-mono text-slate-400">Container Elements / Operations</span>
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] space-y-2">
+          <span className="text-[10px] uppercase font-mono text-[var(--chalk-dim)]">Container Elements / Operations</span>
           <div className="flex flex-wrap gap-2 pt-1">
             {step.elements.map((item, idx) => (
               <span
@@ -158,7 +158,7 @@ export default function StlVisualizer({ currentStep = 0 }) {
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

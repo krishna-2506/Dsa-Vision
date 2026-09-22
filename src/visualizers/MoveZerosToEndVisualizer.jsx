@@ -179,15 +179,15 @@ export default function MoveZerosToEndVisualizer({ currentStep = 0, onStepChange
           const isJ = step.j === idx;
           const isZero = val === 0;
 
-          let cardColor = 'border-[#262834] bg-[#14151c] text-white';
+          let cardColor = 'border-[#262834] bg-[#14151c] text-[var(--chalk)]';
           if (isZero) cardColor = 'border-rose-500/40 bg-rose-500/10 text-rose-300';
           else cardColor = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300';
 
           return (
             <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[56px]">
               <div className="h-6 flex items-center gap-1 text-[10px] font-mono font-bold">
-                {isJ && <span className="px-1.5 rounded bg-indigo-500 text-white">j</span>}
-                {isI && <span className="px-1.5 rounded bg-amber-500 text-white">i</span>}
+                {isJ && <span className="px-1.5 rounded bg-indigo-500 text-[var(--chalk)]">j</span>}
+                {isI && <span className="px-1.5 rounded bg-amber-500 text-[var(--chalk)]">i</span>}
               </div>
 
               <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center font-mono text-xl font-bold transition-all duration-300 ${cardColor}`}>

@@ -144,9 +144,9 @@ export default function IfElseifVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Condition Ladder Flow</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Condition Ladder Flow</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
@@ -164,11 +164,11 @@ export default function IfElseifVisualizer({ currentStep = 0 }) {
                     ? 'bg-emerald-500/20 border-emerald-500/60 text-emerald-300 scale-[1.02]'
                     : isCurrent
                     ? 'bg-amber-500/20 border-amber-500/50 text-amber-300'
-                    : 'bg-[#12131b] border-[#272b3c] text-slate-400 opacity-70'
+                    : 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk-dim)] opacity-70'
                 }`}
               >
                 <div className="flex items-center space-x-3">
-                  <span className="text-slate-500">[{idx + 1}]</span>
+                  <span className="text-[var(--chalk-faint)]">[{idx + 1}]</span>
                   <span>{b.label}</span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -183,7 +183,7 @@ export default function IfElseifVisualizer({ currentStep = 0 }) {
           })}
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

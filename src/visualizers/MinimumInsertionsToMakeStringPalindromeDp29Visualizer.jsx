@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Minimum Insertions to Make String Palindrome (DP 29)',
+  title: 'Minimum Insertions to Make String Palindrome (DP-29)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N^2)',
+  timeComplexity: 'O(N²) Time',
   spaceComplexity: 'O(N) Space-Optimized',
-  description: 'Calculates the minimum number of insertions required to make a string a palindrome. By preserving the Longest Palindromic Subsequence (LPS), we only need to mirror the remaining characters: Min Insertions = N - LPS(s).'
+  description: 'Calculates the minimum insertions required to convert a string into a palindrome. By finding the Longest Palindromic Subsequence (LPS = LCS(s, reverse(s))), all characters outside the LPS must be mirrored: Min Insertions = N - LPS(s).'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Minimum Insertions to Make String Palindrome (DP-29)',
+  nodes: [
+    { id: 'root', label: 'Palindrome Insertion Minimizer', children: ['reduction', 'lps-calc', 'result-rule'] },
+    { id: 'reduction', label: '1. Mathematical Reduction', detail: 'To make s a palindrome with fewest insertions, keep as many palindromic characters intact as possible (LPS).' },
+    { id: 'lps-calc', label: '2. LPS as LCS(s, reverse(s))', children: ['grid-tab', 'recurrence'] },
+    { id: 'grid-tab', label: 'Grid Tabulation', detail: 'Compare string s against its reversal t. Matches step diagonally.' },
+    { id: 'recurrence', label: 'Recurrence', detail: 's[i-1] == t[j-1] => 1 + dp[i-1][j-1], else max(dp[i-1][j], dp[i][j-1])' },
+    { id: 'result-rule', label: '3. Final Formula', detail: 'Min Insertions = Length(s) - LPS(s)' }
+  ]
 };
 
 export const solutions = {
@@ -74,7 +88,7 @@ class Solution {
                     cur[j] = Math.max(prev[j], cur[j - 1]);
                 }
             }
-            System.arraycopy(cur, 0, prev, 0, n + 1);
+            prev = cur.clone();
         }
 
         return n - prev[n];
@@ -105,127 +119,187 @@ var minInsertions = function(s) {
 
 export const steps = [
   {
-    title: '1. String s = "mbadm", Length N = 5',
-    phase: 'INITIAL',
-    codeLine: 12,
-    s: 'mbadm',
-    t: 'mdabm',
-    n: 5,
-    lps: 0,
-    minIns: null,
-    variables: { s: 'mbadm', n: 5, formula: 'Min Insertions = N - LPS(s)' },
-    explain: 'To make "mbadm" a palindrome with minimum insertions, we must preserve the maximum length palindromic subsequence.',
-    intuition: 'Every character outside the Longest Palindromic Subsequence needs a corresponding mirror insertion.'
+    phase: 'SETUP',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'Min Insertions = N - LPS(s) = N - LCS(s, reverse(s))',
+    action: 'Initialize LPS computation between s = "mbadm" and reverse(s) = "mdabm".',
+    explain: 'To make string s palindromic with the fewest insertions, we must keep its Longest Palindromic Subsequence intact and mirror the remaining characters. LPS(s) equals LCS between s and its reverse.',
+    intuition: 'Every character already participating in the palindrome does not need to be duplicated.',
+    metrics: [
+      { label: 'String s', value: '"mbadm"' },
+      { label: 'Reverse t', value: '"mdabm"' },
+      { label: 'Length N', value: 5 }
+    ]
   },
   {
-    title: '2. Compute LPS(s): Reverse t = "mdabm" and run LCS',
-    phase: 'LPS_COMPUTE',
-    codeLine: 18,
-    s: 'mbadm',
-    t: 'mdabm',
-    n: 5,
-    lps: 3,
-    lpsString: 'mam or mbm',
-    minIns: null,
-    variables: { lps: 3, lpsExample: '"mam" (indices 0, 2, 4)', remainingChars: '2 ("b", "d")' },
-    explain: 'LCS between "mbadm" and "mdabm" is 3 (e.g. "mam" or "mbm").',
-    intuition: '3 characters are already symmetric.'
+    phase: 'FILL_ROW_1',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [{ r: 0, c: 0, label: 'diag' }],
+    formula: 's[0] == t[0] ("m" == "m") => dp[1][1] = 1 + dp[0][0] = 1',
+    action: 'Process s[0] = "m": immediate match with t[0] = "m".',
+    explain: 'Matching "m" produces length 1. All remaining cells in row 1 inherit 1 because "m" can match any prefix containing index 0.',
+    intuition: 'First palindromic anchor character is found.',
+    metrics: [
+      { label: 'Active Char', value: '"m"' },
+      { label: 'dp[1][1]', value: 1 }
+    ]
   },
   {
-    title: '3. Calculate Needed Insertions: 5 - 3 = 2 Insertions',
-    phase: 'FORMULA',
-    codeLine: 26,
-    s: 'mbadm',
-    t: 'mdabm',
-    n: 5,
-    lps: 3,
-    minIns: 2,
-    variables: { n: 5, lps: 3, insertions: '5 - 3 = 2' },
-    explain: 'Subtracting LPS from total length: 5 - 3 = 2. Exactly 2 insertions are required.',
-    intuition: 'Only the 2 non-palindromic characters need to be mirrored.'
+    phase: 'FILL_ROW_2',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 2, 2],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 2, c: 4 },
+    dependencyCells: [{ r: 1, c: 3, label: 'diag' }],
+    formula: 's[1] == t[3] ("b" == "b") => dp[2][4] = 1 + dp[1][3] = 2',
+    action: 'Process s[1] = "b": matches t[3] = "b" at column 4.',
+    explain: 'At cell [2, 4], "b" matches "b". Diagonal value dp[1][3] is 1, so dp[2][4] = 1 + 1 = 2! Subsequence "mb" has length 2.',
+    intuition: 'Subsequence length increases to 2.',
+    metrics: [
+      { label: 'Active Char', value: '"b"' },
+      { label: 'dp[2][4]', value: 2, highlight: true }
+    ]
   },
   {
-    title: '4. Palindrome Formed: "mbdadbm" (Inserted \'d\' and \'b\')',
+    phase: 'FILL_ROW_3',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 2, 2],
+      [0, 1, 1, 2, 2, 2],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 3, c: 3 },
+    dependencyCells: [{ r: 2, c: 2, label: 'diag' }],
+    formula: 's[2] == t[2] ("a" == "a") => dp[3][3] = 1 + dp[2][2] = 2',
+    action: 'Process s[2] = "a": matches center character t[2] = "a".',
+    explain: 'Center character "a" matches at column 3, yielding subsequence "ma" of length 2.',
+    intuition: 'Center characters often serve as the palindromic axis.',
+    metrics: [
+      { label: 'Active Char', value: '"a"' },
+      { label: 'dp[3][3]', value: 2 }
+    ]
+  },
+  {
+    phase: 'FILL_ROW_4',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 2, 2],
+      [0, 1, 1, 2, 2, 2],
+      [0, 1, 2, 2, 2, 2],
+      [0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 4, c: 2 },
+    dependencyCells: [{ r: 3, c: 1, label: 'diag' }],
+    formula: 's[3] == t[1] ("d" == "d") => dp[4][2] = 1 + dp[3][1] = 2',
+    action: 'Process s[3] = "d": matches t[1] = "d" at column 2.',
+    explain: 'Character "d" matches at column 2. Maximum subsequence length remains 2 across this row.',
+    intuition: 'Alternative palindromic prefix candidate "md".',
+    metrics: [
+      { label: 'Active Char', value: '"d"' },
+      { label: 'dp[4][2]', value: 2 }
+    ]
+  },
+  {
+    phase: 'FILL_ROW_5_TERMINAL',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 2, 2],
+      [0, 1, 1, 2, 2, 2],
+      [0, 1, 2, 2, 2, 2],
+      [0, 1, 2, 2, 2, 3]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 5, c: 5 },
+    dependencyCells: [{ r: 4, c: 4, label: 'diag' }],
+    formula: 's[4] == t[4] ("m" == "m") => dp[5][5] = 1 + dp[4][4] = 3',
+    action: 'Process terminal s[4] = "m": matches t[4] = "m". Final LPS = 3!',
+    explain: 'Terminal match! Taking 1 + dp[4][4] (1 + 2) yields 3. The Longest Palindromic Subsequence has length 3 ("mam" or "mdm" or "mbm").',
+    intuition: 'LPS found! 3 characters are already in palindrome symmetry.',
+    metrics: [
+      { label: 'Terminal Cell', value: '[5, 5]' },
+      { label: 'LPS Length', value: 3, highlight: true }
+    ]
+  },
+  {
+    phase: 'INSERTION_CALCULATION',
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 2, 2],
+      [0, 1, 1, 2, 2, 2],
+      [0, 1, 2, 2, 2, 2],
+      [0, 1, 2, 2, 2, 3]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 5, c: 5 },
+    formula: 'Min Insertions = N - LPS = 5 - 3 = 2',
+    action: 'Subtract LPS length from total string length to determine minimum insertions.',
+    explain: 'Total length N is 5. LPS is 3 ("m...a...m"). The 2 characters outside the LPS ("b" and "d") lack symmetrical mirrors. We only need to insert their mirrors.',
+    intuition: 'Each unmirrored character requires exactly 1 insertion on the opposing side.',
+    metrics: [
+      { label: 'Total N', value: 5 },
+      { label: 'LPS(s)', value: 3 },
+      { label: 'Insertions Needed', value: 2, highlight: true }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 27,
-    s: 'mbadm',
-    t: 'mdabm',
-    n: 5,
-    lps: 3,
-    minIns: 2,
-    resultingPalindrome: 'mbdadbm',
-    variables: { minInsertions: 2, result: '"mbdadbm"' },
-    explain: 'By inserting \'d\' and \'b\', we obtain the valid palindrome "mbdadbm". Minimum insertions = 2.',
-    intuition: 'Solved in O(N^2) time with O(N) space.'
+    grid: [
+      [0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1],
+      [0, 1, 1, 1, 2, 2],
+      [0, 1, 1, 2, 2, 2],
+      [0, 1, 2, 2, 2, 2],
+      [0, 1, 2, 2, 2, 3]
+    ],
+    rowLabels: ['∅', 'm', 'b', 'a', 'd', 'm'],
+    colLabels: ['∅', 'm', 'd', 'a', 'b', 'm'],
+    activeCell: { r: 5, c: 5 },
+    formula: 'Output: 2 | Resulting Palindrome: "mbdadbm"',
+    action: 'Algorithm finished! Minimum insertions = 2.',
+    explain: 'By inserting \'d\' and \'b\' into appropriate positions, we construct the palindrome "mbdadbm". Minimum insertions needed is 2.',
+    intuition: 'Optimal O(N²) time solution using O(N) space.',
+    metrics: [
+      { label: 'Original', value: '"mbadm"' },
+      { label: 'Palindrome', value: '"mbdadbm"' },
+      { label: 'Min Insertions', value: 2, highlight: true }
+    ]
   }
 ];
-
-export default function MinimumInsertionsToMakeStringPalindromeDp29Visualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          String: "{step.s}" (Len {step.n})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Min Insertions: {step.minIns !== null ? step.minIns : 'Computing...'}
-        </span>
-      </div>
-
-      {/* String & Palindrome Visualizer */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Character Preservation & Insertions
-        </span>
-
-        <div className="flex items-center justify-center gap-2 py-2">
-          {step.s.split('').map((ch, idx) => {
-            const isLps = idx === 0 || idx === 2 || idx === 4;
-
-            return (
-              <div
-                key={idx}
-                className={`w-12 h-14 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all ${
-                  isLps
-                    ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-1 ring-emerald-500/30 font-bold'
-                    : 'border-amber-500/50 bg-amber-500/15 text-amber-300 font-semibold'
-                }`}
-              >
-                <span className="text-sm font-bold">{ch}</span>
-                <span className="text-[8px] text-[#8a8ea3]">
-                  {isLps ? 'LPS' : 'Mirror'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Formula breakdown card */}
-        <div className="w-full max-w-md bg-[#161824] border border-[#272b3c] rounded-xl p-3 flex items-center justify-around text-xs font-mono">
-          <div className="flex flex-col items-center">
-            <span className="text-slate-400">Total Len (N)</span>
-            <span className="text-slate-200 font-bold text-sm">{step.n}</span>
-          </div>
-          <span className="text-slate-500 font-bold text-base">−</span>
-          <div className="flex flex-col items-center">
-            <span className="text-emerald-400 font-semibold">LPS Length</span>
-            <span className="text-emerald-300 font-bold text-sm">{step.lps || '—'}</span>
-          </div>
-          <span className="text-slate-500 font-bold text-base">=</span>
-          <div className="flex flex-col items-center">
-            <span className="text-amber-400 font-semibold">Insertions</span>
-            <span className="text-amber-300 font-bold text-sm">{step.minIns ?? '—'}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

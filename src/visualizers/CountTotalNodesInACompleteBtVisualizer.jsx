@@ -209,7 +209,7 @@ export default function CountTotalNodesInACompleteBtVisualizer({ currentStep = 0
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Active: <strong className="text-cyan-400">Node {step.activeNode}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -222,22 +222,22 @@ export default function CountTotalNodesInACompleteBtVisualizer({ currentStep = 0
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Complete Binary Tree (6 Nodes)</span>
           <span className="text-emerald-400 font-bold">O((log N)^2) Algorithm</span>
         </div>
 
         <div className="flex flex-col items-center gap-4 py-3 w-full">
-          <div className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm ${step.activeNode === 1 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-white'}`}>
+          <div className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm ${step.activeNode === 1 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}>
             1
           </div>
 
           <div className="flex justify-center gap-16 w-full">
-            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === 2 ? 'bg-emerald-500/25 border-emerald-400 text-emerald-200' : 'bg-[#181a26] border-[#31364d] text-white'}`}>
+            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === 2 ? 'bg-emerald-500/25 border-emerald-400 text-emerald-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}>
               2
             </div>
-            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === 3 ? 'bg-purple-500/25 border-purple-400 text-purple-200' : 'bg-[#181a26] border-[#31364d] text-white'}`}>
+            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === 3 ? 'bg-purple-500/25 border-purple-400 text-purple-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}>
               3
             </div>
           </div>
@@ -246,7 +246,7 @@ export default function CountTotalNodesInACompleteBtVisualizer({ currentStep = 0
             {[4, 5, 6].map(v => (
               <div
                 key={v}
-                className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === v ? 'bg-amber-500/25 border-amber-400 text-amber-200' : 'bg-[#181a26] border-[#31364d] text-white'}`}
+                className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === v ? 'bg-amber-500/25 border-amber-400 text-amber-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}
               >
                 {v}
               </div>
@@ -254,7 +254,7 @@ export default function CountTotalNodesInACompleteBtVisualizer({ currentStep = 0
           </div>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           If left height == right height: Subtree is full &rarr; directly return (1 &lt;&lt; h) - 1 in O(1)!
         </div>
       </div>

@@ -255,8 +255,8 @@ export default function MergeKSortedListsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Input Lists */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-4 flex flex-col gap-2">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">K Linked Lists Pointers</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex flex-col gap-2">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">K Linked Lists Pointers</span>
         {step.lists.map((l) => (
           <div key={l.id} className="flex items-center gap-2 font-mono text-xs py-1">
             <span className="text-blue-400 font-bold w-8">L{l.id}:</span>
@@ -265,11 +265,11 @@ export default function MergeKSortedListsVisualizer({ currentStep = 0 }) {
                 const isHead = idx === l.ptr;
                 const isPassed = idx < l.ptr;
 
-                let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-400';
+                let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
                 if (isHead) {
                   borderClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40';
                 } else if (isPassed) {
-                  borderClass = 'border-slate-800 bg-slate-900/50 text-slate-600 opacity-50';
+                  borderClass = 'border-slate-800 bg-slate-900/50 text-[var(--chalk-faint)] opacity-50';
                 }
 
                 return (
@@ -277,7 +277,7 @@ export default function MergeKSortedListsVisualizer({ currentStep = 0 }) {
                     <span className={`px-2.5 py-1 rounded-lg border font-bold ${borderClass}`}>
                       {val}
                     </span>
-                    {idx < l.nodes.length - 1 && <span className="text-slate-600 text-[10px]">→</span>}
+                    {idx < l.nodes.length - 1 && <span className="text-[var(--chalk-faint)] text-[10px]">→</span>}
                   </span>
                 );
               })}
@@ -287,21 +287,21 @@ export default function MergeKSortedListsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Min-Heap */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-4 flex items-center justify-around font-mono text-xs">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex items-center justify-around font-mono text-xs">
         <span className="text-amber-300 font-bold">Min-Heap:</span>
         <div className="flex items-center gap-3">
           {step.minHeap.map((h, idx) => (
             <div key={idx} className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex flex-col items-center">
               <span className="font-black text-sm">{h.val}</span>
-              <span className="text-[9px] text-slate-400">from L{h.listId}</span>
+              <span className="text-[9px] text-[var(--chalk-dim)]">from L{h.listId}</span>
             </div>
           ))}
-          {step.minHeap.length === 0 && <span className="text-slate-500 italic">Empty Heap</span>}
+          {step.minHeap.length === 0 && <span className="text-[var(--chalk-faint)] italic">Empty Heap</span>}
         </div>
       </div>
 
       {/* Merged Output Chain */}
-      <div className="w-full bg-[#12131b] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
+      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
         <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Merged Sorted List Chain</span>
         <div className="flex items-center gap-1.5 overflow-x-auto py-1 font-mono text-xs">
           {step.merged.map((val, idx) => (
@@ -312,12 +312,12 @@ export default function MergeKSortedListsVisualizer({ currentStep = 0 }) {
               {idx < step.merged.length - 1 && <span className="text-emerald-500/40 text-[10px]">→</span>}
             </span>
           ))}
-          {step.merged.length === 0 && <span className="text-slate-500 italic">No nodes merged yet</span>}
+          {step.merged.length === 0 && <span className="text-[var(--chalk-faint)] italic">No nodes merged yet</span>}
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

@@ -192,7 +192,7 @@ export default function CelebrityProblemVisualizer({ currentStep = 0 }) {
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Action: <strong className="text-amber-400">{step.action}</strong>
         </div>
         {step.candidate !== null && (
@@ -204,8 +204,8 @@ export default function CelebrityProblemVisualizer({ currentStep = 0 }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         {/* Acquaintance Matrix */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Party Acquaintance Matrix (M[i][j])</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Party Acquaintance Matrix (M[i][j])</span>
 
           <div className="flex flex-col gap-1.5 p-2.5 bg-[#0f1016] rounded-xl border border-[#252839]">
             {matrix.map((row, i) => (
@@ -224,7 +224,7 @@ export default function CelebrityProblemVisualizer({ currentStep = 0 }) {
                           : isCelebRow
                           ? 'bg-cyan-500/15 border-cyan-500/30 text-cyan-200'
                           : val === 1
-                          ? 'bg-[#1a1d2c] border-[#31364d] text-white'
+                          ? 'bg-[#1a1d2c] border-[#31364d] text-[var(--chalk)]'
                           : 'bg-[#10121a] border-[#222533] text-[#414660]'
                       }`}
                     >
@@ -238,8 +238,8 @@ export default function CelebrityProblemVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Candidate Elimination Stack */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3]">Elimination Pool</span>
+        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Elimination Pool</span>
 
           <div className="flex flex-wrap gap-2 w-full justify-center p-3 rounded-xl bg-[#0f1016] border border-[#252839] min-h-[90px] items-center">
             {step.stack.map(p => (

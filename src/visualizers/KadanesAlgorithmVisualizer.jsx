@@ -1,12 +1,25 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: "Kadane's Algorithm — Maximum Subarray Sum",
   category: 'Arrays & Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Finds the contiguous subarray within a one-dimensional array of numbers which has the largest sum. Drops any prefix with a negative running sum.'
+  timeComplexity: 'O(N) Time',
+  spaceComplexity: 'O(1) Auxiliary Space',
+  description: 'Finds the contiguous subarray within a one-dimensional array of numbers that has the largest sum. Drops any prefix with a negative running sum in a single linear pass.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: "Kadane's Algorithm",
+  nodes: [
+    { id: 'root', label: 'Maximum Subarray Sum', children: ['running-sum', 'drop-negative', 'window-tracking', 'linear-time'] },
+    { id: 'running-sum', label: '1. Running Sum Accumulation', detail: 'Accumulate sum += nums[i]. Check if sum > max_sum to update the global record.' },
+    { id: 'drop-negative', label: '2. Discard Negative Prefix', detail: 'If sum < 0, reset sum = 0. A negative prefix can only hurt any subsequent subarray.' },
+    { id: 'window-tracking', label: '3. Optimal Subarray Window', detail: 'Update start pointer when sum resets to 0. Optimal window spans [start, end].' },
+    { id: 'linear-time', label: '4. Single Pass O(N)', detail: 'Solves the contiguous subarray problem in O(N) time with strictly O(1) extra space.' }
+  ]
 };
 
 export const solutions = {
@@ -14,6 +27,7 @@ export const solutions = {
 // Time Complexity: O(N) | Space Complexity: O(1)
 #include <vector>
 #include <climits>
+#include <algorithm>
 using namespace std;
 
 class Solution {
@@ -29,7 +43,7 @@ public:
                 maxi = sum;
             }
 
-            // If running sum becomes negative, reset to 0 (drop harmful prefix)
+            // Drop harmful negative prefix
             if (sum < 0) {
                 sum = 0;
             }
@@ -38,6 +52,7 @@ public:
     }
 };`,
   python: `# Python 3 Kadane's Algorithm
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def maxSubArray(self, nums: list[int]) -> int:
         max_sum = float('-inf')
@@ -52,6 +67,7 @@ class Solution:
                 
         return max_sum`,
   java: `// Java Kadane's Algorithm
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public long maxSubarraySum(int[] arr, int n) {
         long maxi = Long.MIN_VALUE;
@@ -72,180 +88,214 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Kadane's Algorithm
+// Time Complexity: O(N) | Space Complexity: O(1)
 var maxSubArray = function(nums) {
     let maxi = -Infinity;
     let sum = 0;
-    
+
     for (let i = 0; i < nums.length; i++) {
         sum += nums[i];
-        if (sum > maxi) maxi = sum;
-        if (sum < 0) sum = 0;
+
+        if (sum > maxi) {
+            maxi = sum;
+        }
+
+        if (sum < 0) {
+            sum = 0;
+        }
     }
+
     return maxi;
 };`
 };
 
+const rawArray = [-2, 1, -3, 4, -1, 2, 1, -5, 4];
+
 export const steps = [
   {
-    title: '1. Initialize: sum = 0, maxi = -∞',
-    phase: 'INITIALIZATION',
-    codeLine: 10,
-    array: [-2, 1, -3, 4, -1, 2, 1, -5, 4],
-    currentIdx: 0,
-    currentSum: -2,
-    maxSum: -2,
-    activeWindow: [0, 0],
-    bestWindow: [0, 0],
-    resetOccurred: false,
-    variables: { i: 0, 'arr[0]': -2, sum: -2, maxi: -2 },
-    explain: 'Start at index 0. Add arr[0] = -2 to sum. maxi becomes -2.',
-    intuition: 'We must consider at least one element. If sum < 0, continuing will only drag down future sums.'
+    title: '1. Problem Setup & Invariant Definition',
+    phase: 'INITIAL',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: null,
+    windowStart: null,
+    windowEnd: null,
+    metrics: [
+      { label: 'Array Size N', value: '9' },
+      { label: 'Running Sum', value: '0' },
+      { label: 'Max Sum (maxi)', value: '-Infinity' }
+    ],
+    formula: 'sum += nums[i]; maxi = max(maxi, sum); if (sum < 0) sum = 0;',
+    action: 'Initialize Kadane algorithm with running sum = 0 and maxi = -Infinity',
+    explain: 'We want to find a contiguous subarray with the largest sum. Kadane algorithm traverses the array while tracking a running sum. Whenever the running sum drops below 0, it is reset because a negative sum would only diminish any subsequent subarray.',
+    intuition: 'A negative prefix is always harmful to future elements, so dropping it is always optimal.'
   },
   {
-    title: '2. Negative Prefix: Reset sum = 0',
-    phase: 'RESET_PREFIX',
-    codeLine: 20,
-    array: [-2, 1, -3, 4, -1, 2, 1, -5, 4],
-    currentIdx: 0,
-    currentSum: 0,
-    maxSum: -2,
-    activeWindow: [],
-    bestWindow: [0, 0],
-    resetOccurred: true,
-    variables: { sum: 0, action: 'Drop -2 prefix' },
-    explain: 'sum is negative (-2). Carrying a negative sum into the next index decreases its potential, so reset sum = 0.',
-    intuition: 'A negative running sum cannot be part of an optimal subarray prefix.'
+    title: '2. Index 0: val = -2 (Negative Prefix Dropped)',
+    phase: 'COMPUTE',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 0,
+    windowStart: 0,
+    windowEnd: 0,
+    metrics: [
+      { label: 'nums[0]', value: '-2' },
+      { label: 'Running Sum', value: '-2 -> 0' },
+      { label: 'maxi', value: '-2' },
+      { label: 'Prefix Status', value: 'Reset to 0' }
+    ],
+    formula: 'sum = -2; maxi = max(-inf, -2) = -2; sum < 0 -> sum = 0',
+    action: 'Add nums[0] = -2; update maxi to -2; reset sum to 0',
+    explain: 'At index 0, sum becomes -2, so maxi is updated to -2. Since sum < 0, keeping this negative sum would drag down future elements, so sum resets to 0.',
+    intuition: 'Never carry forward a negative running balance.'
   },
   {
-    title: '3. Process arr[1] = 1: sum = 1, maxi = 1',
-    phase: 'EXTENDING',
-    codeLine: 16,
-    array: [-2, 1, -3, 4, -1, 2, 1, -5, 4],
-    currentIdx: 1,
-    currentSum: 1,
-    maxSum: 1,
-    activeWindow: [1, 1],
-    bestWindow: [1, 1],
-    resetOccurred: false,
-    variables: { i: 1, 'arr[1]': 1, sum: 1, maxi: 1 },
-    explain: 'Start fresh from index 1. sum = 0 + 1 = 1. New maxi = 1. Best subarray so far is [1].',
-    intuition: 'Positive running sums are retained because they can benefit subsequent elements.'
+    title: '3. Index 1: val = 1 (New Subarray Starts)',
+    phase: 'COMPUTE',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 1,
+    windowStart: 1,
+    windowEnd: 1,
+    metrics: [
+      { label: 'nums[1]', value: '1' },
+      { label: 'Running Sum', value: '1' },
+      { label: 'maxi', value: '1' },
+      { label: 'Window', value: '[1, 1]' }
+    ],
+    formula: 'sum = 0 + 1 = 1; maxi = max(-2, 1) = 1',
+    action: 'Start fresh positive subarray at index 1: sum = 1, maxi = 1',
+    explain: 'Starting fresh from sum = 0, adding nums[1] gives sum = 1. This beats our previous maxi of -2, so maxi becomes 1. Active window: [1].',
+    intuition: 'Positive elements create viable candidates for maximum subarrays.'
   },
   {
-    title: '4. Encounter 4: Build Super-Subarray',
-    phase: 'PEAK_BUILDING',
-    codeLine: 16,
-    array: [-2, 1, -3, 4, -1, 2, 1, -5, 4],
-    currentIdx: 3,
-    currentSum: 4,
-    maxSum: 4,
-    activeWindow: [3, 3],
-    bestWindow: [3, 3],
-    resetOccurred: false,
-    variables: { i: 3, 'arr[3]': 4, sum: 4, maxi: 4 },
-    explain: 'After another reset at index 2 (1 + -3 = -2), index 3 has value 4. sum = 4, maxi = 4.',
-    intuition: 'The start of the true optimal window emerges at index 3.'
+    title: '4. Index 2: val = -3 (Sum Drops Below Zero)',
+    phase: 'COMPUTE',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 2,
+    windowStart: 1,
+    windowEnd: 2,
+    metrics: [
+      { label: 'nums[2]', value: '-3' },
+      { label: 'Running Sum', value: '1 + (-3) = -2' },
+      { label: 'maxi', value: '1 (retained)' },
+      { label: 'Action', value: 'Reset sum to 0' }
+    ],
+    formula: 'sum = 1 - 3 = -2 < 0 -> sum = 0; maxi remains 1',
+    action: 'Sum drops to -2; reset sum to 0 to prevent dragging future elements',
+    explain: '1 + (-3) = -2. The running sum is negative again. maxi stays 1. We reset sum to 0 and terminate the current window.',
+    intuition: 'Dropping the prefix [1, -3] prevents a net loss of 2 on upcoming elements.'
   },
   {
-    title: '5. Peak Window: [4, -1, 2, 1] Sum = 6',
-    phase: 'MAXIMUM_FOUND',
-    codeLine: 16,
-    array: [-2, 1, -3, 4, -1, 2, 1, -5, 4],
-    currentIdx: 6,
-    currentSum: 6,
-    maxSum: 6,
-    activeWindow: [3, 6],
-    bestWindow: [3, 6],
-    resetOccurred: false,
-    variables: { i: 6, 'arr[6]': 1, sum: 6, maxi: 6, bestSubarray: '[4, -1, 2, 1]' },
-    explain: 'Adding 4 + (-1) + 2 + 1 yields sum = 6! This sets the global peak maximum sum = 6.',
-    intuition: 'Even though -1 dipped the sum to 3, the subsequent +2 and +1 propelled it to a new high.'
+    title: '5. Index 3: val = 4 (Anchor of Optimal Window)',
+    phase: 'COMPUTE',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 3,
+    windowStart: 3,
+    windowEnd: 3,
+    metrics: [
+      { label: 'nums[3]', value: '4' },
+      { label: 'Running Sum', value: '4' },
+      { label: 'maxi', value: '4', highlight: true },
+      { label: 'Window', value: '[3, 3] = [4]' }
+    ],
+    formula: 'sum = 0 + 4 = 4; maxi = max(1, 4) = 4',
+    action: 'Begin new window at index 3 with strong positive anchor 4',
+    explain: 'Starting a new subarray at index 3: sum = 4. Since 4 > 1, maxi updates to 4. This index marks the beginning of the global optimal subarray.',
+    intuition: 'A strong positive number after a reset serves as a solid foundation for expansion.'
   },
   {
-    title: '6. Algorithm Complete: Max Sum = 6',
+    title: '6. Index 4 & 5: Expanding Window through [-1, 2]',
+    phase: 'COMPUTE',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 5,
+    windowStart: 3,
+    windowEnd: 5,
+    metrics: [
+      { label: 'Window', value: '[4, -1, 2]' },
+      { label: 'Running Sum', value: '4 - 1 + 2 = 5' },
+      { label: 'maxi', value: '5', highlight: true }
+    ],
+    formula: 'sum = 4 - 1 + 2 = 5; maxi = max(4, 5) = 5',
+    action: 'Absorb -1 and 2: running sum rises to 5, setting new record',
+    explain: 'At index 4, sum dips to 4 - 1 = 3 (still positive, so we keep expanding). At index 5, adding 2 boosts sum to 5! maxi updates to 5.',
+    intuition: 'Temporary negative values can be absorbed if subsequent positive values outweigh them.'
+  },
+  {
+    title: '7. Index 6: Peak Window Reached [4, -1, 2, 1] Sum = 6',
+    phase: 'COMPUTE',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 6,
+    windowStart: 3,
+    windowEnd: 6,
+    metrics: [
+      { label: 'nums[6]', value: '1' },
+      { label: 'Running Sum', value: '5 + 1 = 6' },
+      { label: 'Peak maxi', value: '6', highlight: true },
+      { label: 'Optimal Window', value: '[3..6] = [4, -1, 2, 1]' }
+    ],
+    formula: 'sum = 5 + 1 = 6; maxi = max(5, 6) = 6',
+    action: 'Peak reached: sum reaches 6 across subarray [4, -1, 2, 1]',
+    explain: 'Adding nums[6] = 1 gives sum = 6. This establishes the all-time maximum contiguous sum of 6. Subarray elements: 4 + (-1) + 2 + 1 = 6.',
+    intuition: 'Contiguous combination [4, -1, 2, 1] captures the maximal positive synergy in the array.'
+  },
+  {
+    title: '8. Indices 7 & 8: Traversal Completion',
+    phase: 'COMPUTE',
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 8,
+    windowStart: 8,
+    windowEnd: 8,
+    metrics: [
+      { label: 'Index 7', value: 'sum = 6 - 5 = 1' },
+      { label: 'Index 8', value: 'sum = 1 + 4 = 5' },
+      { label: 'maxi Retained', value: '6' }
+    ],
+    formula: 'maxi retains peak value of 6 throughout remaining elements',
+    action: 'Complete pass over remaining elements; none exceed the peak sum of 6',
+    explain: 'At index 7, -5 drops sum to 1. At index 8, 4 raises sum to 5. Neither exceeds our recorded maxi = 6. The single linear pass is finished.',
+    intuition: 'The global maximum remains locked in even as subsequent sums decline.'
+  },
+  {
+    title: '9. Final Result: Maximum Subarray Sum = 6',
     phase: 'COMPLETED',
-    codeLine: 23,
-    array: [-2, 1, -3, 4, -1, 2, 1, -5, 4],
-    currentIdx: 8,
-    currentSum: 5,
-    maxSum: 6,
-    activeWindow: [8, 8],
-    bestWindow: [3, 6],
-    resetOccurred: false,
-    variables: { finalMaxSum: 6, optimalIndices: '3 to 6', numbers: '4, -1, 2, 1' },
-    explain: 'Array traversal finished in single O(N) pass. The maximum contiguous subarray sum is 6 (subarray indices 3 through 6).',
-    intuition: 'Kadanes algorithm computes maximum contiguous sum in strictly O(N) time and O(1) space.'
+    track: {
+      label: 'nums[]',
+      items: rawArray
+    },
+    activeI: 6,
+    windowStart: 3,
+    windowEnd: 6,
+    metrics: [
+      { label: 'Max Subarray Sum', value: '6', highlight: true },
+      { label: 'Optimal Subarray', value: '[4, -1, 2, 1]' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    formula: 'Result = maxi = 6',
+    action: 'Return 6 as the maximum contiguous subarray sum',
+    explain: 'Kadane algorithm completes in O(N) time and O(1) space. The contiguous subarray with the largest sum is [4, -1, 2, 1] with total sum 6.',
+    intuition: 'Linear scanning with dynamic prefix reset guarantees optimal contiguous subarray sum.'
   }
 ];
-
-export default function KadanesAlgorithmVisualizer({ currentStep = 0, onStepChange }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* HUD Scoreboards */}
-      <div className="flex items-center justify-center gap-4 flex-wrap">
-        <div className="px-4 py-2.5 rounded-xl bg-[#14151b] border border-[#232530] text-center min-w-[120px]">
-          <span className="text-[10px] font-mono text-[#8e92a4] uppercase block">Running Sum</span>
-          <span className={`text-xl font-mono font-bold ${step.currentSum < 0 ? 'text-rose-400' : 'text-indigo-400'}`}>
-            {step.currentSum}
-          </span>
-        </div>
-
-        <div className="px-5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-center min-w-[130px]">
-          <span className="text-[10px] font-mono text-emerald-400 uppercase font-semibold block">Max Sum (maxi)</span>
-          <span className="text-xl font-mono font-bold text-emerald-300">
-            {step.maxSum}
-          </span>
-        </div>
-
-        {step.resetOccurred && (
-          <div className="px-3 py-1 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-mono text-xs animate-pulse">
-            ⚠ Negative prefix dropped (sum ➔ 0)
-          </div>
-        )}
-      </div>
-
-      {/* Array Elements Visualizer with Window Highlighting */}
-      <div className="w-full flex items-center justify-center gap-2.5 py-4 overflow-x-auto">
-        {step.array.map((val, idx) => {
-          const isCurrent = step.currentIdx === idx;
-          const inActiveWindow = step.activeWindow.length === 2 && idx >= step.activeWindow[0] && idx <= step.activeWindow[1];
-          const inBestWindow = step.bestWindow.length === 2 && idx >= step.bestWindow[0] && idx <= step.bestWindow[1];
-
-          let borderStyle = 'border-[#262834] bg-[#14151c] text-[#8e92a4]';
-          if (inBestWindow) borderStyle = 'border-emerald-500 bg-emerald-500/15 text-emerald-300 shadow-md shadow-emerald-500/20 scale-105';
-          else if (inActiveWindow) borderStyle = 'border-indigo-500 bg-indigo-500/20 text-indigo-300 scale-105';
-          else if (isCurrent) borderStyle = 'border-amber-500 bg-amber-500/15 text-amber-300';
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[48px]">
-              <div className="h-4 flex items-center justify-center">
-                {isCurrent && <span className="text-[10px] font-mono text-amber-400 font-bold">i↓</span>}
-              </div>
-              <div className={`w-12 h-12 rounded-xl border flex items-center justify-center font-mono font-bold text-sm transition-all duration-300 ${borderStyle}`}>
-                {val}
-              </div>
-              <span className="text-[10px] font-mono text-[#5b5e6e]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex items-center justify-center gap-4 text-xs font-mono">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-          <span className="text-[#8e92a4]">Best Maximum Subarray</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
-          <span className="text-[#8e92a4]">Current Window</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-          <span className="text-[#8e92a4]">Pointer i</span>
-        </div>
-      </div>
-    </div>
-  );
-}

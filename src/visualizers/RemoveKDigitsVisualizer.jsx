@@ -187,8 +187,8 @@ export default function RemoveKDigitsVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Input Digits Stream</span>
           <span className="text-emerald-400 font-bold">Monotonic Greedy</span>
         </div>
@@ -207,7 +207,7 @@ export default function RemoveKDigitsVisualizer({ currentStep = 0 }) {
                     ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 scale-105 shadow-md shadow-cyan-500/20'
                     : isPassed
                     ? 'bg-[#181a26] border-[#292d3f] text-[#636a8e]'
-                    : 'bg-[#141622] border-[#252839] text-white'
+                    : 'bg-[#141622] border-[#252839] text-[var(--chalk)]'
                 }`}
               >
                 {d}
@@ -218,7 +218,7 @@ export default function RemoveKDigitsVisualizer({ currentStep = 0 }) {
 
         {/* Stack View */}
         <div className="w-full max-w-md flex flex-col items-center gap-2 pt-3">
-          <span className="text-xs font-mono text-[#8a8ea3]">Resulting Digit Stack:</span>
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Resulting Digit Stack:</span>
           <div className="w-full h-16 rounded-xl border-2 border-dashed border-[#2d3144] flex items-center justify-center gap-2 p-2 bg-[#0f1016]">
             {step.stack.map((d, i) => (
               <div
@@ -231,7 +231,7 @@ export default function RemoveKDigitsVisualizer({ currentStep = 0 }) {
           </div>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Whenever current digit is smaller than stack top, deleting the stack top makes the number significantly smaller!
         </div>
       </div>

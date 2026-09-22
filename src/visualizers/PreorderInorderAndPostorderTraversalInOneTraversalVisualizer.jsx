@@ -231,7 +231,7 @@ export default function PreorderInorderAndPostorderTraversalInOneTraversalVisual
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Active: <strong className="text-cyan-400">{step.activeNode ? `Node ${step.activeNode} (State ${step.state})` : 'Done'}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -242,7 +242,7 @@ export default function PreorderInorderAndPostorderTraversalInOneTraversalVisual
       {/* 3 Result Channels */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
         {/* Preorder */}
-        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-[#12131b] border border-[#242738]">
+        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
           <span className="text-xs font-mono font-bold text-amber-400">Preorder (State 1)</span>
           <div className="flex gap-1.5 flex-wrap min-h-[32px]">
             {step.pre.map((v, i) => (
@@ -254,7 +254,7 @@ export default function PreorderInorderAndPostorderTraversalInOneTraversalVisual
         </div>
 
         {/* Inorder */}
-        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-[#12131b] border border-[#242738]">
+        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
           <span className="text-xs font-mono font-bold text-cyan-400">Inorder (State 2)</span>
           <div className="flex gap-1.5 flex-wrap min-h-[32px]">
             {step.ino.map((v, i) => (
@@ -266,7 +266,7 @@ export default function PreorderInorderAndPostorderTraversalInOneTraversalVisual
         </div>
 
         {/* Postorder */}
-        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-[#12131b] border border-[#242738]">
+        <div className="flex flex-col gap-2 p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
           <span className="text-xs font-mono font-bold text-emerald-400">Postorder (State 3)</span>
           <div className="flex gap-1.5 flex-wrap min-h-[32px]">
             {step.post.map((v, i) => (
@@ -278,7 +278,7 @@ export default function PreorderInorderAndPostorderTraversalInOneTraversalVisual
         </div>
       </div>
 
-      <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2.5 rounded-xl border border-[#272b3c] text-center w-full">
+      <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2.5 rounded-xl border border-[var(--line)] text-center w-full">
         Each node is touched 3 times: once for preorder (state 1), once for inorder (state 2), and once for postorder (state 3).
       </div>
     </div>

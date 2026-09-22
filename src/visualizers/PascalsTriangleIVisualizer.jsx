@@ -1,12 +1,25 @@
-import React from 'react';
+// DATA-ONLY — rendered by DualArrayRenderer via rendererType
 
 export const meta = {
   title: "Pascal's Triangle I (Row Generation)",
   category: 'Arrays & Dynamic Programming',
   difficulty: 'Easy',
-  timeComplexity: 'O(N^2)',
-  spaceComplexity: 'O(N^2)',
-  description: "Generates the first N rows of Pascal's Triangle. Each interior number is formed by summing the two directly adjacent numbers from the previous row above."
+  timeComplexity: 'O(N²)',
+  spaceComplexity: 'O(N²)',
+  description: "Generates the first N rows of Pascal's Triangle. Each interior number is formed by summing the two directly adjacent numbers from the row immediately above."
+};
+
+export const rendererType = 'dual-array';
+
+export const ideaMap = {
+  title: "Pascal's Triangle Invariants",
+  nodes: [
+    { id: 'root', label: 'Pascal Construction Invariants', children: ['boundary-ones', 'addition-rule', 'combinatorial-link', 'complexity'] },
+    { id: 'boundary-ones', label: '1. Boundary Ones', detail: 'Every row starts and ends with 1: row[0] = 1 and row[r] = 1' },
+    { id: 'addition-rule', label: '2. Adjacent Parent Sum', detail: 'Interior cells: row[c] = prev[c-1] + prev[c] for 1 <= c < r' },
+    { id: 'combinatorial-link', label: '3. Binomial Coefficients', detail: 'The c-th element of row r corresponds to nCr: C(r, c) = r! / (c! * (r-c)!)' },
+    { id: 'complexity', label: '4. Optimal O(N²) Time', detail: 'Row r requires r+1 operations; total operations = N*(N+1)/2 = O(N²)' }
+  ]
 };
 
 export const solutions = {
@@ -34,6 +47,7 @@ public:
     }
 };`,
   python: `# Python 3 Optimal Pascal's Triangle Generation
+# Time Complexity: O(N^2) | Space Complexity: O(N^2)
 class Solution:
     def generate(self, numRows: int) -> list[list[int]]:
         triangle = []
@@ -46,6 +60,7 @@ class Solution:
 
         return triangle`,
   java: `// Java Optimal Pascal's Triangle Generation
+// Time Complexity: O(N^2) | Space Complexity: O(N^2)
 import java.util.*;
 
 class Solution {
@@ -69,6 +84,7 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Optimal Pascal's Triangle Generation
+// Time Complexity: O(N^2) | Space Complexity: O(N^2)
 var generate = function(numRows) {
     const triangle = [];
 
@@ -86,136 +102,221 @@ var generate = function(numRows) {
 
 export const steps = [
   {
-    title: '1. Row 0: Base Element [1]',
+    title: '1. Row 0: Base Apex Element [1]',
     phase: 'BASE_ROW',
-    codeLine: 11,
-    triangle: [
-      [1]
+    tracks: [
+      { label: 'Previous Row', items: ['-', '-', '-', '-', '-'] },
+      { label: 'Current Row 0', items: [1, '-', '-', '-', '-'] }
     ],
-    activeRow: 0,
-    activeCol: 0,
-    parents: null,
-    variables: { row: 0, elements: '[1]' },
-    explain: "Row 0 contains the apex element 1.",
-    intuition: "Pascal's triangle starts with a single unit at the top."
+    activeI: 0,
+    activePrev: null,
+    metrics: [
+      { label: 'Current Row', value: 'r = 0' },
+      { label: 'Row Elements', value: '[1]' },
+      { label: 'Total Rows', value: '5' }
+    ],
+    formula: 'triangle[0] = [1]',
+    action: 'Initialize Pascal\'s Triangle with apex row 0: [1]',
+    explain: 'Pascal\'s Triangle begins at row 0 with a single 1. This forms the apex from which all lower rows descend.',
+    intuition: 'C(0, 0) = 1.',
+    trackTitle: "Pascal's Triangle Row Transition Engine",
+    customCard: {
+      title: 'Apex Definition',
+      rows: [
+        { label: 'Row 0 Values', value: '[1]' },
+        { label: 'Boundary Invariant', value: 'All row boundaries evaluate to 1' }
+      ]
+    }
   },
   {
-    title: '2. Row 1: Boundary Elements [1, 1]',
-    phase: 'EXPANDING',
-    codeLine: 12,
-    triangle: [
-      [1],
-      [1, 1]
+    title: '2. Row 1: Boundary Pair [1, 1]',
+    phase: 'ROW_ONE',
+    tracks: [
+      { label: 'Previous Row 0', items: [1, '-', '-', '-', '-'] },
+      { label: 'Current Row 1', items: [1, 1, '-', '-', '-'] }
     ],
-    activeRow: 1,
-    activeCol: null,
-    parents: null,
-    variables: { row: 1, elements: '[1, 1]' },
-    explain: 'Row 1 has 2 elements, both outer boundaries with value 1.',
-    intuition: 'Edges of every row are always 1.'
+    activeI: 1,
+    activePrev: 0,
+    metrics: [
+      { label: 'Current Row', value: 'r = 1' },
+      { label: 'Row Elements', value: '[1, 1]' },
+      { label: 'Interior Cells', value: '0 (Only boundaries)' }
+    ],
+    formula: 'triangle[1] = [1, 1]',
+    action: 'Construct row 1 with two boundary 1s: [1, 1]',
+    explain: 'Row 1 has length 2. Both index 0 and index 1 are boundary elements, so both take value 1.',
+    intuition: 'C(1, 0) = 1, C(1, 1) = 1.',
+    trackTitle: "Pascal's Triangle Row Transition Engine",
+    customCard: {
+      title: 'Row 1 Definition',
+      rows: [
+        { label: 'Row 1 Values', value: '[1, 1]' },
+        { label: 'Binomial Expansion', value: '(x + y)^1 = 1x + 1y' }
+      ]
+    }
   },
   {
-    title: '3. Row 2, Col 1: Sum Parents (1 + 1 = 2) -> [1, 2, 1]',
-    phase: 'SUM_PARENTS',
-    codeLine: 15,
-    triangle: [
-      [1],
-      [1, 1],
-      [1, 2, 1]
+    title: '3. Row 2: Interior Cell c = 1 is 1 + 1 = 2 => [1, 2, 1]',
+    phase: 'ROW_TWO',
+    tracks: [
+      { label: 'Previous Row 1', items: [1, 1, '-', '-', '-'] },
+      { label: 'Current Row 2', items: [1, 2, 1, '-', '-'] }
     ],
-    activeRow: 2,
-    activeCol: 1,
-    parents: [[1, 0], [1, 1]],
-    variables: { r: 2, c: 1, 'triangle[1][0]': 1, 'triangle[1][1]': 1, sum: 2 },
-    explain: 'Sum triangle[1][0] (1) + triangle[1][1] (1) = 2. Row 2 is [1, 2, 1].',
-    intuition: 'Combinatorial identity: C(n, k) = C(n-1, k-1) + C(n-1, k).'
+    activeI: 1,
+    activePrev: 0,
+    metrics: [
+      { label: 'Current Row', value: 'r = 2' },
+      { label: 'Sum Computed', value: '1 + 1 = 2', highlight: true },
+      { label: 'Row 2 Values', value: '[1, 2, 1]' }
+    ],
+    formula: 'row[1] = prev[0] + prev[1] = 1 + 1 = 2',
+    action: 'Compute interior cell at index 1: 1 + 1 = 2. Row 2 becomes [1, 2, 1]',
+    explain: 'For row 2, boundaries are 1. The middle element at c=1 is the sum of its two parents from row 1: prev[0] + prev[1] = 1 + 1 = 2.',
+    intuition: '(x + y)^2 = x^2 + 2xy + y^2.',
+    trackTitle: "Pascal's Triangle Row Transition Engine",
+    customCard: {
+      title: 'Parent Addition Step',
+      rows: [
+        { label: 'Left Parent', value: 'prev[0] = 1' },
+        { label: 'Right Parent', value: 'prev[1] = 1 ==> Sum = 2', accent: true }
+      ]
+    }
   },
   {
-    title: '4. Row 3: Compute [1, 3, 3, 1] from Row 2',
-    phase: 'SUM_PARENTS',
-    codeLine: 15,
-    triangle: [
-      [1],
-      [1, 1],
-      [1, 2, 1],
-      [1, 3, 3, 1]
+    title: '4. Row 3: Interior Cells (1+2=3, 2+1=3) => [1, 3, 3, 1]',
+    phase: 'ROW_THREE',
+    tracks: [
+      { label: 'Previous Row 2', items: [1, 2, 1, '-', '-'] },
+      { label: 'Current Row 3', items: [1, 3, 3, 1, '-'] }
     ],
-    activeRow: 3,
-    activeCol: 1,
-    parents: [[2, 0], [2, 1]],
-    variables: { r: 3, sums: '1+2=3, 2+1=3', row: '[1, 3, 3, 1]' },
-    explain: 'First interior cell is 1+2 = 3. Second interior cell is 2+1 = 3.',
-    intuition: 'Binomial coefficients of degree 3.'
+    activeI: 2,
+    activePrev: 1,
+    metrics: [
+      { label: 'Current Row', value: 'r = 3' },
+      { label: 'Left Interior', value: '1 + 2 = 3' },
+      { label: 'Right Interior', value: '2 + 1 = 3' },
+      { label: 'Row 3 Values', value: '[1, 3, 3, 1]', highlight: true }
+    ],
+    formula: 'row[1] = 1 + 2 = 3; row[2] = 2 + 1 = 3;',
+    action: 'Compute two interior cells: 1+2=3 and 2+1=3. Row 3 becomes [1, 3, 3, 1]',
+    explain: 'Index 1 is prev[0] + prev[1] = 1 + 2 = 3. Index 2 is prev[1] + prev[2] = 2 + 1 = 3. Combined with boundary 1s, row 3 is [1, 3, 3, 1].',
+    intuition: 'Notice the perfect left-right symmetry in every row: C(r, c) == C(r, r - c).',
+    trackTitle: "Pascal's Triangle Row Transition Engine",
+    customCard: {
+      title: 'Row 3 Symmetry',
+      rows: [
+        { label: 'Symmetric Pairs', value: 'C(3,1) = 3 and C(3,2) = 3' },
+        { label: 'Binomial Expansion', value: '(x + y)^3 = 1x^3 + 3x^2y + 3xy^2 + 1y^3' }
+      ]
+    }
   },
   {
-    title: '5. Row 4: Compute [1, 4, 6, 4, 1] -> 5 Rows Complete!',
+    title: '5. Row 4 (c = 1): prev[0] + prev[1] = 1 + 3 = 4',
+    phase: 'ROW_FOUR',
+    tracks: [
+      { label: 'Previous Row 3', items: [1, 3, 3, 1, '-'] },
+      { label: 'Current Row 4', items: [1, 4, '-', '-', '-'] }
+    ],
+    activeI: 1,
+    activePrev: 0,
+    metrics: [
+      { label: 'Current Row', value: 'r = 4' },
+      { label: 'Computing Col', value: 'c = 1' },
+      { label: 'Calculation', value: '1 + 3 = 4', highlight: true }
+    ],
+    formula: 'row[1] = prev[0] + prev[1] = 1 + 3 = 4',
+    action: 'Sum prev[0] (1) and prev[1] (3) to get 4 at index 1',
+    explain: 'At c = 1, we add adjacent parents 1 and 3 to produce 4.',
+    intuition: 'Each number is the combined accumulation of paths from the top.',
+    trackTitle: "Pascal's Triangle Row Transition Engine",
+    customCard: {
+      title: 'Row 4 Step 1',
+      rows: [
+        { label: 'Parents', value: '1 + 3' },
+        { label: 'Result', value: 'row[1] = 4' }
+      ]
+    }
+  },
+  {
+    title: '6. Row 4 (c = 2): prev[1] + prev[2] = 3 + 3 = 6 (Apex Center)',
+    phase: 'ROW_FOUR',
+    tracks: [
+      { label: 'Previous Row 3', items: [1, 3, 3, 1, '-'] },
+      { label: 'Current Row 4', items: [1, 4, 6, '-', '-'] }
+    ],
+    activeI: 2,
+    activePrev: 1,
+    metrics: [
+      { label: 'Current Row', value: 'r = 4' },
+      { label: 'Computing Col', value: 'c = 2 (Center)' },
+      { label: 'Calculation', value: '3 + 3 = 6', highlight: true }
+    ],
+    formula: 'row[2] = prev[1] + prev[2] = 3 + 3 = 6',
+    action: 'Sum prev[1] (3) and prev[2] (3) to get 6 at central index 2',
+    explain: 'At central index 2, we add the two 3s from the row above to get 6.',
+    intuition: 'Central elements in Pascal\'s triangle represent the highest number of paths from the root.',
+    trackTitle: "Pascal's Triangle Row Transition Engine",
+    customCard: {
+      title: 'Row 4 Center',
+      rows: [
+        { label: 'Parents', value: '3 + 3' },
+        { label: 'Result', value: 'row[2] = 6 (Central Maximum)' }
+      ]
+    }
+  },
+  {
+    title: '7. Row 4 (c = 3 & Final): 3 + 1 = 4 => Complete Row [1, 4, 6, 4, 1]',
+    phase: 'ROW_FOUR',
+    tracks: [
+      { label: 'Previous Row 3', items: [1, 3, 3, 1, '-'] },
+      { label: 'Current Row 4', items: [1, 4, 6, 4, 1] }
+    ],
+    activeI: 3,
+    activePrev: 2,
+    metrics: [
+      { label: 'Row 4 Complete', value: '[1, 4, 6, 4, 1]', highlight: true },
+      { label: 'Row Length', value: '5 elements' },
+      { label: 'All 5 Rows Built', value: 'Finished!' }
+    ],
+    formula: 'row[3] = 3 + 1 = 4; row[4] = 1;',
+    action: 'Complete row 4: index 3 is 3 + 1 = 4, and last index 4 is boundary 1',
+    explain: 'Index 3 gets 3 + 1 = 4, and index 4 gets boundary 1. Row 4 is completely assembled: [1, 4, 6, 4, 1].',
+    intuition: 'Row 4 encodes (x + y)^4 coefficients.',
+    trackTitle: "Pascal's Triangle Row Transition Engine",
+    customCard: {
+      title: 'Full Row 4 Assembly',
+      rows: [
+        { label: 'Result Row 4', value: '[1, 4, 6, 4, 1]' },
+        { label: 'Sum of Row Elements', value: '1 + 4 + 6 + 4 + 1 = 16 = 2^4', accent: true }
+      ]
+    }
+  },
+  {
+    title: "8. Completed: First 5 Rows of Pascal's Triangle Generated in O(N²)",
     phase: 'COMPLETED',
-    codeLine: 18,
-    triangle: [
-      [1],
-      [1, 1],
-      [1, 2, 1],
-      [1, 3, 3, 1],
-      [1, 4, 6, 4, 1]
+    tracks: [
+      { label: 'Row 3 (Final Prev)', items: [1, 3, 3, 1, '-'] },
+      { label: 'Row 4 (Final Row)', items: [1, 4, 6, 4, 1] }
     ],
-    activeRow: 4,
-    activeCol: 2,
-    parents: [[3, 1], [3, 2]],
-    variables: { r: 4, center: '3 + 3 = 6', totalRows: 5, timeComplexity: 'O(N^2)' },
-    explain: 'Row 4 completes with interior cells 1+3=4, 3+3=6, 3+1=4. First 5 rows of Pascal’s Triangle fully generated!',
-    intuition: 'Each layer dynamically constructed from the immediate prior layer.'
+    activeI: null,
+    activePrev: null,
+    metrics: [
+      { label: 'Total Rows', value: '5 Rows', highlight: true },
+      { label: 'Time Complexity', value: 'O(N²)' },
+      { label: 'Space Complexity', value: 'O(N²)' },
+      { label: 'Sum of Row r', value: '2^r' }
+    ],
+    formula: 'triangle = [[1], [1,1], [1,2,1], [1,3,3,1], [1,4,6,4,1]]',
+    action: "Return complete triangle array. Pascal's Triangle generation verified.",
+    explain: "Pascal's Triangle generation runs in O(N²) time by computing each row directly from its preceding row. All combinatorial and binomial identities are strictly preserved.",
+    intuition: "Fundamental DP pattern: subproblem results form the foundation for the next row.",
+    trackTitle: "Pascal's Triangle Summary",
+    customCard: {
+      title: 'Mathematical Properties Verified',
+      rows: [
+        { label: 'Row Sum Rule', value: 'Sum of row r equals 2^r (e.g. 2^4 = 16)' },
+        { label: 'Combinatorial Identity', value: 'nCr = (n-1)C(r-1) + (n-1)Cr' }
+      ]
+    }
   }
 ];
-
-export default function PascalsTriangleIVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Active Phase Badge */}
-      <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-[#161824] border border-[#272b3c] text-indigo-300">
-        Phase: {step.phase} • Row {step.activeRow}
-      </span>
-
-      {/* Pyramid Representation */}
-      <div className="flex flex-col items-center gap-2.5 py-4">
-        {step.triangle.map((row, rIdx) => (
-          <div key={rIdx} className="flex items-center gap-2">
-            {row.map((val, cIdx) => {
-              const isActive = step.activeRow === rIdx && step.activeCol === cIdx;
-              const isParent = step.parents && step.parents.some(([pr, pc]) => pr === rIdx && pc === cIdx);
-
-              let style = 'bg-[#181a24] text-white border-[#2b2e40]';
-              if (isActive) {
-                style = 'bg-amber-500/25 text-amber-300 border-amber-400 scale-110 shadow-lg shadow-amber-500/20 font-extrabold';
-              } else if (isParent) {
-                style = 'bg-indigo-500/25 text-indigo-300 border-indigo-400 scale-105 shadow-md shadow-indigo-500/20 font-bold';
-              }
-
-              return (
-                <div
-                  key={cIdx}
-                  className={`w-11 h-11 rounded-xl border flex flex-col items-center justify-center font-mono text-sm font-bold transition-all duration-300 ${style}`}
-                >
-                  <span>{val}</span>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      {/* Legend */}
-      <div className="flex items-center gap-6 text-xs font-mono text-[#8a8ea3]">
-        <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-indigo-500/30 border border-indigo-500"></span>
-          <span>Parent Cells</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-amber-500/30 border border-amber-500"></span>
-          <span>Computed Child Sum</span>
-        </div>
-      </div>
-    </div>
-  );
-}

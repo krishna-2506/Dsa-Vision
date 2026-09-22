@@ -205,8 +205,8 @@ export default function RottenOrangesVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
           <span>Fruit Matrix [3 &times; 3]</span>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500"></span> Rotten (2)</span>
@@ -225,7 +225,7 @@ export default function RottenOrangesVisualizer({ currentStep = 0 }) {
                     ? 'bg-red-500/20 border-red-500/50 text-red-300 shadow-md shadow-red-500/10'
                     : val === 1
                     ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                    : 'bg-[#161824] border-[#272b3c] text-[#475569]'
+                    : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[#475569]'
                 }`}
               >
                 <span>{val === 2 ? '🍊' : val === 1 ? '🍏' : '—'}</span>
@@ -236,7 +236,7 @@ export default function RottenOrangesVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

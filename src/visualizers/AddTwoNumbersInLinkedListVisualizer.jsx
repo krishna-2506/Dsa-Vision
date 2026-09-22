@@ -211,7 +211,7 @@ export default function AddTwoNumbersInLinkedListVisualizer({ currentStep = 0 })
                 <div
                   key={idx}
                   className={`w-11 h-11 rounded-xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${
-                    isCol ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[#272b3c] bg-[#12131b] text-slate-200'
+                    isCol ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
                   }`}
                 >
                   {d}
@@ -231,7 +231,7 @@ export default function AddTwoNumbersInLinkedListVisualizer({ currentStep = 0 })
                 <div
                   key={idx}
                   className={`w-11 h-11 rounded-xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${
-                    isCol ? 'border-indigo-500 bg-indigo-500/25 text-indigo-300 ring-2 ring-indigo-500/40' : 'border-[#272b3c] bg-[#12131b] text-slate-200'
+                    isCol ? 'border-indigo-500 bg-indigo-500/25 text-indigo-300 ring-2 ring-indigo-500/40' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
                   }`}
                 >
                   {d}
@@ -243,20 +243,20 @@ export default function AddTwoNumbersInLinkedListVisualizer({ currentStep = 0 })
       </div>
 
       {/* Result Nodes Container */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
         <span className="text-[11px] text-emerald-400 font-semibold uppercase tracking-wider">
           Constructed Sum Linked List:
         </span>
         <div className="flex items-center gap-2">
           {step.resultDigits.length === 0 ? (
-            <span className="text-slate-500 italic">No nodes allocated yet</span>
+            <span className="text-[var(--chalk-faint)] italic">No nodes allocated yet</span>
           ) : (
             step.resultDigits.map((val, idx) => (
               <React.Fragment key={idx}>
                 <div className="w-11 h-11 rounded-xl border border-emerald-500/40 bg-emerald-500/15 text-emerald-300 font-bold flex items-center justify-center text-sm shadow-md">
                   {val}
                 </div>
-                {idx < step.resultDigits.length - 1 && <span className="text-[#555a73] font-mono text-xs">→</span>}
+                {idx < step.resultDigits.length - 1 && <span className="text-[var(--chalk-faint)] font-mono text-xs">→</span>}
               </React.Fragment>
             ))
           )}

@@ -179,16 +179,16 @@ export default function DivisorsOfANumberVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Symmetric Factor Pairs */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-3 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Symmetric Factor Pairs Found (i &times; (N / i) = 36):</span>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-3 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Symmetric Factor Pairs Found (i &times; (N / i) = 36):</span>
         <div className="flex flex-wrap items-center gap-3">
           {step.pairsFound.map((pair, idx) => (
             <div
               key={idx}
-              className="px-3 py-2 rounded-xl bg-[#12131b] border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center gap-2"
+              className="px-3 py-2 rounded-xl bg-[var(--board-raised)] border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center gap-2"
             >
               <span>{pair[0]}</span>
-              <span className="text-[#8a8ea3]">&times;</span>
+              <span className="text-[var(--chalk-dim)]">&times;</span>
               <span>{pair[1]}</span>
             </div>
           ))}
@@ -196,8 +196,8 @@ export default function DivisorsOfANumberVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Sorted Divisor Output List */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Sorted Divisors Collection ({step.divisors.length}):</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Sorted Divisors Collection ({step.divisors.length}):</span>
         <div className="flex flex-wrap items-center gap-2">
           {step.divisors.map((d, idx) => (
             <span

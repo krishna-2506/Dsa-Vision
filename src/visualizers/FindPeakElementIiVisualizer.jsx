@@ -268,7 +268,7 @@ export default function FindPeakElementIiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* 2D Matrix Grid */}
-      <div className="p-4 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-2">
+      <div className="p-4 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-2">
         {/* Column Headers */}
         <div className="flex items-center gap-2 ml-8">
           {step.matrix[0].map((_, cIdx) => {
@@ -276,7 +276,7 @@ export default function FindPeakElementIiVisualizer({ currentStep = 0 }) {
             const isEliminated = (step.low !== null && cIdx < step.low) || (step.high !== null && cIdx > step.high);
             return (
               <div key={cIdx} className={`w-12 text-center text-xs font-mono font-bold ${
-                isMid ? 'text-amber-400' : isEliminated ? 'text-[#3b4261]' : 'text-[#8a8ea3]'
+                isMid ? 'text-amber-400' : isEliminated ? 'text-[#3b4261]' : 'text-[var(--chalk-dim)]'
               }`}>
                 Col {cIdx}
               </div>
@@ -287,7 +287,7 @@ export default function FindPeakElementIiVisualizer({ currentStep = 0 }) {
         {/* Rows */}
         {step.matrix.map((row, rIdx) => (
           <div key={rIdx} className="flex items-center gap-2">
-            <span className="w-6 text-xs font-mono text-[#8a8ea3] text-right font-bold">R{rIdx}</span>
+            <span className="w-6 text-xs font-mono text-[var(--chalk-dim)] text-right font-bold">R{rIdx}</span>
             <div className="flex items-center gap-2">
               {row.map((cellVal, cIdx) => {
                 const isMidCol = step.midCol === cIdx;
@@ -295,7 +295,7 @@ export default function FindPeakElementIiVisualizer({ currentStep = 0 }) {
                 const isPeak = step.peakCoord && step.peakCoord[0] === rIdx && step.peakCoord[1] === cIdx;
                 const isEliminated = (step.low !== null && cIdx < step.low) || (step.high !== null && cIdx > step.high);
 
-                let cellStyle = 'bg-[#12131b] border-[#272b3c] text-white';
+                let cellStyle = 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]';
                 if (isPeak) {
                   cellStyle = 'bg-emerald-500/30 border-emerald-400 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/30 ring-2 ring-emerald-400';
                 } else if (isMaxInCol) {
@@ -321,7 +321,7 @@ export default function FindPeakElementIiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Legend & Summary */}
-      <div className="w-full flex items-center justify-around p-3 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#8a8ea3]">
+      <div className="w-full flex items-center justify-around p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)]">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded bg-amber-500/30 border border-amber-400"></span>
           <span>Column Max Element</span>

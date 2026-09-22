@@ -164,8 +164,8 @@ export default function PrimeFactorisationOfANumberVisualizer({ currentStep = 0 
       </div>
 
       {/* Factor Tree Cards */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-4 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Extracted Prime Factors:</span>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Extracted Prime Factors:</span>
         <div className="flex items-center gap-3 overflow-x-auto py-2">
           {step.factors.map((f, idx) => (
             <React.Fragment key={idx}>

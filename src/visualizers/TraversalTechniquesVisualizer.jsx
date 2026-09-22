@@ -147,7 +147,7 @@ export default function TraversalTechniquesVisualizer({ currentStep = 0 }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         {/* BFS Card */}
-        <div className="p-5 rounded-2xl bg-[#12131b] border border-cyan-500/30 shadow-xl flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[var(--board-raised)] border border-cyan-500/30 shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-3">
               <span className="text-xs font-mono font-bold text-cyan-400">BFS (Breadth First)</span>
@@ -164,13 +164,13 @@ export default function TraversalTechniquesVisualizer({ currentStep = 0 }) {
               ))}
             </div>
           </div>
-          <div className="text-[11px] font-mono text-[#8a8ea3] pt-2 border-t border-[#242738]">
+          <div className="text-[11px] font-mono text-[var(--chalk-dim)] pt-2 border-t border-[var(--line)]">
             Level 0 &rarr; Level 1 &rarr; Level 2
           </div>
         </div>
 
         {/* DFS Card */}
-        <div className="p-5 rounded-2xl bg-[#12131b] border border-purple-500/30 shadow-xl flex flex-col justify-between">
+        <div className="p-5 rounded-2xl bg-[var(--board-raised)] border border-purple-500/30 shadow-xl flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-3">
               <span className="text-xs font-mono font-bold text-purple-400">DFS (Depth First)</span>
@@ -187,13 +187,13 @@ export default function TraversalTechniquesVisualizer({ currentStep = 0 }) {
               ))}
             </div>
           </div>
-          <div className="text-[11px] font-mono text-[#8a8ea3] pt-2 border-t border-[#242738]">
+          <div className="text-[11px] font-mono text-[var(--chalk-dim)] pt-2 border-t border-[var(--line)]">
             Deep dive to leaf &rarr; Backtrack
           </div>
         </div>
       </div>
 
-      <div className="w-full p-4 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.insight}
       </div>
     </div>

@@ -204,7 +204,7 @@ export default function ImplementQueueUsingStackVisualizer({ currentStep = 0 }) 
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Queue Op: <strong className="text-cyan-400">{step.action}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
@@ -215,8 +215,8 @@ export default function ImplementQueueUsingStackVisualizer({ currentStep = 0 }) 
       {/* Dual Stack Display */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
         {/* Input Stack */}
-        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3] flex items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)] flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-blue-400"></span>
             Input Stack (Ingress)
           </span>
@@ -235,7 +235,7 @@ export default function ImplementQueueUsingStackVisualizer({ currentStep = 0 }) 
                     }`}
                   >
                     <span>{val}</span>
-                    {isTop && <span className="text-[9px] px-1 rounded bg-blue-500 text-white font-bold">TOP</span>}
+                    {isTop && <span className="text-[9px] px-1 rounded bg-blue-500 text-[var(--chalk)] font-bold">TOP</span>}
                   </div>
                 );
               })
@@ -244,8 +244,8 @@ export default function ImplementQueueUsingStackVisualizer({ currentStep = 0 }) 
         </div>
 
         {/* Output Stack */}
-        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
-          <span className="text-xs font-mono text-[#8a8ea3] flex items-center gap-1.5">
+        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)] flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
             Output Stack (Egress / FIFO)
           </span>
@@ -264,7 +264,7 @@ export default function ImplementQueueUsingStackVisualizer({ currentStep = 0 }) 
                     }`}
                   >
                     <span>{val}</span>
-                    {isTop && <span className="text-[9px] px-1 rounded bg-emerald-500 text-white font-bold">FRONT</span>}
+                    {isTop && <span className="text-[9px] px-1 rounded bg-emerald-500 text-[var(--chalk)] font-bold">FRONT</span>}
                   </div>
                 );
               })
@@ -273,7 +273,7 @@ export default function ImplementQueueUsingStackVisualizer({ currentStep = 0 }) 
         </div>
       </div>
 
-      <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+      <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
         Each element is transferred from input to output at most once &rarr; each operation takes amortized O(1) time!
       </div>
     </div>

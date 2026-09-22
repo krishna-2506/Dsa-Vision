@@ -1,12 +1,25 @@
-import React from 'react';
+// DATA-ONLY — rendered by DualArrayRenderer via rendererType
 
 export const meta = {
   title: 'Find the Repeating and Missing Number (Math Formulation)',
   category: 'Arrays & Mathematics',
   difficulty: 'Hard',
-  timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Calculates the single repeating number X and missing number Y from [1 ... N] in linear time and O(1) space using natural sum and sum-of-squares difference equations.'
+  timeComplexity: 'O(N) Time',
+  spaceComplexity: 'O(1) Auxiliary Space',
+  description: 'Calculates the single repeating number X and missing number Y from [1 ... N] in linear time and O(1) space using natural sum and sum-of-squares simultaneous difference equations.'
+};
+
+export const rendererType = 'dual-array';
+
+export const ideaMap = {
+  title: 'Repeating and Missing Number',
+  nodes: [
+    { id: 'root', label: 'Math Simultaneous Equations', children: ['sum-diff', 'square-diff', 'solve-linear', 'xor-alternative'] },
+    { id: 'sum-diff', label: '1. First Equation: S - Sn', detail: 'Actual sum S minus expected natural sum Sn = N*(N+1)/2 yields val1 = X - Y.' },
+    { id: 'square-diff', label: '2. Second Equation: S2 - S2n', detail: 'Actual square sum S2 minus expected S2n = N*(N+1)*(2N+1)/6 yields X² - Y².' },
+    { id: 'solve-linear', label: '3. Direct Solution', detail: '(X + Y) = (X² - Y²) / (X - Y). Then X = (val1 + val2)/2 and Y = X - val1.' },
+    { id: 'xor-alternative', label: '4. Alternate XOR Method', detail: 'XOR all elements and 1..N, isolate lowest set bit, partition into two buckets to find X and Y.' }
+  ]
 };
 
 export const solutions = {
@@ -20,7 +33,7 @@ public:
     vector<int> findMissingRepeatingNumbers(vector<int> a) {
         long long n = a.size();
 
-        // Sum of first n natural numbers
+        // Expected sum and sum of squares
         long long SN = (n * (n + 1)) / 2;
         long long S2N = (n * (n + 1) * (2 * n + 1)) / 6;
 
@@ -46,6 +59,7 @@ public:
     }
 };`,
   python: `# Python 3 Optimal Math Solution
+# Time: O(N) | Space: O(1)
 class Solution:
     def findMissingRepeatingNumbers(self, a: list[int]) -> list[int]:
         n = len(a)
@@ -55,14 +69,15 @@ class Solution:
         S = sum(a)
         S2 = sum(x * x for x in a)
 
-        val1 = S - SN          # X - Y
+        val1 = S - SN              # X - Y
         val2 = (S2 - S2N) // val1  # X + Y
 
-        X = (val1 + val2) // 2 # Repeating
-        Y = X - val1           # Missing
+        X = (val1 + val2) // 2     # Repeating
+        Y = X - val1               # Missing
 
         return [X, Y]`,
   java: `// Java Optimal Math Solution
+// Time: O(N) | Space: O(1)
 class Solution {
     public int[] findMissingRepeatingNumbers(int[] a) {
         long n = a.length;
@@ -85,6 +100,7 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Optimal Math Solution
+// Time: O(N) | Space: O(1)
 var findMissingRepeatingNumbers = function(a) {
     const n = a.length;
     const SN = (n * (n + 1)) / 2;
@@ -108,115 +124,230 @@ var findMissingRepeatingNumbers = function(a) {
 
 export const steps = [
   {
-    title: '1. Array: [3, 1, 2, 5, 3], N = 5',
+    title: '1. Problem Setup & Invariant Definition',
     phase: 'INITIAL',
-    codeLine: 12,
-    array: [3, 1, 2, 5, 3],
-    n: 5,
-    variables: { n: 5, expectedRange: '[1 ... 5]', goal: 'Find repeating (X) and missing (Y)' },
-    explain: 'Array of size 5 contains numbers from 1 to 5 with one duplicate and one missing. Instead of a hash map, we use pure mathematics to solve it in O(1) space.',
-    intuition: 'Two unknowns (X, Y) can be uniquely identified using two independent polynomial equations.'
+    tracks: [
+      { label: 'Input Array nums', items: [3, 1, 2, 5, 3] },
+      { label: 'Expected [1..N]', items: [1, 2, 3, 4, 5] }
+    ],
+    activeI: null,
+    activePrev: null,
+    trackTitle: 'Array Comparison',
+    metrics: [
+      { label: 'Size N', value: '5' },
+      { label: 'Expected Range', value: '1 to 5' },
+      { label: 'Unknowns', value: 'X (repeating), Y (missing)' }
+    ],
+    customCard: {
+      title: 'Mathematical Strategy',
+      rows: [
+        { label: 'Observation', value: 'Array has N numbers from 1..N with one duplicate X and one missing Y' },
+        { label: 'Constraint', value: 'O(N) time and O(1) space (no hash map, no sorting)' },
+        { label: 'Approach', value: 'Set up 2 algebraic equations in 2 unknowns', accent: true }
+      ]
+    },
+    formula: 'X - Y = S - S_N  and  X^2 - Y^2 = S^2 - S^2_N',
+    action: 'Define expected sequence and formulate simultaneous polynomial system',
+    explain: 'Instead of spending O(N) memory on a hash table or frequency count array, we exploit the algebraic properties of sums. Two independent equations determine X and Y uniquely.',
+    intuition: 'Two unknowns require exactly two independent algebraic relations to solve.'
   },
   {
-    title: '2. Equation 1: Sum Difference (X - Y)',
-    phase: 'EQUATION_1',
-    codeLine: 23,
-    array: [3, 1, 2, 5, 3],
-    n: 5,
-    variables: { 'Actual Sum (S)': 14, 'Expected Sum (SN)': 15, 'val1 = X - Y': -1 },
-    explain: 'Expected sum SN = 5 * 6 / 2 = 15. Actual sum S = 3 + 1 + 2 + 5 + 3 = 14. Therefore: X - Y = 14 - 15 = -1.',
-    intuition: 'First linear relation established.'
+    title: '2. Expected Sums SN and S2N for N = 5',
+    phase: 'BASE_CASES',
+    tracks: [
+      { label: 'Input Array nums', items: [3, 1, 2, 5, 3] },
+      { label: 'Expected [1..N]', items: [1, 2, 3, 4, 5] }
+    ],
+    activeI: null,
+    activePrev: null,
+    trackTitle: 'Closed-Form Sums',
+    metrics: [
+      { label: 'N', value: '5' },
+      { label: 'Expected SN', value: '5 × 6 / 2 = 15' },
+      { label: 'Expected S2N', value: '5 × 6 × 11 / 6 = 55' }
+    ],
+    customCard: {
+      title: 'Natural Number Sum Formulas',
+      rows: [
+        { label: 'Linear Sum SN', value: 'N(N + 1) / 2 = 15' },
+        { label: 'Square Sum S2N', value: 'N(N + 1)(2N + 1) / 6 = 55' },
+        { label: 'Time to Compute', value: 'O(1) closed-form calculation', accent: true }
+      ]
+    },
+    formula: 'S_N = 15, S2_N = 55',
+    action: 'Compute closed-form sums of natural numbers from 1 to 5 in O(1) time',
+    explain: 'For N = 5, the sum of numbers 1+2+3+4+5 is 15. The sum of squares 1+4+9+16+25 is 55. Both are calculated using Gauss closed-form equations in O(1) time.',
+    intuition: 'Closed-form summation gives the exact target ground truth without iterating.'
   },
   {
-    title: '3. Equation 2: Squares Difference (X^2 - Y^2)',
-    phase: 'EQUATION_2',
-    codeLine: 26,
-    array: [3, 1, 2, 5, 3],
-    n: 5,
-    variables: { 'Actual S2': 48, 'Expected S2N': 55, 'X^2 - Y^2': -7, 'val2 = X + Y': '(-7) / (-1) = 7' },
-    explain: 'Expected S2N = (5 * 6 * 11) / 6 = 55. Actual S2 = 9 + 1 + 4 + 25 + 9 = 48. S2 - S2N = -7. Dividing by (X - Y) gives X + Y = 7.',
-    intuition: 'Factoring difference of squares: (X - Y)(X + Y) = -7.'
+    title: '3. Actual Sum S Computation: S = 14',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'Input Array nums', items: [3, 1, 2, 5, 3] },
+      { label: 'Prefix Sums', items: ['3', '4', '6', '11', '14'] }
+    ],
+    activeI: 4,
+    activePrev: null,
+    trackTitle: 'Linear Scan for S',
+    metrics: [
+      { label: 'Actual Sum S', value: '14' },
+      { label: 'Expected SN', value: '15' },
+      { label: 'Difference S - SN', value: '14 - 15 = -1' }
+    ],
+    customCard: {
+      title: 'Equation 1: Sum Difference',
+      rows: [
+        { label: 'Actual Sum S', value: '3 + 1 + 2 + 5 + 3 = 14' },
+        { label: 'Expected Sum SN', value: '15' },
+        { label: 'val1 = X - Y', value: 'S - SN = 14 - 15 = -1', accent: true }
+      ]
+    },
+    formula: 'val1 = S - S_N = X - Y = -1',
+    action: 'Accumulate array elements to compute actual sum S = 14 and determine X - Y = -1',
+    explain: 'Summing all elements gives S = 14. Since repeating number X replaced missing number Y in the sequence, S - SN equals X - Y. Thus, X - Y = -1.',
+    intuition: 'A net sum deficit of 1 proves the missing number exceeds the repeating duplicate by 1.'
   },
   {
-    title: '4. Solve Simultaneous Equations for X and Y',
-    phase: 'SOLVE',
-    codeLine: 31,
-    array: [3, 1, 2, 5, 3],
-    n: 5,
-    variables: { 'Eq 1': 'X - Y = -1', 'Eq 2': 'X + Y = 7', 'X = (-1 + 7)/2': 3, 'Y = 3 - (-1)': 4 },
-    explain: 'Add both equations: 2X = 6 -> X = 3 (Repeating). Substitute X into Eq 1: 3 - Y = -1 -> Y = 4 (Missing).',
-    intuition: 'System of linear equations solved directly.'
+    title: '4. Actual Square Sum S2 Computation: S2 = 48',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'Input Array nums', items: [3, 1, 2, 5, 3] },
+      { label: 'Square Values', items: [9, 1, 4, 25, 9] }
+    ],
+    activeI: 4,
+    activePrev: null,
+    trackTitle: 'Linear Scan for S2',
+    metrics: [
+      { label: 'Actual S2', value: '48' },
+      { label: 'Expected S2N', value: '55' },
+      { label: 'S2 - S2N', value: '48 - 55 = -7' }
+    ],
+    customCard: {
+      title: 'Equation 2: Squares Difference',
+      rows: [
+        { label: 'Actual S2', value: '9 + 1 + 4 + 25 + 9 = 48' },
+        { label: 'Expected S2N', value: '55' },
+        { label: 'X² - Y²', value: 'S2 - S2N = 48 - 55 = -7', accent: true }
+      ]
+    },
+    formula: 'X^2 - Y^2 = S2 - S2_N = 48 - 55 = -7',
+    action: 'Accumulate squares of elements to compute actual sum of squares S2 = 48',
+    explain: 'Sum of squares in array is 9 + 1 + 4 + 25 + 9 = 48. Expected sum of squares is 55. The difference S2 - S2N gives X² - Y² = -7.',
+    intuition: 'Squares difference provides the second independent equation needed to decouple X and Y.'
   },
   {
-    title: '5. Completed: Repeating X = 3, Missing Y = 4',
+    title: '5. Decoupling: Factoring Difference of Squares',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'val1: (X - Y)', items: ['-1', '—', '—', '—', '—'] },
+      { label: 'val2: (X + Y)', items: ['7', '—', '—', '—', '—'] }
+    ],
+    activeI: 0,
+    activePrev: null,
+    trackTitle: 'Algebraic Decoupling',
+    metrics: [
+      { label: 'X - Y', value: '-1' },
+      { label: 'X² - Y²', value: '-7' },
+      { label: 'X + Y', value: '(-7) / (-1) = 7' }
+    ],
+    customCard: {
+      title: 'Factoring Step',
+      rows: [
+        { label: 'Identity', value: 'X² - Y² = (X - Y)(X + Y)' },
+        { label: 'Division', value: '(X + Y) = (X² - Y²) / (X - Y)' },
+        { label: 'Result val2', value: '(-7) / (-1) = 7', accent: true }
+      ]
+    },
+    formula: 'X + Y = (S2 - S2_N) / (S - S_N) = (-7) / (-1) = 7',
+    action: 'Divide difference of squares by difference of sums to isolate X + Y',
+    explain: 'Using algebra: X² - Y² = (X - Y)(X + Y). Since X - Y = -1, we divide: (X + Y) = (-7) / (-1) = 7. We now have two simple linear equations: X - Y = -1 and X + Y = 7.',
+    intuition: 'Division transforms quadratic relation into a clean linear sum.'
+  },
+  {
+    title: '6. Solving for Repeating Number X',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'Equation 1', items: ['X - Y = -1', '—', '—', '—', '—'] },
+      { label: 'Equation 2', items: ['X + Y = 7', '—', '—', '—', '—'] }
+    ],
+    activeI: 0,
+    activePrev: null,
+    trackTitle: 'Linear Elimination',
+    metrics: [
+      { label: 'Equation 1', value: 'X - Y = -1' },
+      { label: 'Equation 2', value: 'X + Y = 7' },
+      { label: 'Sum Equations', value: '2X = 6' },
+      { label: 'Repeating (X)', value: '3', highlight: true }
+    ],
+    customCard: {
+      title: 'Elimination for X',
+      rows: [
+        { label: 'Add Equations', value: '(X - Y) + (X + Y) = -1 + 7' },
+        { label: 'Simplify', value: '2X = 6' },
+        { label: 'Repeating Number X', value: 'X = 6 / 2 = 3', accent: true }
+      ]
+    },
+    formula: 'X = (val1 + val2) / 2 = (-1 + 7) / 2 = 3',
+    action: 'Add both equations together to eliminate Y and solve for X',
+    explain: 'Adding (X - Y = -1) and (X + Y = 7) gives 2X = 6, which yields X = 3. 3 is the repeating number in the array!',
+    intuition: 'Adding the two equations cancels Y, directly yielding X.'
+  },
+  {
+    title: '7. Solving for Missing Number Y',
+    phase: 'COMPUTE',
+    tracks: [
+      { label: 'Repeating X', items: ['3', '—', '—', '—', '—'] },
+      { label: 'Missing Y', items: ['4', '—', '—', '—', '—'] }
+    ],
+    activeI: 0,
+    activePrev: null,
+    trackTitle: 'Substitution for Y',
+    metrics: [
+      { label: 'X', value: '3' },
+      { label: 'val1 (X - Y)', value: '-1' },
+      { label: 'Y = X - val1', value: '3 - (-1) = 4' },
+      { label: 'Missing (Y)', value: '4', highlight: true }
+    ],
+    customCard: {
+      title: 'Substitution for Y',
+      rows: [
+        { label: 'Equation 1', value: '3 - Y = -1' },
+        { label: 'Rearrange', value: 'Y = 3 - (-1)' },
+        { label: 'Missing Number Y', value: 'Y = 4', accent: true }
+      ]
+    },
+    formula: 'Y = X - val1 = 3 - (-1) = 4',
+    action: 'Substitute X = 3 back into Equation 1 to solve for Y',
+    explain: 'Since X - Y = -1, Y = X - (-1) = 3 + 1 = 4. 4 is the missing number from [1 ... 5].',
+    intuition: 'Once X is determined, Y falls out through simple subtraction.'
+  },
+  {
+    title: '8. Final Result: Repeating = 3, Missing = 4',
     phase: 'COMPLETED',
-    codeLine: 34,
-    array: [3, 1, 2, 5, 3],
-    n: 5,
-    variables: { repeating: 3, missing: 4, timeComplexity: 'O(N)', spaceComplexity: 'O(1)' },
-    explain: 'Output: [3, 4]. Executed in a single linear pass with 0 extra memory allocation!',
-    intuition: 'Mathematical elegance replaces hash table overhead.'
+    tracks: [
+      { label: 'Input Array nums', items: [3, 1, 2, 5, 3] },
+      { label: 'Output [X, Y]', items: ['Repeating: 3', 'Missing: 4', '—', '—', '—'] }
+    ],
+    activeI: 0,
+    activePrev: null,
+    trackTitle: 'Optimal Solution Summary',
+    metrics: [
+      { label: 'Repeating (X)', value: '3', highlight: true },
+      { label: 'Missing (Y)', value: '4', highlight: true },
+      { label: 'Time Complexity', value: 'O(N) Single Pass' },
+      { label: 'Space Complexity', value: 'O(1) Auxiliary Space' }
+    ],
+    customCard: {
+      title: 'Verification',
+      rows: [
+        { label: 'Input Check', value: 'Array has two 3s (indices 0 and 4) and no 4' },
+        { label: 'Result Tuple', value: '[3, 4]', accent: true },
+        { label: 'Alternate Method', value: 'XOR grouping also achieves O(N) time and O(1) space' }
+      ]
+    },
+    formula: 'return { (int)X, (int)Y } -> [3, 4]',
+    action: 'Return answer [3, 4] with zero auxiliary heap allocations',
+    explain: 'The algorithm terminates in a single O(N) linear scan and O(1) auxiliary memory. Repeating number is 3 and missing number is 4.',
+    intuition: 'Pure mathematical deduction eliminates all spatial memory overhead.'
   }
 ];
-
-export default function FindTheRepeatingAndMissingNumberVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Target Array */}
-      <div className="w-full flex flex-col items-center gap-1.5">
-        <span className="text-xs font-mono text-[#8a8ea3]">Input Array (size 5):</span>
-        <div className="flex items-center gap-2">
-          {step.array.map((val, idx) => {
-            const isRepeating = step.phase === 'COMPLETED' && val === 3;
-
-            return (
-              <div
-                key={idx}
-                className={`w-12 h-12 rounded-xl border flex items-center justify-center font-mono text-base font-bold transition-all duration-300 ${
-                  isRepeating ? 'bg-amber-500/25 text-amber-300 border-amber-400 scale-105 shadow-md shadow-amber-500/20' : 'bg-[#181a24] text-white border-[#2b2e40]'
-                }`}
-              >
-                {val}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Math Equations Board */}
-      <div className="w-full flex flex-col items-center gap-2 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl">
-        <span className="text-xs font-mono text-[#8a8ea3]">Simultaneous Mathematical Formulation:</span>
-        <div className="flex flex-col gap-2 font-mono text-xs text-left w-full px-4">
-          <div className="flex items-center justify-between py-1 border-b border-[#212434]">
-            <span className="text-[#8a8ea3]">1. Difference:</span>
-            <span className="text-indigo-300 font-bold">X - Y = S - S_N = -1</span>
-          </div>
-          <div className="flex items-center justify-between py-1 border-b border-[#212434]">
-            <span className="text-[#8a8ea3]">2. Squares:</span>
-            <span className="text-purple-300 font-bold">X² - Y² = S² - S²_N = -7</span>
-          </div>
-          <div className="flex items-center justify-between py-1 border-b border-[#212434]">
-            <span className="text-[#8a8ea3]">3. Sum:</span>
-            <span className="text-blue-300 font-bold">X + Y = (-7) / (-1) = 7</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Results Header */}
-      {step.phase === 'COMPLETED' && (
-        <div className="flex items-center gap-6">
-          <div className="px-4 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-xs font-mono">
-            <span className="text-amber-400 font-bold">Repeating (X):</span>
-            <span className="text-amber-200 font-bold text-sm ml-2">3</span>
-          </div>
-          <div className="px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs font-mono">
-            <span className="text-emerald-400 font-bold">Missing (Y):</span>
-            <span className="text-emerald-200 font-bold text-sm ml-2">4</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}

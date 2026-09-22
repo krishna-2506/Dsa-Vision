@@ -133,14 +133,14 @@ export default function CountTheNumberOfSetBitsVisualizer({ currentStep = 0 }) {
 
       {/* 8-bit Binary Register */}
       <div className="w-full flex flex-col items-center gap-2">
-        <span className="text-[11px] font-mono text-[#8a8ea3]">8-Bit Binary Register:</span>
+        <span className="text-[11px] font-mono text-[var(--chalk-dim)]">8-Bit Binary Register:</span>
         <div className="flex items-center gap-1.5 py-2 overflow-x-auto">
           {step.binaryN.split('').map((bit, idx) => {
             const isSet = bit === '1';
 
             let ringClass = isSet
               ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg shadow-emerald-500/10'
-              : 'border-[#272b3c] bg-[#12131b] text-slate-500';
+              : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]';
 
             return (
               <div key={idx} className="flex flex-col items-center gap-1 min-w-[36px]">
@@ -155,8 +155,8 @@ export default function CountTheNumberOfSetBitsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Bit Trick Card */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Bit Trick: <strong className="text-amber-400">N & (N - 1)</strong></span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+        <span className="text-[var(--chalk-dim)]">Bit Trick: <strong className="text-amber-400">N & (N - 1)</strong></span>
         <span className="text-emerald-400 font-semibold">Runs in O(SetBits)</span>
       </div>
     </div>

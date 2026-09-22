@@ -154,7 +154,7 @@ export default function SortCharactersByFrequencyVisualizer({ currentStep = 0 })
       </div>
 
       {/* Result Output Card */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
         <span className="text-[11px] text-emerald-400 font-semibold uppercase tracking-wider">
           Frequency-Sorted String:
         </span>

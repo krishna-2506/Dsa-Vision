@@ -138,13 +138,13 @@ export default function DeletingNodeInLinkedListVisualizer({ currentStep: extern
           <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
             Step {stepIndex + 1} / {steps.length}
           </span>
-          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
+          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
         </div>
         <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition">
+          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
             ← Prev
           </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition">
+          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
             Next →
           </button>
         </div>
@@ -153,12 +153,12 @@ export default function DeletingNodeInLinkedListVisualizer({ currentStep: extern
       {/* 2. Visualizer Canvas */}
       <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[340px]">
         {/* Source Array View */}
-        <div className="mb-2 text-xs font-mono text-slate-500 uppercase tracking-widest">Original Data Sequence</div>
+        <div className="mb-2 text-xs font-mono text-[var(--chalk-faint)] uppercase tracking-widest">Original Data Sequence</div>
         <ArrayView items={SAMPLE_DATA} pointers={stepData.pointers || []} matchIndices={stepData.highlightIndices || []} />
         
         {/* Custom Linked List Rendering Area */}
         <div className="mt-8 flex flex-col items-center w-full relative">
-          <div className="mb-6 text-xs font-mono text-slate-500 uppercase tracking-widest">Linked List Memory State</div>
+          <div className="mb-6 text-xs font-mono text-[var(--chalk-faint)] uppercase tracking-widest">Linked List Memory State</div>
           
           <div className="flex items-center justify-center w-full overflow-visible min-h-[100px]">
             {stepData.linkedList && stepData.linkedList.map((node, i) => (
@@ -173,7 +173,7 @@ export default function DeletingNodeInLinkedListVisualizer({ currentStep: extern
                     node.active ? 'border-indigo-500 bg-indigo-500/20 z-10' : 
                     node.isTarget ? 'border-rose-500 bg-rose-500/10' : 
                     'border-white/20 bg-white/5'
-                  } font-mono text-white text-lg`}>
+                  } font-mono text-[var(--chalk)] text-lg`}>
                     {node.val}
                   </div>
                 </div>
@@ -181,7 +181,7 @@ export default function DeletingNodeInLinkedListVisualizer({ currentStep: extern
                 {/* Connecting Arrows */}
                 {i < stepData.linkedList.length - 1 && (
                   <div className="mx-2 flex items-center z-0">
-                    <svg className={`w-8 h-8 transition-all duration-500 ${node.active && i === stepData.linkedList.length - 2 && stepIndex === 5 ? 'text-emerald-400' : 'text-slate-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className={`w-8 h-8 transition-all duration-500 ${node.active && i === stepData.linkedList.length - 2 && stepIndex === 5 ? 'text-emerald-400' : 'text-[var(--chalk-faint)]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </div>
@@ -204,17 +204,17 @@ export default function DeletingNodeInLinkedListVisualizer({ currentStep: extern
         </div>
 
         <div className="mt-12 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs w-full max-w-2xl">
-          <span className="whitespace-nowrap text-slate-400">Code:</span> 
+          <span className="whitespace-nowrap text-[var(--chalk-dim)]">Code:</span> 
           <code className="text-emerald-400 px-2 py-1 bg-emerald-400/10 rounded flex-1 truncate">{stepData.code}</code>
           <div className="w-px h-4 bg-white/10 mx-1"></div>
-          <span className="whitespace-nowrap text-slate-400">Status:</span> 
+          <span className="whitespace-nowrap text-[var(--chalk-dim)]">Status:</span> 
           <strong className="text-indigo-400 whitespace-nowrap truncate max-w-[200px]">{stepData.hudText || 'Processing...'}</strong>
         </div>
       </div>
 
       {/* 4. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-slate-300 leading-relaxed font-sans shadow-inner min-h-[85px]">
-        <span className="text-slate-500 font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
+      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-[var(--chalk-dim)] leading-relaxed font-sans shadow-inner min-h-[85px]">
+        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
         {stepData.explanation}
       </div>
     </div>

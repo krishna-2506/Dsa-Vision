@@ -196,15 +196,15 @@ export default function PowerSetBitManipulationVisualizer({ currentStep = 0 }) {
 
       {/* Bitmask Inclusion Visual */}
       {step.binaryMask && (
-        <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-around font-mono">
+        <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-around font-mono">
           {step.s.split('').map((char, idx) => {
             const isBitSet = step.binaryMask[step.binaryMask.length - 1 - idx] === '1';
 
             return (
               <div key={idx} className="flex flex-col items-center gap-2">
-                <span className="text-xs text-[#8a8ea3]">Index {idx}</span>
+                <span className="text-xs text-[var(--chalk-dim)]">Index {idx}</span>
                 <div className={`w-16 h-16 rounded-2xl border-2 flex flex-col items-center justify-center transition-all ${
-                  isBitSet ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200 scale-105 shadow-lg shadow-emerald-500/25' : 'border-[#272b3c] bg-[#12131b] text-[#5b6076]'
+                  isBitSet ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200 scale-105 shadow-lg shadow-emerald-500/25' : 'border-[var(--line)] bg-[var(--board-raised)] text-[#5b6076]'
                 }`}>
                   <span className="text-xl font-bold">{char}</span>
                   <span className="text-[10px]">{isBitSet ? 'BIT: 1' : 'BIT: 0'}</span>
@@ -219,8 +219,8 @@ export default function PowerSetBitManipulationVisualizer({ currentStep = 0 }) {
       )}
 
       {/* Generated Subsets Grid */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Power Set Generated ({step.subsetsList.length} / 8):</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Power Set Generated ({step.subsetsList.length} / 8):</span>
         <div className="flex flex-wrap items-center gap-2">
           {step.subsetsList.map((sub, idx) => (
             <span

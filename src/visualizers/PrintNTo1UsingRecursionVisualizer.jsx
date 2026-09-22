@@ -90,8 +90,8 @@ export default function PrintNTo1UsingRecursionVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <span className="text-xs font-mono text-[#8a8ea3] self-start">Output Stream (N down to 1)</span>
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] self-start">Output Stream (N down to 1)</span>
         <div className="flex items-center gap-2 py-3">
           {step.printed.map((num, i) => (
             <span key={i} className="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-200 font-mono font-bold text-lg flex items-center justify-center shadow">
@@ -101,7 +101,7 @@ export default function PrintNTo1UsingRecursionVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

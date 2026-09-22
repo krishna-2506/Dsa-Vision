@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Shortest Common Supersequence (SCS)',
+  title: 'Shortest Common Supersequence (DP-31)',
   category: 'Dynamic Programming',
   difficulty: 'Hard',
-  timeComplexity: 'O(N * M)',
-  spaceComplexity: 'O(N * M)',
-  description: 'Constructs the shortest string that has both str1 and str2 as subsequences. Common characters (LCS) are included once, while disjoint characters from both strings are interleaved during table backtracking.'
+  timeComplexity: 'O(N × M) Table + O(N + M) Reconstruction',
+  spaceComplexity: 'O(N × M) Auxiliary Grid',
+  description: 'Constructs the shortest string containing both str1 and str2 as subsequences. Characters belonging to their Longest Common Subsequence (LCS) are included once, while non-matching characters are interleaved via table backtracking.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Shortest Common Supersequence (DP-31)',
+  nodes: [
+    { id: 'root', label: 'Shortest Common Supersequence', children: ['length-rule', 'lcs-core', 'backtrack-strategy'] },
+    { id: 'length-rule', label: '1. Supersequence Theorem', detail: '|SCS| = |str1| + |str2| - |LCS(str1, str2)|' },
+    { id: 'lcs-core', label: '2. 2D LCS Dynamic Programming', children: ['match-trans', 'mismatch-trans'] },
+    { id: 'match-trans', label: 'Character Match', detail: 'str1[i-1] == str2[j-1] => dp[i][j] = 1 + dp[i-1][j-1]' },
+    { id: 'mismatch-trans', label: 'Character Mismatch', detail: 'dp[i][j] = max(dp[i-1][j], dp[i][j-1])' },
+    { id: 'backtrack-strategy', label: '3. Dual-Pointer Table Traceback', detail: 'Match: take char once & move diagonal. Mismatch: take char from larger neighbor & move towards it.' }
+  ]
 };
 
 export const solutions = {
@@ -23,7 +37,7 @@ public:
         int n = str1.size(), m = str2.size();
         vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
 
-        // Build LCS table
+        // 1. Build LCS table
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= m; j++) {
                 if (str1[i - 1] == str2[j - 1]) dp[i][j] = 1 + dp[i - 1][j - 1];
@@ -31,12 +45,12 @@ public:
             }
         }
 
-        // Backtrack to build SCS
+        // 2. Backtrack to reconstruct SCS string
         string scs = "";
         int i = n, j = m;
         while (i > 0 && j > 0) {
             if (str1[i - 1] == str2[j - 1]) {
-                scs += str1[i - 1]; // Common character included once
+                scs += str1[i - 1]; // Common character shared once
                 i--; j--;
             } else if (dp[i - 1][j] > dp[i][j - 1]) {
                 scs += str1[i - 1];
@@ -144,7 +158,7 @@ var shortestCommonSupersequence = function(str1, str2) {
         }
     }
 
-    let scs = [];
+    const scs = [];
     let i = n, j = m;
     while (i > 0 && j > 0) {
         if (str1[i - 1] === str2[j - 1]) {
@@ -168,118 +182,230 @@ var shortestCommonSupersequence = function(str1, str2) {
 
 export const steps = [
   {
-    title: '1. Strings: str1 = "abac", str2 = "cab"',
-    phase: 'INITIAL',
-    codeLine: 13,
-    str1: 'abac',
-    str2: 'cab',
-    lcs: 2,
-    scsString: '',
-    variables: { str1: 'abac', str2: 'cab', formula: 'len(SCS) = len1 + len2 - LCS' },
-    explain: 'Goal: Find the shortest supersequence containing both "abac" and "cab" as subsequences.',
-    intuition: 'Common characters in LCS are shared (written once); unique characters from both are preserved.'
+    phase: 'SETUP',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 0, c: 0 },
+    formula: '|SCS| = |str1| + |str2| - |LCS| = 4 + 3 - LCS',
+    action: 'Initialize DP table for str1 = "abac" (rows) and str2 = "cab" (columns).',
+    explain: 'dp[i][j] stores the LCS length between str1[0..i-1] and str2[0..j-1]. Base row and column are 0 because matching any prefix against the empty string yields length 0.',
+    intuition: 'Every character shared between str1 and str2 only needs to be written once in the supersequence.',
+    metrics: [
+      { label: '|str1|', value: 4 },
+      { label: '|str2|', value: 3 },
+      { label: 'LCS Len', value: 0 }
+    ]
   },
   {
-    title: '2. Compute LCS: "ab" is Longest Common Subsequence (Length 2)',
-    phase: 'LCS',
-    codeLine: 17,
-    str1: 'abac',
-    str2: 'cab',
-    lcs: 2,
-    lcsSeq: 'ab',
-    scsLen: 5,
-    variables: { lcs: '"ab" (len 2)', expectedSCSLength: '4 + 3 - 2 = 5' },
-    explain: 'LCS is "ab". Total supersequence length will be 4 + 3 - 2 = 5 characters.',
-    intuition: '5 characters is optimal.'
+    phase: 'FILL_ROW_1',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 1, c: 2 },
+    dependencyCells: [{ r: 0, c: 1, label: 'diag' }],
+    formula: 'str1[0] == str2[1] ("a" == "a") => dp[1][2] = 1 + dp[0][1] = 1',
+    action: 'Process row 1 (char "a"): match found at column 2 (char "a").',
+    explain: 'At cell [1, 2], both characters are "a". We add 1 to the diagonal predecessor dp[0][1] = 0, giving 1. Cell [1, 3] carries over this value via max(dp[0][3], dp[1][2]) = 1.',
+    intuition: 'Matching characters always step diagonally, extending the common subsequence length.',
+    metrics: [
+      { label: 'Active Char', value: 'str1[0]: "a"' },
+      { label: 'Match At', value: 'col 2 ("a")' },
+      { label: 'Row 1 Max', value: 1, highlight: true }
+    ]
   },
   {
-    title: '3. Backtrack DP Table: Interleave Unique Chars and Shared Chars',
-    phase: 'BACKTRACK',
-    codeLine: 25,
-    str1: 'abac',
-    str2: 'cab',
-    tokens: ['c', 'a', 'b', 'a', 'c'],
-    variables: { step: 'Shared \'a\' and \'b\', prefix \'c\', suffix \'ac\'' },
-    explain: 'Backtracking backwards from (4, 3) yields the reversed character stream.',
-    intuition: 'Table guides exact placement of non-common characters.'
+    phase: 'FILL_ROW_2',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 2, c: 3 },
+    dependencyCells: [{ r: 1, c: 2, label: 'diag' }],
+    formula: 'str1[1] == str2[2] ("b" == "b") => dp[2][3] = 1 + dp[1][2] = 2',
+    action: 'Process row 2 (char "b"): match found at column 3 (char "b").',
+    explain: 'At cell [2, 3], str1[1] and str2[2] both equal "b". Taking 1 + dp[1][2] (1 + 1) gives 2! The prefix "ab" of str1 matches "ab" of str2.',
+    intuition: 'We have found a common subsequence of length 2: "ab".',
+    metrics: [
+      { label: 'Active Char', value: 'str1[1]: "b"' },
+      { label: 'Subsequence', value: '"ab"' },
+      { label: 'dp[2][3]', value: 2, highlight: true }
+    ]
   },
   {
-    title: '4. Final Result: Shortest Common Supersequence = "cabac" (Length 5)',
+    phase: 'FILL_ROW_3',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 1, 2],
+      [0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 3, c: 3 },
+    dependencyCells: [{ r: 2, c: 3, label: 'top' }, { r: 3, c: 2, label: 'left' }],
+    formula: 'str1[2] != str2[2] ("a" != "b") => dp[3][3] = max(dp[2][3], dp[3][2]) = 2',
+    action: 'Process row 3 (second "a"): propagate optimal subsequence length.',
+    explain: 'For prefix "aba" vs "cab", no longer common subsequence can be formed with terminal "b". The maximum of top neighbor dp[2][3] (2) and left neighbor dp[3][2] (1) is 2.',
+    intuition: 'Mismatches preserve the best choice seen so far from either string prefix.',
+    metrics: [
+      { label: 'Active Char', value: 'str1[2]: "a"' },
+      { label: 'Current Best', value: 2 }
+    ]
+  },
+  {
+    phase: 'FILL_ROW_4_DONE',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 1, 2],
+      [0, 1, 1, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 4, c: 3 },
+    formula: 'LCS = dp[4][3] = 2 ("ab") | Target |SCS| = 4 + 3 - 2 = 5',
+    action: 'Complete DP matrix! Terminal cell [4, 3] yields LCS length = 2.',
+    explain: 'Final entry dp[4][3] is 2, representing the LCS "ab". Using our formula |SCS| = 4 + 3 - 2, we know the shortest supersequence will have length exactly 5.',
+    intuition: 'Now we trace backwards from (4, 3) to (0, 0) to collect the characters in order.',
+    metrics: [
+      { label: '|str1|', value: 4 },
+      { label: '|str2|', value: 3 },
+      { label: 'LCS Length', value: 2 },
+      { label: 'SCS Length', value: 5, highlight: true }
+    ]
+  },
+  {
+    phase: 'BACKTRACK_1',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 1, 2],
+      [0, 1, 1, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 4, c: 3 },
+    dependencyCells: [{ r: 3, c: 3, label: 'larger' }, { r: 4, c: 2, label: 'smaller' }],
+    formula: 'dp[3][3] (2) > dp[4][2] (1) => Take str1[3] ("c"), move UP to [3, 3]',
+    action: 'Backtrack step 1: Compare characters str1[3]="c" vs str2[2]="b".',
+    explain: 'Mismatch between "c" and "b". The top neighbor dp[3][3] has value 2 while left neighbor dp[4][2] has value 1. We must take str1[3] ("c") into the supersequence and move UP to row 3.',
+    intuition: 'Moving UP means str1 character was NOT shared; it must be emitted individually.',
+    metrics: [
+      { label: 'Backtrack Pos', value: '[4, 3]' },
+      { label: 'Emitted Char', value: '"c"' },
+      { label: 'Reversed SCS', value: '["c"]' }
+    ]
+  },
+  {
+    phase: 'BACKTRACK_2',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 1, 2],
+      [0, 1, 1, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 3, c: 3 },
+    dependencyCells: [{ r: 2, c: 3, label: 'larger' }, { r: 3, c: 2, label: 'smaller' }],
+    formula: 'dp[2][3] (2) > dp[3][2] (1) => Take str1[2] ("a"), move UP to [2, 3]',
+    action: 'Backtrack step 2: Compare str1[2]="a" vs str2[2]="b".',
+    explain: 'Mismatch! Top cell dp[2][3]=2 is strictly larger than left cell dp[3][2]=1. Take character str1[2] ("a") and move UP to cell [2, 3].',
+    intuition: 'Another unshared character from str1 is preserved.',
+    metrics: [
+      { label: 'Backtrack Pos', value: '[3, 3]' },
+      { label: 'Emitted Char', value: '"a"' },
+      { label: 'Reversed SCS', value: '["c", "a"]' }
+    ]
+  },
+  {
+    phase: 'BACKTRACK_3',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 1, 2],
+      [0, 1, 1, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 2, c: 3 },
+    dependencyCells: [{ r: 1, c: 2, label: 'diag' }],
+    formula: 'str1[1] == str2[2] ("b" == "b") => Take "b" ONCE, move DIAG to [1, 2]',
+    action: 'Backtrack step 3: Match found! str1[1] == str2[2] == "b".',
+    explain: 'Both characters match! Since this character is part of the common subsequence, it is included ONCE in our supersequence. We decrement both pointers and move diagonally to [1, 2].',
+    intuition: 'This is where compression occurs: 1 character satisfies subsequences in both strings.',
+    metrics: [
+      { label: 'Shared Char', value: '"b"', highlight: true },
+      { label: 'Next Cell', value: '[1, 2]' },
+      { label: 'Reversed SCS', value: '["c", "a", "b"]' }
+    ]
+  },
+  {
+    phase: 'BACKTRACK_4',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 1, 2],
+      [0, 1, 1, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 1, c: 2 },
+    dependencyCells: [{ r: 0, c: 1, label: 'diag' }],
+    formula: 'str1[0] == str2[1] ("a" == "a") => Take "a" ONCE, move DIAG to [0, 1]',
+    action: 'Backtrack step 4: Match found! str1[0] == str2[1] == "a".',
+    explain: 'Another match! Include shared "a" and move diagonally to cell [0, 1]. Now row pointer i = 0 (str1 is exhausted).',
+    intuition: 'Both shared characters ("b" and "a") have been accounted for.',
+    metrics: [
+      { label: 'Shared Char', value: '"a"', highlight: true },
+      { label: 'Next Cell', value: '[0, 1]' },
+      { label: 'Reversed SCS', value: '["c", "a", "b", "a"]' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 38,
-    str1: 'abac',
-    str2: 'cab',
-    finalSCS: 'cabac',
-    variables: { SCS: '"cabac"', containsStr1: 'c-[aba-c]', containsStr2: '[c-ab]-ac' },
-    explain: '"cabac" contains "abac" (indices 1, 2, 3, 4) and "cab" (indices 0, 1, 2). Length is 5!',
-    intuition: 'Shortest possible supersequence constructed.'
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 1, 1],
+      [0, 0, 1, 2],
+      [0, 0, 1, 2],
+      [0, 1, 1, 2]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'c'],
+    colLabels: ['∅', 'c', 'a', 'b'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'reverse(["c", "a", "b", "a", "c"]) = "cabac"',
+    action: 'Append remaining str2 prefix "c" and reverse the collected tokens!',
+    explain: 'At [0, 1], remaining str2 character "c" is appended. Reversing the collected list gives the final Shortest Common Supersequence: "cabac". Both "abac" and "cab" exist as subsequences in "cabac".',
+    intuition: 'Optimal length 5 verified: contains c-[aba-c] and [c-ab]-ac.',
+    metrics: [
+      { label: 'Final SCS', value: '"cabac"', highlight: true },
+      { label: 'Length', value: 5 },
+      { label: 'LCS Shared', value: '"ab"' }
+    ]
   }
 ];
-
-export default function ShortestCommonSupersequenceVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          str1: "{step.str1}" | str2: "{step.str2}"
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          SCS: "{step.finalSCS || 'Building...'}" (Len {step.finalSCS ? step.finalSCS.length : 5})
-        </span>
-      </div>
-
-      {/* Supersequence Breakdown */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Supersequence Character Merging
-        </span>
-
-        <div className="flex items-center justify-center gap-2 py-2">
-          {['c', 'a', 'b', 'a', 'c'].map((ch, idx) => {
-            const isFromBoth = idx === 1 || idx === 2; // 'a' and 'b' are LCS
-            const isFromStr2 = idx === 0; // 'c'
-            const isFromStr1 = idx === 3 || idx === 4; // 'a', 'c'
-
-            return (
-              <div
-                key={idx}
-                className={`w-12 h-16 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                  isFromBoth
-                    ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg scale-105'
-                    : isFromStr2
-                    ? 'border-amber-500/50 bg-amber-500/15 text-amber-300'
-                    : 'border-cyan-500/50 bg-cyan-500/15 text-cyan-300'
-                }`}
-              >
-                <span className="text-base font-bold">{ch}</span>
-                <span className="text-[8px] text-[#8a8ea3]">
-                  {isFromBoth ? 'Both' : isFromStr2 ? 'str2' : 'str1'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Verification Check Card */}
-        <div className="w-full max-w-md bg-[#161824] border border-[#272b3c] rounded-xl p-3 flex flex-col items-center gap-1.5 text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <span className="text-cyan-400 font-semibold">str1 ("abac") in SCS:</span>
-            <span className="text-slate-200">c · <strong>a</strong> · <strong>b</strong> · <strong>a</strong> · <strong>c</strong></span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-amber-400 font-semibold">str2 ("cab") in SCS:</span>
-            <span className="text-slate-200"><strong>c</strong> · <strong>a</strong> · <strong>b</strong> · a · c</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

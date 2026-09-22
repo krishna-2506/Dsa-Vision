@@ -117,14 +117,14 @@ export default function CountAllDigitsOfANumberVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
           <span>Digit Demolition Stream</span>
           <span className="text-cyan-400 font-bold">N &divide; 10 Division</span>
         </div>
 
         <div className="flex items-center gap-3 font-mono text-base font-bold py-2">
-          <span className="px-4 py-2 rounded-xl bg-[#161824] border border-[#272b3c] text-cyan-300">
+          <span className="px-4 py-2 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-cyan-300">
             N = {step.currentN}
           </span>
           <span className="text-purple-400">&rarr;</span>
@@ -133,12 +133,12 @@ export default function CountAllDigitsOfANumberVisualizer({ currentStep = 0 }) {
           </span>
         </div>
 
-        <div className="w-full p-2.5 rounded-xl bg-[#0f1017] border border-[#1f2233] text-[11px] font-mono text-[#8a8ea3] text-center">
+        <div className="w-full p-2.5 rounded-xl bg-[#0f1017] border border-[#1f2233] text-[11px] font-mono text-[var(--chalk-dim)] text-center">
           Direct Math: &lfloor;log<sub>10</sub>(7894)&rfloor; + 1 = 3 + 1 = 4 digits
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.explanation}
       </div>
     </div>

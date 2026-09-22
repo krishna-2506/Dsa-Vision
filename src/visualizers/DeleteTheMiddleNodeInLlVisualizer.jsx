@@ -177,7 +177,7 @@ export default function DeleteTheMiddleNodeInLlVisualizer({ currentStep = 0 }) {
           const isFast = idx === step.fastIdx;
           const isDeleted = idx === step.deletedIdx;
 
-          let ringClass = 'border-[#272b3c] bg-[#12131b] text-slate-200';
+          let ringClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
           if (isDeleted) {
             ringClass = 'border-rose-500/50 bg-rose-500/10 text-rose-300 line-through opacity-50';
           } else if (isSlow) {
@@ -199,7 +199,7 @@ export default function DeleteTheMiddleNodeInLlVisualizer({ currentStep = 0 }) {
                 </div>
               </div>
               {idx < step.nodes.length - 1 && (
-                <span className="text-[#555a73] font-mono text-sm">→</span>
+                <span className="text-[var(--chalk-faint)] font-mono text-sm">→</span>
               )}
             </React.Fragment>
           );
@@ -207,8 +207,8 @@ export default function DeleteTheMiddleNodeInLlVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Footer Info */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Offset fast pointer by 2 steps</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+        <span className="text-[var(--chalk-dim)]">Offset fast pointer by 2 steps</span>
         <span className="text-emerald-400 font-semibold">Single Pass O(N)</span>
       </div>
     </div>

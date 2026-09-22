@@ -121,14 +121,14 @@ export default function GraphRepresentationCVisualizer({ currentStep = 0 }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
         {/* Adjacency List Panel */}
-        <div className="p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
+        <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-mono font-semibold text-cyan-400">Adjacency List (vector&lt;int&gt; adj[ ])</span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/50">Optimal Space</span>
           </div>
           <div className="space-y-2 font-mono text-xs">
             {[1, 2, 3, 4, 5].map(node => (
-              <div key={node} className="flex items-center gap-2 p-1.5 rounded bg-[#161824] border border-[#272b3c]">
+              <div key={node} className="flex items-center gap-2 p-1.5 rounded bg-[var(--board-raised-2)] border border-[var(--line)]">
                 <span className="w-16 text-cyan-300 font-bold">adj[{node}]:</span>
                 <span className="text-[#525777]">&rarr;</span>
                 <div className="flex gap-1.5 flex-wrap">
@@ -148,7 +148,7 @@ export default function GraphRepresentationCVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Adjacency Matrix Panel */}
-        <div className="p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-xl">
+        <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
           <div className="flex justify-between items-center mb-3">
             <span className="text-xs font-mono font-semibold text-purple-400">Adjacency Matrix [6][6]</span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800/50">O(1) Edge Query</span>
@@ -156,11 +156,11 @@ export default function GraphRepresentationCVisualizer({ currentStep = 0 }) {
           <div className="grid grid-cols-6 gap-1 text-center font-mono text-[11px]">
             <div className="text-[#525777] font-bold p-1">#</div>
             {[1, 2, 3, 4, 5].map(h => (
-              <div key={h} className="text-purple-300 font-bold p-1 bg-[#1a1d2e] rounded">{h}</div>
+              <div key={h} className="text-purple-300 font-bold p-1 bg-[var(--board-raised-2)] rounded">{h}</div>
             ))}
             {[1, 2, 3, 4, 5].map(r => (
               <React.Fragment key={r}>
-                <div className="text-purple-300 font-bold p-1 bg-[#1a1d2e] rounded flex items-center justify-center">{r}</div>
+                <div className="text-purple-300 font-bold p-1 bg-[var(--board-raised-2)] rounded flex items-center justify-center">{r}</div>
                 {[1, 2, 3, 4, 5].map(c => {
                   const connected = step.listState[r] && step.listState[r].includes(c);
                   return (
@@ -169,7 +169,7 @@ export default function GraphRepresentationCVisualizer({ currentStep = 0 }) {
                       className={`p-1 rounded flex items-center justify-center font-bold transition-colors ${
                         connected
                           ? 'bg-purple-500/25 text-purple-200 border border-purple-500/40'
-                          : 'bg-[#161824] text-[#475569]'
+                          : 'bg-[var(--board-raised-2)] text-[#475569]'
                       }`}
                     >
                       {connected ? 1 : 0}
@@ -182,7 +182,7 @@ export default function GraphRepresentationCVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.explanation}
       </div>
     </div>

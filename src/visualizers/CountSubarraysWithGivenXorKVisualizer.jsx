@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Count Subarrays with Given XOR K',
@@ -6,11 +6,25 @@ export const meta = {
   difficulty: 'Hard',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(N)',
-  description: 'Counts the number of subarrays having bitwise XOR equal to K using prefix XOR properties and a frequency hash map.'
+  description: 'Counts the number of contiguous subarrays having bitwise XOR equal to K using the prefix XOR algebraic identity and a frequency hash map.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Prefix XOR Subarray Counting Strategy',
+  nodes: [
+    { id: 'root', label: 'Prefix XOR Inverse Equation', children: ['xor-involution', 'prefix-frequency-map', 'initial-zero-seed', 'count-accumulation', 'complexity'] },
+    { id: 'xor-involution', label: '1. XOR Inversion Property', detail: 'If x ^ K = xr, XORing both sides with K yields x = xr ^ K due to self-canceling involution (A ^ A = 0).' },
+    { id: 'prefix-frequency-map', label: '2. Prefix Frequency Map', detail: 'Maintain map mpp[xr] storing the frequency of every prefix XOR seen so far.' },
+    { id: 'initial-zero-seed', label: '3. Seed mpp[0] = 1', detail: 'Initialize mpp[0] = 1 to handle cases where the prefix XOR from index 0 itself equals K.' },
+    { id: 'count-accumulation', label: '4. Cumulative Count Addition', detail: 'At each element, query x = xr ^ K; add mpp[x] to total count before recording current xr.' },
+    { id: 'complexity', label: '5. Linear Time Bound', detail: 'Single O(N) pass with O(1) average hash map lookups, achieving O(N) space and time.' }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++ Count Subarrays with Given XOR K
+  cpp: `// C++ Optimal Prefix XOR + Hash Map Counting
 // Time Complexity: O(N) | Space Complexity: O(N)
 #include <vector>
 #include <unordered_map>
@@ -18,25 +32,29 @@ using namespace std;
 
 class Solution {
 public:
-    int subarraysWithXorK(vector<int> &a, int k) {
+    int subarraysWithXorK(vector<int>& a, int k) {
         int xr = 0;
         unordered_map<int, int> mpp;
-        mpp[xr]++; // {0: 1} initially
+        mpp[0] = 1; // Base case: empty prefix has XOR 0
         int cnt = 0;
 
         for (int i = 0; i < (int)a.size(); i++) {
             xr = xr ^ a[i];
 
-            // By formula: x = xr ^ k
+            // Formula: x ^ k = xr ==> x = xr ^ k
             int x = xr ^ k;
-            cnt += mpp[x];
+            if (mpp.find(x) != mpp.end()) {
+                cnt += mpp[x];
+            }
 
             mpp[xr]++;
         }
+
         return cnt;
     }
 };`,
-  python: `# Python 3 Count Subarrays with Given XOR K
+  python: `# Python 3 Optimal Prefix XOR + Hash Map Counting
+# Time Complexity: O(N) | Space Complexity: O(N)
 from collections import defaultdict
 
 class Solution:
@@ -53,11 +71,12 @@ class Solution:
             mpp[xr] += 1
 
         return cnt`,
-  java: `// Java Count Subarrays with Given XOR K
+  java: `// Java Optimal Prefix XOR + Hash Map Counting
+// Time Complexity: O(N) | Space Complexity: O(N)
 import java.util.HashMap;
 
 class Solution {
-    public static int subarraysWithXorK(int []a, int k) {
+    public static int subarraysWithXorK(int[] a, int k) {
         int xr = 0;
         HashMap<Integer, Integer> mpp = new HashMap<>();
         mpp.put(0, 1);
@@ -71,10 +90,12 @@ class Solution {
             }
             mpp.put(xr, mpp.getOrDefault(xr, 0) + 1);
         }
+
         return cnt;
     }
 }`,
-  javascript: `// JavaScript Count Subarrays with Given XOR K
+  javascript: `// JavaScript Optimal Prefix XOR + Hash Map Counting
+// Time Complexity: O(N) | Space Complexity: O(N)
 function subarraysWithXorK(a, k) {
     let xr = 0;
     const map = new Map();
@@ -89,168 +110,277 @@ function subarraysWithXorK(a, k) {
         }
         map.set(xr, (map.get(xr) || 0) + 1);
     }
+
     return cnt;
 }`
 };
 
 export const steps = [
   {
-    title: '1. Array: [4, 2, 2, 6, 4], Target XOR K = 6',
-    phase: 'INITIAL',
-    codeLine: 12,
-    arr: [4, 2, 2, 6, 4],
-    k: 6,
-    currIdx: -1,
-    xr: 0,
-    neededX: null,
-    added: 0,
-    totalCount: 0,
-    freqMap: { '0': 1 },
-    variables: { k: 6, xr: 0, 'mpp[0]': 1, cnt: 0 },
-    explain: 'Let XR be the prefix XOR up to index i. If a subarray from j+1 to i has XOR = k, then prefixXOR[j] ^ k = XR => prefixXOR[j] = XR ^ k.',
-    intuition: 'Look up frequency of (XR ^ k) in hash map in O(1) time.'
+    title: '1. Setup: Array a = [4, 2, 2, 6, 4], Target XOR K = 6',
+    phase: 'SETUP',
+    track: {
+      label: 'Input Array a',
+      items: [
+        { val: 4 },
+        { val: 2 },
+        { val: 2 },
+        { val: 6 },
+        { val: 4 }
+      ],
+      pointers: [
+        { index: 0, label: 'i = 0' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Running Prefix XOR',
+      items: ['xr = 0', '?', '?', '?', '?']
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Target K', value: 6, highlight: true },
+      { label: 'Running xr', value: 0 },
+      { label: 'Total Count', value: 0 }
+    ],
+    formula: 'xr = 0; mpp[0] = 1; cnt = 0;',
+    action: 'Initialize running prefix XOR xr = 0, frequency map with mpp[0] = 1, and count = 0.',
+    explain: 'We count subarrays where XOR equals K. Storing mpp[0] = 1 handles subarrays that start at index 0 whose prefix XOR is already K.',
+    intuition: 'XOR acts like addition without carry. Its self-inverse property makes range queries O(1).',
+    variables: { k: 6, xr: 0, cnt: 0, mpp: '{0: 1}' }
   },
   {
-    title: '2. idx 0 (val = 4): xr = 4, needed x = 4 ^ 6 = 2 -> Not in map, mpp[4] = 1',
-    phase: 'XOR_STEP',
-    codeLine: 18,
-    arr: [4, 2, 2, 6, 4],
-    k: 6,
-    currIdx: 0,
-    xr: 4,
-    neededX: 2,
-    added: 0,
-    totalCount: 0,
-    freqMap: { '0': 1, '4': 1 },
-    variables: { i: 0, val: 4, xr: 4, 'target x': '4 ^ 6 = 2', 'mpp[2]': 0, cnt: 0 },
-    explain: 'Running XOR is 4. Target needed prefix is 2. Freq of 2 in map is 0. Record mpp[4] = 1.',
-    intuition: 'No subarray ending at 0 equals 6.'
+    title: '2. Mathematical Principle: x ^ K = xr ==> x = xr ^ K',
+    phase: 'ANALYSIS',
+    track: {
+      label: 'XOR Inverse Equation',
+      items: [
+        { val: 'Prefix[i] = xr', status: 'match' },
+        { val: 'Subarray = K', status: 'match' },
+        { val: 'Needed Prefix = x', status: 'match' },
+        { val: 'Equation: x = xr ^ K', badge: 'Formula' }
+      ],
+      pointers: [
+        { index: 3, label: 'x = xr ^ K' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'XOR Identity', value: 'A ^ A = 0' },
+      { label: 'Derived Need', value: 'x = xr ^ K' },
+      { label: 'Lookup Cost', value: 'O(1) Map query' }
+    ],
+    formula: 'x ^ k = xr  ==>  (x ^ k) ^ k = xr ^ k  ==>  x = xr ^ k',
+    action: 'Derive the lookup key formula using the involution property of XOR.',
+    explain: 'If an earlier prefix has XOR equal to x, the subarray between x and xr has XOR equal to x ^ xr. Setting x ^ xr = K and XORing both sides by K gives x = xr ^ K.',
+    intuition: 'At every index, looking up (xr ^ K) instantly tells us how many valid subarrays end at that index.',
+    variables: { identity: 'x = xr ^ k', lookupFormula: 'cnt += mpp[xr ^ k]' }
   },
   {
-    title: '3. idx 1 (val = 2): xr = 6, needed x = 6 ^ 6 = 0 -> Found! cnt += 1 (subarray [4, 2])',
+    title: '3. Index 0: a[0] = 4 -> xr = 4, x = 4 ^ 6 = 2 (Not in map)',
+    phase: 'SCANNING',
+    track: {
+      label: 'Input Array a',
+      items: [
+        { val: 4, status: 'active', badge: 'xr = 4' },
+        { val: 2 },
+        { val: 2 },
+        { val: 6 },
+        { val: 4 }
+      ],
+      pointers: [
+        { index: 0, label: 'i = 0' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Running Prefix XOR',
+      items: [4, '?', '?', '?', '?']
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Running xr', value: 4 },
+      { label: 'Needed x (4 ^ 6)', value: 2 },
+      { label: 'mpp[2]', value: '0 (Not found)' }
+    ],
+    formula: 'xr = 0 ^ 4 = 4; x = 4 ^ 6 = 2; mpp[4]++;',
+    action: 'xr becomes 4. Required prefix x = 4 ^ 6 = 2 is not in map. Store mpp[4] = 1.',
+    explain: 'No subarray ending at index 0 has XOR equal to 6. Cache prefix XOR 4.',
+    intuition: 'First prefix recorded.',
+    variables: { i: 0, 'a[0]': 4, xr: 4, neededX: 2, cnt: 0, 'mpp[4]': 1 }
+  },
+  {
+    title: '4. Index 1: a[1] = 2 -> xr = 6, x = 6 ^ 6 = 0 (Found mpp[0] = 1!) -> Subarray [4, 2]',
     phase: 'MATCH_FOUND',
-    codeLine: 20,
-    arr: [4, 2, 2, 6, 4],
-    k: 6,
-    currIdx: 1,
-    xr: 6,
-    neededX: 0,
-    added: 1,
-    totalCount: 1,
-    freqMap: { '0': 1, '4': 1, '6': 1 },
-    variables: { i: 1, val: 2, xr: 6, 'target x': '6 ^ 6 = 0', 'mpp[0]': 1, cnt: 1 },
-    explain: 'Running XOR is 6. Needed x is 6 ^ 6 = 0. mpp[0] is 1! Subarray [4, 2] has XOR = 4 ^ 2 = 6! Count becomes 1.',
-    intuition: 'Prefix XOR itself equals K.'
+    track: {
+      label: 'First Subarray Found: a[0..1]',
+      items: [
+        { val: 4, status: 'match', badge: 'XOR = 6' },
+        { val: 2, status: 'match', badge: 'XOR = 6' },
+        { val: 2 },
+        { val: 6 },
+        { val: 4 }
+      ],
+      pointers: [
+        { index: 1, label: 'i = 1 (xr = 6)' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Running Prefix XOR',
+      items: [4, 6, '?', '?', '?']
+    },
+    windowStart: 0,
+    windowEnd: 1,
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'Running xr', value: 6 },
+      { label: 'Needed x (6 ^ 6)', value: 0 },
+      { label: 'mpp[0] Found', value: 1, highlight: true },
+      { label: 'New Total Count', value: 1, highlight: true }
+    ],
+    formula: 'xr = 4 ^ 2 = 6; x = 6 ^ 6 = 0; cnt += mpp[0] (1); mpp[6]++;',
+    action: 'xr = 6. Look up x = 6 ^ 6 = 0 in map. Found 1 occurrence! cnt becomes 1.',
+    explain: 'Subarray a[0..1] ([4, 2]) has 4 ^ 2 = 6 = K! Count increments to 1. Store mpp[6] = 1.',
+    intuition: 'Matches target directly from array start.',
+    variables: { i: 1, 'a[1]': 2, xr: 6, neededX: 0, cnt: 1, 'mpp[6]': 1 }
   },
   {
-    title: '4. idx 2 (val = 2): xr = 4, needed x = 4 ^ 6 = 2 -> Not in map, mpp[4] = 2',
-    phase: 'XOR_STEP',
-    codeLine: 18,
-    arr: [4, 2, 2, 6, 4],
-    k: 6,
-    currIdx: 2,
-    xr: 4,
-    neededX: 2,
-    added: 0,
-    totalCount: 1,
-    freqMap: { '0': 1, '4': 2, '6': 1 },
-    variables: { i: 2, val: 2, xr: 4, 'target x': 2, 'mpp[2]': 0, cnt: 1 },
-    explain: 'Running XOR is 6 ^ 2 = 4. Target x = 2 not found. Increment mpp[4] to 2.',
-    intuition: 'Multiple prefixes can share the same XOR.'
+    title: '5. Index 2: a[2] = 2 -> xr = 4, x = 4 ^ 6 = 2 (Not in map)',
+    phase: 'SCANNING',
+    track: {
+      label: 'Input Array a',
+      items: [
+        { val: 4 },
+        { val: 2 },
+        { val: 2, status: 'active', badge: 'xr = 4' },
+        { val: 6 },
+        { val: 4 }
+      ],
+      pointers: [
+        { index: 2, label: 'i = 2' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Running Prefix XOR',
+      items: [4, 6, 4, '?', '?']
+    },
+    activeI: 2,
+    activeJ: null,
+    metrics: [
+      { label: 'Running xr', value: 4 },
+      { label: 'Needed x (4 ^ 6)', value: 2 },
+      { label: 'mpp[4] Frequency', value: 2 }
+    ],
+    formula: 'xr = 6 ^ 2 = 4; x = 4 ^ 6 = 2 (absent); mpp[4] = 2;',
+    action: 'xr becomes 4 again (since 6 ^ 2 = 4). x = 2 is absent. mpp[4] count increments to 2.',
+    explain: 'No new subarray ending at index 2 matches. Prefix XOR 4 has now appeared twice.',
+    intuition: 'Prefix frequency tracks repeated XOR states.',
+    variables: { i: 2, 'a[2]': 2, xr: 4, neededX: 2, cnt: 1, 'mpp[4]': 2 }
   },
   {
-    title: '5. idx 3 (val = 6): xr = 2, needed x = 2 ^ 6 = 4 -> Found freq = 2! cnt += 2',
-    phase: 'MULTI_MATCH',
-    codeLine: 20,
-    arr: [4, 2, 2, 6, 4],
-    k: 6,
-    currIdx: 3,
-    xr: 2,
-    neededX: 4,
-    added: 2,
-    totalCount: 3,
-    freqMap: { '0': 1, '4': 2, '6': 1, '2': 1 },
-    variables: { i: 3, val: 6, xr: 2, 'target x': 4, 'mpp[4]': 2, added: 2, cnt: 3 },
-    explain: 'Running XOR is 4 ^ 6 = 2. Target x = 2 ^ 6 = 4. Frequency of 4 is 2! Two matching subarrays: [2, 2, 6] and [6] both XOR to 6! Total cnt = 3.',
-    intuition: 'Subarrays [2, 2, 6] and [6] both discovered simultaneously.'
+    title: '6. Index 3: a[3] = 6 -> xr = 2, x = 2 ^ 6 = 4 (Found mpp[4] = 2!) -> +2 Subarrays!',
+    phase: 'MATCH_FOUND',
+    track: {
+      label: 'Two Matching Subarrays Found!',
+      items: [
+        { val: 4 },
+        { val: 2, status: 'match', badge: 'Match' },
+        { val: 2, status: 'match', badge: 'Match' },
+        { val: 6, status: 'match', badge: 'Match' },
+        { val: 4 }
+      ],
+      pointers: [
+        { index: 3, label: 'i = 3 (xr = 2)' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Running Prefix XOR',
+      items: [4, 6, 4, 2, '?']
+    },
+    windowStart: 1,
+    windowEnd: 3,
+    activeI: 3,
+    activeJ: null,
+    metrics: [
+      { label: 'Running xr', value: 2 },
+      { label: 'Needed x (2 ^ 6)', value: 4 },
+      { label: 'mpp[4] Found', value: 2, highlight: true },
+      { label: 'New Total Count', value: '1 + 2 = 3', highlight: true }
+    ],
+    formula: 'xr = 4 ^ 6 = 2; x = 2 ^ 6 = 4; cnt += mpp[4] (2); mpp[2]++;',
+    action: 'xr = 2. Look up x = 2 ^ 6 = 4. mpp[4] = 2! Add 2 to cnt: cnt becomes 3.',
+    explain: 'Because prefix 4 occurred twice (at idx 0 and idx 2), two distinct subarrays ending at index 3 have XOR equal to 6: a[1..3] ([2, 2, 6]) and a[3..3] ([6]).',
+    intuition: 'Multiple matching subarrays added in a single O(1) step!',
+    variables: { i: 3, 'a[3]': 6, xr: 2, neededX: 4, added: 2, cnt: 3, 'mpp[2]': 1 }
   },
   {
-    title: '6. idx 4 (val = 4): xr = 6, needed x = 0 -> Found freq = 1! Total cnt = 4',
+    title: '7. Index 4: a[4] = 4 -> xr = 6, x = 6 ^ 6 = 0 (Found mpp[0] = 1!) -> Subarray a[0..4]',
+    phase: 'MATCH_FOUND',
+    track: {
+      label: 'Fourth Subarray Discovered',
+      items: [
+        { val: 4, status: 'match', badge: 'Full' },
+        { val: 2, status: 'match', badge: 'Full' },
+        { val: 2, status: 'match', badge: 'Full' },
+        { val: 6, status: 'match', badge: 'Full' },
+        { val: 4, status: 'match', badge: 'Full' }
+      ],
+      pointers: [
+        { index: 4, label: 'i = 4 (xr = 6)' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Running Prefix XOR',
+      items: [4, 6, 4, 2, 6]
+    },
+    windowStart: 0,
+    windowEnd: 4,
+    activeI: 4,
+    activeJ: null,
+    metrics: [
+      { label: 'Running xr', value: 6 },
+      { label: 'Needed x', value: 0 },
+      { label: 'mpp[0] Found', value: 1 },
+      { label: 'Final Total Count', value: 4, highlight: true }
+    ],
+    formula: 'xr = 2 ^ 4 = 6; x = 6 ^ 6 = 0; cnt += mpp[0] (1);',
+    action: 'xr = 6. x = 0 found in map (mpp[0]=1). Add 1 to cnt: total count is 4.',
+    explain: 'The entire array a[0..4] ([4, 2, 2, 6, 4]) has XOR = 4 ^ 2 ^ 2 ^ 6 ^ 4 = 6! Traversal is complete.',
+    intuition: 'Fourth and final matching subarray confirmed.',
+    variables: { i: 4, 'a[4]': 4, xr: 6, neededX: 0, cnt: 4, completed: true }
+  },
+  {
+    title: '8. Complete: Total Subarrays with XOR K = 4',
     phase: 'COMPLETED',
-    codeLine: 24,
-    arr: [4, 2, 2, 6, 4],
-    k: 6,
-    currIdx: 4,
-    xr: 6,
-    neededX: 0,
-    added: 1,
-    totalCount: 4,
-    freqMap: { '0': 1, '4': 2, '6': 2, '2': 1 },
-    variables: { finalCount: 4, timeComplexity: 'O(N)', spaceComplexity: 'O(N)' },
-    explain: 'Running XOR is 2 ^ 4 = 6. Target x = 0 found in map (freq 1), adding subarray [4, 2, 2, 6, 4]. Final total count = 4 subarrays!',
-    intuition: 'Linear O(N) scan computes all matching XOR subarrays.'
+    track: {
+      label: 'All 4 Matching Subarrays Identified',
+      items: [
+        { val: '[4, 2]', status: 'match', badge: 'Subarray 1' },
+        { val: '[2, 2, 6]', status: 'match', badge: 'Subarray 2' },
+        { val: '[6]', status: 'match', badge: 'Subarray 3' },
+        { val: '[4, 2, 2, 6, 4]', status: 'match', badge: 'Subarray 4' }
+      ],
+      pointers: [
+        { index: 0, label: '#1' },
+        { index: 1, label: '#2' },
+        { index: 2, label: '#3' },
+        { index: 3, label: '#4' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Total Subarrays', value: 4, highlight: true },
+      { label: 'Target XOR K', value: 6 },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(N)' }
+    ],
+    formula: 'return cnt; // 4',
+    action: 'Algorithm concludes: Returns 4.',
+    explain: 'By leveraging XOR cancellation and frequency hashing, all 4 valid subarrays are counted in O(N) linear time and O(N) space.',
+    intuition: 'Optimal prefix XOR frequency counting.',
+    variables: { result: 4, targetK: 6, time: 'O(N)', space: 'O(N)' }
   }
 ];
-
-export default function CountSubarraysWithGivenXorKVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metrics Header */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Current XR = {step.xr}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
-          Target X (XR ^ K) = {step.neededX ?? '-'}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Total Subarrays = {step.totalCount}
-        </span>
-      </div>
-
-      {/* Array Elements */}
-      <div className="w-full flex items-center justify-center gap-2 py-3 overflow-x-auto">
-        {step.arr.map((val, idx) => {
-          const isCurrent = idx === step.currIdx;
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1 min-w-[48px]">
-              <div
-                className={`w-12 h-12 rounded-xl border flex items-center justify-center font-mono font-bold text-base transition-all duration-300 ${
-                  isCurrent
-                    ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-200'
-                }`}
-              >
-                {val}
-              </div>
-              <span className="text-[9px] font-mono text-[#5b6076]">idx {idx}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Frequency Map */}
-      <div className="w-full bg-[#12131b] border border-[#222538] rounded-xl p-3 flex flex-col gap-2 text-xs font-mono">
-        <span className="text-[11px] text-[#717691] font-semibold uppercase tracking-wider">
-          Prefix XOR Frequency Map (XOR → Count):
-        </span>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(step.freqMap).map(([xVal, freq]) => (
-            <span
-              key={xVal}
-              className={`px-2.5 py-1 rounded border font-mono ${
-                Number(xVal) === step.neededX
-                  ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold ring-1 ring-emerald-500/50'
-                  : 'border-[#2c3046] bg-[#181a26] text-indigo-300'
-              }`}
-            >
-              XR <strong>{xVal}</strong> → <strong>{freq}</strong>×
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

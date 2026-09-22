@@ -192,14 +192,14 @@ export default function ReverseALlVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {step.nodes.map((val, idx) => {
           const isPrev = step.prevIdx === idx;
           const isCurr = step.currIdx === idx;
           const isNext = step.nextIdx === idx;
           const isReversed = step.phase === 'RESULT' || idx < step.reversedCount;
 
-          let style = 'bg-[#12131b] border-[#272b3c] text-white';
+          let style = 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]';
           if (isCurr) {
             style = 'bg-amber-500/25 border-amber-400 text-amber-200 scale-105 shadow-md shadow-amber-500/20';
           } else if (isPrev) {
@@ -231,7 +231,7 @@ export default function ReverseALlVisualizer({ currentStep = 0 }) {
 
               {/* Directional Link Arrow */}
               {idx < step.nodes.length - 1 && (
-                <div className="text-base font-bold text-[#8a8ea3]">
+                <div className="text-base font-bold text-[var(--chalk-dim)]">
                   &rarr;
                 </div>
               )}
@@ -240,24 +240,24 @@ export default function ReverseALlVisualizer({ currentStep = 0 }) {
         })}
 
         {/* NULL */}
-        <div className="w-13 h-13 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[#8a8ea3]">
+        <div className="w-13 h-13 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[var(--chalk-dim)]">
           NULL
         </div>
       </div>
 
       {/* Pointers Legend */}
-      <div className="w-full flex items-center justify-around p-3 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#8a8ea3]">
+      <div className="w-full flex items-center justify-around p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)]">
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-          <span>prev: <strong className="text-white">{step.prevIdx !== null ? `Node(${step.nodes[step.prevIdx]})` : 'NULL'}</strong></span>
+          <span>prev: <strong className="text-[var(--chalk)]">{step.prevIdx !== null ? `Node(${step.nodes[step.prevIdx]})` : 'NULL'}</strong></span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-          <span>curr: <strong className="text-white">{step.currIdx !== null ? `Node(${step.nodes[step.currIdx]})` : 'NULL'}</strong></span>
+          <span>curr: <strong className="text-[var(--chalk)]">{step.currIdx !== null ? `Node(${step.nodes[step.currIdx]})` : 'NULL'}</strong></span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-          <span>next: <strong className="text-white">{step.nextIdx !== null ? `Node(${step.nodes[step.nextIdx]})` : 'NULL'}</strong></span>
+          <span>next: <strong className="text-[var(--chalk)]">{step.nextIdx !== null ? `Node(${step.nodes[step.nextIdx]})` : 'NULL'}</strong></span>
         </div>
       </div>
     </div>

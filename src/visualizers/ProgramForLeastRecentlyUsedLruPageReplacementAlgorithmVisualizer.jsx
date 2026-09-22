@@ -205,8 +205,8 @@ export default function ProgramForLeastRecentlyUsedLruPageReplacementAlgorithmVi
       </div>
 
       {/* Cache Slots Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           Memory Cache Slots (Capacity: 3)
         </span>
 
@@ -220,10 +220,10 @@ export default function ProgramForLeastRecentlyUsedLruPageReplacementAlgorithmVi
                 className={`w-20 h-24 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 ${
                   pageVal !== undefined
                     ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/30'
-                    : 'border-[#272b3c] bg-[#161824] text-slate-600'
+                    : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]'
                 }`}
               >
-                <span className="text-[9px] text-[#8a8ea3]">Slot {slotIdx}</span>
+                <span className="text-[9px] text-[var(--chalk-dim)]">Slot {slotIdx}</span>
                 <span className="text-2xl font-bold text-amber-300 mt-1">
                   {pageVal !== undefined ? pageVal : '-'}
                 </span>
@@ -236,8 +236,8 @@ export default function ProgramForLeastRecentlyUsedLruPageReplacementAlgorithmVi
         </div>
 
         {/* Page Stream */}
-        <div className="w-full border-t border-[#272b3c] pt-3 flex flex-col items-center gap-2">
-          <span className="text-[11px] font-mono text-slate-400">
+        <div className="w-full border-t border-[var(--line)] pt-3 flex flex-col items-center gap-2">
+          <span className="text-[11px] font-mono text-[var(--chalk-dim)]">
             Request Stream:
           </span>
           <div className="flex items-center gap-2 font-mono text-xs">
@@ -248,8 +248,8 @@ export default function ProgramForLeastRecentlyUsedLruPageReplacementAlgorithmVi
                   idx === step.currentI
                     ? 'bg-cyan-500/25 border-cyan-400 text-cyan-300 font-bold'
                     : idx < step.currentI
-                    ? 'bg-[#161824] border-[#272b3c] text-slate-400'
-                    : 'bg-[#12131b] border-[#272b3c] text-slate-600'
+                    ? 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
+                    : 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk-faint)]'
                 }`}
               >
                 {p}
@@ -260,7 +260,7 @@ export default function ProgramForLeastRecentlyUsedLruPageReplacementAlgorithmVi
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

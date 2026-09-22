@@ -112,9 +112,9 @@ export default function WhatAreArraysStringsVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Contiguous Memory Blocks</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Contiguous Memory Blocks</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
@@ -122,7 +122,7 @@ export default function WhatAreArraysStringsVisualizer({ currentStep = 0 }) {
 
         <div className="space-y-4">
           <div>
-            <div className="text-[11px] font-mono text-slate-400 mb-2">Integer Array: arr[5] (int = 4 bytes)</div>
+            <div className="text-[11px] font-mono text-[var(--chalk-dim)] mb-2">Integer Array: arr[5] (int = 4 bytes)</div>
             <div className="grid grid-cols-5 gap-2">
               {arrayData.map(item => {
                 const isSelected = step.highlightIdx === item.idx;
@@ -132,12 +132,12 @@ export default function WhatAreArraysStringsVisualizer({ currentStep = 0 }) {
                     className={`p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all ${
                       isSelected
                         ? 'bg-emerald-500/25 border-emerald-500/80 text-emerald-200 scale-105 shadow-md shadow-emerald-500/20'
-                        : 'bg-[#12131b] border-[#272b3c] text-slate-300'
+                        : 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk-dim)]'
                     }`}
                   >
-                    <span className="text-[10px] font-mono text-slate-500">[{item.idx}]</span>
+                    <span className="text-[10px] font-mono text-[var(--chalk-faint)]">[{item.idx}]</span>
                     <span className="text-base font-bold font-mono my-1">{item.val}</span>
-                    <span className="text-[9px] font-mono text-slate-400">{item.addr}</span>
+                    <span className="text-[9px] font-mono text-[var(--chalk-dim)]">{item.addr}</span>
                   </div>
                 );
               })}
@@ -145,27 +145,27 @@ export default function WhatAreArraysStringsVisualizer({ currentStep = 0 }) {
           </div>
 
           <div>
-            <div className="text-[11px] font-mono text-slate-400 mb-2">Character String: "ALGO" (char = 1 byte)</div>
+            <div className="text-[11px] font-mono text-[var(--chalk-dim)] mb-2">Character String: "ALGO" (char = 1 byte)</div>
             <div className="grid grid-cols-5 gap-2">
               {strData.map(item => (
                 <div
                   key={item.idx}
-                  className="p-2.5 rounded-xl border bg-[#12131b] border-[#272b3c] flex flex-col items-center justify-center"
+                  className="p-2.5 rounded-xl border bg-[var(--board-raised)] border-[var(--line)] flex flex-col items-center justify-center"
                 >
-                  <span className="text-[10px] font-mono text-slate-500">[{item.idx}]</span>
+                  <span className="text-[10px] font-mono text-[var(--chalk-faint)]">[{item.idx}]</span>
                   <span className="text-base font-bold font-mono my-1 text-cyan-300">{item.char}</span>
-                  <span className="text-[9px] font-mono text-slate-400">{item.addr}</span>
+                  <span className="text-[9px] font-mono text-[var(--chalk-dim)]">{item.addr}</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col space-y-1">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col space-y-1">
           <div className="text-xs font-mono text-indigo-300">
             Address Calculation: <span className="text-indigo-100 font-semibold">{step.addressFormula}</span>
           </div>
-          <div className="text-xs text-slate-300 leading-relaxed">{step.explanation}</div>
+          <div className="text-xs text-[var(--chalk-dim)] leading-relaxed">{step.explanation}</div>
         </div>
       </div>
     </div>

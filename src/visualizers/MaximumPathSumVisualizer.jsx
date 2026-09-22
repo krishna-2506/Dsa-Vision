@@ -191,14 +191,14 @@ export default function MaximumPathSumVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Tree View with Optimal Path Highlight */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Path Sum Evaluation</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Path Sum Evaluation</span>
 
         <div className="flex flex-col items-center gap-4 py-2 w-full">
           {/* Root -10 */}
           <div className="flex justify-center">
             <div className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center font-mono font-bold transition-all ${
-              step.activeNode === -10 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[#272b3c] bg-[#161824] text-slate-400'
+              step.activeNode === -10 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
             }`}>
               -10
             </div>
@@ -207,7 +207,7 @@ export default function MaximumPathSumVisualizer({ currentStep = 0 }) {
           {/* Level 1: 9 and 20 */}
           <div className="flex justify-center gap-24">
             <div className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center font-mono font-bold transition-all ${
-              step.activeNode === 9 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[#272b3c] bg-[#161824] text-slate-300'
+              step.activeNode === 9 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
             }`}>
               9
             </div>
@@ -232,7 +232,7 @@ export default function MaximumPathSumVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

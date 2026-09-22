@@ -153,8 +153,8 @@ export default function DjisktrasAlgorithmVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>Shortest Path Distance Table</span>
           <span className="text-amber-400 font-bold">O(E log V)</span>
         </div>
@@ -166,7 +166,7 @@ export default function DjisktrasAlgorithmVisualizer({ currentStep = 0 }) {
               className={`p-3 rounded-xl border flex flex-col items-center transition-all ${
                 step.dist[v] !== 'INF'
                   ? 'bg-amber-500/20 border-amber-500/40 text-amber-200 shadow'
-                  : 'bg-[#161824] border-[#272b3c] text-slate-500'
+                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-faint)]'
               }`}
             >
               <span className="font-bold">Vertex {v}</span>
@@ -183,7 +183,7 @@ export default function DjisktrasAlgorithmVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.explanation}
       </div>
     </div>

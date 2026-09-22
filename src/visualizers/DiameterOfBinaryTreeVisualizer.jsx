@@ -184,8 +184,8 @@ export default function DiameterOfBinaryTreeVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Tree Visualization */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Diameter Path Search</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Diameter Path Search</span>
 
         <div className="flex flex-col items-center gap-4 py-2 w-full">
           {/* Root 1 */}
@@ -205,7 +205,7 @@ export default function DiameterOfBinaryTreeVisualizer({ currentStep = 0 }) {
               <div key={val} className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
                 step.activeNode === val 
                   ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
-                  : 'border-[#272b3c] bg-[#161824] text-slate-300'
+                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
               }`}>
                 {val}
               </div>
@@ -218,7 +218,7 @@ export default function DiameterOfBinaryTreeVisualizer({ currentStep = 0 }) {
               <div key={val} className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
                 step.activeNode === val 
                   ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
-                  : 'border-[#272b3c] bg-[#161824] text-slate-300'
+                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
               }`}>
                 {val}
               </div>
@@ -228,7 +228,7 @@ export default function DiameterOfBinaryTreeVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

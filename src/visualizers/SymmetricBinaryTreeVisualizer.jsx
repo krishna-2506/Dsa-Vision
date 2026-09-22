@@ -172,8 +172,8 @@ export default function SymmetricBinaryTreeVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Symmetric Tree View with Mirror Axis */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 relative">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Mirror Reflection Symmetry</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 relative">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Mirror Reflection Symmetry</span>
 
         {/* Central Vertical Mirror Axis */}
         <div className="absolute top-12 bottom-6 w-[2px] bg-gradient-to-b from-purple-500/60 via-purple-400 to-purple-500/60 dashed border-l border-dashed border-purple-400" />
@@ -203,22 +203,22 @@ export default function SymmetricBinaryTreeVisualizer({ currentStep = 0 }) {
           {/* Level 2: Outer (3, 3) and Inner (4, 4) */}
           <div className="flex justify-between w-full max-w-sm px-4">
             <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-              step.pair && step.pair[0] === 3 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[#272b3c] bg-[#161824] text-slate-300'
+              step.pair && step.pair[0] === 3 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
             }`}>
               3
             </div>
             <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-              step.pair && step.pair[0] === 4 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[#272b3c] bg-[#161824] text-slate-300'
+              step.pair && step.pair[0] === 4 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
             }`}>
               4
             </div>
             <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-              step.pair && step.pair[1] === 4 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[#272b3c] bg-[#161824] text-slate-300'
+              step.pair && step.pair[1] === 4 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
             }`}>
               4
             </div>
             <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-              step.pair && step.pair[1] === 3 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[#272b3c] bg-[#161824] text-slate-300'
+              step.pair && step.pair[1] === 3 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
             }`}>
               3
             </div>
@@ -227,7 +227,7 @@ export default function SymmetricBinaryTreeVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

@@ -164,7 +164,7 @@ export default function PrintRootToLeafPathInBtVisualizer({ currentStep = 0 }) {
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Active Path: <strong className="text-amber-400">[{step.activePath.join(' &rarr; ')}]</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
@@ -172,8 +172,8 @@ export default function PrintRootToLeafPathInBtVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Collected Root-to-Leaf Paths</span>
           <span className="text-emerald-400 font-bold">Backtracking DFS</span>
         </div>
@@ -183,7 +183,7 @@ export default function PrintRootToLeafPathInBtVisualizer({ currentStep = 0 }) {
             <span className="text-xs font-mono text-[#4e5370] text-center py-4">Searching for leaf paths...</span>
           ) : (
             step.savedPaths.map((p, idx) => (
-              <div key={idx} className="flex items-center gap-2 p-3 rounded-xl bg-[#0f1016] border border-[#242738]">
+              <div key={idx} className="flex items-center gap-2 p-3 rounded-xl bg-[#0f1016] border border-[var(--line)]">
                 <span className="text-xs font-mono text-purple-400 font-bold w-14">Path {idx + 1}:</span>
                 <div className="flex items-center gap-1.5">
                   {p.map((val, i) => (
@@ -200,7 +200,7 @@ export default function PrintRootToLeafPathInBtVisualizer({ currentStep = 0 }) {
           )}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Backtracking pops the current node when returning up the call stack to explore alternative branches.
         </div>
       </div>

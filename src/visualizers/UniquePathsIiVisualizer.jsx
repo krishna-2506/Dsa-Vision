@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
   title: 'Unique Paths II (Grid with Obstacles)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(M * N)',
+  timeComplexity: 'O(M × N) Time',
   spaceComplexity: 'O(N) Space-Optimized',
-  description: 'Calculates the number of unique paths from top-left to bottom-right in an M x N grid containing obstacles. Cells marked with 1 are obstacles and cannot be traversed (paths = 0).'
+  description: 'Calculates the number of unique paths from top-left to bottom-right in an M × N grid containing obstacles. Cells with obstacles cannot be traversed and immediately set dp[i][j] = 0.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Unique Paths II (Obstacle Grid)',
+  nodes: [
+    { id: 'root', label: 'Obstacle Grid Paths', children: ['obstacle-rule', 'transition-rule', 'space-compression'] },
+    { id: 'obstacle-rule', label: '1. Obstacle Blocking Invariant', detail: 'If grid[i][j] == 1 (Obstacle), dp[i][j] = 0. No path can enter or exit this cell.' },
+    { id: 'transition-rule', label: '2. Free Cell Transition', children: ['from-top', 'from-left'] },
+    { id: 'from-top', label: 'Top Neighbor', detail: 'dp[i-1][j] (0 if obstacle above)' },
+    { id: 'from-left', label: 'Left Neighbor', detail: 'dp[i][j-1] (0 if obstacle to left)' },
+    { id: 'space-compression', label: '3. 1D Array Accumulator', detail: 'If obstacle, set dp[j] = 0; else dp[j] += dp[j-1]. Runs in O(N) memory.' }
+  ]
 };
 
 export const solutions = {
@@ -61,7 +75,7 @@ class Solution {
         int n = obstacleGrid[0].length;
         int[] dp = new int[n];
 
-        dp[0] = (obstacleGrid[0][0] == 0) ? 1 : 0;
+        dp[0] = obstacleGrid[0][0] == 0 ? 1 : 0;
 
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
@@ -101,121 +115,181 @@ var uniquePathsWithObstacles = function(obstacleGrid) {
 
 export const steps = [
   {
-    title: '1. Initialize: 3x3 Grid with Obstacle at (1, 1)',
-    phase: 'INITIAL',
-    codeLine: 13,
-    activeCell: [0, 0],
+    phase: 'SETUP',
     grid: [
-      [{ val: 1, isObs: false }, { val: 1, isObs: false }, { val: 1, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 0, isObs: true },  { val: 0, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 0, isObs: false }, { val: 0, isObs: false }]
+      [1, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0]
     ],
-    variables: { obstacle: 'Cell (1, 1) is blocked', start: 'dp[0][0] = 1' },
-    explain: 'Row 0 and Col 0 start with 1 path up until any obstacle. Cell (1, 1) has an obstacle (val = 0 paths).',
-    intuition: 'Any cell with obstacleGrid[r][c] == 1 has dp[r][c] = 0.'
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'Obstacle at [1, 1]: dp[1][1] = 0 | Start: dp[0][0] = 1',
+    action: 'Initialize 3 × 3 grid with obstacle located at center cell [1, 1].',
+    explain: 'dp[i][j] stores the number of valid paths reaching (i, j). Any cell containing an obstacle blocks all traversal and has dp value strictly 0.',
+    intuition: 'Obstacles zero out incoming flow from both directions.',
+    metrics: [
+      { label: 'Grid Size', value: '3 × 3' },
+      { label: 'Obstacle Pos', value: '[1, 1]' },
+      { label: 'Start Paths', value: 1 }
+    ]
   },
   {
-    title: '2. Check Obstacle Cell (1, 1): Path count = 0',
-    phase: 'OBSTACLE',
-    codeLine: 18,
-    activeCell: [1, 1],
+    phase: 'ROW_0_BASE',
     grid: [
-      [{ val: 1, isObs: false }, { val: 1, isObs: false }, { val: 1, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 0, isObs: true },  { val: 0, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 0, isObs: false }, { val: 0, isObs: false }]
+      [1, 1, 1],
+      [0, 0, 0],
+      [0, 0, 0]
     ],
-    variables: { cell: '(1,1)', state: 'BLOCKED BY OBSTACLE', paths: 0 },
-    explain: 'Obstacle detected at (1, 1). No path can step onto or pass through this cell. dp[1][1] = 0.',
-    intuition: 'Zero paths transmit downstream through this cell.'
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 0, c: 2 },
+    dependencyCells: [{ r: 0, c: 1, label: 'left=1' }],
+    formula: 'Row 0 has no obstacles => all cells have 1 path (moving right)',
+    action: 'Process row 0: cells [0, 1] and [0, 2] each receive 1 path from the left.',
+    explain: 'With no obstacles on row 0, moving right from (0, 0) provides exactly 1 path to each cell along the top boundary.',
+    intuition: 'Clear top edge provides unobstructed horizontal path.',
+    metrics: [
+      { label: 'Row 0 State', value: '[1, 1, 1]' }
+    ]
   },
   {
-    title: '3. Compute Neighbor Cells: (1, 2) and (2, 1)',
-    phase: 'COMPUTE',
-    codeLine: 20,
-    activeCell: [1, 2],
+    phase: 'ROW_1_COL_0',
     grid: [
-      [{ val: 1, isObs: false }, { val: 1, isObs: false }, { val: 1, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 0, isObs: true },  { val: 1, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 1, isObs: false }, { val: 0, isObs: false }]
+      [1, 1, 1],
+      [1, 0, 0],
+      [0, 0, 0]
     ],
-    variables: { 'dp[1][2]': 'Top(1) + Left(0) = 1', 'dp[2][1]': 'Top(0) + Left(1) = 1' },
-    explain: 'Cell (1, 2) receives 1 path from (0, 2) and 0 from (1, 1). Cell (2, 1) receives 0 from (1, 1) and 1 from (2, 0).',
-    intuition: 'Paths are forced to route around the obstacle.'
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 1, c: 0 },
+    dependencyCells: [{ r: 0, c: 0, label: 'top=1' }],
+    formula: 'dp[1][0] = dp[0][0] = 1 (Moving straight down)',
+    action: 'Evaluate [1, 0]: receives 1 path moving Down from [0, 0].',
+    explain: 'Cell [1, 0] is unblocked and receives the 1 path coming from [0, 0].',
+    intuition: 'Left edge path remains open.',
+    metrics: [
+      { label: 'dp[1][0]', value: 1 }
+    ]
   },
   {
-    title: '4. Compute Target Cell (2, 2): 1 + 1 = 2 Unique Paths (Final)',
+    phase: 'ROW_1_COL_1_OBSTACLE',
+    grid: [
+      [1, 1, 1],
+      [1, 0, 0],
+      [0, 0, 0]
+    ],
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [{ r: 0, c: 1, label: 'blocked' }, { r: 1, c: 0, label: 'blocked' }],
+    formula: 'obstacleGrid[1][1] == 1 => dp[1][1] = 0 (BLOCKED)',
+    action: 'Encounter obstacle at cell [1, 1]! Value is clamped to 0.',
+    explain: 'Because cell [1, 1] is an obstacle, no path may enter it. dp[1][1] is explicitly set to 0. It cannot forward paths to the right or down.',
+    intuition: 'Obstacles act as path sinks where path count drops to zero.',
+    metrics: [
+      { label: 'Obstacle Cell', value: '[1, 1]' },
+      { label: 'dp[1][1]', value: 0, highlight: true }
+    ]
+  },
+  {
+    phase: 'ROW_1_COL_2',
+    grid: [
+      [1, 1, 1],
+      [1, 0, 1],
+      [0, 0, 0]
+    ],
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 1, c: 2 },
+    dependencyCells: [{ r: 0, c: 2, label: 'top=1' }, { r: 1, c: 1, label: 'left=0' }],
+    formula: 'dp[1][2] = top (1) + left (0) = 1 path',
+    action: 'Evaluate cell [1, 2]: top (1) + left (0) = 1 path.',
+    explain: 'At cell [1, 2], the left neighbor [1, 1] is an obstacle contributing 0 paths. The only way to reach [1, 2] is from above ([0, 2]), giving 1 + 0 = 1 path.',
+    intuition: 'Left path severed by obstacle; only vertical path survives.',
+    metrics: [
+      { label: 'Top Contribution', value: 1 },
+      { label: 'Left Contribution', value: 0 },
+      { label: 'dp[1][2]', value: 1 }
+    ]
+  },
+  {
+    phase: 'ROW_2_COL_0_1',
+    grid: [
+      [1, 1, 1],
+      [1, 0, 1],
+      [1, 1, 0]
+    ],
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 2, c: 1 },
+    dependencyCells: [{ r: 1, c: 1, label: 'top=0' }, { r: 2, c: 0, label: 'left=1' }],
+    formula: 'dp[2][1] = top (0) + left (1) = 1 path',
+    action: 'Evaluate [2, 0] = 1, then evaluate [2, 1]: top (0) + left (1) = 1 path.',
+    explain: 'At cell [2, 1], the top neighbor [1, 1] is blocked (0 paths). However, 1 path arrives from the left neighbor [2, 0]. Total paths = 0 + 1 = 1.',
+    intuition: 'Paths circumvent the obstacle by traveling around its lower edge.',
+    metrics: [
+      { label: 'dp[2][0]', value: 1 },
+      { label: 'dp[2][1]', value: 1 }
+    ]
+  },
+  {
+    phase: 'ROW_2_COL_2_TERMINAL',
+    grid: [
+      [1, 1, 1],
+      [1, 0, 1],
+      [1, 1, 2]
+    ],
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 2, c: 2 },
+    dependencyCells: [{ r: 1, c: 2, label: 'top=1' }, { r: 2, c: 1, label: 'left=1' }],
+    formula: 'dp[2][2] = top (1) + left (1) = 2 unique paths',
+    action: 'Evaluate target destination [2, 2]: Total unique paths = 2!',
+    explain: 'Target cell [2, 2] receives 1 path from above [1, 2] and 1 path from the left [2, 1]. Total paths to exit = 1 + 1 = 2 (down from 6 in an obstacle-free grid).',
+    intuition: 'Target reached! Exactly 2 surviving paths navigate around the obstacle.',
+    metrics: [
+      { label: 'Destination', value: '[2, 2]' },
+      { label: 'Surviving Paths', value: 2, highlight: true }
+    ]
+  },
+  {
+    phase: 'PATH_DETECTION',
+    grid: [
+      [1, 1, 1],
+      [1, 0, 1],
+      [1, 1, 2]
+    ],
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 2, c: 2 },
+    formula: 'Path 1: (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2) | Path 2: (0,0) -> (1,0) -> (2,0) -> (2,1) -> (2,2)',
+    action: 'Enumerate the two surviving valid paths.',
+    explain: '1. Upper perimeter: Right ➔ Right ➔ Down ➔ Down\n2. Lower perimeter: Down ➔ Down ➔ Right ➔ Right\nAll 4 other paths that would have traversed (1, 1) are eliminated.',
+    intuition: 'Clear geometric detour around the central obstacle.',
+    metrics: [
+      { label: 'Path 1', value: 'Top Perimeter' },
+      { label: 'Path 2', value: 'Bottom Perimeter' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 25,
-    activeCell: [2, 2],
     grid: [
-      [{ val: 1, isObs: false }, { val: 1, isObs: false }, { val: 1, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 0, isObs: true },  { val: 1, isObs: false }],
-      [{ val: 1, isObs: false }, { val: 1, isObs: false }, { val: 2, isObs: false }]
+      [1, 1, 1],
+      [1, 0, 1],
+      [1, 1, 2]
     ],
-    variables: { target: '(2,2)', totalPaths: 2, routes: 'RRDD, DDRR' },
-    explain: 'Target (2, 2) sums paths from (1, 2) [1 path] and (2, 1) [1 path] = 2 unique paths. All other paths hit the obstacle!',
-    intuition: 'Obstacles reduce total unique paths from 6 down to 2.'
+    rowLabels: ['Row 0 (Start)', 'Row 1 (Obstacle)', 'Row 2 (Target)'],
+    colLabels: ['Col 0', 'Col 1 (Obstacle)', 'Col 2'],
+    activeCell: { r: 2, c: 2 },
+    formula: 'Output: 2 | O(M × N) Time, O(N) Space',
+    action: 'Algorithm complete! 2 unique paths.',
+    explain: 'Runs in O(M × N) time using O(N) space. If start (0, 0) or exit (M-1, N-1) is an obstacle, algorithm terminates with 0 in O(1).',
+    intuition: 'Robust obstacle grid dynamic programming.',
+    metrics: [
+      { label: 'Obstacle Pos', value: '(1, 1)' },
+      { label: 'Unique Paths', value: 2, highlight: true },
+      { label: 'Space Complexity', value: 'O(N)' }
+    ]
   }
 ];
-
-export default function UniquePathsIiVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Active Cell: ({step.activeCell[0]}, {step.activeCell[1]})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Target Reachable Paths: {step.grid[2][2].val}
-        </span>
-      </div>
-
-      {/* Grid Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Grid Matrix with Obstacles & Dynamic Paths
-        </span>
-
-        <div className="flex flex-col gap-2 p-2">
-          {step.grid.map((row, r) => (
-            <div key={r} className="flex gap-2">
-              {row.map((cell, c) => {
-                const isActive = step.activeCell[0] === r && step.activeCell[1] === c;
-
-                return (
-                  <div
-                    key={c}
-                    className={`w-20 h-20 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                      cell.isObs
-                        ? 'border-rose-500/60 bg-rose-500/20 text-rose-300 shadow-inner'
-                        : isActive
-                        ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg scale-105'
-                        : cell.val > 0
-                        ? 'border-blue-500/40 bg-blue-500/15 text-blue-300'
-                        : 'border-[#272b3c] bg-[#161824] text-slate-600'
-                    }`}
-                  >
-                    <span className="text-[10px]">
-                      {cell.isObs ? '🛑 Obstacle' : `(${r},${c})`}
-                    </span>
-                    <span className="text-sm font-bold mt-1">
-                      {cell.isObs ? '0' : cell.val > 0 ? `${cell.val} paths` : '—'}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

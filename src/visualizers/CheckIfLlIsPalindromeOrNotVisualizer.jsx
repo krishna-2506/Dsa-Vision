@@ -277,7 +277,7 @@ export default function CheckIfLlIsPalindromeOrNotVisualizer({ currentStep = 0 }
       </div>
 
       {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {step.nodes.map((val, idx) => {
           const isSlow = step.slowIdx === idx;
           const isFast = step.fastIdx === idx;
@@ -285,7 +285,7 @@ export default function CheckIfLlIsPalindromeOrNotVisualizer({ currentStep = 0 }
           const isP2 = step.p2Idx === idx;
           const isSecondHalf = idx >= 3;
 
-          let style = 'bg-[#12131b] border-[#272b3c] text-white';
+          let style = 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]';
           if (isP1 || isP2) {
             style = 'bg-emerald-500/25 border-emerald-400 text-emerald-200 scale-105 shadow-md shadow-emerald-500/20';
           } else if (isSlow) {
@@ -315,7 +315,7 @@ export default function CheckIfLlIsPalindromeOrNotVisualizer({ currentStep = 0 }
               </div>
 
               {idx < step.nodes.length - 1 && (
-                <div className="text-base font-bold text-[#8a8ea3]">&rarr;</div>
+                <div className="text-base font-bold text-[var(--chalk-dim)]">&rarr;</div>
               )}
             </React.Fragment>
           );

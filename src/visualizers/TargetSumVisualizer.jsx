@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Target Sum',
+  title: 'Target Sum (DP-21)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * S1)',
-  spaceComplexity: 'O(S1)',
-  description: 'Assigns + or - signs to elements of an array such that the expression evaluates to the target sum. Reduces to counting partitions with difference equal to Target: S1 = (TotalSum + Target) / 2.'
+  timeComplexity: 'O(N × S₁) Time',
+  spaceComplexity: 'O(S₁) Space-Optimized',
+  description: 'Assigns + or - signs to elements of an array so that the entire expression evaluates to the target. Mathematically reduces to finding the number of subsets with sum S₁ = (TotalSum + Target) / 2.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Target Sum (DP-21)',
+  nodes: [
+    { id: 'root', label: 'Target Sum Solver', children: ['math-reduction', 'validity-checks', 'subset-dp'] },
+    { id: 'math-reduction', label: '1. Mathematical Transformation', detail: 'Let P be positives, N be negatives. P - N = target and P + N = totalSum => 2P = totalSum + target => P = (totalSum + target) / 2' },
+    { id: 'validity-checks', label: '2. Feasibility Pre-Checks', detail: 'If (totalSum + target) is odd or totalSum < |target|, 0 ways are possible.' },
+    { id: 'subset-dp', label: '3. 0/1 Subset Sum Tabulation', children: ['exclude-num', 'include-num'] },
+    { id: 'exclude-num', label: 'Exclude num', detail: 'dp[i-1][s] (Don\'t assign + to num)' },
+    { id: 'include-num', label: 'Include num', detail: 'dp[i-1][s - num] (Assign + to num)' }
+  ]
 };
 
 export const solutions = {
@@ -58,7 +72,7 @@ class Solution:
 class Solution {
     public int findTargetSumWays(int[] nums, int target) {
         int totalSum = 0;
-        for (int num : nums) totalSum += num;
+        for (int x : nums) totalSum += x;
         if (totalSum - target < 0 || (totalSum + target) % 2 != 0) return 0;
 
         int s1 = (totalSum + target) / 2;
@@ -80,7 +94,7 @@ var findTargetSumWays = function(nums, target) {
     const totalSum = nums.reduce((a, b) => a + b, 0);
     if (totalSum - target < 0 || (totalSum + target) % 2 !== 0) return 0;
 
-    const s1 = Math.floor((totalSum + target) / 2);
+    const s1 = (totalSum + target) / 2;
     const dp = new Array(s1 + 1).fill(0);
     dp[0] = 1;
 
@@ -96,110 +110,180 @@ var findTargetSumWays = function(nums, target) {
 
 export const steps = [
   {
-    title: '1. Array: [1, 1, 1, 1, 1], Target = 3',
-    phase: 'INITIAL',
-    codeLine: 13,
-    nums: [1, 1, 1, 1, 1],
-    target: 3,
-    totalSum: 5,
-    s1: 4,
-    dp: [1, 0, 0, 0, 0],
-    variables: { totalSum: 5, target: 3, 'Derived S1': '(5 + 3) / 2 = 4' },
-    explain: 'Assigning signs divides elements into positive subset S1 and negative subset S2. S1 - S2 = 3 and S1 + S2 = 5 -> S1 = 4.',
-    intuition: 'Target Sum is mathematically identical to Count Partitions with Difference D.'
+    phase: 'SETUP',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'P - N = Target (1), P + N = TotalSum (7) => P = (7 + 1) / 2 = 4',
+    action: 'Reduce Target Sum to: Count Subsets with Sum = 4 from nums = [1, 1, 2, 3].',
+    explain: 'Assigning signs partitions the array into positive set P and negative set N. Solving the system yields P = (TotalSum + Target) / 2 = 4. We now count subsets summing to 4.',
+    intuition: 'Converting algebraic sign assignment into standard subset counting.',
+    metrics: [
+      { label: 'Nums', value: '[1, 1, 2, 3]' },
+      { label: 'Target', value: 1 },
+      { label: 'Target Subset S₁', value: 4, highlight: true }
+    ]
   },
   {
-    title: '2. Check Pre-conditions: TotalSum >= Target and (TotalSum + Target) % 2 == 0',
-    phase: 'VALIDATE',
-    codeLine: 14,
-    nums: [1, 1, 1, 1, 1],
-    target: 3,
-    totalSum: 5,
-    s1: 4,
-    dp: [1, 0, 0, 0, 0],
-    variables: { condition1: '5 >= 3 (True)', condition2: '(5 + 3) % 2 == 0 (True)' },
-    explain: 'Both mathematical parity and range checks hold true. S1 = 4 is an integer.',
-    intuition: 'If parity fails, 0 ways exist.'
+    phase: 'ROW_1_FIRST_1',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [{ r: 0, c: 1, label: 'excl=0' }, { r: 0, c: 0, label: 'incl=1' }],
+    formula: 's = 1: dp[0][1] + dp[0][0] = 0 + 1 = 1 way',
+    action: 'Process first num = 1: forms sum 0 in 1 way, sum 1 in 1 way.',
+    explain: 'With only the first 1, subset sum 0 has 1 way (empty set) and sum 1 has 1 way ({1}). All larger sums remain 0.',
+    intuition: 'Single item gives two outcome sums: 0 and 1.',
+    metrics: [
+      { label: 'Active Num', value: 1 },
+      { label: 'dp[1][1]', value: 1 }
+    ]
   },
   {
-    title: '3. Process 1s: DP counts combinations of choosing four 1s from five',
-    phase: 'COMBINATIONS',
-    codeLine: 22,
-    nums: [1, 1, 1, 1, 1],
-    target: 3,
-    totalSum: 5,
-    s1: 4,
-    dp: [1, 5, 10, 10, 5],
-    variables: { 'dp[4]': 'C(5, 4) = 5 ways' },
-    explain: 'We need exactly four + signs and one - sign. Number of ways to pick four + signs out of 5 positions is 5.',
-    intuition: 'Every choice of four + signs gives sum: (+1+1+1+1 -1) = 3.'
+    phase: 'ROW_2_SECOND_1',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 2, 1, 0, 0],
+      [1, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 2, c: 1 },
+    dependencyCells: [{ r: 1, c: 1, label: 'excl=1' }, { r: 1, c: 0, label: 'incl=1' }],
+    formula: 's = 1: dp[1][1] + dp[1][0] = 1 + 1 = 2 ways ({1a}, {1b})',
+    action: 'Process second num = 1: sum 1 now has 2 ways, sum 2 has 1 way.',
+    explain: 'At sum 1, we can either choose the first 1 or the second 1, yielding 2 distinct subsets. At sum 2, choosing both 1s ({1, 1}) gives 1 way.',
+    intuition: 'Duplicate items create multiple distinct index subsets.',
+    metrics: [
+      { label: 'Active Num', value: 'second 1' },
+      { label: 'Ways for sum 1', value: 2, highlight: true },
+      { label: 'Ways for sum 2', value: 1 }
+    ]
   },
   {
-    title: '4. Final Result: 5 Distinct Expressions Equal to Target 3',
+    phase: 'ROW_3_NUM_2',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 2, 1, 0, 0],
+      [1, 2, 2, 2, 1],
+      [1, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 3, c: 4 },
+    dependencyCells: [{ r: 2, c: 4, label: 'excl=0' }, { r: 2, c: 2, label: 'incl=1' }],
+    formula: 's = 4: dp[2][4] + dp[2][2] = 0 + 1 = 1 way ({1, 1, 2})',
+    action: 'Process num = 2: reaches target sum 4 for the first time!',
+    explain: 'Sum 4 is formed by combining num 2 with previous sum 2 ({1, 1}), giving subset {1, 1, 2} (val 4). dp[3][4] = 1.',
+    intuition: 'First candidate subset {1, 1, 2} identified.',
+    metrics: [
+      { label: 'Active Num', value: 2 },
+      { label: 'Ways for sum 4', value: 1, highlight: true }
+    ]
+  },
+  {
+    phase: 'ROW_4_NUM_3_SUM_3',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 2, 1, 0, 0],
+      [1, 2, 2, 2, 1],
+      [1, 2, 2, 3, 1]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 4, c: 3 },
+    dependencyCells: [{ r: 3, c: 3, label: 'excl=2' }, { r: 3, c: 0, label: 'incl=1' }],
+    formula: 's = 3: dp[3][3] + dp[3][0] = 2 + 1 = 3 ways',
+    action: 'Process num = 3 at sum 3: exclude 3 (2 ways) + include 3 (1 way) = 3 ways.',
+    explain: 'Subsets reaching sum 3: 1) {1a, 2}, 2) {1b, 2}, 3) {3}. Total ways = 3.',
+    intuition: 'Intermediate sum 3 accumulates 3 combinations.',
+    metrics: [
+      { label: 'Active Num', value: 3 },
+      { label: 'Ways for sum 3', value: 3 }
+    ]
+  },
+  {
+    phase: 'ROW_4_NUM_3_SUM_4_TERMINAL',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 2, 1, 0, 0],
+      [1, 2, 2, 2, 1],
+      [1, 2, 2, 3, 3]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 4, c: 4 },
+    dependencyCells: [{ r: 3, c: 4, label: 'excl=1' }, { r: 3, c: 1, label: 'incl=2' }],
+    formula: 's = 4: dp[3][4] + dp[3][1] = 1 + 2 = 3 ways',
+    action: 'Evaluate terminal cell [4, 4]: 3 distinct subsets sum to S₁ = 4!',
+    explain: 'To form sum 4:\n- Exclude 3: dp[3][4] = 1 way ({1, 1, 2})\n- Include 3: dp[3][1] = 2 ways ({1a, 3} and {1b, 3})\nTotal ways = 1 + 2 = 3 ways!',
+    intuition: 'Terminal cell holds 3 distinct subsets.',
+    metrics: [
+      { label: 'Terminal Cell', value: '[4, 4]' },
+      { label: 'Total Ways', value: 3, highlight: true }
+    ]
+  },
+  {
+    phase: 'EXPRESSION_EXPANSION',
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 2, 1, 0, 0],
+      [1, 2, 2, 2, 1],
+      [1, 2, 2, 3, 3]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 4, c: 4 },
+    formula: 'Sign Assignments: (+1 -1 -2 +3 = 1), (-1 +1 -2 +3 = 1), (+1 +1 +2 -3 = 1)',
+    action: 'Translate the 3 subsets back into signed expressions.',
+    explain: '1. Positive {1a, 3}, Negative {1b, 2} ➔ +1 - 1 - 2 + 3 = 1\n2. Positive {1b, 3}, Negative {1a, 2} ➔ -1 + 1 - 2 + 3 = 1\n3. Positive {1a, 1b, 2}, Negative {3} ➔ +1 + 1 + 2 - 3 = 1\nAll 3 expressions evaluate exactly to Target = 1!',
+    intuition: 'Each subset of sum S₁ corresponds 1-to-1 with an expression evaluating to target.',
+    metrics: [
+      { label: 'Expr 1', value: '+1 -1 -2 +3 = 1' },
+      { label: 'Expr 2', value: '-1 +1 -2 +3 = 1' },
+      { label: 'Expr 3', value: '+1 +1 +2 -3 = 1' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 26,
-    nums: [1, 1, 1, 1, 1],
-    target: 3,
-    totalSum: 5,
-    s1: 4,
-    dp: [1, 5, 10, 10, 5],
-    variables: { waysToTarget: 5, sampleExpression: '+1 + 1 + 1 + 1 - 1 = 3' },
-    explain: 'There are 5 different ways to assign signs to reach target 3: each corresponds to placing the minus sign at a different index.',
-    intuition: 'Complete solution runs in O(N * S1) time and O(S1) space.'
+    grid: [
+      [1, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0],
+      [1, 2, 1, 0, 0],
+      [1, 2, 2, 2, 1],
+      [1, 2, 2, 3, 3]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 1', 'Num 2', 'Num 3'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4'],
+    activeCell: { r: 4, c: 4 },
+    formula: 'Output: 3 | O(N × S₁) Time, O(S₁) Space',
+    action: 'Algorithm complete! 3 valid expressions.',
+    explain: 'Using reverse 1D traversal: dp[s] += dp[s - num], the problem completes in O(N × S₁) time with only O(S₁) space. Any case where totalSum < target or (totalSum + target) % 2 != 0 returns 0 in O(1).',
+    intuition: 'Algebraic reduction simplifies exponential 2^N brute force to pseudo-polynomial DP.',
+    metrics: [
+      { label: 'Nums', value: '[1, 1, 2, 3]' },
+      { label: 'Target', value: 1 },
+      { label: 'Total Ways', value: 3, highlight: true }
+    ]
   }
 ];
-
-export default function TargetSumVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Target = {step.target} | Target S1 = {step.s1}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Ways: {step.dp[step.s1]}
-        </span>
-      </div>
-
-      {/* Signs Expression Preview */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Expression Sign Assignment (+ / -)
-        </span>
-
-        <div className="flex items-center justify-center gap-2 py-2">
-          {step.nums.map((num, idx) => {
-            const isMinus = idx === 4 && step.phase === 'COMPLETED';
-
-            return (
-              <div key={idx} className="flex items-center gap-2">
-                <div
-                  className={`w-14 h-18 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                    isMinus
-                      ? 'border-rose-500/60 bg-rose-500/20 text-rose-300'
-                      : 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300'
-                  }`}
-                >
-                  <span className="text-sm font-bold">{isMinus ? '−' : '+'}</span>
-                  <span className="text-sm font-bold text-amber-300">{num}</span>
-                </div>
-              </div>
-            );
-          })}
-          <span className="text-slate-500 font-mono text-xl font-bold ml-2">=</span>
-          <div className="w-14 h-18 rounded-2xl border border-emerald-500 bg-emerald-500/25 text-emerald-300 font-bold flex items-center justify-center text-lg font-mono">
-            {step.target}
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

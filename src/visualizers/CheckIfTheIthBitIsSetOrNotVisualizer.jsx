@@ -131,7 +131,7 @@ export default function CheckIfTheIthBitIsSetOrNotVisualizer({ currentStep = 0 }
                       ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg'
                       : bit === '1'
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                      : 'border-[#272b3c] bg-[#12131b] text-slate-500'
+                      : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]'
                   }`}
                 >
                   {bit}
@@ -151,7 +151,7 @@ export default function CheckIfTheIthBitIsSetOrNotVisualizer({ currentStep = 0 }
                 className={`w-9 h-10 rounded-xl border flex items-center justify-center font-mono font-bold text-sm ${
                   bit === '1'
                     ? 'border-indigo-500 bg-indigo-500/25 text-indigo-300'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-500'
+                    : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]'
                 }`}
               >
                 {bit}
@@ -167,7 +167,7 @@ export default function CheckIfTheIthBitIsSetOrNotVisualizer({ currentStep = 0 }
             {step.andRes.split('').map((bit, idx) => (
               <div
                 key={idx}
-                className="w-9 h-10 rounded-xl border border-emerald-500/30 bg-[#12131b] flex items-center justify-center font-mono font-bold text-sm text-emerald-400"
+                className="w-9 h-10 rounded-xl border border-emerald-500/30 bg-[var(--board-raised)] flex items-center justify-center font-mono font-bold text-sm text-emerald-400"
               >
                 {bit}
               </div>
@@ -177,8 +177,8 @@ export default function CheckIfTheIthBitIsSetOrNotVisualizer({ currentStep = 0 }
       </div>
 
       {/* Bit Trick formula banner */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[#8a8ea3]">Formula: <strong className="text-amber-400">(N & (1 &lt;&lt; i)) != 0</strong></span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
+        <span className="text-[var(--chalk-dim)]">Formula: <strong className="text-amber-400">(N & (1 &lt;&lt; i)) != 0</strong></span>
         <span className="text-emerald-400 font-semibold">O(1) Time</span>
       </div>
     </div>

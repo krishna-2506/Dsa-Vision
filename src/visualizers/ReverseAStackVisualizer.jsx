@@ -193,9 +193,9 @@ export default function ReverseAStackVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Canvas */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] grid grid-cols-2 gap-6 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] grid grid-cols-2 gap-6 font-mono">
         {/* Physical Stack Tower */}
-        <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[#12131b] border border-[#272b3c]">
+        <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
           <span className="text-xs text-amber-400 font-bold">Data Stack:</span>
           <div className="w-36 h-48 border-b-4 border-l-2 border-r-2 border-amber-400/50 rounded-b-xl flex flex-col-reverse items-center p-2 gap-2 bg-[#0e1017]">
             {step.stack.map((val, idx) => {
@@ -204,7 +204,7 @@ export default function ReverseAStackVisualizer({ currentStep = 0 }) {
                 <div
                   key={idx}
                   className={`w-full py-2 rounded-lg border text-center font-bold text-sm transition-all ${
-                    isTop ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[#272b3c] bg-[#161824] text-white'
+                    isTop ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk)]'
                   }`}
                 >
                   {val} {isTop && <span className="text-[10px] text-amber-300 font-normal">&larr; TOP</span>}
@@ -212,11 +212,11 @@ export default function ReverseAStackVisualizer({ currentStep = 0 }) {
               );
             })}
           </div>
-          <span className="text-[10px] text-[#8a8ea3]">BOTTOM OF STACK</span>
+          <span className="text-[10px] text-[var(--chalk-dim)]">BOTTOM OF STACK</span>
         </div>
 
         {/* Recursive Call Stack Frames */}
-        <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[#12131b] border border-[#272b3c]">
+        <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
           <span className="text-xs text-cyan-400 font-bold">Call Stack Frames (Memory):</span>
           <div className="w-full h-48 flex flex-col-reverse items-center justify-start gap-2 overflow-y-auto p-2 bg-[#0e1017] rounded-xl border border-[#1e2233]">
             {step.callStack.length === 0 ? (

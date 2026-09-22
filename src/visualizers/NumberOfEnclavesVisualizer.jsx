@@ -182,13 +182,13 @@ export default function NumberOfEnclavesVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
           <span>Grid Enclave Analysis [4 &times; 4]</span>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-purple-500"></span> Enclave (Trapped)</span>
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-emerald-500"></span> Escapable Land</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-[#161824]"></span> Sea (0)</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-[var(--board-raised-2)]"></span> Sea (0)</span>
           </div>
         </div>
 
@@ -204,7 +204,7 @@ export default function NumberOfEnclavesVisualizer({ currentStep = 0 }) {
                     ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
                     : val === 1
                     ? 'bg-amber-500/20 border-amber-500/40 text-amber-200'
-                    : 'bg-[#161824] border-[#272b3c] text-slate-500'
+                    : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-faint)]'
                 }`}
               >
                 <span>{val}</span>
@@ -215,7 +215,7 @@ export default function NumberOfEnclavesVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

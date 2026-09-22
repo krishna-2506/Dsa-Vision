@@ -206,12 +206,12 @@ export default function AddOneToANumberRepresentedByLlVisualizer({ currentStep =
       </div>
 
       {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {step.nodes.map((val, idx) => {
           const isActive = step.activeIdx === idx;
           const isUpdated = idx >= (step.activeIdx ?? 99);
 
-          let nodeStyle = 'bg-[#12131b] border-[#272b3c] text-white';
+          let nodeStyle = 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]';
           if (isActive) {
             nodeStyle = 'bg-amber-500/25 border-amber-400 text-amber-200 scale-110 shadow-lg shadow-amber-500/25';
           } else if (isUpdated) {
@@ -240,21 +240,21 @@ export default function AddOneToANumberRepresentedByLlVisualizer({ currentStep =
               </div>
 
               {/* Arrow */}
-              <div className="text-base font-bold text-[#8a8ea3]">&rarr;</div>
+              <div className="text-base font-bold text-[var(--chalk-dim)]">&rarr;</div>
             </React.Fragment>
           );
         })}
 
         {/* NULL */}
-        <div className="w-14 h-14 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[#8a8ea3]">
+        <div className="w-14 h-14 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[var(--chalk-dim)]">
           NULL
         </div>
       </div>
 
       {/* Result Value Banner */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex items-center justify-center gap-3 font-mono text-sm">
-        <span className="text-[#8a8ea3]">Current List Value:</span>
-        <span className="text-2xl font-bold text-white tracking-widest">{step.nodes.join('')}</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-center gap-3 font-mono text-sm">
+        <span className="text-[var(--chalk-dim)]">Current List Value:</span>
+        <span className="text-2xl font-bold text-[var(--chalk)] tracking-widest">{step.nodes.join('')}</span>
       </div>
     </div>
   );

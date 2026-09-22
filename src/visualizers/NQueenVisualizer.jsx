@@ -255,16 +255,16 @@ export default function NQueenVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Chessboard */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Interactive 4 × 4 Chessboard</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Interactive 4 × 4 Chessboard</span>
 
-        <div className="grid grid-cols-4 border-2 border-[#272b3c] rounded-xl overflow-hidden shadow-2xl">
+        <div className="grid grid-cols-4 border-2 border-[var(--line)] rounded-xl overflow-hidden shadow-2xl">
           {Array.from({ length: step.n }).map((_, r) =>
             Array.from({ length: step.n }).map((_, c) => {
               const isDark = (r + c) % 2 === 1;
               const hasQueen = step.queens.some(q => q.r === r && q.c === c);
 
-              let bgClass = isDark ? 'bg-[#181a26]' : 'bg-[#12131b]';
+              let bgClass = isDark ? 'bg-[#181a26]' : 'bg-[var(--board-raised)]';
               if (hasQueen) {
                 bgClass = 'bg-amber-500/25 ring-2 ring-amber-500/50 shadow-inner';
               }
@@ -272,12 +272,12 @@ export default function NQueenVisualizer({ currentStep = 0 }) {
               return (
                 <div 
                   key={`${r}-${c}`}
-                  className={`w-14 h-14 border border-[#272b3c]/50 flex flex-col items-center justify-center transition-all ${bgClass}`}
+                  className={`w-14 h-14 border border-[var(--line)]/50 flex flex-col items-center justify-center transition-all ${bgClass}`}
                 >
                   {hasQueen ? (
                     <span className="text-2xl drop-shadow-md animate-bounce">👑</span>
                   ) : (
-                    <span className="text-[8px] font-mono text-slate-600">{r},{c}</span>
+                    <span className="text-[8px] font-mono text-[var(--chalk-faint)]">{r},{c}</span>
                   )}
                 </div>
               );
@@ -287,7 +287,7 @@ export default function NQueenVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

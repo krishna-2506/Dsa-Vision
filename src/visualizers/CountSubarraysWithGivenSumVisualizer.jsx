@@ -205,11 +205,11 @@ export default function CountSubarraysWithGivenSumVisualizer({ currentStep = 0 }
           return (
             <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[50px]">
               <div className="h-5 flex items-center text-[9px] font-mono font-bold">
-                {isCurrent && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">x</span>}
+                {isCurrent && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">x</span>}
               </div>
 
               <div className={`w-13 h-13 rounded-xl border flex items-center justify-center font-mono text-lg font-bold transition-all duration-300 ${
-                isCurrent ? 'bg-amber-500/25 text-amber-300 border-amber-400 scale-105 shadow-md shadow-amber-500/20' : 'bg-[#181a24] text-white border-[#2b2e40]'
+                isCurrent ? 'bg-amber-500/25 text-amber-300 border-amber-400 scale-105 shadow-md shadow-amber-500/20' : 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]'
               }`}>
                 {val}
               </div>
@@ -223,7 +223,7 @@ export default function CountSubarraysWithGivenSumVisualizer({ currentStep = 0 }
       {/* Found Subarrays Stream */}
       {step.subarraysFound.length > 0 && (
         <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#141622] border border-[#272b3d] text-xs font-mono">
-          <span className="text-[#8a8ea3]">Matched Subarrays:</span>
+          <span className="text-[var(--chalk-dim)]">Matched Subarrays:</span>
           {step.subarraysFound.map((sub, idx) => (
             <span key={idx} className="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
               {sub}

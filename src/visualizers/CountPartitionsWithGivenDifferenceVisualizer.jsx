@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Count Partitions with Given Difference',
+  title: 'Count Partitions with Given Difference (DP-18)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * Target)',
-  spaceComplexity: 'O(Target)',
-  description: 'Counts the number of partitions of an array into two subsets S1 and S2 such that sum(S1) - sum(S2) = D. Mathematically transforms into finding the number of subsets with sum equal to (TotalSum + D) / 2.'
+  timeComplexity: 'O(N × Target) Time',
+  spaceComplexity: 'O(Target) Space-Optimized',
+  description: 'Counts the number of partitions of an array into two subsets S1 and S2 such that sum(S1) - sum(S2) = D. Mathematically transforms into finding the number of subsets with sum S1 = (TotalSum + D) / 2.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Count Partitions with Given Difference',
+  nodes: [
+    { id: 'root', label: 'Partition Difference Counter', children: ['algebraic-identity', 'validity-checks', 'subset-sum-matrix'] },
+    { id: 'algebraic-identity', label: '1. Mathematical Identity', detail: 'S1 - S2 = D and S1 + S2 = TotalSum => 2*S1 = TotalSum + D => S1 = (TotalSum + D) / 2' },
+    { id: 'validity-checks', label: '2. Parity & Feasibility Constraints', detail: 'If (TotalSum + D) is odd or TotalSum < D, 0 partitions exist.' },
+    { id: 'subset-sum-matrix', label: '3. 0/1 Subset Sum DP', children: ['not-pick', 'pick'] },
+    { id: 'not-pick', label: 'Not Pick', detail: 'dp[i-1][target] (Exclude current element)' },
+    { id: 'pick', label: 'Pick', detail: 'dp[i-1][target - arr[i-1]] (Include current element)' }
+  ]
 };
 
 export const solutions = {
@@ -26,20 +40,12 @@ public:
         int target = (totalSum + d) / 2;
         vector<int> dp(target + 1, 0);
 
-        if (arr[0] == 0) dp[0] = 2;
-        else {
-            dp[0] = 1;
-            if (arr[0] <= target) dp[arr[0]] = 1;
-        }
+        dp[0] = 1;
 
-        for (int i = 1; i < n; i++) {
-            vector<int> cur(target + 1, 0);
-            for (int t = 0; t <= target; t++) {
-                int notTaken = dp[t];
-                int taken = (arr[i] <= t) ? dp[t - arr[i]] : 0;
-                cur[t] = (notTaken + taken) % MOD;
+        for (int num : arr) {
+            for (int t = target; t >= num; t--) {
+                dp[t] = (dp[t] + dp[t - num]) % MOD;
             }
-            dp = cur;
         }
 
         return dp[target];
@@ -56,23 +62,17 @@ class Solution:
 
         target = (total_sum + d) // 2
         dp = [0] * (target + 1)
-        dp[0] = 2 if arr[0] == 0 else 1
-        if arr[0] != 0 and arr[0] <= target:
-            dp[arr[0]] = 1
+        dp[0] = 1
 
-        for i in range(1, n):
-            cur = [0] * (target + 1)
-            for t in range(target + 1):
-                not_taken = dp[t]
-                taken = dp[t - arr[i]] if arr[i] <= t else 0
-                cur[t] = (not_taken + taken) % MOD
-            dp = cur
+        for num in arr:
+            for t in range(target, num - 1, -1):
+                dp[t] = (dp[t] + dp[t - num]) % MOD
 
         return dp[target]`,
   java: `// Java Count Partitions with Given Difference
 // Time: O(N * Target) | Space: O(Target)
 class Solution {
-    private static final int MOD = 1_000_000_007;
+    static final int MOD = (int)1e9 + 7;
 
     public int countPartitions(int n, int d, int[] arr) {
         int totalSum = 0;
@@ -81,21 +81,12 @@ class Solution {
 
         int target = (totalSum + d) / 2;
         int[] dp = new int[target + 1];
+        dp[0] = 1;
 
-        if (arr[0] == 0) dp[0] = 2;
-        else {
-            dp[0] = 1;
-            if (arr[0] <= target) dp[arr[0]] = 1;
-        }
-
-        for (int i = 1; i < n; i++) {
-            int[] cur = new int[target + 1];
-            for (int t = 0; t <= target; t++) {
-                int notTaken = dp[t];
-                int taken = (arr[i] <= t) ? dp[t - arr[i]] : 0;
-                cur[t] = (notTaken + taken) % MOD;
+        for (int num : arr) {
+            for (int t = target; t >= num; t--) {
+                dp[t] = (dp[t] + dp[t - num]) % MOD;
             }
-            dp = cur;
         }
 
         return dp[target];
@@ -108,23 +99,14 @@ var countPartitions = function(n, d, arr) {
     const totalSum = arr.reduce((a, b) => a + b, 0);
     if (totalSum - d < 0 || (totalSum + d) % 2 !== 0) return 0;
 
-    const target = Math.floor((totalSum + d) / 2);
-    let dp = new Array(target + 1).fill(0);
+    const target = (totalSum + d) / 2;
+    const dp = new Array(target + 1).fill(0);
+    dp[0] = 1;
 
-    if (arr[0] === 0) dp[0] = 2;
-    else {
-        dp[0] = 1;
-        if (arr[0] <= target) dp[arr[0]] = 1;
-    }
-
-    for (let i = 1; i < n; i++) {
-        const cur = new Array(target + 1).fill(0);
-        for (let t = 0; t <= target; t++) {
-            const notTaken = dp[t];
-            const taken = arr[i] <= t ? dp[t - arr[i]] : 0;
-            cur[t] = (notTaken + taken) % MOD;
+    for (const num of arr) {
+        for (let t = target; t >= num; t--) {
+            dp[t] = (dp[t] + dp[t - num]) % MOD;
         }
-        dp = cur;
     }
 
     return dp[target];
@@ -133,116 +115,178 @@ var countPartitions = function(n, d, arr) {
 
 export const steps = [
   {
-    title: '1. Array: [5, 2, 6, 4], D = 3, Total Sum = 17',
-    phase: 'INITIAL',
-    codeLine: 13,
-    arr: [5, 2, 6, 4],
-    d: 3,
-    totalSum: 17,
-    target: 10,
-    dpCount: 0,
-    variables: { totalSum: 17, d: 3, formula: '(17 + 3) / 2 = 10', target: 10 },
-    explain: 'Equations: S1 + S2 = 17 and S1 - S2 = 3. Adding gives 2 * S1 = 20 -> S1 = 10. We must find subsets summing to 10.',
-    intuition: 'Target sum derived algebraically.'
+    phase: 'SETUP',
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'S1 - S2 = D (2), S1 + S2 = 10 => S1 = (10 + 2) / 2 = 6',
+    action: 'Reduce problem to counting subsets summing to target S1 = 6 from arr = [1, 2, 3, 4].',
+    explain: 'Instead of brute force partitioning into 2^N subsets, we observe that S1 = (TotalSum + D) / 2 = 6. Any subset summing to 6 leaves a complementary subset summing to 4, guaranteeing difference D = 6 - 4 = 2.',
+    intuition: 'Converting a difference constraint into a single target subset sum.',
+    metrics: [
+      { label: 'Array', value: '[1, 2, 3, 4]' },
+      { label: 'Diff D', value: 2 },
+      { label: 'Target S1', value: 6, highlight: true }
+    ]
   },
   {
-    title: '2. Check Validity: (17 - 3) >= 0 and (17 + 3) is Even -> VALID',
-    phase: 'VALIDATE',
-    codeLine: 14,
-    arr: [5, 2, 6, 4],
-    d: 3,
-    totalSum: 17,
-    target: 10,
-    dpCount: 0,
-    variables: { isValid: 'TotalSum - D >= 0 (14 >= 0) and Even (20 % 2 == 0)' },
-    explain: 'Both conditions pass. If totalSum - d < 0 or (totalSum + d) is odd, partition is impossible (returns 0).',
-    intuition: 'Guarantees whole integer subset partitions.'
+    phase: 'ROW_1_NUM_1',
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [{ r: 0, c: 1, label: 'excl=0' }, { r: 0, c: 0, label: 'incl=1' }],
+    formula: 's = 1: dp[0][1] + dp[0][0] = 0 + 1 = 1 way',
+    action: 'Process num = 1: can form sum 0 (1 way) and sum 1 (1 way).',
+    explain: 'Using only element 1, we can form sum 0 (empty set) and sum 1 ({1}). All other sums remain 0.',
+    intuition: 'Base element creates first nonzero entries.',
+    metrics: [
+      { label: 'Active Num', value: 1 },
+      { label: 'dp[1][1]', value: 1 }
+    ]
   },
   {
-    title: '3. Subset Sum DP: Subsets summing to 10 found: [6, 4] and [5, 2, ?]',
-    phase: 'PROCESS',
-    codeLine: 29,
-    arr: [5, 2, 6, 4],
-    d: 3,
-    totalSum: 17,
-    target: 10,
-    dpCount: 1,
-    variables: { match1: '[6, 4] -> sum 10, remaining [5, 2] -> sum 7. Difference 10 - 7 = 3' },
-    explain: 'Partition 1: S1 = [6, 4] (sum 10), S2 = [5, 2] (sum 7). Difference is 10 - 7 = 3.',
-    intuition: 'Direct match for difference requirement.'
+    phase: 'ROW_2_NUM_2',
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 2, c: 3 },
+    dependencyCells: [{ r: 1, c: 3, label: 'excl=0' }, { r: 1, c: 1, label: 'incl=1' }],
+    formula: 's = 3: dp[1][3] + dp[1][1] = 0 + 1 = 1 way ({1, 2})',
+    action: 'Process num = 2: can form sums 0, 1, 2, and 3 in 1 way each.',
+    explain: 'Adding 2 enables forming sum 2 ({2}) and sum 3 ({1, 2}). Rows 0..3 now have 1 way each.',
+    intuition: 'Consecutive powers of combinations expand reachable sums.',
+    metrics: [
+      { label: 'Active Num', value: 2 },
+      { label: 'Reachable', value: '0, 1, 2, 3' }
+    ]
   },
   {
-    title: '4. Final Result: 1 Valid Partition with Difference 3',
+    phase: 'ROW_3_NUM_3',
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0],
+      [1, 1, 1, 2, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 3, c: 6 },
+    dependencyCells: [{ r: 2, c: 6, label: 'excl=0' }, { r: 2, c: 3, label: 'incl=1' }],
+    formula: 's = 6: dp[2][6] + dp[2][3] = 0 + 1 = 1 way ({1, 2, 3})',
+    action: 'Process num = 3: reaches target sum 6 for the first time ({1, 2, 3})!',
+    explain: 'At sum 6, including 3 pairs with previous sum 3 ({1, 2}) to produce subset {1, 2, 3} with sum 6. Also, sum 3 branches to 2 ways: {3} and {1, 2}.',
+    intuition: 'First partition found: S1={1, 2, 3} (sum 6), S2={4} (sum 4).',
+    metrics: [
+      { label: 'Active Num', value: 3 },
+      { label: 'Ways for sum 6', value: 1, highlight: true }
+    ]
+  },
+  {
+    phase: 'ROW_4_NUM_4_SUM_4',
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0],
+      [1, 1, 1, 2, 1, 1, 1],
+      [1, 1, 1, 2, 2, 1, 1]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 4, c: 4 },
+    dependencyCells: [{ r: 3, c: 4, label: 'excl=1' }, { r: 3, c: 0, label: 'incl=1' }],
+    formula: 's = 4: dp[3][4] + dp[3][0] = 1 + 1 = 2 ways ({1, 3}, {4})',
+    action: 'Process num = 4 at sum 4: exclude 4 (1 way: {1, 3}) + include 4 (1 way: {4}) = 2 ways.',
+    explain: 'Sum 4 can be formed in 2 ways: either by {1, 3} without 4, or {4} as a standalone element.',
+    intuition: 'Two alternative subsets with sum 4.',
+    metrics: [
+      { label: 'Active Num', value: 4 },
+      { label: 'Ways for sum 4', value: 2 }
+    ]
+  },
+  {
+    phase: 'ROW_4_NUM_4_SUM_6_TERMINAL',
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0],
+      [1, 1, 1, 2, 1, 1, 1],
+      [1, 1, 1, 2, 2, 2, 2]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 4, c: 6 },
+    dependencyCells: [{ r: 3, c: 6, label: 'excl=1' }, { r: 3, c: 2, label: 'incl=1' }],
+    formula: 's = 6: dp[3][6] + dp[3][2] = 1 + 1 = 2 ways ({1, 2, 3}, {2, 4})',
+    action: 'Evaluate terminal cell [4, 6]: Exactly 2 subsets sum to S1 = 6!',
+    explain: 'To form sum 6:\n- Exclude 4: dp[3][6] = 1 way ({1, 2, 3})\n- Include 4: dp[3][2] = 1 way ({2} + 4 = {2, 4})\nTotal ways = 1 + 1 = 2 ways!',
+    intuition: 'Both subsets {1, 2, 3} and {2, 4} achieve sum 6.',
+    metrics: [
+      { label: 'Terminal Cell', value: '[4, 6]' },
+      { label: 'Total Partitions', value: 2, highlight: true }
+    ]
+  },
+  {
+    phase: 'PARTITIONS_BREAKDOWN',
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0],
+      [1, 1, 1, 2, 1, 1, 1],
+      [1, 1, 1, 2, 2, 2, 2]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 4, c: 6 },
+    formula: 'Partition 1: S1={1, 2, 3}, S2={4} | Partition 2: S1={2, 4}, S2={1, 3}',
+    action: 'Verify both partitions yield difference D = 2.',
+    explain: '1. S1 = {1, 2, 3} (sum 6), S2 = {4} (sum 4) => 6 - 4 = 2\n2. S1 = {2, 4} (sum 6), S2 = {1, 3} (sum 4) => 6 - 4 = 2\nBoth partitions strictly satisfy all problem constraints!',
+    intuition: 'Explicit subset pairs verify the mathematical equivalence.',
+    metrics: [
+      { label: 'Partition 1 Diff', value: '6 - 4 = 2' },
+      { label: 'Partition 2 Diff', value: '6 - 4 = 2' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 35,
-    arr: [5, 2, 6, 4],
-    d: 3,
-    totalSum: 17,
-    target: 10,
-    dpCount: 1,
-    variables: { totalPartitions: 1, partition: '{6, 4} and {5, 2}' },
-    explain: 'Exactly 1 valid partition exists satisfying S1 - S2 = 3. Returning 1.',
-    intuition: 'Solved in O(N * Target) time.'
+    grid: [
+      [1, 0, 0, 0, 0, 0, 0],
+      [1, 1, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0],
+      [1, 1, 1, 2, 1, 1, 1],
+      [1, 1, 1, 2, 2, 2, 2]
+    ],
+    rowLabels: ['None', 'Num 1', 'Num 2', 'Num 3', 'Num 4'],
+    colLabels: ['S:0', 'S:1', 'S:2', 'S:3', 'S:4', 'S:5', 'S:6'],
+    activeCell: { r: 4, c: 6 },
+    formula: 'Output: 2 Partitions | O(N × Target) Time, O(Target) Space',
+    action: 'Algorithm complete! Total valid partitions = 2.',
+    explain: 'Using 1D reverse tabulation (from Target down to num), the solution executes in O(N × Target) time and O(Target) memory with modulo 1e9 + 7.',
+    intuition: 'Target subset transformation provides optimal linear-space complexity.',
+    metrics: [
+      { label: 'Array', value: '[1, 2, 3, 4]' },
+      { label: 'Difference D', value: 2 },
+      { label: 'Result', value: 2, highlight: true }
+    ]
   }
 ];
-
-export default function CountPartitionsWithGivenDifferenceVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Target Diff D = {step.d} | S1 Target = {step.target}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Valid Partitions: {step.dpCount}
-        </span>
-      </div>
-
-      {/* Partition Display Card */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-5 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Subset Partition with Difference {step.d}
-        </span>
-
-        <div className="w-full flex items-center justify-around gap-4 pt-2">
-          {/* S1 */}
-          <div className="flex-1 bg-[#161824] border border-emerald-500/40 rounded-2xl p-4 flex flex-col items-center gap-2">
-            <span className="text-xs font-mono font-bold text-emerald-400">Subset S1 (Sum = 10)</span>
-            <div className="flex items-center gap-2">
-              {[6, 4].map((num, idx) => (
-                <span key={idx} className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 font-bold flex items-center justify-center text-xs font-mono">
-                  {num}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <span className="text-slate-500 font-mono text-lg font-bold">−</span>
-            <span className="text-[10px] text-amber-400 font-mono font-bold mt-1">Diff = 3</span>
-          </div>
-
-          {/* S2 */}
-          <div className="flex-1 bg-[#161824] border border-blue-500/40 rounded-2xl p-4 flex flex-col items-center gap-2">
-            <span className="text-xs font-mono font-bold text-blue-400">Subset S2 (Sum = 7)</span>
-            <div className="flex items-center gap-2">
-              {[5, 2].map((num, idx) => (
-                <span key={idx} className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-300 font-bold flex items-center justify-center text-xs font-mono">
-                  {num}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Longest Substring With At Most K Distinct Characters',
-  category: 'Sliding Window',
+  category: 'Sliding Window & Two Pointers',
   difficulty: 'Hard',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(K)',
-  description: 'Finds the length of the longest substring containing at most K distinct characters using a sliding window frequency map.'
+  spaceComplexity: 'O(K) Auxiliary',
+  description: 'Finds the length of the longest contiguous substring containing at most K distinct characters using a sliding window frequency map.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'At Most K Distinct Characters Invariant',
+  nodes: [
+    { id: 'root', label: 'Frequency-Controlled Sliding Window', children: ['expand-char', 'hash-cardinality', 'contract-left', 'max-length-tracking', 'complexity'] },
+    { id: 'expand-char', label: '1. Window Expansion', detail: 'Advance right pointer, inserting str[right] into the frequency map and incrementing its count.' },
+    { id: 'hash-cardinality', label: '2. Check Unique Count', detail: 'Map size mpp.size() represents the count of distinct characters currently in the window.' },
+    { id: 'contract-left', label: '3. Eviction on Overflow', detail: 'When mpp.size() > K, contract left pointer, decrementing frequencies; when a character count hits 0, erase it from the map.' },
+    { id: 'max-length-tracking', label: '4. Update Max Length', detail: 'Once the window is valid (mpp.size() <= K), update maxLen = max(maxLen, right - left + 1).' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Linear O(N) time with O(K) space since each pointer moves from 0 to N-1 monotonically.' }
+  ]
 };
 
 export const solutions = {
@@ -28,7 +42,7 @@ public:
         while (right < n) {
             mpp[str[right]]++;
 
-            // Shrink window if unique character count exceeds k
+            // Shrink window if distinct characters exceed k
             while ((int)mpp.size() > k) {
                 mpp[str[left]]--;
                 if (mpp[str[left]] == 0) {
@@ -45,6 +59,7 @@ public:
     }
 };`,
   python: `# Python 3 Longest Substring With At Most K Distinct Characters
+# Time Complexity: O(N) | Space Complexity: O(K)
 class Solution:
     def kDistinctChars(self, k: int, str: str) -> int:
         char_map = {}
@@ -64,46 +79,52 @@ class Solution:
 
         return max_len`,
   java: `// Java Longest Substring With At Most K Distinct Characters
+// Time Complexity: O(N) | Space Complexity: O(K)
 import java.util.HashMap;
 
 class Solution {
-    public static int kDistinctChars(int k, String str) {
-        HashMap<Character, Integer> map = new HashMap<>();
-        int left = 0, maxLen = 0;
+    public int kDistinctChars(int k, String str) {
+        HashMap<Character, Integer> mpp = new HashMap<>();
+        int left = 0, right = 0;
+        int maxLen = 0;
+        int n = str.length();
 
-        for (int right = 0; right < str.length(); right++) {
+        while (right < n) {
             char ch = str.charAt(right);
-            map.put(ch, map.getOrDefault(ch, 0) + 1);
+            mpp.put(ch, mpp.getOrDefault(ch, 0) + 1);
 
-            while (map.size() > k) {
-                char leftChar = str.charAt(left);
-                map.put(leftChar, map.get(leftChar) - 1);
-                if (map.get(leftChar) == 0) {
-                    map.remove(leftChar);
+            while (mpp.size() > k) {
+                char leftCh = str.charAt(left);
+                mpp.put(leftCh, mpp.get(leftCh) - 1);
+                if (mpp.get(leftCh) == 0) {
+                    mpp.remove(leftCh);
                 }
                 left++;
             }
 
             maxLen = Math.max(maxLen, right - left + 1);
+            right++;
         }
 
         return maxLen;
     }
 }`,
   javascript: `// JavaScript Longest Substring With At Most K Distinct Characters
-function kDistinctChars(k, str) {
-    const map = new Map();
-    let left = 0, maxLen = 0;
+// Time Complexity: O(N) | Space Complexity: O(K)
+var kDistinctChars = function(k, str) {
+    const mpp = new Map();
+    let left = 0;
+    let maxLen = 0;
 
     for (let right = 0; right < str.length; right++) {
         const ch = str[right];
-        map.set(ch, (map.get(ch) || 0) + 1);
+        mpp.set(ch, (mpp.get(ch) || 0) + 1);
 
-        while (map.size > k) {
-            const leftChar = str[left];
-            map.set(leftChar, map.get(leftChar) - 1);
-            if (map.get(leftChar) === 0) {
-                map.delete(leftChar);
+        while (mpp.size > k) {
+            const leftCh = str[left];
+            mpp.set(leftCh, mpp.get(leftCh) - 1);
+            if (mpp.get(leftCh) === 0) {
+                mpp.delete(leftCh);
             }
             left++;
         }
@@ -112,130 +133,331 @@ function kDistinctChars(k, str) {
     }
 
     return maxLen;
-}`
+};`
 };
 
 export const steps = [
   {
-    title: '1. String: "aabacbebebe", At Most K = 3 Distinct Characters',
+    title: '1. Problem Setup & K-Distinct Bound Invariant',
     phase: 'INITIAL',
-    codeLine: 13,
-    str: 'aabacbebebe',
-    k: 3,
-    left: 0,
-    right: 0,
-    charMap: { 'a': 1 },
-    maxLen: 1,
-    variables: { k: 3, left: 0, right: 0, distinct: 1, maxLen: 1 },
-    explain: 'Expand right pointer while map.size <= 3. Whenever distinct count > 3, shrink from left.',
-    intuition: 'Sliding window maintains at most K distinct character types.'
+    track: {
+      label: 'str = "aabacbebebe" (N = 11, Limit K = 3)',
+      items: [
+        { val: 'a' },
+        { val: 'a' },
+        { val: 'b' },
+        { val: 'a' },
+        { val: 'c' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 0,
+    windowStart: 0,
+    windowEnd: 0,
+    metrics: [
+      { label: 'Allowed Distinct K', value: 3 },
+      { label: 'Map Cardinality', value: 0 },
+      { label: 'Current Window', value: '""' },
+      { label: 'maxLen', value: 0, highlight: true }
+    ],
+    formula: 'int left = 0, right = 0; unordered_map<char, int> mpp;',
+    action: 'Initialize sliding window pointers left and right, and character frequency map.',
+    explain: 'Goal: Find the length of the longest contiguous substring containing at most K = 3 distinct characters.',
+    intuition: 'We expand right while map size <= K. Whenever map size > K, we shrink left until a character count reaches zero and is erased.',
+    variables: {
+      'str': 'aabacbebebe',
+      'K': 3,
+      'left': 0,
+      'right': 0,
+      'distinctCount': 0,
+      'maxLen': 0
+    }
   },
   {
-    title: '2. Expand R to 4: Window "aabac" has 3 distinct {\'a\', \'b\', \'c\'} -> maxLen = 5',
+    title: '2. Expand "aabac": Window [0..4] (3 Distinct Chars: a, b, c)',
     phase: 'EXPANDING',
-    codeLine: 26,
-    str: 'aabacbebebe',
-    k: 3,
-    left: 0,
-    right: 4,
-    charMap: { 'a': 3, 'b': 1, 'c': 1 },
-    maxLen: 5,
-    variables: { window: '"aabac"', distinct: 3, k: 3, maxLen: 5 },
-    explain: 'Characters present are \'a\', \'b\', \'c\'. Distinct count is 3 <= 3. Substring length = 5.',
-    intuition: 'Valid window grown.'
+    track: {
+      label: 'Window [0..4] = "aabac": Exactly 3 Distinct Characters',
+      items: [
+        { val: 'a', status: 'match', badge: 'L = 0' },
+        { val: 'a', status: 'match' },
+        { val: 'b', status: 'match' },
+        { val: 'a', status: 'match' },
+        { val: 'c', status: 'match', badge: 'R = 4' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 4,
+    windowStart: 0,
+    windowEnd: 4,
+    metrics: [
+      { label: 'Distinct Chars', value: '3 <= 3 (Valid)' },
+      { label: 'Frequencies', value: '{a: 3, b: 1, c: 1}' },
+      { label: 'Window Length', value: '4 - 0 + 1 = 5' },
+      { label: 'maxLen', value: 5, highlight: true }
+    ],
+    formula: 'right advances 0->4; mpp.size() = 3 <= K; maxLen = 5;',
+    action: 'Characters "a", "a", "b", "a", "c" enter the window. Distinct count = 3 <= 3.',
+    explain: 'Window covers "aabac". All 3 characters are within the budget K=3. maxLen updates to 5.',
+    intuition: 'Window is valid; budget of 3 distinct characters is fully utilized.',
+    variables: {
+      'left': 0,
+      'right': 4,
+      'mpp': '{a: 3, b: 1, c: 1}',
+      'distinctCount': 3,
+      'maxLen': 5
+    }
   },
   {
-    title: '3. R = 5 (\'e\'): 4 distinct {\'a\', \'b\', \'c\', \'e\'} > 3! Shrink L past all \'a\'s to index 4',
-    phase: 'SHRINK_WINDOW',
-    codeLine: 19,
-    str: 'aabacbebebe',
-    k: 3,
-    left: 4,
-    right: 5,
-    charMap: { 'c': 1, 'b': 1, 'e': 1 },
-    maxLen: 5,
-    variables: { left: 4, right: 5, distinct: 3, removed: "'a'", currentWindow: '"cbe"' },
-    explain: 'Encountered \'e\', distinct types = 4. Left pointer advances past \'a\', \'a\', \'b\', \'a\' to index 4 (\'c\'). Now distinct = 3.',
-    intuition: 'Restores map.size <= 3.'
+    title: '3. Expand "b" at Index 5: Window [0..5] = "aabacb" (Length 6!)',
+    phase: 'EXPANDING',
+    track: {
+      label: 'Window [0..5] = "aabacb": Length 6 with 3 Distinct Chars!',
+      items: [
+        { val: 'a', status: 'match', badge: 'L = 0' },
+        { val: 'a', status: 'match' },
+        { val: 'b', status: 'match' },
+        { val: 'a', status: 'match' },
+        { val: 'c', status: 'match' },
+        { val: 'b', status: 'match', badge: 'R = 5' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 5,
+    windowStart: 0,
+    windowEnd: 5,
+    metrics: [
+      { label: 'Added Character', value: "'b' (count: 2)" },
+      { label: 'Distinct Chars', value: '3 <= 3 (Valid)' },
+      { label: 'Window Length', value: '5 - 0 + 1 = 6' },
+      { label: 'maxLen', value: 6, highlight: true }
+    ],
+    formula: 'mpp[\'b\']++; maxLen = max(5, 6) = 6;',
+    action: 'Add "b" at right = 5. Frequency of "b" increments to 2. Distinct count is still 3.',
+    explain: 'Window [0..5] is "aabacb". Contains {a: 3, b: 2, c: 1}. Length reaches 6!',
+    intuition: 'Adding an already existing character expands the window without adding new character types.',
+    variables: {
+      'left': 0,
+      'right': 5,
+      'mpp': '{a: 3, b: 2, c: 1}',
+      'distinctCount': 3,
+      'maxLen': 6
+    }
   },
   {
-    title: '4. Expand R to 10: Window [4...10] is "cbebebe" (distinct {\'c\', \'b\', \'e\'}) -> maxLen = 7!',
-    phase: 'MAX_FOUND',
-    codeLine: 26,
-    str: 'aabacbebebe',
-    k: 3,
-    left: 4,
-    right: 10,
-    charMap: { 'c': 1, 'b': 3, 'e': 3 },
-    maxLen: 7,
-    variables: { window: '"cbebebe"', windowLen: 7, distinct: 3, maxLen: 7 },
-    explain: 'Right pointer advances to end of string with only \'b\' and \'e\'. Substring "cbebebe" has length 7 with 3 distinct characters!',
-    intuition: 'Optimal longest substring reached.'
+    title: '4. Add "e" at Index 6: 4 Distinct Characters (Violation: 4 > 3)',
+    phase: 'OVERFLOW',
+    track: {
+      label: 'Character \'e\' added -> mpp has {a, b, c, e} = 4 > 3 (Overflow!)',
+      items: [
+        { val: 'a', status: 'match', badge: 'L = 0' },
+        { val: 'a', status: 'match' },
+        { val: 'b', status: 'match' },
+        { val: 'a', status: 'match' },
+        { val: 'c', status: 'match' },
+        { val: 'b', status: 'match' },
+        { val: 'e', status: 'mismatch', badge: '4th Distinct (R = 6)' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' }
+      ]
+    },
+    activeI: 0,
+    activeJ: 6,
+    windowStart: 0,
+    windowEnd: 6,
+    metrics: [
+      { label: 'New Character', value: "'e'" },
+      { label: 'Distinct Chars', value: '4 > 3 (Violation!)', highlight: true },
+      { label: 'Action Required', value: 'Contract left pointer' }
+    ],
+    formula: 'mpp[\'e\']++; // mpp.size() = 4 > K(3); while loop activates',
+    action: 'Encounter 4th distinct character "e". Map has 4 keys: {a: 3, b: 2, c: 1, e: 1}.',
+    explain: 'Budget is exceeded. We must advance left to completely remove one character type.',
+    intuition: 'Contraction continues until one character type frequency drops to zero.',
+    variables: {
+      'left': 0,
+      'right': 6,
+      'distinctCount': 4,
+      'maxLen': 6
+    }
   },
   {
-    title: '5. Completed: Maximum Length = 7',
+    title: '5. Shrink Left to Index 4: Evict "a" (Window [4..6])',
+    phase: 'SHRINKING',
+    track: {
+      label: 'Discard indices 0..3: \'a\' is fully evicted! Window [4..6] has {c, b, e}',
+      items: [
+        { val: 'a', status: 'mismatch', badge: 'Drop' },
+        { val: 'a', status: 'mismatch', badge: 'Drop' },
+        { val: 'b', status: 'mismatch', badge: 'Drop' },
+        { val: 'a', status: 'mismatch', badge: 'Drop \'a\'' },
+        { val: 'c', status: 'match', badge: 'New L = 4' },
+        { val: 'b', status: 'match' },
+        { val: 'e', status: 'match', badge: 'R = 6' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' }
+      ]
+    },
+    activeI: 4,
+    activeJ: 6,
+    windowStart: 4,
+    windowEnd: 6,
+    metrics: [
+      { label: 'left advanced', value: '0 -> 4' },
+      { label: 'Evicted Char', value: "'a' count = 0 (erased)" },
+      { label: 'Remaining Chars', value: '{c: 1, b: 1, e: 1} (3 types)' },
+      { label: 'Window Size', value: 3 }
+    ],
+    formula: 'mpp[\'a\'] hits 0 -> mpp.erase(\'a\'); mpp.size() = 3 <= K;',
+    action: 'Advance left from 0 to 4. "a" is fully eliminated. Map retains 3 distinct keys: {c, b, e}.',
+    explain: 'Window shrinks to [4..6] = "cbe". Distinct character count is restored to 3.',
+    intuition: 'The window is valid once more, ready for further expansion.',
+    variables: {
+      'left': 4,
+      'right': 6,
+      'mpp': '{c: 1, b: 1, e: 1}',
+      'distinctCount': 3,
+      'maxLen': 6
+    }
+  },
+  {
+    title: '6. Expand "bebebe": Tail Substring of Length 6',
+    phase: 'EXPANDING',
+    track: {
+      label: 'Evict \'c\' at index 4 -> window [5..10] = "bebebe" (Only 2 Distinct Chars: b, e)',
+      items: [
+        { val: 'a' },
+        { val: 'a' },
+        { val: 'b' },
+        { val: 'a' },
+        { val: 'c', status: 'mismatch', badge: 'Evict \'c\'' },
+        { val: 'b', status: 'match', badge: 'L = 5' },
+        { val: 'e', status: 'match' },
+        { val: 'b', status: 'match' },
+        { val: 'e', status: 'match' },
+        { val: 'b', status: 'match' },
+        { val: 'e', status: 'match', badge: 'R = 10 (Len 6)' }
+      ]
+    },
+    activeI: 5,
+    activeJ: 10,
+    windowStart: 5,
+    windowEnd: 10,
+    metrics: [
+      { label: 'Tail Substring', value: '"bebebe"' },
+      { label: 'Distinct Chars', value: '2 <= 3 (Under Budget)' },
+      { label: 'Window Length', value: '10 - 5 + 1 = 6' },
+      { label: 'maxLen', value: 6, highlight: true }
+    ],
+    formula: 'right advances to 10; window [5..10] has len 6; maxLen = max(6, 6) = 6;',
+    action: 'As right advances across remaining characters "b" and "e", window [5..10] contains only 2 distinct characters.',
+    explain: 'Subarray [5..10] is "bebebe" of length 6. Contains only 2 distinct characters (b and e), well within budget K = 3.',
+    intuition: 'Both "aabacb" and "bebebe" achieve the maximum length of 6.',
+    variables: {
+      'left': 5,
+      'right': 10,
+      'mpp': '{b: 3, e: 3}',
+      'distinctCount': 2,
+      'maxLen': 6
+    }
+  },
+  {
+    title: '7. Scan Completed: Entire String Traversed',
+    phase: 'CONVERGENCE',
+    track: {
+      label: 'Full string processed in O(N) linear time',
+      items: [
+        { val: 'a', status: 'match' },
+        { val: 'a', status: 'match' },
+        { val: 'b', status: 'match' },
+        { val: 'a', status: 'match' },
+        { val: 'c', status: 'match' },
+        { val: 'b', status: 'match', badge: 'Peak 1 (Len 6)' },
+        { val: 'e' },
+        { val: 'b', status: 'sorted' },
+        { val: 'e', status: 'sorted' },
+        { val: 'b', status: 'sorted' },
+        { val: 'e', status: 'sorted', badge: 'Peak 2 (Len 6)' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: 0,
+    windowEnd: 5,
+    metrics: [
+      { label: 'Candidate 1', value: '"aabacb" (len 6)' },
+      { label: 'Candidate 2', value: '"bebebe" (len 6)' },
+      { label: 'Global Maximum', value: 6, highlight: true },
+      { label: 'Status', value: 'Complete' }
+    ],
+    formula: 'right = n; loop finishes; maxLen = 6;',
+    action: 'Pointers have fully traversed the string. Maximum valid length is 6.',
+    explain: 'No valid contiguous substring exists with length > 6 and <= 3 distinct characters.',
+    intuition: 'Sliding window guarantees that all maximal valid segments were evaluated.',
+    variables: {
+      'left': 5,
+      'right': 11,
+      'maxLen': 6
+    }
+  },
+  {
+    title: '8. Result: Longest Substring Length = 6',
     phase: 'COMPLETED',
-    codeLine: 30,
-    str: 'aabacbebebe',
-    k: 3,
-    left: 4,
-    right: 10,
-    charMap: { 'c': 1, 'b': 3, 'e': 3 },
-    maxLen: 7,
-    variables: { longestSubstring: '"cbebebe"', length: 7, timeComplexity: 'O(N)' },
-    explain: 'Longest substring with at most 3 distinct characters is "cbebebe" with length 7.',
-    intuition: 'Sliding window completed.'
+    track: {
+      label: 'Optimal Substring: "aabacb" (or "bebebe") with <= 3 Distinct Characters',
+      items: [
+        { val: 'a', status: 'match', badge: '1' },
+        { val: 'a', status: 'match', badge: '2' },
+        { val: 'b', status: 'match', badge: '3' },
+        { val: 'a', status: 'match', badge: '4' },
+        { val: 'c', status: 'match', badge: '5' },
+        { val: 'b', status: 'match', badge: '6 (Len=6)' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' },
+        { val: 'b' },
+        { val: 'e' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: 0,
+    windowEnd: 5,
+    metrics: [
+      { label: 'Optimal Substring', value: '"aabacb"' },
+      { label: 'Max Length', value: 6, highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(K) Auxiliary' }
+    ],
+    formula: 'return maxLen = 6;',
+    action: 'Return the maximum length found.',
+    explain: 'The longest substring with at most 3 distinct characters has length 6. Computed in O(N) time with O(K) space.',
+    intuition: 'Frequency map sliding window provides optimal linear scalability for arbitrary K.',
+    variables: {
+      'result': 6,
+      'timeComplexity': 'O(N)',
+      'spaceComplexity': 'O(K)'
+    }
   }
 ];
-
-export default function LongestSubstringWithAtMostKDistinctCharactersVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Distinct in Window: {Object.keys(step.charMap).length} / {step.k} max
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Substring Length = {step.maxLen}
-        </span>
-      </div>
-
-      {/* Characters in String */}
-      <div className="w-full flex items-center justify-center gap-1.5 py-4 overflow-x-auto">
-        {step.str.split('').map((ch, idx) => {
-          const inWindow = idx >= step.left && idx <= step.right;
-
-          let ringClass = 'border-[#272b3c] bg-[#12131b] text-slate-400';
-          if (inWindow) {
-            ringClass = 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300 font-bold';
-          }
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1 min-w-[36px]">
-              <div className={`w-9 h-11 rounded-xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${ringClass}`}>
-                {ch}
-              </div>
-              <span className="text-[8px] font-mono text-[#5b6076]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Character map display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <div className="flex items-center gap-2">
-          <span className="text-[#8a8ea3]">Active Distinct Characters:</span>
-          {Object.entries(step.charMap).map(([ch, cnt]) => (
-            <span key={ch} className="px-2 py-0.5 rounded bg-[#181a26] border border-[#2c3046] text-amber-300">
-              '{ch}': {cnt}×
-            </span>
-          ))}
-        </div>
-        <span className="text-emerald-400 font-semibold">Length: {step.right - step.left + 1}</span>
-      </div>
-    </div>
-  );
-}

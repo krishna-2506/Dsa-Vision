@@ -226,7 +226,7 @@ export default function RomanToIntegerVisualizer({ currentStep = 0 }) {
                 className={`w-12 h-14 rounded-xl border flex flex-col items-center justify-center font-serif font-bold text-lg transition-all ${
                   isCurrent
                     ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30 shadow-lg'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-200'
+                    : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
                 }`}
               >
                 <span>{ch}</span>
@@ -238,7 +238,7 @@ export default function RomanToIntegerVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Conversion total badge */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-4 flex flex-col items-center gap-1 text-xs font-mono">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-4 flex flex-col items-center gap-1 text-xs font-mono">
         <span className="text-[11px] text-indigo-400 font-semibold uppercase tracking-wider">
           Converted Value:
         </span>

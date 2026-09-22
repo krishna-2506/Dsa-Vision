@@ -1,8 +1,14 @@
 // Asynchronous Auto-Discovery Registry using Vite's dynamic import.meta.glob
 // Enables route-level and component-level code-splitting: 
 // 450+ visualizers are bundled into lightweight on-demand chunks instead of one 4.4MB monolith!
+//
+// Supports two module shapes:
+// 1. CLASSIC: module exports `default` React component (existing monolith .jsx files)
+// 2. DATA-ONLY: module exports `rendererType` string (new data-driven .js files)
+//    → Automatically paired with a shared renderer via RendererHost
 
 import React from 'react';
+import { RendererHost } from '../renderers';
 
 // Vite dynamic import glob (non-eager)
 const visualizerImporters = import.meta.glob('./*.{jsx,js}');
@@ -21,6 +27,19 @@ const loadedModulesCache = new Map();
 const lazyComponentsCache = new Map();
 
 /**
+ * Creates a wrapper component for data-only modules that delegates rendering
+ * to the RendererHost based on the module's rendererType.
+ */
+function createDataDrivenComponent(mod) {
+  const rendererType = mod.rendererType;
+  const steps = mod.steps || [];
+
+  return function DataDrivenVisualizer({ currentStep = 0 }) {
+    return React.createElement(RendererHost, { rendererType, steps, currentStep });
+  };
+}
+
+/**
  * Preloads and returns the full visualizer module (Component, meta, steps, approaches, solutions)
  */
 export async function loadVisualizer(key) {
@@ -33,16 +52,22 @@ export async function loadVisualizer(key) {
 
   try {
     const mod = await importer();
+    
+    // Determine the component: use default export if available, otherwise create data-driven wrapper
+    const Component = mod.default || (mod.rendererType ? createDataDrivenComponent(mod) : null);
+    
     const entry = {
       key,
-      Component: mod.default,
+      Component,
+      rendererType: mod.rendererType || null,
       meta: mod.meta || {
         title: key.replace(/([A-Z])/g, ' $1').trim(),
         category: 'General'
       },
       steps: mod.steps || null,
       approaches: mod.approaches || null,
-      solutions: mod.solutions || null
+      solutions: mod.solutions || null,
+      ideaMap: mod.ideaMap || null
     };
     loadedModulesCache.set(key, entry);
     return entry;
@@ -64,19 +89,25 @@ export function getLazyComponent(key) {
   const importer = rawImportersByKey[key];
   const LazyComp = React.lazy(async () => {
     const mod = await importer();
+    
+    // Determine the component: use default export if available, otherwise create data-driven wrapper
+    const Component = mod.default || (mod.rendererType ? createDataDrivenComponent(mod) : null);
+    
     const entry = {
       key,
-      Component: mod.default,
+      Component,
+      rendererType: mod.rendererType || null,
       meta: mod.meta || {
         title: key.replace(/([A-Z])/g, ' $1').trim(),
         category: 'General'
       },
       steps: mod.steps || null,
       approaches: mod.approaches || null,
-      solutions: mod.solutions || null
+      solutions: mod.solutions || null,
+      ideaMap: mod.ideaMap || null
     };
     loadedModulesCache.set(key, entry);
-    return { default: mod.default };
+    return { default: Component };
   });
 
   lazyComponentsCache.set(key, LazyComp);
@@ -100,6 +131,7 @@ export const visualizersRegistry = new Proxy(rawImportersByKey, {
     return {
       key: prop,
       Component: LazyComp,
+      rendererType: cached?.rendererType || null,
       meta: cached?.meta || {
         title: prop.replace(/([A-Z])/g, ' $1').trim(),
         category: 'General'
@@ -107,6 +139,7 @@ export const visualizersRegistry = new Proxy(rawImportersByKey, {
       steps: cached?.steps || null,
       approaches: cached?.approaches || null,
       solutions: cached?.solutions || null,
+      ideaMap: cached?.ideaMap || null,
       load: () => loadVisualizer(prop)
     };
   },

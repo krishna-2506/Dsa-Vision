@@ -1,17 +1,31 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Fractional Knapsack',
   category: 'Greedy Algorithms',
   difficulty: 'Medium',
   timeComplexity: 'O(N log N)',
-  spaceComplexity: 'O(1) auxiliary',
-  description: 'Maximizes the total value of items placed into a knapsack of capacity W by greedily choosing items with the highest value-per-unit-weight ratio.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Maximizes the total value of items placed into a knapsack of capacity W by greedily choosing items with the highest value-per-unit-weight ratio, taking fractions when items exceed remaining capacity.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Value Density Greedy Selection Invariant',
+  nodes: [
+    { id: 'root', label: 'Fractional Knapsack Greedy Strategy', children: ['density-metric', 'descending-sort', 'full-item-consumption', 'fractional-cutoff', 'complexity'] },
+    { id: 'density-metric', label: '1. Value Density Definition', detail: 'Compute value per unit weight ratio = value / weight for every item; higher density yields greater value per unit of knapsack capacity.' },
+    { id: 'descending-sort', label: '2. Descending Density Sort', detail: 'Sort all items descending by value density so the most efficient items are evaluated first.' },
+    { id: 'full-item-consumption', label: '3. Complete Item Inclusion', detail: 'If remaining capacity >= item.weight, include the entire item: currentWeight += weight, totalValue += value.' },
+    { id: 'fractional-cutoff', label: '4. Fractional Filling & Termination', detail: 'If remaining capacity < item.weight, take fraction = remain / weight of the item: totalValue += fraction * value, filling knapsack completely and terminating.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'O(N log N) sorting dominates the single O(N) linear sweep with strictly O(1) auxiliary variables.' }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Fractional Knapsack (Greedy Value Density)
-// Time: O(N log N) | Space: O(1)
+// Time Complexity: O(N log N) | Space Complexity: O(1)
 #include <vector>
 #include <algorithm>
 using namespace std;
@@ -35,22 +49,21 @@ public:
         int currentWeight = 0;
 
         for (int i = 0; i < n; i++) {
-            // If item fits completely
             if (currentWeight + arr[i].weight <= w) {
                 currentWeight += arr[i].weight;
                 totalValue += arr[i].value;
             } else {
-                // Take fractional part of the item to fill remaining capacity
                 int remain = w - currentWeight;
                 totalValue += ((double)arr[i].value / (double)arr[i].weight) * (double)remain;
-                break; // Knapsack is full
+                break;
             }
         }
 
         return totalValue;
     }
 };`,
-  python: `# Python 3 Fractional Knapsack (Greedy)
+  python: `# Python 3 Fractional Knapsack (Greedy Value Density)
+# Time Complexity: O(N log N) | Space Complexity: O(1)
 class Item:
     def __init__(self, val, wt):
         self.value = val
@@ -58,28 +71,32 @@ class Item:
 
 class Solution:
     def fractionalKnapsack(self, w: int, arr: list[Item], n: int) -> float:
-        # Sort items by value / weight descending
+        # Sort descending by value / weight
         arr.sort(key=lambda x: x.value / x.weight, reverse=True)
 
-        total_value = 0.0
-        curr_weight = 0
+        total_val = 0.0
+        cur_wt = 0
 
         for item in arr:
-            if curr_weight + item.weight <= w:
-                curr_weight += item.weight
-                total_value += item.value
+            if cur_wt + item.weight <= w:
+                cur_wt += item.weight
+                total_val += item.value
             else:
-                remain = w - curr_weight
-                total_value += (item.value / item.weight) * remain
+                remain = w - cur_wt
+                total_val += (item.value / item.weight) * remain
                 break
 
-        return total_value`,
-  java: `// Java Fractional Knapsack (Greedy)
+        return total_val`,
+  java: `// Java Fractional Knapsack (Greedy Value Density)
+// Time Complexity: O(N log N) | Space Complexity: O(1)
 import java.util.Arrays;
 
 class Item {
     int value, weight;
-    Item(int x, int y){ this.value = x; this.weight = y; }
+    Item(int x, int y) {
+        this.value = x;
+        this.weight = y;
+    }
 }
 
 class Solution {
@@ -107,175 +124,298 @@ class Solution {
         return totalValue;
     }
 }`,
-  javascript: `// JavaScript Fractional Knapsack (Greedy)
-function fractionalKnapsack(W, arr, n) {
+  javascript: `// JavaScript Fractional Knapsack (Greedy Value Density)
+// Time Complexity: O(N log N) | Space Complexity: O(1)
+var fractionalKnapsack = function(w, arr, n) {
     arr.sort((a, b) => (b.value / b.weight) - (a.value / a.weight));
 
     let totalValue = 0.0;
     let currentWeight = 0;
 
     for (let i = 0; i < n; i++) {
-        if (currentWeight + arr[i].weight <= W) {
+        if (currentWeight + arr[i].weight <= w) {
             currentWeight += arr[i].weight;
             totalValue += arr[i].value;
         } else {
-            const remain = W - currentWeight;
+            const remain = w - currentWeight;
             totalValue += (arr[i].value / arr[i].weight) * remain;
             break;
         }
     }
 
     return totalValue;
-}`
+};`
 };
 
 export const steps = [
   {
-    title: '1. Capacity W = 50, Items Sorted by Ratio (Value / Weight) Descending',
+    title: '1. Problem Setup: Sort Items by Value Density (Ratio = Value / Weight)',
     phase: 'INITIAL',
-    codeLine: 18,
-    items: [
-      { id: 'Item 1', val: 60, wt: 10, ratio: 6.0, taken: 0 },
-      { id: 'Item 2', val: 100, wt: 20, ratio: 5.0, taken: 0 },
-      { id: 'Item 3', val: 120, wt: 30, ratio: 4.0, taken: 0 }
+    codeLine: 16,
+    track: {
+      label: 'Candidate Items (Sorted by Value Density Descending)',
+      items: [
+        { val: 'I1: 60/10 (6.0/kg)', status: 'current' },
+        { val: 'I2: 100/20 (5.0/kg)', status: 'default' },
+        { val: 'I3: 120/30 (4.0/kg)', status: 'default' },
+        { val: 'I4: 20/10 (2.0/kg)', status: 'default' }
+      ],
+      pointers: { first: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Knapsack Capacity Fill (Capacity W = 50 kg)',
+      items: [
+        { val: '0 / 50 kg Loaded', status: 'dim' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Knapsack Capacity', value: '50 kg' },
+      { label: 'Current Weight', value: '0 kg' },
+      { label: 'Current Value', value: '$0.00' },
+      { label: 'Top Item', value: 'Item 1 ($6.00/kg)' }
     ],
-    currWeight: 0,
-    totalVal: 0,
-    capacity: 50,
-    variables: { W: 50, sortedRatios: '[6.0, 5.0, 4.0]', currWeight: 0, totalVal: 0 },
-    explain: 'Greedy density: picking the item with the highest ratio yields maximum return per kg added.',
-    intuition: 'Sort items in descending order of value / weight.'
+    formula: 'ratio[i] = value[i] / weight[i]; sort(items, ratio DESC);',
+    action: 'Sort all 4 items by value density. Highest density is Item 1 ($6/kg). Capacity W = 50.',
+    explain: 'Greedy choice: Packing items with highest value-per-kg first guarantees maximal total value because fractional slices are permitted.',
+    intuition: 'Fractional knapsack exhibits the greedy choice property; 0/1 knapsack does not.'
   },
   {
-    title: '2. Take 100% of Item 1 (val=60, wt=10): Weight = 10, Total Value = 60',
+    title: '2. Take Full Item 1: Weight 10 kg, Value $60 -> Knapsack: 10 / 50 kg',
     phase: 'TAKE_FULL',
-    codeLine: 28,
-    items: [
-      { id: 'Item 1', val: 60, wt: 10, ratio: 6.0, taken: 100 },
-      { id: 'Item 2', val: 100, wt: 20, ratio: 5.0, taken: 0 },
-      { id: 'Item 3', val: 120, wt: 30, ratio: 4.0, taken: 0 }
+    codeLine: 23,
+    track: {
+      label: 'Candidate Items',
+      items: [
+        { val: 'I1 (100% Taken)', status: 'match' },
+        { val: 'I2: 100/20 (5.0/kg)', status: 'current' },
+        { val: 'I3: 120/30 (4.0/kg)', status: 'default' },
+        { val: 'I4: 20/10 (2.0/kg)', status: 'default' }
+      ],
+      pointers: { next: { idx: 1, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Knapsack Contents',
+      items: [
+        { val: 'Item 1 (10 kg, $60)', status: 'match' },
+        { val: 'Remaining: 40 kg', status: 'dim' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Item 1 Weight', value: '10 kg <= 50 kg (Fits full)' },
+      { label: 'Knapsack Weight', value: '10 / 50 kg', highlight: true },
+      { label: 'Knapsack Value', value: '$60.00', highlight: true },
+      { label: 'Remaining Space', value: '40 kg' }
     ],
-    currWeight: 10,
-    totalVal: 60,
-    capacity: 50,
-    variables: { itemTaken: 'Item 1 (100%)', weightAdded: 10, totalWeight: 10, totalVal: 60 },
-    explain: 'Item 1 weighs 10 <= 50. Take whole item. Remaining capacity = 40.',
-    intuition: 'Always take full item if entire weight fits.'
+    formula: 'currentWeight += 10; totalValue += 60; // Weight: 10, Value: 60',
+    action: 'Item 1 (10 kg) fits completely within remaining capacity (50 kg). Consume 100% of Item 1.',
+    explain: 'Entire item 1 added. Knapsack holds 10 kg with value $60. 40 kg capacity remains.',
+    intuition: 'Full items are taken whenever they fit inside the knapsack.'
   },
   {
-    title: '3. Take 100% of Item 2 (val=100, wt=20): Weight = 30, Total Value = 160',
+    title: '3. Take Full Item 2: Weight 20 kg, Value $100 -> Knapsack: 30 / 50 kg',
     phase: 'TAKE_FULL',
-    codeLine: 28,
-    items: [
-      { id: 'Item 1', val: 60, wt: 10, ratio: 6.0, taken: 100 },
-      { id: 'Item 2', val: 100, wt: 20, ratio: 5.0, taken: 100 },
-      { id: 'Item 3', val: 120, wt: 30, ratio: 4.0, taken: 0 }
+    codeLine: 23,
+    track: {
+      label: 'Candidate Items',
+      items: [
+        { val: 'I1 (100%)', status: 'visited' },
+        { val: 'I2 (100% Taken)', status: 'match' },
+        { val: 'I3: 120/30 (4.0/kg)', status: 'current' },
+        { val: 'I4: 20/10 (2.0/kg)', status: 'default' }
+      ],
+      pointers: { next: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Knapsack Contents',
+      items: [
+        { val: 'Item 1 (10 kg, $60)', status: 'visited' },
+        { val: 'Item 2 (20 kg, $100)', status: 'match' },
+        { val: 'Remaining: 20 kg', status: 'dim' }
+      ]
+    },
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'Item 2 Weight', value: '20 kg <= 40 kg (Fits full)' },
+      { label: 'Knapsack Weight', value: '30 / 50 kg', highlight: true },
+      { label: 'Knapsack Value', value: '$160.00', highlight: true },
+      { label: 'Remaining Space', value: '20 kg' }
     ],
-    currWeight: 30,
-    totalVal: 160,
-    capacity: 50,
-    variables: { itemTaken: 'Item 2 (100%)', weightAdded: 20, totalWeight: 30, totalVal: 160 },
-    explain: 'Item 2 weighs 20 <= 40 remaining. Take whole item. Remaining capacity = 20.',
-    intuition: 'Capacity left is 20 kg.'
+    formula: 'currentWeight += 20; totalValue += 100; // Weight: 30, Value: 160',
+    action: 'Item 2 (20 kg) fits within remaining capacity (40 kg). Consume 100% of Item 2.',
+    explain: 'Knapsack now contains 10 kg + 20 kg = 30 kg, with cumulative value $60 + $100 = $160.',
+    intuition: 'Continue taking whole items while capacity allows.'
   },
   {
-    title: '4. Take 20/30 (66.7%) of Item 3: Adds 20 kg, Value += (4.0 * 20) = 80',
+    title: '4. Inspect Item 3: Weight 30 kg > Remaining 20 kg -> Cannot Take Full',
+    phase: 'EVALUATE',
+    codeLine: 26,
+    track: {
+      label: 'Candidate Items (Capacity Exceeded)',
+      items: [
+        { val: 'I1 (100%)', status: 'visited' },
+        { val: 'I2 (100%)', status: 'visited' },
+        { val: 'I3: 120/30 (Partial)', status: 'current' },
+        { val: 'I4: 20/10', status: 'dim' }
+      ],
+      pointers: { partial: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Knapsack Capacity Bottleneck',
+      items: [
+        { val: 'Loaded: 30 kg', status: 'visited' },
+        { val: 'Only 20 kg Left (Item 3 is 30 kg)', status: 'current' }
+      ]
+    },
+    activeI: 2,
+    activeJ: null,
+    metrics: [
+      { label: 'Item 3 Weight', value: '30 kg' },
+      { label: 'Remaining Cap', value: '20 kg (50 - 30)' },
+      { label: 'Fraction Needed', value: '20 / 30 = 2/3 (66.7%)', highlight: true },
+      { label: 'Strategy', value: 'Slice item proportionally' }
+    ],
+    formula: 'remain = 50 - 30 = 20 kg; fraction = 20 / 30 = 0.667;',
+    action: 'Item 3 is 30 kg, but only 20 kg capacity remains. Take partial fraction: 20 / 30 of Item 3.',
+    explain: 'Because items are divisible, we take exactly 20 kg of Item 3 to saturate the knapsack.',
+    intuition: 'Slicing the highest-density available item maximizes value per remaining kg.',
+    customCard: {
+      title: 'Fractional Slice Computation',
+      rows: [
+        { label: 'Item 3 Value Density', value: '$4.00 / kg' },
+        { label: 'Capacity Consumed', value: '20 kg (Max allowable)', accent: true },
+        { label: 'Value Harvested', value: '20 kg * $4.00/kg = $80.00', accent: true }
+      ]
+    }
+  },
+  {
+    title: '5. Pack Fractional Item 3: 20 kg for $80 Value -> Knapsack Full: 50 / 50 kg',
     phase: 'TAKE_FRACTION',
-    codeLine: 34,
-    items: [
-      { id: 'Item 1', val: 60, wt: 10, ratio: 6.0, taken: 100 },
-      { id: 'Item 2', val: 100, wt: 20, ratio: 5.0, taken: 100 },
-      { id: 'Item 3', val: 120, wt: 30, ratio: 4.0, taken: 66.7 }
+    codeLine: 28,
+    track: {
+      label: 'Candidate Items',
+      items: [
+        { val: 'I1 (100%)', status: 'visited' },
+        { val: 'I2 (100%)', status: 'visited' },
+        { val: 'I3 (66.7% Taken)', status: 'match' },
+        { val: 'I4 (Discarded)', status: 'dim' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Knapsack Contents (Capacity 100% Full)',
+      items: [
+        { val: 'I1: 10 kg ($60)', status: 'match' },
+        { val: 'I2: 20 kg ($100)', status: 'match' },
+        { val: 'I3: 20 kg ($80)', status: 'match' }
+      ]
+    },
+    activeI: 2,
+    activeJ: null,
+    metrics: [
+      { label: 'Fraction Added', value: '$80.00 (20 * 4.0)', highlight: true },
+      { label: 'Knapsack Weight', value: '50 / 50 kg (Full!)', highlight: true },
+      { label: 'Total Value', value: '$240.00', highlight: true },
+      { label: 'Remaining Cap', value: '0 kg' }
     ],
-    currWeight: 50,
-    totalVal: 240,
-    capacity: 50,
-    variables: { fraction: '20/30 kg', valAdded: 80, totalWeight: 50, totalVal: 240 },
-    explain: 'Item 3 weighs 30 kg, but only 20 kg capacity remains. Take fraction (20/30) * 120 = 80 value.',
-    intuition: 'Fractional Knapsack allows continuous splitting.'
+    formula: 'totalValue += (120 / 30) * 20 = 160 + 80 = 240; break;',
+    action: 'Add 20 kg of Item 3 at $4/kg = $80. Knapsack is now 100% full at 50 kg. Break loop.',
+    explain: 'Total value is $60 (Item 1) + $100 (Item 2) + $80 (Item 3 fraction) = $240.00.',
+    intuition: 'Once capacity reaches 0, no additional items can be accepted.'
   },
   {
-    title: '5. Completed: Knapsack Full (50/50 kg) -> Max Value = 240.0',
-    phase: 'COMPLETED',
-    codeLine: 38,
-    items: [
-      { id: 'Item 1', val: 60, wt: 10, ratio: 6.0, taken: 100 },
-      { id: 'Item 2', val: 100, wt: 20, ratio: 5.0, taken: 100 },
-      { id: 'Item 3', val: 120, wt: 30, ratio: 4.0, taken: 66.7 }
+    title: '6. Terminate: Discard Remaining Lower-Density Items',
+    phase: 'TERMINATE',
+    codeLine: 29,
+    track: {
+      label: 'Items Processing Status',
+      items: [
+        { val: 'I1: 100%', status: 'match' },
+        { val: 'I2: 100%', status: 'match' },
+        { val: 'I3: 66.7%', status: 'match' },
+        { val: 'I4: 0% (Skipped)', status: 'dim' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Saturated Knapsack Payload',
+      items: [
+        { val: 'Total Weight: 50 kg', status: 'match' },
+        { val: 'Total Value: $240.00', status: 'match' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Skipped Items', value: 'Item 4 ($2.00/kg)' },
+      { label: 'Reason', value: 'Knapsack full (Capacity = 0)' },
+      { label: 'Optimal Value', value: '$240.00' }
     ],
-    currWeight: 50,
-    totalVal: 240,
-    capacity: 50,
-    variables: { optimalValue: 240.0, timeComplexity: 'O(N log N)', spaceComplexity: 'O(1)' },
-    explain: 'Total maximum value achievable is 240.0.',
-    intuition: 'Greedy choice property proves optimality for fractional variant.'
+    formula: 'break; // Remaining items ignored',
+    action: 'Loop breaks immediately. Item 4 ($2/kg) is discarded because no capacity remains.',
+    explain: 'Lower-density items are never taken when higher-density items fill the knapsack.',
+    intuition: 'Early loop termination preserves O(N) traversal bound.'
+  },
+  {
+    title: '7. Verify Knapsack Invariant & Density Proof',
+    phase: 'VERIFY',
+    codeLine: 33,
+    track: {
+      label: 'Knapsack Value Density Verification',
+      items: [
+        { val: '10 kg @ $6.0/kg', status: 'match' },
+        { val: '20 kg @ $5.0/kg', status: 'match' },
+        { val: '20 kg @ $4.0/kg', status: 'match' },
+        { val: 'Unused: 10 kg @ $2.0/kg', status: 'dim' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Loaded Density Range', value: '[6.0, 5.0, 4.0]' },
+      { label: 'Excluded Density', value: '2.0 <= 4.0' },
+      { label: 'Weight Constraint', value: '10 + 20 + 20 = 50 kg (Exact)' },
+      { label: 'Total Value', value: '$240.00' }
+    ],
+    formula: 'Total = 10*6.0 + 20*5.0 + 20*4.0 = 60 + 100 + 80 = 240.0',
+    action: 'Verify that every included kilogram has higher or equal density than any excluded kilogram.',
+    explain: 'Replacing any kilogram of Item 1, 2, or 3 with Item 4 would strictly decrease total value.',
+    intuition: 'Value density ordering guarantees the global mathematical maximum.'
+  },
+  {
+    title: '8. Complete: Return Maximum Value = 240.0',
+    phase: 'COMPLETED',
+    codeLine: 34,
+    track: {
+      label: 'Optimal Knapsack Payload: $240.00 (50 kg)',
+      items: [
+        { val: 'I1: 10 kg ($60)', status: 'match' },
+        { val: 'I2: 20 kg ($100)', status: 'match' },
+        { val: 'I3: 20 kg ($80)', status: 'match' },
+        { val: 'Capacity Full', status: 'match' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Maximum Value', value: '240.00', highlight: true },
+      { label: 'Weight Filled', value: '50 / 50 kg' },
+      { label: 'Time Complexity', value: 'O(N log N)' },
+      { label: 'Space Complexity', value: 'O(1) auxiliary' }
+    ],
+    formula: 'return totalValue; // 240.0',
+    action: 'Algorithm concludes. Return total value = 240.0.',
+    explain: 'Optimal solution found with exactly 1 fractional item cut.',
+    intuition: 'Greedy fractional knapsack solves continuous linear resource packing with zero dynamic programming overhead.',
+    customCard: {
+      title: 'Fractional Knapsack Summary',
+      rows: [
+        { label: 'Max Total Value', value: '240.00', accent: true },
+        { label: 'Items Taken', value: '100% of I1, 100% of I2, 66.7% of I3' },
+        { label: 'Complexity', value: 'O(N log N) sorting, O(N) sweep, O(1) space', accent: true }
+      ]
+    }
   }
 ];
-
-export default function FractionalKnapsackVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Knapsack Weight: {step.currWeight} / {step.capacity} kg
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Total Value = ${step.totalVal.toFixed(1)}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Free Space: {step.capacity - step.currWeight} kg
-        </span>
-      </div>
-
-      {/* Knapsack Capacity Gauge Bar */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-5 flex flex-col gap-3">
-        <div className="flex items-center justify-between text-xs font-mono text-[#8a8ea3]">
-          <span>Knapsack Fill Level</span>
-          <span className="text-amber-300 font-bold">{((step.currWeight / step.capacity) * 100).toFixed(0)}%</span>
-        </div>
-        <div className="w-full bg-[#161824] rounded-full h-3 border border-[#272b3c] overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-300"
-            style={{ width: `${(step.currWeight / step.capacity) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Items Cards */}
-      <div className="w-full grid grid-cols-3 gap-3">
-        {step.items.map((item) => {
-          let statusBadge = 'border-[#272b3c] bg-[#161824] text-slate-500';
-          if (item.taken === 100) {
-            statusBadge = 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/40 shadow-sm';
-          } else if (item.taken > 0) {
-            statusBadge = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40';
-          }
-
-          return (
-            <div key={item.id} className={`rounded-xl border p-3 flex flex-col gap-2 font-mono transition-all ${statusBadge}`}>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold">{item.id}</span>
-                <span className="text-[10px] text-amber-400 font-semibold">{item.ratio} v/w</span>
-              </div>
-              <div className="text-[11px] text-slate-400">
-                <div>Val: ${item.val}</div>
-                <div>Wt: {item.wt} kg</div>
-              </div>
-              <div className="mt-1 pt-1 border-t border-[#272b3c] text-[10px] font-bold">
-                Taken: {item.taken}%
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

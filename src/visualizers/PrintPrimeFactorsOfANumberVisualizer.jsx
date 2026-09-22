@@ -170,8 +170,8 @@ export default function PrintPrimeFactorsOfANumberVisualizer({ currentStep = 0 }
       </div>
 
       {/* Unique Prime Badges */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-4 font-mono">
-        <span className="text-xs text-[#8a8ea3]">Distinct Prime Factors:</span>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4 font-mono">
+        <span className="text-xs text-[var(--chalk-dim)]">Distinct Prime Factors:</span>
         <div className="flex items-center gap-4 overflow-x-auto py-2">
           {step.distinctFactors.map((f, idx) => (
             <div

@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Merge Overlapping Subintervals',
@@ -9,8 +9,22 @@ export const meta = {
   description: 'Merges all overlapping intervals into non-overlapping spans after sorting by start times in O(N log N) time.'
 };
 
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Interval Merging Strategy',
+  nodes: [
+    { id: 'root', label: 'Greedy Start-Time Sorting', children: ['sort-start', 'overlap-check', 'extend-boundary', 'disjoint-push', 'complexity'] },
+    { id: 'sort-start', label: '1. Sort by Start Coordinates', detail: 'Sorting by start time guarantees that any intervals capable of overlapping must appear consecutively.' },
+    { id: 'overlap-check', label: '2. Overlap Condition (curr.start <= last.end)', detail: 'If current interval starts before or at the end of the previous interval, they intersect.' },
+    { id: 'extend-boundary', label: '3. Greedy Expansion (last.end = max)', detail: 'Merge overlapping intervals by extending the end boundary to max(last.end, curr.end).' },
+    { id: 'disjoint-push', label: '4. Disjoint Range Commit', detail: 'If curr.start > last.end, no overlap is possible; commit the interval to the merged list.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'O(N log N) sorting dominant time with O(N) auxiliary space to store output intervals.' }
+  ]
+};
+
 export const solutions = {
-  cpp: `// C++ Optimal Sorting + Linear Scan Interval Merging
+  cpp: `// C++ Optimal Sorting + Single Pass Interval Merging
 // Time Complexity: O(N log N) | Space Complexity: O(N)
 #include <vector>
 #include <algorithm>
@@ -21,17 +35,13 @@ public:
     vector<vector<int>> merge(vector<vector<int>>& intervals) {
         if (intervals.empty()) return {};
 
-        // Step 1: Sort by start time
         sort(intervals.begin(), intervals.end());
-
         vector<vector<int>> merged;
 
         for (const auto& interval : intervals) {
-            // If merged is empty or current doesn't overlap with last
             if (merged.empty() || merged.back()[1] < interval[0]) {
                 merged.push_back(interval);
             } else {
-                // Overlap exists: extend end boundary of last interval
                 merged.back()[1] = max(merged.back()[1], interval[1]);
             }
         }
@@ -40,8 +50,12 @@ public:
     }
 };`,
   python: `# Python 3 Optimal Interval Merging
+# Time Complexity: O(N log N) | Space Complexity: O(N)
 class Solution:
     def merge(self, intervals: list[list[int]]) -> list[list[int]]:
+        if not intervals:
+            return []
+
         intervals.sort(key=lambda x: x[0])
         merged = []
 
@@ -53,10 +67,13 @@ class Solution:
 
         return merged`,
   java: `// Java Optimal Interval Merging
+// Time Complexity: O(N log N) | Space Complexity: O(N)
 import java.util.*;
 
 class Solution {
     public int[][] merge(int[][] intervals) {
+        if (intervals.length == 0) return new int[0][];
+
         Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
         List<int[]> merged = new ArrayList<>();
 
@@ -72,7 +89,10 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Optimal Interval Merging
+// Time Complexity: O(N log N) | Space Complexity: O(N)
 var merge = function(intervals) {
+    if (!intervals.length) return [];
+
     intervals.sort((a, b) => a[0] - b[0]);
     const merged = [];
 
@@ -90,110 +110,259 @@ var merge = function(intervals) {
 
 export const steps = [
   {
-    title: '1. Sort Intervals by Start Time: [[1, 3], [2, 6], [8, 10], [15, 18]]',
+    title: '1. Setup: Unsorted Intervals [[1, 3], [8, 10], [2, 6], [15, 18]]',
+    phase: 'SETUP',
+    track: {
+      label: 'Input Intervals (Unsorted)',
+      items: [
+        { val: '[1, 3]' },
+        { val: '[8, 10]' },
+        { val: '[2, 6]' },
+        { val: '[15, 18]' }
+      ],
+      pointers: [
+        { index: 0, label: 'Unsorted' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Total Intervals', value: 4 },
+      { label: 'Sort Key', value: 'Start Coordinate' },
+      { label: 'Strategy', value: 'Greedy Sweep' }
+    ],
+    formula: 'sort(intervals.begin(), intervals.end());',
+    action: 'Begin with unsorted intervals. Sorting is mandatory to linearize potential overlaps.',
+    explain: 'Without sorting, any interval could potentially overlap with any other interval, requiring an expensive O(N^2) comparison network.',
+    intuition: 'Sorting by start coordinate ensures overlapping intervals are guaranteed to appear consecutively.',
+    variables: { unsorted: '[[1, 3], [8, 10], [2, 6], [15, 18]]', count: 4 }
+  },
+  {
+    title: '2. Sorting Phase: Sorted by Start Time -> [[1, 3], [2, 6], [8, 10], [15, 18]]',
     phase: 'SORTING',
-    codeLine: 14,
-    intervals: [[1, 3], [2, 6], [8, 10], [15, 18]],
-    currentIdx: null,
-    merged: [],
-    variables: { totalIntervals: 4, sorted: '[[1, 3], [2, 6], [8, 10], [15, 18]]' },
-    explain: 'Sort intervals primarily by their starting coordinates. This ensures overlapping intervals must be adjacent.',
-    intuition: 'Sorted start times guarantee that once an interval starts strictly after the current end, no future interval can overlap with it.'
+    track: {
+      label: 'Sorted Intervals',
+      items: [
+        { val: '[1, 3]', status: 'match', badge: 'Start = 1' },
+        { val: '[2, 6]', badge: 'Start = 2' },
+        { val: '[8, 10]', badge: 'Start = 8' },
+        { val: '[15, 18]', badge: 'Start = 15' }
+      ],
+      pointers: [
+        { index: 0, label: 'curr = [1, 3]' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Merged Intervals List',
+      items: ['(empty)']
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Sorting Cost', value: 'O(N log N)', highlight: true },
+      { label: 'Order', value: 'Monotonic Start Times' },
+      { label: 'Merged Count', value: 0 }
+    ],
+    formula: 'intervals = [[1, 3], [2, 6], [8, 10], [15, 18]]',
+    action: 'Intervals sorted in ascending order of start values: 1 < 2 < 8 < 15.',
+    explain: 'Now that the intervals are sorted, we can initialize our merged list and evaluate them sequentially in one pass.',
+    intuition: 'Chronological progression established.',
+    variables: { sorted: true, i: 0, merged: [] }
   },
   {
-    title: '2. Process [1, 3]: Merged list is empty -> Add [1, 3]',
-    phase: 'ADD_FIRST',
-    codeLine: 20,
-    intervals: [[1, 3], [2, 6], [8, 10], [15, 18]],
-    currentIdx: 0,
-    merged: [[1, 3]],
-    variables: { current: '[1, 3]', 'merged.empty()': true, action: 'Push [1, 3]' },
-    explain: 'First interval [1, 3] pushed into merged list as the initial reference interval.',
-    intuition: 'Anchor established.'
+    title: '3. Process [1, 3]: Initial Range Committed to Merged List',
+    phase: 'COMMIT_RANGE',
+    track: {
+      label: 'Sorted Intervals',
+      items: [
+        { val: '[1, 3]', status: 'match', badge: 'Active' },
+        { val: '[2, 6]' },
+        { val: '[8, 10]' },
+        { val: '[15, 18]' }
+      ],
+      pointers: [
+        { index: 0, label: 'Committed [1, 3]' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Merged Intervals List',
+      items: [
+        { val: '[1, 3]', status: 'match' }
+      ]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Active Range', value: '[1, 3]', highlight: true },
+      { label: 'Last End', value: 3 },
+      { label: 'Merged Size', value: 1 }
+    ],
+    formula: 'merged.push_back([1, 3]);',
+    action: 'merged is empty: insert [1, 3] as our first active interval.',
+    explain: '[1, 3] sets the baseline span. Future intervals will be tested against its end boundary (3).',
+    intuition: 'First interval anchors the starting cluster.',
+    variables: { i: 0, current: '[1, 3]', lastMerged: '[1, 3]', lastEnd: 3 }
   },
   {
-    title: '3. Process [2, 6]: 2 <= 3 -> OVERLAP! Merge into [1, max(3, 6) = 6]',
+    title: '4. Process [2, 6]: Start 2 <= 3 -> Overlap Detected! Expand to [1, 6]',
     phase: 'MERGE_OVERLAP',
-    codeLine: 23,
-    intervals: [[1, 3], [2, 6], [8, 10], [15, 18]],
-    currentIdx: 1,
-    merged: [[1, 6]],
-    variables: { current: '[2, 6]', 'lastEnd': 3, 'overlap': '2 <= 3', newSpan: '[1, 6]' },
-    explain: 'Start time 2 is less than or equal to current end time 3. They overlap! Extend the upper bound to max(3, 6) = 6.',
-    intuition: '[1, 3] and [2, 6] fuse seamlessly into [1, 6].'
+    track: {
+      label: 'Sorted Intervals',
+      items: [
+        { val: '[1, 3]', status: 'match' },
+        { val: '[2, 6]', status: 'match', badge: 'Overlap!' },
+        { val: '[8, 10]' },
+        { val: '[15, 18]' }
+      ],
+      pointers: [
+        { index: 1, label: 'curr = [2, 6]' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Merged Intervals List',
+      items: [
+        { val: '[1, 6]', status: 'match', badge: 'Expanded' }
+      ]
+    },
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'Overlap Check', value: '2 <= 3 (True)', highlight: true },
+      { label: 'New End', value: 'max(3, 6) = 6', highlight: true },
+      { label: 'Merged Span', value: '[1, 6]' }
+    ],
+    formula: 'last[1] = max(last[1], curr[1]) ==> max(3, 6) = 6',
+    action: '2 <= 3: [2, 6] overlaps with [1, 3]. Extend the end boundary from 3 to max(3, 6) = 6.',
+    explain: 'Because interval [2, 6] begins before [1, 3] ends, the two intervals merge into a single continuous range [1, 6].',
+    intuition: 'Two overlapping blocks fuse into one larger block.',
+    variables: { i: 1, curr: '[2, 6]', overlap: true, oldEnd: 3, newEnd: 6, mergedResult: '[1, 6]' }
   },
   {
-    title: '4. Process [8, 10]: 8 > 6 -> Disjoint (No Overlap) -> Push [8, 10]',
-    phase: 'DISJOINT',
-    codeLine: 20,
-    intervals: [[1, 3], [2, 6], [8, 10], [15, 18]],
-    currentIdx: 2,
-    merged: [[1, 6], [8, 10]],
-    variables: { current: '[8, 10]', 'lastEnd': 6, 'overlap': '8 > 6 (False)', action: 'Push [8, 10]' },
-    explain: 'Interval [8, 10] starts at 8, which is strictly greater than 6. [1, 6] is closed. Append [8, 10].',
-    intuition: 'Gap detected between 6 and 8. New interval begins.'
+    title: '5. Process [8, 10]: Start 8 > 6 -> Disjoint! Append [8, 10]',
+    phase: 'COMMIT_RANGE',
+    track: {
+      label: 'Sorted Intervals',
+      items: [
+        { val: '[1, 3]', status: 'match' },
+        { val: '[2, 6]', status: 'match' },
+        { val: '[8, 10]', status: 'match', badge: 'Disjoint' },
+        { val: '[15, 18]' }
+      ],
+      pointers: [
+        { index: 2, label: 'curr = [8, 10]' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Merged Intervals List',
+      items: [
+        { val: '[1, 6]', status: 'match' },
+        { val: '[8, 10]', status: 'match', badge: 'New Block' }
+      ]
+    },
+    activeI: 2,
+    activeJ: null,
+    metrics: [
+      { label: 'Overlap Check', value: '8 <= 6 (False)' },
+      { label: 'Gap Detected', value: 'Range [6 .. 8] is empty' },
+      { label: 'Merged Size', value: 2, highlight: true }
+    ],
+    formula: 'curr[0] > last[1] (8 > 6) ==> merged.push_back([8, 10]);',
+    action: '8 > 6: Interval [8, 10] does not overlap with [1, 6]. Append it as a new interval.',
+    explain: 'There is a gap between 6 and 8 where no activity occurs. Interval [1, 6] is permanently closed and [8, 10] starts the next cluster.',
+    intuition: 'A gap between intervals solidifies the previous merged group.',
+    variables: { i: 2, curr: '[8, 10]', overlap: false, lastEnd: 10, totalMerged: 2 }
   },
   {
-    title: '5. Process [15, 18]: 15 > 10 -> Disjoint -> Push [15, 18]',
+    title: '6. Process [15, 18]: Start 15 > 10 -> Disjoint! Append [15, 18]',
+    phase: 'COMMIT_RANGE',
+    track: {
+      label: 'Sorted Intervals',
+      items: [
+        { val: '[1, 3]', status: 'match' },
+        { val: '[2, 6]', status: 'match' },
+        { val: '[8, 10]', status: 'match' },
+        { val: '[15, 18]', status: 'match', badge: 'Disjoint' }
+      ],
+      pointers: [
+        { index: 3, label: 'curr = [15, 18]' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'Merged Intervals List',
+      items: [
+        { val: '[1, 6]', status: 'match' },
+        { val: '[8, 10]', status: 'match' },
+        { val: '[15, 18]', status: 'match', badge: 'New Block' }
+      ]
+    },
+    activeI: 3,
+    activeJ: null,
+    metrics: [
+      { label: 'Overlap Check', value: '15 <= 10 (False)' },
+      { label: 'Gap Detected', value: 'Range [10 .. 15]' },
+      { label: 'Merged Size', value: 3, highlight: true }
+    ],
+    formula: 'curr[0] > last[1] (15 > 10) ==> merged.push_back([15, 18]);',
+    action: '15 > 10: Interval [15, 18] is disjoint from [8, 10]. Append to merged list.',
+    explain: 'Final interval is added. All 4 input intervals have been processed.',
+    intuition: 'Linear scan complete.',
+    variables: { i: 3, curr: '[15, 18]', overlap: false, lastEnd: 18, totalMerged: 3 }
+  },
+  {
+    title: '7. Edge Case Analysis: Fully Contained & Touching Intervals',
+    phase: 'ANALYSIS',
+    track: {
+      label: 'Boundary Handling Invariant',
+      items: [
+        { val: 'Contained: [1, 5] + [2, 4] -> [1, max(5, 4)=5]', status: 'match' },
+        { val: 'Touching: [1, 4] + [4, 7] -> [1, 7]', status: 'match' },
+        { val: 'Start-sort prevents interleaving bugs', status: 'match' }
+      ],
+      pointers: [
+        { index: 0, label: 'Robust Rules' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Touching Rule', value: 'start <= end includes equality' },
+      { label: 'Contained Rule', value: 'max(end1, end2) preserves outer' },
+      { label: 'Correctness', value: '100% Proven' }
+    ],
+    formula: 'last[1] = max(last[1], curr[1]);',
+    action: 'Verify boundary safety for subset and touching interval geometries.',
+    explain: 'Using max(last[1], curr[1]) ensures that an interval fully contained inside another does not accidentally shrink the merged boundary. Testing curr.start <= last.end handles touching intervals seamlessly.',
+    intuition: 'The max() operator preserves the true rightmost reach.',
+    variables: { boundarySafety: 'max() handles containment', touchingAllowed: true }
+  },
+  {
+    title: '8. Complete: Return Merged Intervals [[1, 6], [8, 10], [15, 18]]',
     phase: 'COMPLETED',
-    codeLine: 20,
-    intervals: [[1, 3], [2, 6], [8, 10], [15, 18]],
-    currentIdx: 3,
-    merged: [[1, 6], [8, 10], [15, 18]],
-    variables: { result: '[[1, 6], [8, 10], [15, 18]]', count: 3, timeComplexity: 'O(N log N)' },
-    explain: 'Interval [15, 18] starts at 15 > 10. Append [15, 18]. All intervals evaluated!',
-    intuition: 'Result: 3 consolidated non-overlapping intervals.'
+    track: {
+      label: 'Final Merged Intervals',
+      items: [
+        { val: '[1, 6]', status: 'match', badge: 'Merged (1+2)' },
+        { val: '[8, 10]', status: 'match', badge: 'Standalone' },
+        { val: '[15, 18]', status: 'match', badge: 'Standalone' }
+      ],
+      pointers: [
+        { index: 0, label: '[1, 6]' },
+        { index: 1, label: '[8, 10]' },
+        { index: 2, label: '[15, 18]' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Result Intervals', value: 3, highlight: true },
+      { label: 'Original Count', value: 4 },
+      { label: 'Time Complexity', value: 'O(N log N)' },
+      { label: 'Space Complexity', value: 'O(N)' }
+    ],
+    formula: 'return [[1, 6], [8, 10], [15, 18]];',
+    action: 'Algorithm concludes: Returns the list of 3 non-overlapping intervals.',
+    explain: 'Sorted interval scanning achieved optimal O(N log N) time and merged the 4 initial intervals down to 3 disjoint spans.',
+    intuition: 'Greedy chronological sweep guarantees maximal consolidation.',
+    variables: { result: '[[1, 6], [8, 10], [15, 18]]', count: 3, time: 'O(N log N)', space: 'O(N)' }
   }
 ];
-
-export default function MergeOverlappingSubintervalsVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Input Intervals */}
-      <div className="w-full flex flex-col items-center gap-2">
-        <span className="text-xs font-mono text-[#8a8ea3]">Sorted Input Intervals:</span>
-        <div className="flex items-center gap-3">
-          {step.intervals.map((iv, idx) => {
-            const isCurrent = step.currentIdx === idx;
-            return (
-              <div
-                key={idx}
-                className={`px-3 py-2 rounded-xl border font-mono text-sm font-bold transition-all duration-300 ${
-                  isCurrent ? 'bg-amber-500/25 text-amber-300 border-amber-400 scale-105 shadow-md shadow-amber-500/20' : 'bg-[#181a24] text-white border-[#2b2e40]'
-                }`}
-              >
-                [{iv[0]}, {iv[1]}]
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Downward indicator */}
-      <div className="text-xs font-mono text-[#555a72]">
-        ↓ Consolidating Overlapping Spans ↓
-      </div>
-
-      {/* Merged Intervals Output */}
-      <div className="w-full flex flex-col items-center gap-2">
-        <span className="text-xs font-mono text-emerald-400 font-bold">Consolidated Result:</span>
-        <div className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl">
-          {step.merged.length === 0 ? (
-            <span className="text-xs font-mono text-[#555a72]">Empty</span>
-          ) : (
-            step.merged.map((iv, idx) => (
-              <div
-                key={idx}
-                className="px-3.5 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-sm font-bold shadow-sm"
-              >
-                [{iv[0]}, {iv[1]}]
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

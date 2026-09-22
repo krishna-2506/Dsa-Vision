@@ -1,12 +1,25 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Binary Search (Search X in Sorted Array)',
   category: 'Binary Search',
   difficulty: 'Easy',
   timeComplexity: 'O(log N)',
-  spaceComplexity: 'O(1)',
-  description: 'Searches for a target value X in a sorted array by repeatedly halving the search range using low, mid, and high pointers.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Searches for a target value X in a sorted array by repeatedly halving the search interval using low, mid, and high pointers.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Binary Search Halving Principle',
+  nodes: [
+    { id: 'root', label: 'Binary Search Strategy', children: ['sorted-invariant', 'mid-calculation', 'range-elimination', 'termination'] },
+    { id: 'sorted-invariant', label: '1. Sorted Precondition', detail: 'Array must be monotonic: arr[0] <= arr[1] <= ... <= arr[N-1]' },
+    { id: 'mid-calculation', label: '2. Overflow-Safe Midpoint', detail: 'mid = low + (high - low) / 2 prevents integer overflow in fixed-width types' },
+    { id: 'range-elimination', label: '3. Divide and Discard', detail: 'If arr[mid] < X, discard left half (low = mid + 1); if arr[mid] > X, discard right half (high = mid - 1)' },
+    { id: 'termination', label: '4. Termination Bound', detail: 'Loop while low <= high. If arr[mid] == X return mid; if pointers cross return -1' }
+  ]
 };
 
 export const solutions = {
@@ -35,12 +48,13 @@ public:
     }
 };`,
   python: `# Python 3 Optimal Binary Search
+# Time Complexity: O(log N) | Space Complexity: O(1)
 class Solution:
     def search(self, nums: list[int], target: int) -> int:
         low, high = 0, len(nums) - 1
 
         while low <= high:
-            mid = (low + high) // 2
+            mid = low + (high - low) // 2
             
             if nums[mid] == target:
                 return mid
@@ -51,6 +65,7 @@ class Solution:
                 
         return -1`,
   java: `// Java Optimal Binary Search
+// Time Complexity: O(log N) | Space Complexity: O(1)
 class Solution {
     public int search(int[] nums, int target) {
         int low = 0, high = nums.length - 1;
@@ -70,11 +85,12 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Optimal Binary Search
+// Time Complexity: O(log N) | Space Complexity: O(1)
 var search = function(nums, target) {
     let low = 0, high = nums.length - 1;
 
     while (low <= high) {
-        const mid = Math.floor((low + high) / 2);
+        const mid = low + Math.floor((high - low) / 2);
 
         if (nums[mid] === target) {
             return mid;
@@ -90,153 +106,270 @@ var search = function(nums, target) {
 
 export const steps = [
   {
-    title: '1. Initialize Range: low = 0, high = 9, target = 14',
-    phase: 'INITIAL',
-    codeLine: 11,
-    array: [2, 3, 7, 10, 13, 14, 17, 22, 29, 35],
-    target: 14,
-    low: 0,
-    high: 9,
-    mid: null,
-    variables: { low: 0, high: 9, target: 14, searchRange: '[0...9]' },
-    explain: 'Binary Search starts with low at index 0 and high at index 9. The search space contains 10 elements.',
-    intuition: 'Because the array is monotonically sorted, we can divide the problem size in half on every comparison.'
+    title: '1. Initialize Range: low = 0, high = 9 (Target X = 14)',
+    phase: 'SETUP',
+    track: {
+      label: 'Sorted Array nums',
+      items: [2, 3, 7, 10, 13, 14, 17, 22, 29, 35],
+      pointers: [
+        { index: 0, label: 'low' },
+        { index: 9, label: 'high' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: 0,
+    windowEnd: 9,
+    metrics: [
+      { label: 'Target X', value: '14' },
+      { label: 'low', value: '0' },
+      { label: 'high', value: '9' },
+      { label: 'Window Size', value: '10 elements' }
+    ],
+    variables: { low: 0, high: 9, target: 14, window: '[0..9]' },
+    formula: 'Search Space: nums[low .. high] = nums[0 .. 9]',
+    action: 'Initialize search pointers: low = 0, high = nums.length - 1',
+    explain: 'Binary Search operates on a sorted array. We establish the full search interval from index 0 to 9 to find target 14.',
+    intuition: 'Instead of linear O(N) scanning, each comparison will cut the candidate window exactly in half.'
   },
   {
-    title: '2. Compute mid = 4: nums[4] = 13 < target (14)',
-    phase: 'COMPARE',
-    codeLine: 17,
-    array: [2, 3, 7, 10, 13, 14, 17, 22, 29, 35],
-    target: 14,
-    low: 0,
-    high: 9,
-    mid: 4,
-    variables: { low: 0, high: 9, mid: 4, 'nums[mid]': 13, target: 14 },
-    explain: 'mid = (0 + 9) // 2 = 4. nums[4] is 13. Since 13 < 14, the target cannot be in [0...4]. Eliminate the entire left half!',
-    intuition: 'Target is larger than the middle, so we advance low = mid + 1 = 5.'
+    title: '2. Pass 1: mid = 4 (val 13) < Target 14 => Discard Left Half',
+    phase: 'HALVE_RANGE',
+    track: {
+      label: 'Sorted Array nums',
+      items: [
+        { value: 2, status: 'discarded' },
+        { value: 3, status: 'discarded' },
+        { value: 7, status: 'discarded' },
+        { value: 10, status: 'discarded' },
+        { value: 13, status: 'current' },
+        14, 17, 22, 29, 35
+      ],
+      pointers: [
+        { index: 0, label: 'low' },
+        { index: 4, label: 'mid' },
+        { index: 9, label: 'high' }
+      ]
+    },
+    activeI: 4,
+    activeJ: null,
+    windowStart: 0,
+    windowEnd: 9,
+    metrics: [
+      { label: 'mid Index', value: '4' },
+      { label: 'nums[mid]', value: '13' },
+      { label: 'Comparison', value: '13 < 14 (Too Small)' },
+      { label: 'Action', value: 'low = mid + 1 (5)' }
+    ],
+    variables: { mid: 4, 'nums[mid]': 13, target: 14, nextLow: 5 },
+    formula: 'mid = 0 + (9 - 0) / 2 = 4; nums[4] = 13 < 14 ==> low = 4 + 1 = 5',
+    action: 'nums[mid] = 13 is strictly less than 14. Eliminate indices 0 through 4',
+    explain: 'Because the array is sorted, all elements at indices 0 through 4 are <= 13 and cannot contain 14. We advance low to mid + 1 = 5.',
+    intuition: 'One single comparison safely discards half of the entire array.'
   },
   {
-    title: '3. Update Range: low = 5, high = 9',
-    phase: 'ELIMINATE_LEFT',
-    codeLine: 18,
-    array: [2, 3, 7, 10, 13, 14, 17, 22, 29, 35],
-    target: 14,
-    low: 5,
-    high: 9,
-    mid: null,
-    variables: { low: 5, high: 9, eliminated: 'Indices 0 to 4 eliminated' },
-    explain: 'Remaining active search space is [5...9] containing {14, 17, 22, 29, 35}.',
-    intuition: 'Halved the search area from 10 elements to 5 elements in one step.'
+    title: '3. Update Window: low = 5, high = 9 (Active Window [5..9])',
+    phase: 'UPDATE_WINDOW',
+    track: {
+      label: 'Sorted Array nums',
+      items: [
+        { value: 2, status: 'discarded' },
+        { value: 3, status: 'discarded' },
+        { value: 7, status: 'discarded' },
+        { value: 10, status: 'discarded' },
+        { value: 13, status: 'discarded' },
+        14, 17, 22, 29, 35
+      ],
+      pointers: [
+        { index: 5, label: 'low' },
+        { index: 9, label: 'high' }
+      ]
+    },
+    activeI: 5,
+    activeJ: 9,
+    windowStart: 5,
+    windowEnd: 9,
+    metrics: [
+      { label: 'low', value: '5' },
+      { label: 'high', value: '9' },
+      { label: 'Remaining Size', value: '5 elements' },
+      { label: 'Discarded', value: '50%' }
+    ],
+    variables: { low: 5, high: 9, activeSlice: '[14, 17, 22, 29, 35]' },
+    formula: 'New Window: nums[5 .. 9] containing 5 elements',
+    action: 'Active search range contracted to [5..9]',
+    explain: 'Search space reduced from 10 elements to 5 elements. We recompute the midpoint for this new interval.',
+    intuition: 'Each iteration strictly halves the search domain.'
   },
   {
-    title: '4. Compute mid = 7: nums[7] = 22 > target (14)',
-    phase: 'COMPARE',
-    codeLine: 19,
-    array: [2, 3, 7, 10, 13, 14, 17, 22, 29, 35],
-    target: 14,
-    low: 5,
-    high: 9,
-    mid: 7,
-    variables: { low: 5, high: 9, mid: 7, 'nums[mid]': 22, target: 14 },
-    explain: 'mid = (5 + 9) // 2 = 7. nums[7] is 22. Since 22 > 14, target cannot be in [7...9]. Eliminate the right half!',
-    intuition: 'Target is smaller than mid, so high = mid - 1 = 6.'
+    title: '4. Pass 2: mid = 7 (val 22) > Target 14 => Discard Right Half',
+    phase: 'HALVE_RANGE',
+    track: {
+      label: 'Sorted Array nums',
+      items: [
+        { value: 2, status: 'discarded' },
+        { value: 3, status: 'discarded' },
+        { value: 7, status: 'discarded' },
+        { value: 10, status: 'discarded' },
+        { value: 13, status: 'discarded' },
+        14, 17,
+        { value: 22, status: 'current' },
+        { value: 29, status: 'discarded' },
+        { value: 35, status: 'discarded' }
+      ],
+      pointers: [
+        { index: 5, label: 'low' },
+        { index: 7, label: 'mid' },
+        { index: 9, label: 'high' }
+      ]
+    },
+    activeI: 7,
+    activeJ: null,
+    windowStart: 5,
+    windowEnd: 9,
+    metrics: [
+      { label: 'mid Index', value: '7' },
+      { label: 'nums[mid]', value: '22' },
+      { label: 'Comparison', value: '22 > 14 (Too Large)' },
+      { label: 'Action', value: 'high = mid - 1 (6)' }
+    ],
+    variables: { mid: 7, 'nums[mid]': 22, target: 14, nextHigh: 6 },
+    formula: 'mid = 5 + (9 - 5) / 2 = 7; nums[7] = 22 > 14 ==> high = 7 - 1 = 6',
+    action: 'nums[mid] = 22 is strictly greater than 14. Eliminate indices 7 through 9',
+    explain: 'All elements at indices 7, 8, and 9 are >= 22 and cannot be 14. Decrement high to mid - 1 = 6.',
+    intuition: 'Search space shrinks again, discarding the right half.'
   },
   {
-    title: '5. Update Range: low = 5, high = 6',
-    phase: 'ELIMINATE_RIGHT',
-    codeLine: 20,
-    array: [2, 3, 7, 10, 13, 14, 17, 22, 29, 35],
-    target: 14,
-    low: 5,
-    high: 6,
-    mid: null,
-    variables: { low: 5, high: 6, activeCount: 2 },
-    explain: 'Remaining search space is narrowed down to [5...6] containing {14, 17}.',
-    intuition: 'Down to just 2 elements.'
+    title: '5. Update Window: low = 5, high = 6 (Active Window [5..6])',
+    phase: 'UPDATE_WINDOW',
+    track: {
+      label: 'Sorted Array nums',
+      items: [
+        { value: 2, status: 'discarded' },
+        { value: 3, status: 'discarded' },
+        { value: 7, status: 'discarded' },
+        { value: 10, status: 'discarded' },
+        { value: 13, status: 'discarded' },
+        14, 17,
+        { value: 22, status: 'discarded' },
+        { value: 29, status: 'discarded' },
+        { value: 35, status: 'discarded' }
+      ],
+      pointers: [
+        { index: 5, label: 'low' },
+        { index: 6, label: 'high' }
+      ]
+    },
+    activeI: 5,
+    activeJ: 6,
+    windowStart: 5,
+    windowEnd: 6,
+    metrics: [
+      { label: 'low', value: '5' },
+      { label: 'high', value: '6' },
+      { label: 'Remaining Size', value: '2 elements' },
+      { label: 'Window', value: '[14, 17]' }
+    ],
+    variables: { low: 5, high: 6, candidateValues: '[14, 17]' },
+    formula: 'New Window: nums[5 .. 6] containing only 2 elements',
+    action: 'Active search range contracted to [5..6]',
+    explain: 'Only indices 5 and 6 remain viable candidates. Recompute midpoint for this 2-element segment.',
+    intuition: 'Target 14 is cornered within a tiny 2-element window.'
   },
   {
-    title: '6. Compute mid = 5: nums[5] = 14 == target! Match Found!',
+    title: '6. Pass 3: mid = 5 (val 14) == Target 14 => Match Found!',
     phase: 'MATCH_FOUND',
-    codeLine: 15,
-    array: [2, 3, 7, 10, 13, 14, 17, 22, 29, 35],
-    target: 14,
-    low: 5,
-    high: 6,
-    mid: 5,
-    variables: { mid: 5, 'nums[5]': 14, target: 14, foundIndex: 5 },
-    explain: 'mid = (5 + 6) // 2 = 5. nums[5] == 14! Match found at index 5. Return 5 immediately!',
-    intuition: 'Target found in just 3 comparisons! O(log N) efficiency demonstrated.'
+    track: {
+      label: 'Sorted Array nums',
+      items: [
+        { value: 2, status: 'discarded' },
+        { value: 3, status: 'discarded' },
+        { value: 7, status: 'discarded' },
+        { value: 10, status: 'discarded' },
+        { value: 13, status: 'discarded' },
+        { value: 14, status: 'match' },
+        17,
+        { value: 22, status: 'discarded' },
+        { value: 29, status: 'discarded' },
+        { value: 35, status: 'discarded' }
+      ],
+      pointers: [
+        { index: 5, label: 'low, mid' },
+        { index: 6, label: 'high' }
+      ]
+    },
+    activeI: 5,
+    activeJ: null,
+    windowStart: 5,
+    windowEnd: 6,
+    metrics: [
+      { label: 'mid Index', value: '5' },
+      { label: 'nums[mid]', value: '14' },
+      { label: 'Match Status', value: 'nums[5] == 14 (FOUND!)', highlight: true },
+      { label: 'Return Value', value: '5' }
+    ],
+    variables: { mid: 5, 'nums[mid]': 14, target: 14, matched: true },
+    formula: 'mid = 5 + (6 - 5) / 2 = 5; nums[5] == target (14 == 14)',
+    action: 'Target match detected at index 5! Return 5 immediately',
+    explain: 'At mid = 5, nums[mid] is exactly equal to target 14. Binary search succeeds and immediately returns index 5.',
+    intuition: 'Target found in just 3 steps rather than 6 comparisons required by linear search.'
+  },
+  {
+    title: '7. Search Result: Target 14 Located at Index 5',
+    phase: 'RESULT',
+    track: {
+      label: 'Target Located in Sorted Array',
+      items: [
+        2, 3, 7, 10, 13,
+        { value: 14, status: 'match' },
+        17, 22, 29, 35
+      ],
+      pointers: [
+        { index: 5, label: 'Target (idx 5)' }
+      ]
+    },
+    activeI: 5,
+    activeJ: null,
+    metrics: [
+      { label: 'Target Index', value: '5', highlight: true },
+      { label: 'Total Comparisons', value: '3' },
+      { label: 'Search Status', value: 'Success' }
+    ],
+    variables: { resultIndex: 5, totalElements: 10, stepsTaken: 3 },
+    formula: 'return mid; // return 5',
+    action: 'Return 5. Target 14 successfully confirmed at index 5',
+    explain: 'Index 5 stores the target value 14. Binary Search safely terminates before pointers cross.',
+    intuition: 'Logarithmic search halving guarantees at most ceil(log2(N)) steps.'
+  },
+  {
+    title: '8. Completed: O(log N) Time & O(1) Auxiliary Space Verified',
+    phase: 'COMPLETED',
+    track: {
+      label: 'Sorted Array nums',
+      items: [
+        2, 3, 7, 10, 13,
+        { value: 14, status: 'match' },
+        17, 22, 29, 35
+      ],
+      pointers: []
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Found Index', value: '5', highlight: true },
+      { label: 'Time Complexity', value: 'O(log N)' },
+      { label: 'Space Complexity', value: 'O(1) In-Place' },
+      { label: 'Max Steps for N=10', value: '4 steps' }
+    ],
+    variables: {
+      timeComplexity: 'O(log N)',
+      spaceComplexity: 'O(1)',
+      maxComparisons: 'ceil(log2(10)) = 4',
+      actualComparisons: 3
+    },
+    formula: 'T(N) = T(N/2) + O(1) ==> T(N) = O(log N)',
+    action: 'Binary Search complete. Optimal logarithmic efficiency proven.',
+    explain: 'For an array of size 10, worst-case comparisons is ceil(log2(10)) = 4. We found the element in only 3 comparisons using zero auxiliary memory.',
+    intuition: 'Binary search is the quintessential logarithmic algorithm.'
   }
 ];
-
-export default function SearchXInSortedArrayVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Target Badge */}
-      <div className="flex items-center gap-4">
-        <span className="px-4 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-mono text-sm font-semibold">
-          Target X = {step.target}
-        </span>
-        <span className="text-xs font-mono text-[#8a8ea3] px-3 py-1.5 rounded-xl bg-[#141622] border border-[#272b3d]">
-          Phase: {step.phase}
-        </span>
-      </div>
-
-      {/* Array Elements */}
-      <div className="w-full flex items-center justify-center gap-2 py-4 overflow-x-auto">
-        {step.array.map((val, idx) => {
-          const isLow = step.low === idx;
-          const isHigh = step.high === idx;
-          const isMid = step.mid === idx;
-          const isMatch = step.phase === 'MATCH_FOUND' && step.mid === idx;
-          const isEliminated = (step.low !== null && idx < step.low) || (step.high !== null && idx > step.high);
-
-          let style = 'bg-[#171924] text-white border-[#2b2f42]';
-          if (isMatch) {
-            style = 'bg-emerald-500/25 text-emerald-300 border-emerald-400 scale-110 shadow-lg shadow-emerald-500/25';
-          } else if (isMid) {
-            style = 'bg-amber-500/25 text-amber-300 border-amber-400 scale-105 shadow-md shadow-amber-500/20';
-          } else if (isEliminated) {
-            style = 'bg-[#101117] text-[#42465c] border-[#1d202e] opacity-40';
-          }
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1 min-w-[48px]">
-              {/* Pointers Top Label */}
-              <div className="h-6 flex items-center gap-1 text-[9px] font-mono font-bold">
-                {isLow && <span className="px-1.5 py-0.5 rounded bg-blue-500 text-white">L</span>}
-                {isMid && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">M</span>}
-                {isHigh && <span className="px-1.5 py-0.5 rounded bg-purple-500 text-white">H</span>}
-              </div>
-
-              {/* Number Card */}
-              <div className={`w-12 h-12 rounded-xl border flex items-center justify-center font-mono text-base font-bold transition-all duration-300 ${style}`}>
-                {val}
-              </div>
-
-              <span className="text-[9px] font-mono text-[#5b6076]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Range Status */}
-      <div className="flex items-center gap-6 text-xs font-mono text-[#8a8ea3]">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-          <span>Low: {step.low ?? '-'}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-          <span>Mid: {step.mid ?? '-'}</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-          <span>High: {step.high ?? '-'}</span>
-        </div>
-      </div>
-    </div>
-  );
-}

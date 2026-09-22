@@ -108,13 +108,13 @@ export default function CountTheNumberOfNodesLinkedListVisualizer({ currentStep:
           <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
             Step {stepIndex + 1} / {steps.length}
           </span>
-          <h3 className="text-sm font-bold text-white font-mono">{stepData.title}</h3>
+          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
         </div>
         <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-slate-300 text-xs font-mono rounded border border-white/5 transition">
+          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
             ← Prev
           </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-mono font-medium rounded transition">
+          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
             Next →
           </button>
         </div>
@@ -126,11 +126,11 @@ export default function CountTheNumberOfNodesLinkedListVisualizer({ currentStep:
         {/* Dynamic Variables Display */}
         <div className="flex gap-6 mb-12">
           <div className="flex flex-col items-center p-3 rounded-lg bg-[#0e111a] border border-white/10 min-w-[100px] shadow-lg">
-            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">cnt (Count)</span>
+            <span className="text-[10px] uppercase tracking-wider text-[var(--chalk-faint)] font-bold mb-1">cnt (Count)</span>
             <span className="text-3xl font-mono text-emerald-400 font-bold transition-all duration-300">{stepData.cnt}</span>
           </div>
           <div className="flex flex-col items-center p-3 rounded-lg bg-[#0e111a] border border-white/10 min-w-[100px] shadow-lg">
-            <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold mb-1">curr points to</span>
+            <span className="text-[10px] uppercase tracking-wider text-[var(--chalk-faint)] font-bold mb-1">curr points to</span>
             <span className="text-3xl font-mono text-indigo-400 font-bold transition-all duration-300">
               {stepData.currIdx === nodes.length - 1 ? 'NULL' : SAMPLE_DATA[stepData.currIdx]}
             </span>
@@ -158,26 +158,26 @@ export default function CountTheNumberOfNodesLinkedListVisualizer({ currentStep:
                   {/* Node Box */}
                   <div className={`w-14 h-14 flex items-center justify-center rounded-lg border-2 font-mono text-lg font-bold transition-all duration-200 relative z-10 ${
                     isCurrent ? 'border-indigo-500 bg-indigo-500/20 text-indigo-100' :
-                    isNull ? 'border-white/10 bg-[#0e111a] text-slate-600' :
+                    isNull ? 'border-white/10 bg-[#0e111a] text-[var(--chalk-faint)]' :
                     isVisited ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300' :
-                    'border-white/20 bg-white/5 text-slate-300'
+                    'border-white/20 bg-white/5 text-[var(--chalk-dim)]'
                   }`}>
                     {val}
                   </div>
                   
                   {/* Head/Tail Indicators */}
                   {!isNull && idx === 0 && (
-                    <span className="absolute -bottom-6 text-[10px] font-mono text-slate-500">head</span>
+                    <span className="absolute -bottom-6 text-[10px] font-mono text-[var(--chalk-faint)]">head</span>
                   )}
                   {!isNull && idx === SAMPLE_DATA.length - 1 && (
-                    <span className="absolute -bottom-6 text-[10px] font-mono text-slate-500">tail</span>
+                    <span className="absolute -bottom-6 text-[10px] font-mono text-[var(--chalk-faint)]">tail</span>
                   )}
                 </div>
 
                 {/* Arrow connecting nodes */}
                 {!isNull && (
                   <div className="px-2 z-0 relative">
-                    <svg className={`w-6 h-6 transition-colors duration-300 ${isVisited ? 'text-emerald-500/50' : 'text-white/20'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className={`w-6 h-6 transition-colors duration-300 ${isVisited ? 'text-emerald-500/50' : 'text-[var(--chalk)]/20'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
                   </div>
@@ -189,16 +189,16 @@ export default function CountTheNumberOfNodesLinkedListVisualizer({ currentStep:
         
         {/* Code & Status HUD */}
         <div className="mt-12 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-lg max-w-full overflow-hidden">
-          <span className="text-slate-500 flex-shrink-0">Exec:</span>
+          <span className="text-[var(--chalk-faint)] flex-shrink-0">Exec:</span>
           <code className="text-rose-300 bg-rose-500/10 px-1.5 py-0.5 rounded truncate">{stepData.code}</code>
           <div className="w-px h-4 bg-white/10 mx-1 flex-shrink-0"></div>
-          <span className="text-slate-500 flex-shrink-0">Status:</span>
+          <span className="text-[var(--chalk-faint)] flex-shrink-0">Status:</span>
           <strong className="text-indigo-400 truncate">{stepData.hudText || 'Processing...'}</strong>
         </div>
       </div>
 
       {/* 4. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-slate-300 leading-relaxed font-sans min-h-[90px]">
+      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-[var(--chalk-dim)] leading-relaxed font-sans min-h-[90px]">
         <span className="text-emerald-500/80 font-mono text-[11px] uppercase mr-2 font-bold tracking-widest">Explanation:</span>
         {stepData.explanation}
       </div>

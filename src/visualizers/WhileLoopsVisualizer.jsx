@@ -125,29 +125,29 @@ export default function WhileLoopsVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Loop State Comparison</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Loop State Comparison</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
         </div>
 
         <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-          <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] space-y-2">
+          <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] space-y-2">
             <div className="text-[10px] text-cyan-400 uppercase tracking-wider font-bold">while (count {'>'} 0)</div>
-            <div className="text-slate-300">Current count: <span className="text-emerald-400 font-bold">{step.countVal}</span></div>
-            <div className="text-[10px] text-slate-400">Pre-test condition before body</div>
+            <div className="text-[var(--chalk-dim)]">Current count: <span className="text-emerald-400 font-bold">{step.countVal}</span></div>
+            <div className="text-[10px] text-[var(--chalk-dim)]">Pre-test condition before body</div>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] space-y-2">
+          <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] space-y-2">
             <div className="text-[10px] text-purple-400 uppercase tracking-wider font-bold">do {'{ ... }'} while (i {'<'} 0)</div>
-            <div className="text-slate-300">Current i: <span className="text-purple-300 font-bold">{step.doWhileVal}</span></div>
-            <div className="text-[10px] text-slate-400">Post-test condition after body</div>
+            <div className="text-[var(--chalk-dim)]">Current i: <span className="text-purple-300 font-bold">{step.doWhileVal}</span></div>
+            <div className="text-[10px] text-[var(--chalk-dim)]">Post-test condition after body</div>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

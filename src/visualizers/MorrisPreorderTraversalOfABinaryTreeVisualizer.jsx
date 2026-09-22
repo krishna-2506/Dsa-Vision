@@ -195,7 +195,7 @@ export default function MorrisPreorderTraversalOfABinaryTreeVisualizer({ current
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Active: <strong className="text-cyan-400">{step.curr ? `Node ${step.curr}` : 'Finished'}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -203,8 +203,8 @@ export default function MorrisPreorderTraversalOfABinaryTreeVisualizer({ current
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Threaded Binary Tree Preorder Walk</span>
           <span className="text-purple-400 font-bold">O(1) Space Traversal</span>
         </div>
@@ -213,7 +213,7 @@ export default function MorrisPreorderTraversalOfABinaryTreeVisualizer({ current
         <div className="flex flex-col items-center gap-4 py-3 w-full">
           <div
             className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm ${
-              step.curr === 1 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-white'
+              step.curr === 1 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
             }`}
           >
             1
@@ -222,14 +222,14 @@ export default function MorrisPreorderTraversalOfABinaryTreeVisualizer({ current
           <div className="flex justify-center gap-16 w-full">
             <div
               className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${
-                step.curr === 2 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-white'
+                step.curr === 2 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               2
             </div>
             <div
               className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${
-                step.curr === 3 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-white'
+                step.curr === 3 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
               }`}
             >
               3
@@ -241,7 +241,7 @@ export default function MorrisPreorderTraversalOfABinaryTreeVisualizer({ current
               <div
                 key={v}
                 className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${
-                  step.curr === v ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-white'
+                  step.curr === v ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
                 }`}
               >
                 {v}
@@ -251,8 +251,8 @@ export default function MorrisPreorderTraversalOfABinaryTreeVisualizer({ current
         </div>
 
         {/* Output stream */}
-        <div className="w-full flex items-center justify-between p-3 rounded-xl bg-[#0f1016] border border-[#242738] text-xs font-mono">
-          <span className="text-[#8a8ea3]">Preorder Stream:</span>
+        <div className="w-full flex items-center justify-between p-3 rounded-xl bg-[#0f1016] border border-[var(--line)] text-xs font-mono">
+          <span className="text-[var(--chalk-dim)]">Preorder Stream:</span>
           <div className="flex gap-1.5">
             {step.preorder.map((v, i) => (
               <span key={i} className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold">
@@ -262,7 +262,7 @@ export default function MorrisPreorderTraversalOfABinaryTreeVisualizer({ current
           </div>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           In Morris Preorder, a node is recorded the very first time it is visited (when establishing the thread).
         </div>
       </div>

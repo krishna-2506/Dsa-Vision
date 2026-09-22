@@ -176,8 +176,8 @@ export default function IntroductionToBitsAndTricksVisualizer({ currentStep = 0 
       </div>
 
       {/* Bit Register Table */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-4 font-mono">
-        <div className="text-xs text-[#8a8ea3]">8-Bit Register Display (Bit 7 &rarr; Bit 0)</div>
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4 font-mono">
+        <div className="text-xs text-[var(--chalk-dim)]">8-Bit Register Display (Bit 7 &rarr; Bit 0)</div>
 
         {/* Binary Register */}
         <div className="flex items-center gap-2">
@@ -190,7 +190,7 @@ export default function IntroductionToBitsAndTricksVisualizer({ currentStep = 0 
                 <span className="text-[10px] text-[#5b6076]">b{bitIndex}</span>
                 <div className={`w-10 h-12 rounded-xl border flex items-center justify-center font-bold text-base transition-all ${
                   isTarget ? 'border-amber-400 bg-amber-500/25 text-amber-200 scale-105 shadow-md shadow-amber-500/20' :
-                  bit === '1' ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-200' : 'border-[#272b3c] bg-[#12131b] text-[#555a73]'
+                  bit === '1' ? 'border-cyan-500/40 bg-cyan-500/15 text-cyan-200' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]'
                 }`}>
                   {bit}
                 </div>
@@ -201,8 +201,8 @@ export default function IntroductionToBitsAndTricksVisualizer({ currentStep = 0 
 
         {/* Mask Info */}
         {step.mask && (
-          <div className="w-full p-2.5 rounded-xl bg-[#12131b] border border-[#202436] flex items-center justify-between text-xs px-4">
-            <span className="text-[#8a8ea3]">Mask Used:</span>
+          <div className="w-full p-2.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-between text-xs px-4">
+            <span className="text-[var(--chalk-dim)]">Mask Used:</span>
             <span className="text-purple-300 font-bold">{step.mask}_2</span>
           </div>
         )}

@@ -177,14 +177,14 @@ export default function TopKFrequentElementsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Frequency Tally Cards */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-5 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Occurrences Table (Hash Map)</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-5 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Occurrences Table (Hash Map)</span>
 
         <div className="flex items-center justify-center gap-4 py-1">
           {Object.entries(step.frequencies).map(([elem, freq]) => {
             const inHeap = step.minHeap.some(h => h.elem === Number(elem));
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-400';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
             if (inHeap) {
               borderClass = 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/30';
             }
@@ -200,8 +200,8 @@ export default function TopKFrequentElementsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Min-Heap (Ordered by Frequency) */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <div className="flex items-center justify-between w-full text-xs font-mono text-[#8a8ea3] border-b border-[#272b3c] pb-2">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <div className="flex items-center justify-between w-full text-xs font-mono text-[var(--chalk-dim)] border-b border-[var(--line)] pb-2">
           <span>Min-Heap (Capacity K = {step.k})</span>
           {step.evicted && (
             <span className="text-rose-400 font-bold">Evicted: Value {step.evicted.elem} ({step.evicted.freq}×)</span>
@@ -215,17 +215,17 @@ export default function TopKFrequentElementsVisualizer({ currentStep = 0 }) {
                 ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg' 
                 : 'border-blue-500/50 bg-blue-500/15 text-blue-300'
             }`}>
-              <span className="text-[10px] text-slate-400">{idx === 0 ? 'HEAP ROOT' : 'NODE'}</span>
+              <span className="text-[10px] text-[var(--chalk-dim)]">{idx === 0 ? 'HEAP ROOT' : 'NODE'}</span>
               <span className="text-base font-black">Val: {item.elem}</span>
               <span className="text-[11px] text-amber-300 font-bold">Freq: {item.freq}×</span>
             </div>
           ))}
-          {step.minHeap.length === 0 && <span className="text-xs text-slate-500 italic">Empty Heap</span>}
+          {step.minHeap.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Empty Heap</span>}
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

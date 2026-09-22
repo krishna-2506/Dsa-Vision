@@ -208,15 +208,15 @@ export default function CombinationSumVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Candidates array selection */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-5 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Candidate Numbers Pool</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-5 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Candidate Numbers Pool</span>
 
         <div className="flex items-center justify-center gap-3">
           {step.candidates.map((val, idx) => {
             const isCurrent = idx === step.currentIndex;
             const isPicked = step.currentCombo.includes(val);
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-400';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
             if (isCurrent) {
               borderClass = 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg';
             } else if (isPicked) {
@@ -226,7 +226,7 @@ export default function CombinationSumVisualizer({ currentStep = 0 }) {
             return (
               <div key={idx} className={`w-14 h-16 rounded-xl border flex flex-col items-center justify-center font-mono font-bold transition-all ${borderClass}`}>
                 <span className="text-base">{val}</span>
-                <span className="text-[9px] text-slate-500">[{idx}]</span>
+                <span className="text-[9px] text-[var(--chalk-faint)]">[{idx}]</span>
               </div>
             );
           })}
@@ -235,19 +235,19 @@ export default function CombinationSumVisualizer({ currentStep = 0 }) {
 
       {/* Current Backtracking Stack & Output */}
       <div className="w-full grid grid-cols-2 gap-4">
-        <div className="bg-[#12131b] border border-[#272b3c] rounded-2xl p-4 flex flex-col items-center gap-2">
-          <span className="text-xs font-mono text-[#8a8ea3]">Current Combination</span>
+        <div className="bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex flex-col items-center gap-2">
+          <span className="text-xs font-mono text-[var(--chalk-dim)]">Current Combination</span>
           <div className="flex items-center gap-1.5 min-h-[40px] flex-wrap justify-center">
             {step.currentCombo.map((val, idx) => (
               <span key={idx} className="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono font-bold text-sm">
                 {val}
               </span>
             ))}
-            {step.currentCombo.length === 0 && <span className="text-xs text-slate-500 italic">Empty</span>}
+            {step.currentCombo.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Empty</span>}
           </div>
         </div>
 
-        <div className="bg-[#12131b] border border-emerald-500/30 rounded-2xl p-4 flex flex-col items-center gap-2">
+        <div className="bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col items-center gap-2">
           <span className="text-xs font-mono text-emerald-400">Target Matches Found</span>
           <div className="flex flex-col items-center gap-1 min-h-[40px]">
             {step.results.map((res, idx) => (
@@ -255,13 +255,13 @@ export default function CombinationSumVisualizer({ currentStep = 0 }) {
                 [{res.join(', ')}]
               </span>
             ))}
-            {step.results.length === 0 && <span className="text-xs text-slate-500 italic">Searching...</span>}
+            {step.results.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Searching...</span>}
           </div>
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

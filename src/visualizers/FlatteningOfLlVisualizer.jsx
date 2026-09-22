@@ -212,7 +212,7 @@ export default function FlatteningOfLlVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual 2D / Flattened Matrix */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-4">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4">
         {step.mode === '2D_VIEW' || step.mode === 'MERGED_INTERMEDIATE' ? (
           <div className="flex items-start justify-center gap-6 overflow-x-auto py-2">
             {step.columns.map((col, cIdx) => (
@@ -225,8 +225,8 @@ export default function FlatteningOfLlVisualizer({ currentStep = 0 }) {
                 {/* Bottom Nodes */}
                 {col.bottom.map((bVal, bIdx) => (
                   <React.Fragment key={bIdx}>
-                    <span className="text-xs font-mono text-[#8a8ea3]">&darr;</span>
-                    <div className="w-13 h-13 rounded-xl border border-[#272b3c] bg-[#12131b] text-white flex items-center justify-center font-mono font-bold text-base">
+                    <span className="text-xs font-mono text-[var(--chalk-dim)]">&darr;</span>
+                    <div className="w-13 h-13 rounded-xl border border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)] flex items-center justify-center font-mono font-bold text-base">
                       {bVal}
                     </div>
                   </React.Fragment>
@@ -247,7 +247,7 @@ export default function FlatteningOfLlVisualizer({ currentStep = 0 }) {
                 )}
               </React.Fragment>
             ))}
-            <span className="text-xs font-mono text-[#8a8ea3] ml-2">&rarr; NULL</span>
+            <span className="text-xs font-mono text-[var(--chalk-dim)] ml-2">&rarr; NULL</span>
           </div>
         )}
       </div>

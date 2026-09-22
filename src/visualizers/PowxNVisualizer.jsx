@@ -209,32 +209,32 @@ export default function PowxNVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Exponentiation Gauge Card */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Binary Exponentiation Registers</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Binary Exponentiation Registers</span>
 
         <div className="grid grid-cols-3 gap-4 w-full">
-          <div className="p-3 rounded-xl border border-[#272b3c] bg-[#161824] flex flex-col items-center justify-center font-mono">
-            <span className="text-[10px] text-slate-400">EXPONENT (N)</span>
+          <div className="p-3 rounded-xl border border-[var(--line)] bg-[var(--board-raised-2)] flex flex-col items-center justify-center font-mono">
+            <span className="text-[10px] text-[var(--chalk-dim)]">EXPONENT (N)</span>
             <span className="text-2xl font-black text-amber-300 mt-1">{step.exponent}</span>
-            <span className="text-[10px] text-slate-500 mt-1">{step.exponent.toString(2)} in binary</span>
+            <span className="text-[10px] text-[var(--chalk-faint)] mt-1">{step.exponent.toString(2)} in binary</span>
           </div>
 
           <div className="p-3 rounded-xl border border-blue-500/30 bg-blue-500/10 flex flex-col items-center justify-center font-mono">
             <span className="text-[10px] text-blue-300">CURRENT BASE (x)</span>
             <span className="text-xl font-black text-blue-300 mt-1">{step.currentProduct}</span>
-            <span className="text-[10px] text-slate-400 mt-1">x ← x²</span>
+            <span className="text-[10px] text-[var(--chalk-dim)] mt-1">x ← x²</span>
           </div>
 
           <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex flex-col items-center justify-center font-mono">
             <span className="text-[10px] text-emerald-300">ACCUMULATOR (ans)</span>
             <span className="text-xl font-black text-emerald-300 mt-1">{step.ans}</span>
-            <span className="text-[10px] text-slate-400 mt-1">ans ← ans · x</span>
+            <span className="text-[10px] text-[var(--chalk-dim)] mt-1">ans ← ans · x</span>
           </div>
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

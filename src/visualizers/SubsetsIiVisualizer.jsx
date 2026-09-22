@@ -186,15 +186,15 @@ export default function SubsetsIiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Array Elements with duplicate color */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-5 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Sorted Elements (Duplicate Highlights)</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-5 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Sorted Elements (Duplicate Highlights)</span>
 
         <div className="flex items-center justify-center gap-4">
           {step.nums.map((val, idx) => {
             const isCurrent = idx === step.index;
             const isDuplicate = idx > 0 && val === step.nums[idx - 1];
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-400';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
             if (isCurrent && step.skipped) {
               borderClass = 'border-rose-500 bg-rose-500/20 text-rose-300 ring-2 ring-rose-500/40 line-through';
             } else if (isCurrent) {
@@ -206,7 +206,7 @@ export default function SubsetsIiVisualizer({ currentStep = 0 }) {
             return (
               <div key={idx} className={`w-16 h-20 rounded-2xl border flex flex-col items-center justify-center font-mono font-bold transition-all ${borderClass}`}>
                 <span className="text-xl">{val}</span>
-                <span className="text-[10px] text-slate-500">{isDuplicate ? 'DUPLICATE' : `idx ${idx}`}</span>
+                <span className="text-[10px] text-[var(--chalk-faint)]">{isDuplicate ? 'DUPLICATE' : `idx ${idx}`}</span>
               </div>
             );
           })}
@@ -214,7 +214,7 @@ export default function SubsetsIiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Generated Subsets Container */}
-      <div className="w-full bg-[#12131b] border border-emerald-500/30 rounded-2xl p-5 flex flex-col gap-2">
+      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-5 flex flex-col gap-2">
         <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Discovered Unique Subsets</span>
         <div className="flex items-center gap-2 flex-wrap">
           {step.results.map((sub, idx) => (
@@ -226,7 +226,7 @@ export default function SubsetsIiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

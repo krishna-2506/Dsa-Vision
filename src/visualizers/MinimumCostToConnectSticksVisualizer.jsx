@@ -183,8 +183,8 @@ export default function MinimumCostToConnectSticksVisualizer({ currentStep = 0 }
       </div>
 
       {/* Sticks in Heap visualizer */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Available Sticks in Min-Heap</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Available Sticks in Min-Heap</span>
 
         <div className="flex items-center justify-center gap-4 py-2">
           {step.sticks.map((len, idx) => (
@@ -195,16 +195,16 @@ export default function MinimumCostToConnectSticksVisualizer({ currentStep = 0 }
               >
                 {len}
               </div>
-              <span className="text-[10px] font-mono text-slate-400">Stick {idx + 1}</span>
+              <span className="text-[10px] font-mono text-[var(--chalk-dim)]">Stick {idx + 1}</span>
             </div>
           ))}
-          {step.sticks.length === 0 && <span className="text-xs text-slate-500 italic">Merging in progress...</span>}
+          {step.sticks.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Merging in progress...</span>}
         </div>
       </div>
 
       {/* Merging Stage */}
       {step.first !== null && (
-        <div className="w-full bg-[#12131b] border border-amber-500/30 rounded-2xl p-4 flex items-center justify-around font-mono text-xs">
+        <div className="w-full bg-[var(--board-raised)] border border-amber-500/30 rounded-2xl p-4 flex items-center justify-around font-mono text-xs">
           <div className="flex items-center gap-2 text-blue-300">
             <span>First:</span>
             <span className="px-2 py-1 bg-blue-500/20 border border-blue-500/40 rounded font-bold">{step.first}</span>
@@ -223,7 +223,7 @@ export default function MinimumCostToConnectSticksVisualizer({ currentStep = 0 }
       )}
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

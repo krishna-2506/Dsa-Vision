@@ -256,12 +256,12 @@ export default function RotateALlVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {step.nodes.map((val, idx) => {
           const isNewHead = step.newHeadIdx === idx;
           const isNewTail = step.newTailIdx === idx;
 
-          let style = 'border-[#272b3c] bg-[#12131b] text-white';
+          let style = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
           if (isNewHead) {
             style = 'border-emerald-400 bg-emerald-500/20 text-emerald-200 scale-105 shadow-md shadow-emerald-500/20';
           } else if (isNewTail) {
@@ -285,20 +285,20 @@ export default function RotateALlVisualizer({ currentStep = 0 }) {
               </div>
 
               {idx < step.nodes.length - 1 ? (
-                <div className="text-base font-bold text-[#8a8ea3]">&rarr;</div>
+                <div className="text-base font-bold text-[var(--chalk-dim)]">&rarr;</div>
               ) : step.circular ? (
                 <div className="text-xs font-mono text-cyan-400 font-bold px-1 bg-cyan-500/10 rounded border border-cyan-500/30">
                   &rarr; 1 (Ring)
                 </div>
               ) : (
-                <div className="text-base font-bold text-[#8a8ea3]">&rarr;</div>
+                <div className="text-base font-bold text-[var(--chalk-dim)]">&rarr;</div>
               )}
             </React.Fragment>
           );
         })}
 
         {!step.circular && (
-          <div className="w-13 h-13 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[#8a8ea3]">
+          <div className="w-13 h-13 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[var(--chalk-dim)]">
             NULL
           </div>
         )}

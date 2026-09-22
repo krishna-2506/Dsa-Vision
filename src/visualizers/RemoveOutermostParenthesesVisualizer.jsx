@@ -191,7 +191,7 @@ export default function RemoveOutermostParenthesesVisualizer({ currentStep = 0 }
           const isCurrent = idx === step.currIdx;
           const isOuter = (idx === 0 || idx === 5 || idx === 6 || idx === 9);
 
-          let borderClass = 'border-[#272b3c] bg-[#12131b] text-slate-300';
+          let borderClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-dim)]';
           if (isCurrent) {
             borderClass = 'border-amber-500 bg-amber-500/30 text-amber-300 ring-2 ring-amber-500/30 shadow-lg';
           } else if (isOuter && idx <= step.currIdx) {
@@ -210,7 +210,7 @@ export default function RemoveOutermostParenthesesVisualizer({ currentStep = 0 }
       </div>
 
       {/* Result Accumulator */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
         <span className="text-[11px] text-emerald-400 font-semibold uppercase tracking-wider">
           Stripped Output String:
         </span>

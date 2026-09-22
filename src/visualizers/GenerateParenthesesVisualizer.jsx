@@ -218,8 +218,8 @@ export default function GenerateParenthesesVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Active Backtracking String Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Current Backtracking String</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Current Backtracking String</span>
         
         <div className="flex items-center justify-center gap-2 py-2">
           {Array.from({ length: step.n * 2 }).map((_, idx) => {
@@ -228,10 +228,10 @@ export default function GenerateParenthesesVisualizer({ currentStep = 0 }) {
               <div key={idx} className={`w-12 h-14 rounded-xl border flex flex-col items-center justify-center font-mono font-bold text-lg transition-all ${
                 char 
                   ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40 shadow-sm'
-                  : 'border-[#272b3c] bg-[#161824] text-slate-600'
+                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]'
               }`}>
                 <span>{char || '·'}</span>
-                <span className="text-[8px] text-slate-500">pos {idx}</span>
+                <span className="text-[8px] text-[var(--chalk-faint)]">pos {idx}</span>
               </div>
             );
           })}
@@ -239,7 +239,7 @@ export default function GenerateParenthesesVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Generated Solutions Pool */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-4 flex flex-col gap-2">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex flex-col gap-2">
         <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Generated Balanced Solutions</span>
         <div className="flex items-center gap-3 flex-wrap">
           {step.results.map((combo, idx) => (
@@ -247,12 +247,12 @@ export default function GenerateParenthesesVisualizer({ currentStep = 0 }) {
               {combo}
             </span>
           ))}
-          {step.results.length === 0 && <span className="text-xs text-slate-500 font-mono italic">Backtracking tree in progress...</span>}
+          {step.results.length === 0 && <span className="text-xs text-[var(--chalk-faint)] font-mono italic">Backtracking tree in progress...</span>}
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

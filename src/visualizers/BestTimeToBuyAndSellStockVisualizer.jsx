@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by StockTradingRenderer via rendererType
 
 export const meta = {
   title: 'Best Time to Buy and Sell Stock (1 Transaction)',
@@ -6,7 +6,19 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1)',
-  description: 'Finds the maximum profit from buying and selling a stock once. Dynamic programming state maintains the minimum buy price seen so far to maximize profit = prices[i] - minPrice.'
+  description: 'Finds the maximum profit from buying and selling a stock once. Maintains the minimum buy price seen so far in a single pass to maximize profit = prices[i] - minPrice.'
+};
+
+export const rendererType = 'stock-trading';
+
+export const ideaMap = {
+  title: 'Best Time to Buy and Sell Stock (1 Transaction)',
+  nodes: [
+    { id: 'root', label: 'Stock I (1 Trade)', children: ['min-tracking', 'profit-formula', 'complexity'] },
+    { id: 'min-tracking', label: '1. Prefix Minimum', detail: 'minPrice = min(minPrice, prices[i]) tracks cheapest buy day seen so far' },
+    { id: 'profit-formula', label: '2. Profit Optimization', detail: 'maxProfit = max(maxProfit, prices[i] - minPrice) checks selling today vs previous best' },
+    { id: 'complexity', label: '3. Optimal Complexity', detail: 'Single forward pass solves the problem in O(N) time and O(1) auxiliary space' }
+  ]
 };
 
 export const solutions = {
@@ -74,127 +86,166 @@ var maxProfit = function(prices) {
 
 export const steps = [
   {
-    title: '1. Prices: [7, 1, 5, 3, 6, 4], Day 0 (Price = 7)',
-    phase: 'INITIAL',
-    codeLine: 12,
+    phase: 'SETUP',
     prices: [7, 1, 5, 3, 6, 4],
-    activeDay: 0,
-    minPrice: 7,
-    maxProfit: 0,
-    buyDay: 0,
-    sellDay: 0,
-    variables: { day: 0, price: 7, minPrice: 7, profit: 0, maxProfit: 0 },
-    explain: 'Starting on Day 0: Price is 7. minPrice initialized to 7. Profit = 7 - 7 = 0.',
-    intuition: 'At any point in time, buying at the lowest historical price yields the optimal potential profit.'
+    currentDay: null,
+    trades: [],
+    dpState: { holdProfit: -7, notHoldProfit: 0 },
+    formula: 'Constraint: At most 1 transaction | minPrice = infinity, maxProfit = 0',
+    action: 'Initialize prefix minimum price tracker and maxProfit accumulator.',
+    explain: 'To maximize prices[sell] - prices[buy] where buy < sell, we only need to track the lowest price observed before the current day: minPrice = min(minPrice, prices[i]).',
+    intuition: 'At any day i, the best possible day to have bought in the past was when price hit its absolute minimum.',
+    metrics: [
+      { label: 'Max Profit', value: '$0', highlight: true },
+      { label: 'Allowed Trades', value: '1' },
+      { label: 'Status', value: 'Ready' }
+    ],
+    customCard: {
+      title: 'Greedy Prefix Invariant',
+      rows: [
+        { label: 'Running Minimum', value: 'minPrice = min(minPrice, price)' },
+        { label: 'Profit Evaluation', value: 'profit = price - minPrice' }
+      ]
+    }
   },
   {
-    title: '2. Day 1 (Price = 1): New Minimum Buy Price Found!',
-    phase: 'NEW_MIN',
-    codeLine: 16,
+    phase: 'SCAN',
     prices: [7, 1, 5, 3, 6, 4],
-    activeDay: 1,
-    minPrice: 1,
-    maxProfit: 0,
-    buyDay: 1,
-    sellDay: 1,
-    variables: { day: 1, price: 1, minPrice: 1, profit: 0, maxProfit: 0 },
-    explain: 'Price drops to 1! Update minPrice = min(7, 1) = 1. Best day to buy updated to Day 1.',
-    intuition: 'Buying at 1 maximizes all downstream selling margins.'
+    currentDay: 0,
+    trades: [],
+    dpState: { holdProfit: -7, notHoldProfit: 0 },
+    formula: 'Day 0 ($7): minPrice = 7 | profit = 7 - 7 = $0',
+    action: 'Day 0 (Price $7): Set initial minPrice = $7.',
+    explain: 'On Day 0, price is $7. minPrice is updated to $7. Selling on the same day gives $0 profit.',
+    intuition: 'Initial price establishes the benchmark.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 0' },
+      { label: 'Price', value: '$7' },
+      { label: 'minPrice', value: '$7' }
+    ]
   },
   {
-    title: '3. Day 2 (Price = 5): Selling Yields Profit = 5 - 1 = 4',
-    phase: 'PROFIT',
-    codeLine: 17,
+    phase: 'BUY',
     prices: [7, 1, 5, 3, 6, 4],
-    activeDay: 2,
-    minPrice: 1,
-    maxProfit: 4,
-    buyDay: 1,
-    sellDay: 2,
-    variables: { day: 2, price: 5, minPrice: 1, profit: 4, maxProfit: 4 },
-    explain: 'Price rises to 5: Selling here gives profit 5 - 1 = 4. Update maxProfit = 4.',
-    intuition: 'Locked in positive gain.'
+    currentDay: 1,
+    trades: [],
+    dpState: { holdProfit: -1, notHoldProfit: 0 },
+    formula: 'Day 1 ($1): 1 < 7 => New minPrice = $1! Best buy day updated to Day 1.',
+    action: 'Day 1 (Price $1): Price plunges! Update minPrice = $1.',
+    explain: 'Price dropped from $7 to $1. Since $1 < $7, minPrice updates to $1. Any future sell will be compared against this new rock-bottom buy price.',
+    intuition: 'Buying at $1 maximizes all future selling margins.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 1' },
+      { label: 'Price', value: '$1' },
+      { label: 'minPrice', value: '$1 (New Minimum)', highlight: true }
+    ],
+    customCard: {
+      title: 'Optimal Buy Anchor Found',
+      rows: [
+        { label: 'New Buy Anchor', value: 'Day 1 at $1 (replaces Day 0 at $7)', accent: true },
+        { label: 'Future Upside', value: 'Every subsequent dollar gained will count as pure profit' }
+      ]
+    }
   },
   {
-    title: '4. Day 4 (Price = 6): Peak Sell Day! Profit = 6 - 1 = 5 (Max Profit)',
+    phase: 'TRADE',
+    prices: [7, 1, 5, 3, 6, 4],
+    currentDay: 2,
+    trades: [{ buy: 1, sell: 2, net: 4 }],
+    dpState: { holdProfit: -1, notHoldProfit: 4 },
+    formula: 'Day 2 ($5): profit = 5 - 1 = $4 => maxProfit = max(0, 4) = $4',
+    action: 'Day 2 (Price $5): Surge to $5! Potential profit = $5 - $1 = $4.',
+    explain: 'Selling at $5 yields $5 - $1 = $4 profit. Since $4 > $0, maxProfit updates to $4. Best candidate trade: Buy Day 1 ($1) -> Sell Day 2 ($5).',
+    intuition: 'First profitable exit window.',
+    metrics: [
+      { label: 'Current Profit', value: '$4', highlight: true },
+      { label: 'Sell Price', value: '$5' },
+      { label: 'Buy Price', value: '$1' }
+    ],
+    customCard: {
+      title: 'First Profitable Candidate',
+      rows: [
+        { label: 'Candidate Trade', value: 'Buy D1 ($1) -> Sell D2 ($5)', accent: true },
+        { label: 'Net Gain', value: '+$4' }
+      ]
+    }
+  },
+  {
+    phase: 'SCAN',
+    prices: [7, 1, 5, 3, 6, 4],
+    currentDay: 3,
+    trades: [{ buy: 1, sell: 2, net: 4 }],
+    dpState: { holdProfit: -1, notHoldProfit: 4 },
+    formula: 'Day 3 ($3): profit = 3 - 1 = $2 < 4 => maxProfit remains $4',
+    action: 'Day 3 (Price $3): Pullback to $3; selling today gives only $2 profit.',
+    explain: 'Selling at $3 produces $3 - $1 = $2, which is less than our existing $4 benchmark. maxProfit stays at $4. minPrice remains $1.',
+    intuition: 'Do not settle for smaller gains when a larger profit is already recorded.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 3' },
+      { label: 'Price', value: '$3' },
+      { label: 'maxProfit', value: '$4' }
+    ]
+  },
+  {
+    phase: 'TRADE',
+    prices: [7, 1, 5, 3, 6, 4],
+    currentDay: 4,
+    trades: [{ buy: 1, sell: 4, net: 5 }],
+    dpState: { holdProfit: -1, notHoldProfit: 5 },
+    formula: 'Day 4 ($6): profit = 6 - 1 = $5 > 4 => Global Max Profit = $5!',
+    action: 'Day 4 (Price $6): Peak price reached! Update maxProfit = $5.',
+    explain: 'Price peaks at $6. Selling today yields $6 - $1 = $5. Since $5 > $4, maxProfit updates to $5! Optimal trade: Buy Day 1 ($1) and sell Day 4 ($6).',
+    intuition: 'Global peak across the entire timeline.',
+    metrics: [
+      { label: 'Max Profit', value: '$5', highlight: true },
+      { label: 'Best Buy Day', value: 'Day 1 ($1)' },
+      { label: 'Best Sell Day', value: 'Day 4 ($6)' }
+    ],
+    customCard: {
+      title: 'Global Optimum Found',
+      rows: [
+        { label: 'Optimal Transaction', value: 'Buy Day 1 ($1) -> Sell Day 4 ($6)', accent: true },
+        { label: 'Maximum Spread', value: '$6 - $1 = $5' }
+      ]
+    }
+  },
+  {
+    phase: 'SCAN',
+    prices: [7, 1, 5, 3, 6, 4],
+    currentDay: 5,
+    trades: [{ buy: 1, sell: 4, net: 5 }],
+    dpState: { holdProfit: -1, notHoldProfit: 5 },
+    formula: 'Day 5 ($4): profit = 4 - 1 = $3 < 5 => maxProfit remains $5',
+    action: 'Day 5 (Price $4): Price drops on final day; maxProfit remains $5.',
+    explain: 'Final day price of $4 yields $4 - $1 = $3 < $5. Scanning ends.',
+    intuition: 'The peak on Day 4 remains unchallenged.',
+    metrics: [
+      { label: 'Current Day', value: 'Day 5' },
+      { label: 'Price', value: '$4' },
+      { label: 'Final Profit', value: '$5' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 17,
     prices: [7, 1, 5, 3, 6, 4],
-    activeDay: 4,
-    minPrice: 1,
-    maxProfit: 5,
-    buyDay: 1,
-    sellDay: 4,
-    variables: { buyDay: 'Day 1 ($1)', sellDay: 'Day 4 ($6)', maxProfit: 5 },
-    explain: 'Price peaks at 6 on Day 4: Profit = 6 - 1 = 5. Day 5 price drops to 4. Global max profit is 5!',
-    intuition: 'Single pass linear scan solves the optimal transaction in O(N) time and O(1) space.'
+    currentDay: null,
+    trades: [{ buy: 1, sell: 4, net: 5 }],
+    dpState: { holdProfit: -1, notHoldProfit: 5 },
+    formula: 'Result: maxProfit = $6 - $1 = $5',
+    action: 'Algorithm completed in O(N) time and O(1) space.',
+    explain: 'By tracking the prefix minimum price in a single pass, we compute the maximum possible single-transaction profit ($5) in linear time without nested loops.',
+    intuition: 'Prefix minimum tracking solves the maximum single spread in optimal O(N) time.',
+    metrics: [
+      { label: 'Maximum Profit', value: '$5', highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Trade Confirmation',
+      rows: [
+        { label: 'Buy Execution', value: 'Day 1 at $1', accent: true },
+        { label: 'Sell Execution', value: 'Day 4 at $6', accent: true }
+      ]
+    }
   }
 ];
-
-export default function BestTimeToBuyAndSellStockVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Min Buy Price: ${step.minPrice} (Day {step.buyDay})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Profit: ${step.maxProfit}
-        </span>
-      </div>
-
-      {/* Stock Timeline Card */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Stock Price Chart & Transaction Interval
-        </span>
-
-        <div className="w-full flex items-end justify-around gap-2 h-44 pt-4 px-2">
-          {step.prices.map((p, idx) => {
-            const isCurrent = idx === step.activeDay;
-            const isBuy = idx === step.buyDay;
-            const isSell = idx === step.sellDay && step.maxProfit > 0;
-            const heightPx = p * 18;
-
-            return (
-              <div key={idx} className="flex-1 flex flex-col items-center justify-end h-full">
-                <div className="text-[10px] font-mono mb-1 font-bold text-amber-300">
-                  ${p}
-                </div>
-
-                <div
-                  style={{ height: `${heightPx}px` }}
-                  className={`w-full max-w-[48px] rounded-t-xl border-t border-x flex flex-col items-center justify-between p-1 font-mono transition-all duration-300 ${
-                    isBuy
-                      ? 'border-emerald-500 bg-emerald-500/30 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg'
-                      : isSell
-                      ? 'border-amber-500 bg-amber-500/30 text-amber-300 ring-2 ring-amber-500/40 shadow-lg'
-                      : isCurrent
-                      ? 'border-blue-500/50 bg-blue-500/20 text-blue-300'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-500'
-                  }`}
-                >
-                  <span className="text-[8px] font-bold">
-                    {isBuy ? 'BUY' : isSell ? 'SELL' : ''}
-                  </span>
-                </div>
-
-                <span className="text-[9px] font-mono text-[#8a8ea3] mt-1.5">
-                  D{idx}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

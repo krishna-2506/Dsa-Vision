@@ -279,7 +279,7 @@ export default function RatInAMazeVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Maze Grid */}
-      <div className="p-4 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-2 font-mono">
+      <div className="p-4 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-2 font-mono">
         {step.maze.map((row, r) => (
           <div key={r} className="flex items-center gap-2">
             {row.map((cell, c) => {
@@ -288,7 +288,7 @@ export default function RatInAMazeVisualizer({ currentStep = 0 }) {
               const isGoal = r === 3 && c === 3;
               const isWall = cell === 0;
 
-              let style = 'border-[#272b3c] bg-[#12131b] text-white';
+              let style = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
               if (isRat) {
                 style = 'border-amber-400 bg-amber-500/30 text-amber-200 scale-105 shadow-md shadow-amber-500/25 ring-2 ring-amber-400';
               } else if (isWall) {
@@ -319,8 +319,8 @@ export default function RatInAMazeVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Discovered Paths */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono text-xs">
-        <span className="text-[#8a8ea3]">Discovered Paths to Destination:</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
+        <span className="text-[var(--chalk-dim)]">Discovered Paths to Destination:</span>
         <div className="flex flex-wrap items-center gap-2">
           {step.completedPaths.map((p, idx) => (
             <span

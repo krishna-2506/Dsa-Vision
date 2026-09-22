@@ -249,7 +249,7 @@ export default function FindOutHowManyTimesTheArrayIsRotatedVisualizer({ current
           const isMid = idx === step.mid;
           const isMin = idx === step.minIndex;
 
-          let borderClass = 'border-[#272b3c] bg-[#12131b] text-slate-200';
+          let borderClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
           if (isMin) {
             borderClass = 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg';
           } else if (isMid) {
@@ -268,7 +268,7 @@ export default function FindOutHowManyTimesTheArrayIsRotatedVisualizer({ current
       </div>
 
       {/* Domain info */}
-      <div className="flex items-center gap-4 text-xs font-mono text-[#8a8ea3]">
+      <div className="flex items-center gap-4 text-xs font-mono text-[var(--chalk-dim)]">
         <span>Domain: [{step.low} ... {step.high}]</span>
         <span>•</span>
         <span>Array length: {step.arr.length}</span>

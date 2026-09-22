@@ -276,7 +276,7 @@ export default function LfuCacheVisualizer({ currentStep = 0 }) {
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Command: <strong className="text-amber-400">{step.action}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -289,8 +289,8 @@ export default function LfuCacheVisualizer({ currentStep = 0 }) {
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Frequency Buckets (Frequency &rarr; LRU Linked List)</span>
           <span className="text-amber-400 font-bold">O(1) Bucket Splicing</span>
         </div>
@@ -311,7 +311,7 @@ export default function LfuCacheVisualizer({ currentStep = 0 }) {
                 <div className="flex items-center gap-1.5 w-24">
                   <span className="text-xs font-mono font-bold text-amber-300">Freq {f}</span>
                   {isMin && (
-                    <span className="text-[8px] font-mono px-1 rounded bg-purple-500 text-white font-bold">
+                    <span className="text-[8px] font-mono px-1 rounded bg-purple-500 text-[var(--chalk)] font-bold">
                       MIN
                     </span>
                   )}
@@ -336,7 +336,7 @@ export default function LfuCacheVisualizer({ currentStep = 0 }) {
           })}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           LFU evicts the item in the minFreq bucket. If multiple items share minFreq, the least recently used one is evicted.
         </div>
       </div>

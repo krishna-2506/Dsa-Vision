@@ -1,12 +1,25 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Insertion Sort',
   category: 'Sorting Algorithms',
   difficulty: 'Easy',
-  timeComplexity: 'O(N²)',
-  spaceComplexity: 'O(1)',
-  description: 'Builds the sorted array one element at a time. Takes elements from the unsorted portion and shifts larger elements right to insert the key in its correct position.'
+  timeComplexity: 'O(N²) Worst/Avg, O(N) Best (Already Sorted)',
+  spaceComplexity: 'O(1) In-Place',
+  description: 'Builds the sorted array incrementally one element at a time. Extracts the current key from the unsorted segment and shifts larger elements rightward to insert the key into its correct position.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Insertion Sort',
+  nodes: [
+    { id: 'root', label: 'Insertion Sort Strategy', children: ['sorted-prefix', 'extract-key', 'shift-right', 'adaptive-efficiency'] },
+    { id: 'sorted-prefix', label: '1. Sorted Subarray Invariant', detail: 'At step i, elements arr[0..i-1] are in sorted order relative to each other.' },
+    { id: 'extract-key', label: '2. Extract Key', detail: 'Store key = arr[i] in a variable, creating a virtual vacant slot at index i.' },
+    { id: 'shift-right', label: '3. Shift Greater Elements', detail: 'While j >= 0 and arr[j] > key, copy arr[j] into arr[j+1], then insert key at arr[j+1].' },
+    { id: 'adaptive-efficiency', label: '4. Adaptive & Online', detail: 'Runs in linear O(N) time for nearly sorted inputs, and can sort incoming streams online.' }
+  ]
 };
 
 export const solutions = {
@@ -23,16 +36,17 @@ public:
             int key = arr[i];
             int j = i - 1;
             
-            // Move elements of arr[0..i-1] that are greater than key to one position ahead
+            // Shift elements greater than key to the right
             while (j >= 0 && arr[j] > key) {
                 arr[j + 1] = arr[j];
-                j = j - 1;
+                j--;
             }
             arr[j + 1] = key;
         }
     }
 };`,
   python: `# Python 3 Insertion Sort
+# Time: O(N²) worst, O(N) best | Space: O(1)
 class Solution:
     def insertionSort(self, arr: list[int]) -> None:
         for i in range(1, len(arr)):
@@ -43,6 +57,7 @@ class Solution:
                 j -= 1
             arr[j + 1] = key`,
   java: `// Java Insertion Sort
+// Time: O(N²) worst, O(N) best | Space: O(1)
 class Solution {
     public void insertionSort(int[] arr) {
         int n = arr.length;
@@ -51,17 +66,18 @@ class Solution {
             int j = i - 1;
             while (j >= 0 && arr[j] > key) {
                 arr[j + 1] = arr[j];
-                j = j - 1;
+                j--;
             }
             arr[j + 1] = key;
         }
     }
 }`,
   javascript: `// JavaScript Insertion Sort
+// Time: O(N²) worst, O(N) best | Space: O(1)
 var insertionSort = function(arr) {
     const n = arr.length;
     for (let i = 1; i < n; i++) {
-        let key = arr[i];
+        const key = arr[i];
         let j = i - 1;
         while (j >= 0 && arr[j] > key) {
             arr[j + 1] = arr[j];
@@ -75,143 +91,177 @@ var insertionSort = function(arr) {
 
 export const steps = [
   {
-    title: '1. Pick Key arr[1] = 11',
+    title: '1. Problem Setup & Invariant Definition',
+    phase: 'INITIAL',
+    track: {
+      label: 'Array',
+      items: [12, 11, 13, 5, 6]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Array Size N', value: '5' },
+      { label: 'Initial Key', value: 'arr[1] = 11' },
+      { label: 'Sorted Prefix', value: '[12] (size 1)' }
+    ],
+    formula: 'key = arr[i]; while (j >= 0 && arr[j] > key) { arr[j+1] = arr[j]; j--; } arr[j+1] = key;',
+    action: 'Initialize Insertion Sort on array [12, 11, 13, 5, 6]',
+    explain: 'Insertion Sort views index 0 as a sorted subarray of size 1. For each subsequent index i from 1 to N-1, it takes key = arr[i] and inserts it into its proper place among the previously sorted elements.',
+    intuition: 'Works just like sorting playing cards in your hand by sliding each new card into position.'
+  },
+  {
+    title: '2. Step i = 1: Pick Key = 11 and Compare with 12',
     phase: 'PICK_KEY',
-    codeLine: 12,
-    array: [12, 11, 13, 5, 6],
-    key: 11,
-    keyIdx: 1,
-    j: 0,
-    sortedUpTo: 0,
-    variables: { i: 1, key: 11, j: 0, 'arr[j]': 12 },
-    explain: 'Array index 0 ([12]) is trivially sorted. Pick arr[1] (11) as our key to insert into the sorted left sub-array.',
-    intuition: 'Insertion sort operates like sorting playing cards in your hand.'
+    track: {
+      label: 'Array',
+      items: [12, 11, 13, 5, 6]
+    },
+    activeI: 1,
+    activeJ: 0,
+    metrics: [
+      { label: 'Step i', value: '1' },
+      { label: 'Key', value: '11' },
+      { label: 'Comparing arr[0]', value: '12 > 11 (True)' }
+    ],
+    formula: 'arr[0] > key (12 > 11) -> shift 12 right',
+    action: 'Key is 11; compare with preceding element arr[0] = 12',
+    explain: 'We extract key = 11 at index 1. Comparing with arr[0] = 12: 12 is greater than 11, so 12 must be shifted right to index 1.',
+    intuition: '12 needs to move aside to create a slot for the smaller value 11.'
   },
   {
-    title: '2. Shift arr[0] (12) Right',
-    phase: 'SHIFTING',
-    codeLine: 17,
-    array: [12, 12, 13, 5, 6],
-    key: 11,
-    keyIdx: 1,
-    j: -1,
-    sortedUpTo: 1,
-    variables: { i: 1, key: 11, j: -1, shift: '12 shifted to index 1' },
-    explain: '12 > 11, so shift 12 right into index 1. Pointer j decrements to -1, reaching the left boundary.',
-    intuition: 'Shifting creates an empty slot for the key to fall into.'
-  },
-  {
-    title: '3. Insert Key 11 at arr[0]',
+    title: '3. Step i = 1: Shift 12 Right & Insert 11 at Index 0',
     phase: 'INSERTION',
-    codeLine: 20,
-    array: [11, 12, 13, 5, 6],
-    key: null,
-    keyIdx: null,
-    j: null,
-    sortedUpTo: 1,
-    variables: { insertedAt: 0, key: 11, sortedSubarray: '[11, 12]' },
-    explain: 'Insert key (11) at arr[j+1] = arr[0]. The sub-array [11, 12] is now completely sorted.',
-    intuition: 'Each insertion expands the sorted subarray size by 1.'
+    track: {
+      label: 'Array',
+      items: [11, 12, 13, 5, 6]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Inserted at', value: 'arr[0] = 11' },
+      { label: 'Sorted Prefix', value: '[11, 12]' },
+      { label: 'Shift Count', value: '1 shift' }
+    ],
+    formula: 'arr[0] = key (11); sorted prefix is now [11, 12]',
+    action: 'Insert key 11 into index 0; prefix [11, 12] is now sorted',
+    explain: 'After shifting 12 to index 1, pointer j becomes -1 (out of bounds). We place key 11 into arr[j+1] = arr[0]. The subarray [11, 12] is sorted.',
+    intuition: 'Sorted prefix length increases from 1 to 2.'
   },
   {
-    title: '4. Pick Key arr[3] = 5',
+    title: '4. Step i = 2: Pick Key = 13 (Already in Correct Place)',
+    phase: 'COMPUTE',
+    track: {
+      label: 'Array',
+      items: [11, 12, 13, 5, 6]
+    },
+    activeI: 2,
+    activeJ: 1,
+    metrics: [
+      { label: 'Step i', value: '2' },
+      { label: 'Key', value: '13' },
+      { label: 'Comparing arr[1]', value: '12 <= 13 (In Order)' },
+      { label: 'Shifts Needed', value: '0 shifts' }
+    ],
+    formula: 'arr[1] <= key (12 <= 13) -> 0 shifts needed',
+    action: '13 is already greater than 12; zero shifts needed',
+    explain: 'Pick key = 13 at index 2. Comparing with arr[1] = 12: since 12 <= 13, the while loop immediately stops. 13 stays at index 2, expanding the sorted prefix to [11, 12, 13].',
+    intuition: 'When an element is already larger than the prefix maximum, insertion takes O(1) time.'
+  },
+  {
+    title: '5. Step i = 3: Pick Key = 5 (Smaller than Entire Prefix)',
     phase: 'PICK_KEY',
-    codeLine: 12,
-    array: [11, 12, 13, 5, 6],
-    key: 5,
-    keyIdx: 3,
-    j: 2,
-    sortedUpTo: 2,
-    variables: { i: 3, key: 5, j: 2, 'arr[j]': 13 },
-    explain: 'After 13 stays in place, pick key = 5 at index 3. Compare with sorted prefix [11, 12, 13].',
-    intuition: '5 is smaller than all sorted elements, so it will shift all of them.'
+    track: {
+      label: 'Array',
+      items: [11, 12, 13, 5, 6]
+    },
+    activeI: 3,
+    activeJ: 2,
+    metrics: [
+      { label: 'Step i', value: '3' },
+      { label: 'Key', value: '5' },
+      { label: 'Sorted Prefix', value: '[11, 12, 13]' },
+      { label: 'Comparing arr[2]', value: '13 > 5' }
+    ],
+    formula: 'key = 5; will shift all 3 prefix elements right',
+    action: 'Key 5 is smaller than all sorted elements [11, 12, 13]',
+    explain: 'Pick key = 5 at index 3. It will compare against 13, 12, and 11 in sequence. Because 5 is smaller than all of them, each element will shift right by one index.',
+    intuition: 'Smallest values require traversing the full prefix to reach index 0.'
   },
   {
-    title: '5. Shift 13, 12, 11 Right and Insert 5',
+    title: '6. Step i = 3: Shift 13, 12, 11 Right & Insert 5',
     phase: 'INSERTION',
-    codeLine: 20,
-    array: [5, 11, 12, 13, 6],
-    key: 5,
-    keyIdx: 0,
-    j: -1,
-    sortedUpTo: 3,
-    variables: { insertedAt: 0, key: 5, sortedSubarray: '[5, 11, 12, 13]' },
-    explain: 'Elements 13, 12, and 11 shifted right. Key 5 is inserted at index 0. Only index 4 remains.',
-    intuition: 'Adaptive behavior: runs in O(N) when elements are nearly sorted.'
+    track: {
+      label: 'Array',
+      items: [5, 11, 12, 13, 6]
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Inserted at', value: 'arr[0] = 5' },
+      { label: 'Sorted Prefix', value: '[5, 11, 12, 13]' },
+      { label: 'Shifts', value: '3 shifts (13, 12, 11)' }
+    ],
+    formula: 'arr[0] = 5; prefix is now [5, 11, 12, 13]',
+    action: 'All 3 elements shift right; key 5 is placed at index 0',
+    explain: '13 shifts to index 3, 12 shifts to index 2, 11 shifts to index 1. Pointer j reaches -1. Key 5 is inserted at arr[0]. Sorted prefix is now [5, 11, 12, 13].',
+    intuition: 'Shifting maintains relative stability of the existing elements.'
   },
   {
-    title: '6. Final Sorted Array',
+    title: '7. Step i = 4: Pick Key = 6 and Scan Left',
+    phase: 'PICK_KEY',
+    track: {
+      label: 'Array',
+      items: [5, 11, 12, 13, 6]
+    },
+    activeI: 4,
+    activeJ: 3,
+    metrics: [
+      { label: 'Step i', value: '4' },
+      { label: 'Key', value: '6' },
+      { label: 'Comparing arr[3]', value: '13 > 6 (Shift)' }
+    ],
+    formula: 'key = 6; shift 13, 12, 11; stop before 5 (5 <= 6)',
+    action: 'Compare key 6 with prefix elements from right to left',
+    explain: 'Pick key = 6 at index 4. 13 > 6 (shifts right), 12 > 6 (shifts right), 11 > 6 (shifts right). When j reaches index 0, arr[0] = 5 <= 6, so shifting stops!',
+    intuition: 'Shifting terminates as soon as a smaller or equal element is reached.'
+  },
+  {
+    title: '8. Step i = 4: Insert Key 6 at Index 1',
+    phase: 'INSERTION',
+    track: {
+      label: 'Array',
+      items: [5, 6, 11, 12, 13]
+    },
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'Inserted at', value: 'arr[1] = 6' },
+      { label: 'Sorted Array', value: '[5, 6, 11, 12, 13]' },
+      { label: 'Shifts', value: '3 shifts' }
+    ],
+    formula: 'arr[1] = 6; array is completely sorted',
+    action: 'Insert 6 at index 1 between 5 and 11',
+    explain: 'Placing key 6 at index 1 produces [5, 6, 11, 12, 13]. All 5 elements have been processed.',
+    intuition: 'Key slots cleanly into its target location in the sorted prefix.'
+  },
+  {
+    title: '9. Insertion Sort Complete: Fully Sorted Array',
     phase: 'COMPLETED',
-    codeLine: 22,
-    array: [5, 6, 11, 12, 13],
-    key: null,
-    keyIdx: null,
-    j: null,
-    sortedUpTo: 4,
-    variables: { isComplete: true, totalSorted: 5 },
-    explain: 'Key 6 inserted between 5 and 11. The full array is now sorted!',
-    intuition: 'Insertion sort is stable and in-place, ideal for small or almost-sorted datasets.'
+    track: {
+      label: 'Sorted Array',
+      items: [5, 6, 11, 12, 13]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Sorted Array', value: '[5, 6, 11, 12, 13]', highlight: true },
+      { label: 'Time Complexity', value: 'O(N) Best, O(N²) Worst' },
+      { label: 'Space Complexity', value: 'O(1) In-Place' },
+      { label: 'Stability', value: 'Stable (Equal items not shifted)' }
+    ],
+    formula: 'Array fully sorted: [5, 6, 11, 12, 13]',
+    action: 'Insertion sort finished; array is in non-decreasing order',
+    explain: 'The algorithm terminates in O(1) auxiliary space. Insertion sort is stable, in-place, and performs with outstanding speed on partially sorted inputs.',
+    intuition: 'Insertion sort is one of the most efficient algorithms for small or nearly sorted collections.'
   }
 ];
-
-export default function InsertionSortingVisualizer({ currentStep = 0, onStepChange }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-  const maxVal = Math.max(...step.array);
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Floating Key Card Indicator if active */}
-      {step.key !== null && (
-        <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-xs">
-          <span className="font-bold">Active Key:</span>
-          <span className="px-2 py-0.5 rounded bg-amber-500/30 text-white font-bold text-sm">{step.key}</span>
-          <span className="text-[#8e92a4]">(looking for insertion slot)</span>
-        </div>
-      )}
-
-      {/* Array Elements Visualizer */}
-      <div className="w-full flex items-end justify-center gap-3 h-48 bg-[#0c0d12] p-4 rounded-2xl border border-[#20222a]">
-        {step.array.map((val, idx) => {
-          const isSorted = idx <= step.sortedUpTo;
-          const isKey = step.keyIdx === idx;
-          const isJ = step.j === idx;
-          const heightPct = Math.round((val / maxVal) * 80) + 20;
-
-          let barColor = 'bg-[#1c1e28] border-[#2c2f3d] text-[#8e92a4]';
-          if (isKey) barColor = 'bg-amber-500/30 border-amber-500 text-amber-300 scale-105 shadow-md shadow-amber-500/25';
-          else if (isJ) barColor = 'bg-rose-500/30 border-rose-500 text-rose-300';
-          else if (isSorted) barColor = 'bg-emerald-500/20 border-emerald-500 text-emerald-300';
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1.5 flex-1 max-w-[56px]">
-              <span className="text-[11px] font-mono font-bold text-white">{val}</span>
-              <div
-                style={{ height: `${heightPct}%` }}
-                className={`w-full rounded-xl border transition-all duration-300 flex items-center justify-center font-mono text-xs font-semibold ${barColor}`}
-              >
-                {isKey && <span className="text-[10px]">KEY</span>}
-                {isJ && !isKey && <span className="text-[10px]">j</span>}
-              </div>
-              <span className="text-[10px] font-mono text-[#5b5e6e]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex items-center justify-center gap-4 text-xs font-mono">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-          <span className="text-[#8e92a4]">Key Element</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-          <span className="text-[#8e92a4]">Shifting Left (j)</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-          <span className="text-[#8e92a4]">Sorted Partition</span>
-        </div>
-      </div>
-    </div>
-  );
-}

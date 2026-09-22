@@ -174,8 +174,8 @@ export default function PostorderTraversalVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Binary Tree Graph */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Tree Visualization</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Tree Visualization</span>
 
         <div className="flex flex-col items-center gap-4 py-2 w-full">
           {/* Level 0: Root 1 */}
@@ -185,7 +185,7 @@ export default function PostorderTraversalVisualizer({ currentStep = 0 }) {
                 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
                 : step.traversal.includes(1) 
                 ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
-                : 'border-[#272b3c] bg-[#161824] text-slate-400'
+                : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
             }`}>
               1
             </div>
@@ -199,7 +199,7 @@ export default function PostorderTraversalVisualizer({ currentStep = 0 }) {
                   ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
                   : step.traversal.includes(val) 
                   ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
-                  : 'border-[#272b3c] bg-[#161824] text-slate-400'
+                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
               }`}>
                 {val}
               </div>
@@ -214,7 +214,7 @@ export default function PostorderTraversalVisualizer({ currentStep = 0 }) {
                   ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
                   : step.traversal.includes(val) 
                   ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
-                  : 'border-[#272b3c] bg-[#161824] text-slate-400'
+                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
               }`}>
                 {val}
               </div>
@@ -224,7 +224,7 @@ export default function PostorderTraversalVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Traversal Output Array */}
-      <div className="w-full bg-[#12131b] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
+      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
         <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Postorder Traversal Array</span>
         <div className="flex items-center gap-2">
           {step.traversal.map((val, idx) => (
@@ -232,15 +232,15 @@ export default function PostorderTraversalVisualizer({ currentStep = 0 }) {
               <span className="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-sm">
                 {val}
               </span>
-              {idx < step.traversal.length - 1 && <span className="text-slate-600 text-xs font-mono">→</span>}
+              {idx < step.traversal.length - 1 && <span className="text-[var(--chalk-faint)] text-xs font-mono">→</span>}
             </span>
           ))}
-          {step.traversal.length === 0 && <span className="text-xs text-slate-500 italic font-mono">Traversing children first...</span>}
+          {step.traversal.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic font-mono">Traversing children first...</span>}
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

@@ -154,12 +154,12 @@ export default function PalindromeNumberVisualizer({ currentStep = 0 }) {
     <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       {/* Top Comparison Header */}
       <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono">
-          <span className="text-[#8a8ea3]">Original (dup):</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono">
+          <span className="text-[var(--chalk-dim)]">Original (dup):</span>
           <span className="text-blue-300 font-bold text-sm">{step.original}</span>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono">
-          <span className="text-[#8a8ea3]">Reversed (rev):</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono">
+          <span className="text-[var(--chalk-dim)]">Reversed (rev):</span>
           <span className={`font-bold text-sm ${step.isMatch ? 'text-emerald-300' : 'text-amber-300'}`}>
             {step.rev}
           </span>
@@ -167,7 +167,7 @@ export default function PalindromeNumberVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Equality Evaluation Box */}
-      <div className="flex items-center justify-center gap-4 p-5 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl">
+      <div className="flex items-center justify-center gap-4 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl">
         <div className="w-16 h-16 rounded-2xl bg-[#181a24] border border-[#2b2e40] flex items-center justify-center font-mono text-xl font-bold text-blue-300">
           {step.original}
         </div>

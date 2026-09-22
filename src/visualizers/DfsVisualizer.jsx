@@ -155,8 +155,8 @@ export default function DfsVisualizer({ currentStep = 0 }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
         {/* Graph Canvas */}
-        <div className="md:col-span-2 flex flex-col items-center p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl">
-          <span className="text-xs font-mono text-[#8a8ea3] self-start mb-2">Graph DFS Pathway</span>
+        <div className="md:col-span-2 flex flex-col items-center p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl">
+          <span className="text-xs font-mono text-[var(--chalk-dim)] self-start mb-2">Graph DFS Pathway</span>
           <svg width="260" height="210" className="overflow-visible">
             {edges.map((e, idx) => {
               const u = nodes.find(n => n.id === e.u);
@@ -206,7 +206,7 @@ export default function DfsVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Call Stack Panel */}
-        <div className="p-4 rounded-2xl bg-[#12131b] border border-[#242738] flex flex-col justify-between">
+        <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col justify-between">
           <div>
             <span className="text-xs font-mono font-semibold text-purple-400 block mb-2">Recursion Call Stack</span>
             <div className="flex flex-col-reverse gap-1.5 font-mono text-xs">
@@ -216,7 +216,7 @@ export default function DfsVisualizer({ currentStep = 0 }) {
                   className={`p-2 rounded-lg text-center font-bold border transition-all ${
                     idx === step.stack.length - 1
                       ? 'bg-purple-500/25 text-purple-200 border-purple-500/40 shadow-lg'
-                      : 'bg-[#161824] text-[#8a8ea3] border-[#272b3c]'
+                      : 'bg-[var(--board-raised-2)] text-[var(--chalk-dim)] border-[var(--line)]'
                   }`}
                 >
                   dfs({frame}) {idx === step.stack.length - 1 && '◀ TOP'}
@@ -230,7 +230,7 @@ export default function DfsVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.note}
       </div>
     </div>

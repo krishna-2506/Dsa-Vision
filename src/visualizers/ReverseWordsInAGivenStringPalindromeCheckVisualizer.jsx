@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
-  title: 'Reverse Words in a Given String',
+  title: 'Reverse Words in a String',
   category: 'Strings',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(N)',
-  description: 'Reverses the order of words in a string, stripping multiple leading, trailing, and inter-word spaces.'
+  description: 'Reverses the order of words in a string, stripping multiple leading, trailing, and inter-word spaces, and joining the extracted words with a single space delimiter.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Word Tokenization and Reverse Assembly Invariant',
+  nodes: [
+    { id: 'root', label: 'Reverse Words Architecture', children: ['whitespace-trim', 'token-extraction', 'reverse-assembly', 'delimiter-join', 'complexity'] },
+    { id: 'whitespace-trim', label: '1. Whitespace Normalization', detail: 'Scan the raw input string while skipping redundant leading, trailing, and multi-consecutive spaces.' },
+    { id: 'token-extraction', label: '2. Word Token Identification', detail: 'Identify contiguous non-space substrings as distinct word tokens and collect them into a sequence buffer.' },
+    { id: 'reverse-assembly', label: '3. Right-to-Left Traversal', detail: 'Iterate backwards through the token sequence from index (W - 1) down to 0.' },
+    { id: 'delimiter-join', label: '4. Canonical Single-Space Join', detail: 'Concatenate tokens with exactly one delimiter space between adjacent words, producing clean normalized output.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Single pass tokenization O(N) time with O(N) auxiliary space for word storage.' }
+  ]
 };
 
 export const solutions = {
@@ -38,13 +52,14 @@ public:
     }
 };`,
   python: `# Python 3 Reverse Words in a String
+# Time Complexity: O(N) | Space Complexity: O(N)
 class Solution:
     def reverseWords(self, s: str) -> str:
-        # Split on whitespace and filter empty tokens
+        # Split automatically collapses multi-space delimiters and strips ends
         words = s.split()
-        # Join words in reverse order
         return " ".join(reversed(words))`,
   java: `// Java Reverse Words in a String
+// Time Complexity: O(N) | Space Complexity: O(N)
 class Solution {
     public String reverseWords(String s) {
         String[] words = s.trim().split("\\\\s+");
@@ -59,6 +74,7 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Reverse Words in a String
+// Time Complexity: O(N) | Space Complexity: O(N)
 var reverseWords = function(s) {
     const words = s.trim().split(/\\s+/);
     return words.reverse().join(' ');
@@ -67,132 +83,259 @@ var reverseWords = function(s) {
 
 export const steps = [
   {
-    title: '1. Raw Input String: "  the sky is  blue  "',
+    title: '1. Raw String Input Inspection',
     phase: 'INITIAL',
-    codeLine: 13,
-    rawStr: '  the sky is  blue  ',
-    tokens: [],
-    reversedTokens: [],
-    activeWord: null,
-    variables: { raw: '"  the sky is  blue  "', wordsExtracted: 0 },
-    explain: 'The input string contains leading, trailing, and multiple spaces between words. We need to extract words and invert their order.',
-    intuition: 'Tokenize words cleanly while ignoring redundant whitespace.'
+    codeLine: 23,
+    track: {
+      label: 'Input String Stream: "  the sky is  blue  "',
+      items: [
+        { val: 'sp', status: 'dim' },
+        { val: 'sp', status: 'dim' },
+        { val: 'the', status: 'current' },
+        { val: 'sp', status: 'dim' },
+        { val: 'sky', status: 'default' },
+        { val: 'sp', status: 'dim' },
+        { val: 'is', status: 'default' },
+        { val: 'sp', status: 'dim' },
+        { val: 'sp', status: 'dim' },
+        { val: 'blue', status: 'default' },
+        { val: 'sp', status: 'dim' }
+      ],
+      pointers: { scan: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    activeI: 2,
+    activeJ: null,
+    metrics: [
+      { label: 'Words Found', value: '0' },
+      { label: 'Leading Spaces', value: 'Skipped' },
+      { label: 'Phase', value: 'Scan Stream' }
+    ],
+    formula: 'while (ss >> word) { words.push_back(word); }',
+    action: 'Skip leading spaces and initialize token extractor on input string.',
+    explain: 'Input contains irregular whitespace: leading spaces, double spaces, and trailing spaces.',
+    intuition: 'Stream reading or regex splitting cleanly isolates words from irrelevant padding.'
   },
   {
-    title: '2. Extract Words: ["the", "sky", "is", "blue"]',
-    phase: 'EXTRACT',
-    codeLine: 18,
-    rawStr: '  the sky is  blue  ',
-    tokens: ['the', 'sky', 'is', 'blue'],
-    reversedTokens: [],
-    activeWord: 'blue',
-    variables: { totalWords: 4, tokens: '["the", "sky", "is", "blue"]' },
-    explain: 'Whitespace-separated stream reading yields 4 clean tokens: "the", "sky", "is", and "blue".',
-    intuition: 'Now we iterate from the end of the word array backwards.'
-  },
-  {
-    title: '3. Append Word 3: "blue"',
-    phase: 'REVERSING',
-    codeLine: 24,
-    rawStr: '  the sky is  blue  ',
-    tokens: ['the', 'sky', 'is', 'blue'],
-    reversedTokens: ['blue'],
-    activeWord: 'blue',
-    variables: { currentResult: '"blue"', remaining: 3 },
-    explain: 'Last word "blue" becomes the first word in the reversed sequence.',
-    intuition: 'First word placed.'
-  },
-  {
-    title: '4. Append Word 2: "blue is"',
-    phase: 'REVERSING',
-    codeLine: 24,
-    rawStr: '  the sky is  blue  ',
-    tokens: ['the', 'sky', 'is', 'blue'],
-    reversedTokens: ['blue', 'is'],
-    activeWord: 'is',
-    variables: { currentResult: '"blue is"', remaining: 2 },
-    explain: 'Append word "is" with a single intervening space.',
-    intuition: 'Second word appended.'
-  },
-  {
-    title: '5. Append Word 1: "blue is sky"',
-    phase: 'REVERSING',
-    codeLine: 24,
-    rawStr: '  the sky is  blue  ',
-    tokens: ['the', 'sky', 'is', 'blue'],
-    reversedTokens: ['blue', 'is', 'sky'],
-    activeWord: 'sky',
-    variables: { currentResult: '"blue is sky"', remaining: 1 },
-    explain: 'Append word "sky" with space.',
-    intuition: 'Third word appended.'
-  },
-  {
-    title: '6. Append Word 0: "blue is sky the" -> Final Output',
-    phase: 'COMPLETED',
+    title: '2. Extract First Word Token: "the"',
+    phase: 'TOKENIZE',
     codeLine: 28,
-    rawStr: '  the sky is  blue  ',
-    tokens: ['the', 'sky', 'is', 'blue'],
-    reversedTokens: ['blue', 'is', 'sky', 'the'],
-    activeWord: 'the',
-    variables: { finalResult: '"blue is sky the"', timeComplexity: 'O(N)', spaceComplexity: 'O(N)' },
-    explain: 'All words have been assembled in reverse order with singular spaces and no extra margins: "blue is sky the".',
-    intuition: 'Word reversal complete.'
+    track: {
+      label: 'Extracted Word Sequence',
+      items: [
+        { val: 'the', status: 'selected' },
+        { val: '-', status: 'dim' },
+        { val: '-', status: 'dim' },
+        { val: '-', status: 'dim' }
+      ],
+      pointers: { token: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    activeI: 0,
+    activeJ: null,
+    metrics: [
+      { label: 'Words Found', value: '1 ("the")' },
+      { label: 'Buffer Size', value: '1' },
+      { label: 'Next Search', value: 'index 6' }
+    ],
+    formula: 'words.push_back("the")',
+    action: 'Token "the" extracted and stored at tokens[0]. Advance scanner past spaces.',
+    explain: 'Scanner detects characters "t-h-e" bounded by whitespace, pushing it to the word array.',
+    intuition: 'Each non-space contiguous group forms a semantic word token.'
+  },
+  {
+    title: '3. Extract Second Word Token: "sky"',
+    phase: 'TOKENIZE',
+    codeLine: 28,
+    track: {
+      label: 'Extracted Word Sequence',
+      items: [
+        { val: 'the', status: 'default' },
+        { val: 'sky', status: 'selected' },
+        { val: '-', status: 'dim' },
+        { val: '-', status: 'dim' }
+      ],
+      pointers: { token: { idx: 1, color: 'var(--accent-bright)' } }
+    },
+    activeI: 1,
+    activeJ: null,
+    metrics: [
+      { label: 'Words Found', value: '2 ("sky")' },
+      { label: 'Buffer Size', value: '2' },
+      { label: 'Next Search', value: 'index 10' }
+    ],
+    formula: 'words.push_back("sky")',
+    action: 'Skip single space separator and capture second word "sky" into tokens[1].',
+    explain: 'Scanner advances past whitespace at index 5 and consumes word "sky".',
+    intuition: 'Array buffer holds words in their original forward sequence.'
+  },
+  {
+    title: '4. Tokenization Completed: 4 Clean Words',
+    phase: 'TOKENIZE',
+    codeLine: 31,
+    track: {
+      label: 'Extracted Word Sequence (Forward Order)',
+      items: [
+        { val: 'the', status: 'default' },
+        { val: 'sky', status: 'default' },
+        { val: 'is', status: 'default' },
+        { val: 'blue', status: 'default' }
+      ],
+      pointers: { last: { idx: 3, color: 'var(--accent-bright)' } }
+    },
+    activeI: 3,
+    activeJ: null,
+    metrics: [
+      { label: 'Total Words', value: '4' },
+      { label: 'Clean Tokens', value: '["the", "sky", "is", "blue"]' },
+      { label: 'Reverse Start', value: 'index 3' }
+    ],
+    formula: 'total = 4; i = total - 1;',
+    action: 'All 4 words extracted. Trailing whitespace ignored. Prepare backwards loop.',
+    explain: 'Tokens list contains ["the", "sky", "is", "blue"]. To reverse sentence order, traverse backwards.',
+    intuition: 'Reversing an array of tokens preserves intra-word spelling while inverting sentence word order.'
+  },
+  {
+    title: '5. Reverse Step 1: Prepend Final Word "blue"',
+    phase: 'REVERSE',
+    codeLine: 33,
+    track: {
+      label: 'Token Source Array (Reverse Reading)',
+      items: [
+        { val: 'the', status: 'default' },
+        { val: 'sky', status: 'default' },
+        { val: 'is', status: 'default' },
+        { val: 'blue', status: 'match' }
+      ],
+      pointers: { read: { idx: 3, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Reversed Output Accumulator',
+      items: [
+        { val: 'blue', status: 'match' },
+        { val: '-', status: 'dim' },
+        { val: '-', status: 'dim' },
+        { val: '-', status: 'dim' }
+      ],
+      activeI: 0
+    },
+    activeI: 3,
+    activeJ: 0,
+    metrics: [
+      { label: 'Read Index', value: '3 ("blue")' },
+      { label: 'Result', value: '"blue"' },
+      { label: 'Remaining', value: '3 words' }
+    ],
+    formula: 'result += words[3]; // "blue"',
+    action: 'Last word "blue" becomes the first token in reversed sequence.',
+    explain: 'Starting reverse iteration at index 3. Word "blue" appended to accumulator.',
+    intuition: 'The last word in the input sentence is the first word in the output.'
+  },
+  {
+    title: '6. Reverse Step 2: Append Word "is"',
+    phase: 'REVERSE',
+    codeLine: 33,
+    track: {
+      label: 'Token Source Array (Reverse Reading)',
+      items: [
+        { val: 'the', status: 'default' },
+        { val: 'sky', status: 'default' },
+        { val: 'is', status: 'match' },
+        { val: 'blue', status: 'visited' }
+      ],
+      pointers: { read: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Reversed Output Accumulator',
+      items: [
+        { val: 'blue', status: 'visited' },
+        { val: 'is', status: 'match' },
+        { val: '-', status: 'dim' },
+        { val: '-', status: 'dim' }
+      ],
+      activeI: 1
+    },
+    activeI: 2,
+    activeJ: 1,
+    metrics: [
+      { label: 'Read Index', value: '2 ("is")' },
+      { label: 'Result', value: '"blue is"' },
+      { label: 'Remaining', value: '2 words' }
+    ],
+    formula: 'result += " " + words[2]; // "blue is"',
+    action: 'Append delimiter space followed by word "is".',
+    explain: 'Result is now "blue is". Exactly one space separates adjacent words.',
+    intuition: 'Inject single space delimiters between successive reversed tokens.'
+  },
+  {
+    title: '7. Reverse Step 3: Append Word "sky"',
+    phase: 'REVERSE',
+    codeLine: 33,
+    track: {
+      label: 'Token Source Array (Reverse Reading)',
+      items: [
+        { val: 'the', status: 'default' },
+        { val: 'sky', status: 'match' },
+        { val: 'is', status: 'visited' },
+        { val: 'blue', status: 'visited' }
+      ],
+      pointers: { read: { idx: 1, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Reversed Output Accumulator',
+      items: [
+        { val: 'blue', status: 'visited' },
+        { val: 'is', status: 'visited' },
+        { val: 'sky', status: 'match' },
+        { val: '-', status: 'dim' }
+      ],
+      activeI: 2
+    },
+    activeI: 1,
+    activeJ: 2,
+    metrics: [
+      { label: 'Read Index', value: '1 ("sky")' },
+      { label: 'Result', value: '"blue is sky"' },
+      { label: 'Remaining', value: '1 word' }
+    ],
+    formula: 'result += " " + words[1]; // "blue is sky"',
+    action: 'Append space and token "sky". Decrement read index to 0.',
+    explain: 'Accumulator contains "blue is sky". Only index 0 ("the") remains.',
+    intuition: 'Each backward step moves one word closer to the start of the sentence.'
+  },
+  {
+    title: '8. Final Token "the" Appended: Normalized String Returned',
+    phase: 'COMPLETED',
+    codeLine: 37,
+    track: {
+      label: 'Token Source Array (All Words Processed)',
+      items: [
+        { val: 'the', status: 'match' },
+        { val: 'sky', status: 'visited' },
+        { val: 'is', status: 'visited' },
+        { val: 'blue', status: 'visited' }
+      ],
+      pointers: { done: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    auxiliaryTrack: {
+      label: 'Final Reversed String Output',
+      items: [
+        { val: 'blue', status: 'match' },
+        { val: 'is', status: 'match' },
+        { val: 'sky', status: 'match' },
+        { val: 'the', status: 'match' }
+      ],
+      activeI: null
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Final Result', value: '"blue is sky the"', highlight: true },
+      { label: 'Total Words', value: '4' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(N)' }
+    ],
+    formula: 'return result; // "blue is sky the"',
+    action: 'Word 0 appended. No trailing space added. Return final reversed string.',
+    explain: 'All words assembled in reverse with single space separators and no irregular spacing.',
+    intuition: 'Tokenize then reverse is simple, linear O(N) time and handles arbitrary whitespace robustly.'
   }
 ];
-
-export default function ReverseWordsInAGivenStringPalindromeCheckVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Raw string banner */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-3 flex flex-col gap-1 text-xs font-mono">
-        <span className="text-[#656a82] font-medium">Input String:</span>
-        <span className="text-amber-300 bg-[#161824] px-3 py-1.5 rounded-lg border border-[#2b2e40] overflow-x-auto">
-          {step.rawStr}
-        </span>
-      </div>
-
-      {/* Extracted tokens */}
-      <div className="w-full flex flex-col items-center gap-2">
-        <span className="text-[11px] font-mono text-[#8a8ea3]">Extracted Tokens:</span>
-        <div className="flex items-center gap-2 flex-wrap justify-center">
-          {step.tokens.length === 0 ? (
-            <span className="text-xs font-mono text-[#5b6076] italic">Parsing in progress...</span>
-          ) : (
-            step.tokens.map((word, idx) => (
-              <span
-                key={idx}
-                className={`px-3 py-1.5 rounded-xl border font-mono text-xs transition-all ${
-                  step.activeWord === word
-                    ? 'border-amber-500 bg-amber-500/20 text-amber-300 font-bold'
-                    : 'border-[#2c3046] bg-[#161824] text-[#8a8ea3]'
-                }`}
-              >
-                [{idx}] "{word}"
-              </span>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Reversed Result Box */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
-        <span className="text-[11px] text-emerald-400 font-semibold tracking-wider uppercase">
-          Reversed Word Output:
-        </span>
-        <div className="w-full flex items-center justify-center gap-2 min-h-[44px] px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 font-bold text-sm">
-          {step.reversedTokens.length > 0 ? (
-            step.reversedTokens.map((w, idx) => (
-              <span key={idx} className="bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/40">
-                {w}
-              </span>
-            ))
-          ) : (
-            <span className="text-emerald-400/50 italic text-xs">Waiting for tokens...</span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

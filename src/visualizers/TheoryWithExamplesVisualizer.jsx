@@ -104,9 +104,9 @@ export default function TheoryWithExamplesVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Complexity Reference Matrix</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Complexity Reference Matrix</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
@@ -114,15 +114,15 @@ export default function TheoryWithExamplesVisualizer({ currentStep = 0 }) {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
           {bounds.map((b, idx) => (
-            <div key={idx} className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c] flex flex-col justify-between">
+            <div key={idx} className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col justify-between">
               <span className={`text-sm font-bold font-mono ${b.color}`}>{b.complexity}</span>
-              <span className="text-[11px] text-slate-300">{b.name}</span>
-              <span className="text-[10px] font-mono text-slate-500 mt-1">Max N: {b.maxN}</span>
+              <span className="text-[11px] text-[var(--chalk-dim)]">{b.name}</span>
+              <span className="text-[10px] font-mono text-[var(--chalk-faint)] mt-1">Max N: {b.maxN}</span>
             </div>
           ))}
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

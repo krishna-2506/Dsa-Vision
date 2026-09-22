@@ -127,24 +127,24 @@ export default function SwapTwoNumbersVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Value Cards */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-around gap-4 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-around gap-4 font-mono">
         {/* Variable A Card */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-xs text-amber-400 font-bold">Variable A:</span>
           <div className="w-24 h-24 rounded-2xl border-2 border-amber-400/60 bg-amber-500/15 text-amber-200 flex flex-col items-center justify-center gap-1 shadow-lg shadow-amber-500/20">
             <span className="text-3xl font-bold">{step.a}</span>
-            <span className="text-xs text-[#8a8ea3]">{step.binaryA}_2</span>
+            <span className="text-xs text-[var(--chalk-dim)]">{step.binaryA}_2</span>
           </div>
         </div>
 
-        <div className="text-2xl font-bold text-[#8a8ea3]">&hArr;</div>
+        <div className="text-2xl font-bold text-[var(--chalk-dim)]">&hArr;</div>
 
         {/* Variable B Card */}
         <div className="flex flex-col items-center gap-2">
           <span className="text-xs text-cyan-400 font-bold">Variable B:</span>
           <div className="w-24 h-24 rounded-2xl border-2 border-cyan-400/60 bg-cyan-500/15 text-cyan-200 flex flex-col items-center justify-center gap-1 shadow-lg shadow-cyan-500/20">
             <span className="text-3xl font-bold">{step.b}</span>
-            <span className="text-xs text-[#8a8ea3]">{step.binaryB}_2</span>
+            <span className="text-xs text-[var(--chalk-dim)]">{step.binaryB}_2</span>
           </div>
         </div>
       </div>

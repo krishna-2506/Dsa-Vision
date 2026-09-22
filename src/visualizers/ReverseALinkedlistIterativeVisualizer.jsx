@@ -171,7 +171,7 @@ export default function ReverseALinkedlistIterativeVisualizer({ currentStep = 0 
           const isCurr = step.currIdx === idx;
           const conn = step.connections[idx]; // link between node idx and idx+1
 
-          let nodeStyle = 'bg-[#181a24] text-white border-[#2b2e40]';
+          let nodeStyle = 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]';
           if (step.phase === 'COMPLETED' && isPrev) {
             nodeStyle = 'bg-emerald-500/25 text-emerald-300 border-emerald-400 scale-110 shadow-lg shadow-emerald-500/20';
           } else if (isCurr) {
@@ -185,8 +185,8 @@ export default function ReverseALinkedlistIterativeVisualizer({ currentStep = 0 
               <div className="flex flex-col items-center gap-1 min-w-[56px]">
                 {/* Pointer Markers */}
                 <div className="h-6 flex items-center gap-1 text-[10px] font-mono font-bold">
-                  {isPrev && <span className="px-1.5 py-0.5 rounded bg-indigo-500 text-white">prev</span>}
-                  {isCurr && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">curr</span>}
+                  {isPrev && <span className="px-1.5 py-0.5 rounded bg-indigo-500 text-[var(--chalk)]">prev</span>}
+                  {isCurr && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">curr</span>}
                 </div>
 
                 {/* Node Box */}
@@ -216,7 +216,7 @@ export default function ReverseALinkedlistIterativeVisualizer({ currentStep = 0 
       </div>
 
       {/* Explanation Tag */}
-      <div className="flex items-center gap-4 text-xs font-mono text-[#8a8ea3]">
+      <div className="flex items-center gap-4 text-xs font-mono text-[var(--chalk-dim)]">
         <div className="flex items-center gap-1.5">
           <span className="text-emerald-400 font-bold">←</span>
           <span>Reversed Link</span>

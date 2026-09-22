@@ -339,7 +339,7 @@ export default function CountOccurrencesInASortedArrayVisualizer({ currentStep =
           const isLastCandidate = step.lastIndex === idx;
           const isEliminated = step.low !== null && step.high !== null && (idx < step.low || idx > step.high);
 
-          let style = 'bg-[#181a24] text-white border-[#2b2e40]';
+          let style = 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]';
           if (step.phase === 'RESULT' && isTargetRange) {
             style = 'bg-emerald-500/25 text-emerald-300 border-emerald-400 scale-105 shadow-lg shadow-emerald-500/20';
           } else if (isMid) {
@@ -354,9 +354,9 @@ export default function CountOccurrencesInASortedArrayVisualizer({ currentStep =
             <div key={idx} className="flex flex-col items-center gap-1 min-w-[46px]">
               {/* Pointer Markers */}
               <div className="h-6 flex items-center gap-0.5 text-[9px] font-mono font-bold">
-                {isLow && <span className="px-1 py-0.5 rounded bg-blue-500 text-white">L</span>}
-                {isMid && <span className="px-1 py-0.5 rounded bg-amber-500 text-white">M</span>}
-                {isHigh && <span className="px-1 py-0.5 rounded bg-purple-500 text-white">H</span>}
+                {isLow && <span className="px-1 py-0.5 rounded bg-blue-500 text-[var(--chalk)]">L</span>}
+                {isMid && <span className="px-1 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">M</span>}
+                {isHigh && <span className="px-1 py-0.5 rounded bg-purple-500 text-[var(--chalk)]">H</span>}
               </div>
 
               {/* Box */}
@@ -371,9 +371,9 @@ export default function CountOccurrencesInASortedArrayVisualizer({ currentStep =
       </div>
 
       {/* Result Calculation Card */}
-      <div className="w-full max-w-md p-4 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col items-center justify-center gap-2">
-        <div className="text-xs text-[#8a8ea3] font-mono">Occurrence Formula:</div>
-        <div className="text-base font-mono font-bold text-white flex items-center gap-2">
+      <div className="w-full max-w-md p-4 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center justify-center gap-2">
+        <div className="text-xs text-[var(--chalk-dim)] font-mono">Occurrence Formula:</div>
+        <div className="text-base font-mono font-bold text-[var(--chalk)] flex items-center gap-2">
           <span>Count = </span>
           <span className="text-purple-400">{step.lastIndex !== -1 ? step.lastIndex : 'last'}</span>
           <span> - </span>

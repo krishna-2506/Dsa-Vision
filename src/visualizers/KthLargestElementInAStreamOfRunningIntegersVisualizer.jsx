@@ -165,8 +165,8 @@ export default function KthLargestElementInAStreamOfRunningIntegersVisualizer({ 
       </div>
 
       {/* Heap State Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           Bounded Min-Heap Elements (Size = {step.k})
         </span>
 
@@ -180,7 +180,7 @@ export default function KthLargestElementInAStreamOfRunningIntegersVisualizer({ 
                   : 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300'
               }`}
             >
-              <span className="text-[9px] text-[#8a8ea3]">
+              <span className="text-[9px] text-[var(--chalk-dim)]">
                 {idx === 0 ? 'Kth Largest' : 'Top K Element'}
               </span>
               <span className="text-xl font-bold mt-0.5">{val}</span>
@@ -189,8 +189,8 @@ export default function KthLargestElementInAStreamOfRunningIntegersVisualizer({ 
         </div>
 
         {/* Stream History */}
-        <div className="w-full border-t border-[#272b3c] pt-3 flex flex-col items-center gap-2">
-          <span className="text-[11px] font-mono text-slate-400">
+        <div className="w-full border-t border-[var(--line)] pt-3 flex flex-col items-center gap-2">
+          <span className="text-[11px] font-mono text-[var(--chalk-dim)]">
             Stream History (latest to right):
           </span>
           <div className="flex flex-wrap items-center justify-center gap-2 font-mono text-xs">
@@ -200,7 +200,7 @@ export default function KthLargestElementInAStreamOfRunningIntegersVisualizer({ 
                 className={`px-2.5 py-1 rounded-lg border ${
                   x === step.addedVal
                     ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold'
-                    : 'bg-[#161824] border-[#272b3c] text-slate-400'
+                    : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
                 }`}
               >
                 {x}
@@ -211,7 +211,7 @@ export default function KthLargestElementInAStreamOfRunningIntegersVisualizer({ 
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

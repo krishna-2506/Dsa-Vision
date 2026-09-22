@@ -1,17 +1,31 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Jump Game II (Minimum Jumps)',
   category: 'Greedy Algorithms',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Calculates the minimum number of jumps required to reach the last index using a greedy window / BFS level-order reachability approach.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Calculates the minimum number of jumps required to reach the last index in an integer array using greedy level-order BFS window expansion.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'BFS Window Jump Frontier Invariant',
+  nodes: [
+    { id: 'root', label: 'Greedy Window BFS', children: ['bfs-range', 'farthest-relaxation', 'window-shift', 'jump-increment', 'complexity'] },
+    { id: 'bfs-range', label: '1. Jump Horizon [l, r]', detail: 'Maintain current jump interval [l, r] containing all indices reachable with exactly `jumps` steps.' },
+    { id: 'farthest-relaxation', label: '2. Farthest Horizon Exploration', detail: 'Iterate i through [l, r], computing farthest = max(farthest, i + nums[i]) across all candidates.' },
+    { id: 'window-shift', label: '3. Range Advancement', detail: 'Once the current jump interval [l, r] is exhausted, set the next interval: l = r + 1, r = farthest.' },
+    { id: 'jump-increment', label: '4. Level Increment', detail: 'Increment jumps counter by 1. Terminate when the right boundary r reaches or exceeds n - 1.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Each index is inspected exactly once; runtime is strictly O(N) with O(1) auxiliary variables.' }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Jump Game II (Greedy Window / BFS)
-// Time: O(N) | Space: O(1)
+// Time Complexity: O(N) | Space Complexity: O(1)
 #include <vector>
 #include <algorithm>
 using namespace std;
@@ -25,11 +39,9 @@ public:
 
         while (r < n - 1) {
             int farthest = 0;
-            // Scan all positions in the current jump window [l, r]
             for (int i = l; i <= r; i++) {
                 farthest = max(farthest, i + nums[i]);
             }
-            // Advance to next jump window
             l = r + 1;
             r = farthest;
             jumps++;
@@ -39,6 +51,7 @@ public:
     }
 };`,
   python: `# Python 3 Jump Game II (Greedy Window / BFS)
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def jump(self, nums: list[int]) -> int:
         jumps = 0
@@ -55,6 +68,7 @@ class Solution:
 
         return jumps`,
   java: `// Java Jump Game II (Greedy Window / BFS)
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public int jump(int[] nums) {
         int jumps = 0;
@@ -75,6 +89,7 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Jump Game II (Greedy Window / BFS)
+// Time Complexity: O(N) | Space Complexity: O(1)
 var jump = function(nums) {
     let jumps = 0;
     let l = 0, r = 0;
@@ -96,126 +111,246 @@ var jump = function(nums) {
 
 export const steps = [
   {
-    title: '1. Array: [2, 3, 1, 1, 4], Start Window: [0...0], Jumps = 0',
+    title: '1. Problem Setup & Initial BFS Window: [0, 0]',
     phase: 'INITIAL',
-    codeLine: 12,
-    nums: [2, 3, 1, 1, 4],
-    l: 0,
-    r: 0,
-    farthest: 0,
-    jumps: 0,
-    variables: { l: 0, r: 0, jumps: 0, target: 4 },
-    explain: 'Greedy insight: think in BFS levels. At jump 0, we can only be at index 0 (window [0, 0]).',
-    intuition: 'Each jump corresponds to moving one level deeper in BFS.'
+    codeLine: 13,
+    track: {
+      label: 'Jump Array: nums = [2, 3, 1, 1, 4]',
+      items: [
+        { val: 'nums[0]=2', status: 'current' },
+        { val: 'nums[1]=3', status: 'default' },
+        { val: 'nums[2]=1', status: 'default' },
+        { val: 'nums[3]=1', status: 'default' },
+        { val: 'nums[4]=4', status: 'default' }
+      ],
+      pointers: { L: { idx: 0, color: 'var(--accent-bright)' }, R: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    activeI: 0,
+    activeJ: 0,
+    windowStart: 0,
+    windowEnd: 0,
+    metrics: [
+      { label: 'Jumps Made', value: '0' },
+      { label: 'Current Window', value: '[0..0]' },
+      { label: 'Target Index', value: '4' },
+      { label: 'farthest', value: '0' }
+    ],
+    formula: 'l = 0, r = 0, jumps = 0; target = n - 1 = 4;',
+    action: 'Initialize BFS jump frontier at index 0: [l=0, r=0]. Target destination is index 4.',
+    explain: 'With 0 jumps, the only accessible index is index 0. We will find the maximum horizon reachable in 1 jump.',
+    intuition: 'Treat indices reachable in K jumps as Level K in an unweighted BFS tree.'
   },
   {
-    title: '2. Jump 1: Scan Window [0...0] -> Farthest = 0 + 2 = 2',
+    title: '2. Level 0 Scan: i = 0 -> farthest = 0 + 2 = 2',
     phase: 'SCAN_WINDOW',
     codeLine: 19,
-    nums: [2, 3, 1, 1, 4],
-    l: 0,
-    r: 0,
-    farthest: 2,
-    jumps: 0,
-    variables: { window: '[0...0]', farthest: 2 },
-    explain: 'From index 0, maximum jump is 2. Farthest reach = 2.',
-    intuition: 'First jump can take us anywhere in range [1...2].'
+    track: {
+      label: 'Scanning Window [0..0]',
+      items: [
+        { val: 'nums[0]=2', status: 'match' },
+        { val: 'nums[1]=3', status: 'selected' },
+        { val: 'nums[2]=1', status: 'selected' },
+        { val: 'nums[3]=1', status: 'default' },
+        { val: 'nums[4]=4', status: 'default' }
+      ],
+      pointers: { i: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    activeI: 0,
+    activeJ: 0,
+    windowStart: 0,
+    windowEnd: 0,
+    metrics: [
+      { label: 'Current i', value: '0' },
+      { label: 'Jump Reach', value: '0 + 2 = 2', highlight: true },
+      { label: 'farthest', value: '2' },
+      { label: 'Level Status', value: 'Window [0..0] complete' }
+    ],
+    formula: 'farthest = max(0, 0 + nums[0]) = 2;',
+    action: 'From index 0, jumping up to 2 steps reaches index 2. Update farthest = 2.',
+    explain: 'All indices in current level [0..0] are evaluated. Next jump can reach any index from 1 to 2.',
+    intuition: 'The next BFS level boundary will span from r + 1 to farthest.'
   },
   {
-    title: '3. Execute Jump 1: Jumps = 1, New Window = [1...2]',
-    phase: 'ADVANCE_WINDOW',
+    title: '3. Advance to Jump Level 1: Window [1..2], jumps = 1',
+    phase: 'NEXT_LEVEL',
     codeLine: 23,
-    nums: [2, 3, 1, 1, 4],
-    l: 1,
-    r: 2,
-    farthest: 2,
-    jumps: 1,
-    variables: { l: 1, r: 2, jumps: 1 },
-    explain: 'Next window of positions reachable with 1 jump is [1...2]. Jumps increments to 1.',
-    intuition: 'BFS level 1 complete.'
+    track: {
+      label: 'Jump Level 1 Window: [1..2]',
+      items: [
+        { val: 'nums[0]=2', status: 'visited' },
+        { val: 'nums[1]=3', status: 'current' },
+        { val: 'nums[2]=1', status: 'current' },
+        { val: 'nums[3]=1', status: 'default' },
+        { val: 'nums[4]=4', status: 'default' }
+      ],
+      pointers: { L: { idx: 1, color: 'var(--accent-bright)' }, R: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    activeI: 1,
+    activeJ: 2,
+    windowStart: 1,
+    windowEnd: 2,
+    metrics: [
+      { label: 'Jumps Made', value: '1', highlight: true },
+      { label: 'New Window', value: '[1..2]' },
+      { label: 'farthest', value: 'reset to 0' },
+      { label: 'Target Covered?', value: 'false (2 < 4)' }
+    ],
+    formula: 'l = r + 1 = 1; r = farthest = 2; jumps++;',
+    action: 'Commit Jump 1. Set l = 1, r = 2. Any index in [1..2] is reachable in 1 jump.',
+    explain: 'Since r = 2 < target (4), we must make at least one more jump. Now scan window [1..2] to maximize next jump.',
+    intuition: 'Level 1 encompasses indices {1, 2}.'
   },
   {
-    title: '4. Scan Window [1...2]: Index 1 gives 1 + 3 = 4, Index 2 gives 2 + 1 = 3 -> Farthest = 4',
+    title: '4. Level 1 Scan: i = 1 -> farthest = max(0, 1 + 3) = 4',
     phase: 'SCAN_WINDOW',
     codeLine: 19,
-    nums: [2, 3, 1, 1, 4],
-    l: 1,
-    r: 2,
-    farthest: 4,
-    jumps: 1,
-    variables: { 'farthest(i=1)': 4, 'farthest(i=2)': 3, maxFarthest: 4 },
-    explain: 'Testing all choices in window [1...2]: index 1 allows jumping to index 4 (the target!).',
-    intuition: 'Greedy picks the maximum reach among all nodes in current level.'
+    track: {
+      label: 'Evaluating i = 1 in Window [1..2]',
+      items: [
+        { val: 'nums[0]=2', status: 'visited' },
+        { val: 'nums[1]=3', status: 'match' },
+        { val: 'nums[2]=1', status: 'selected' },
+        { val: 'nums[3]=1', status: 'selected' },
+        { val: 'nums[4]=4', status: 'match' }
+      ],
+      pointers: { i: { idx: 1, color: 'var(--accent-bright)' }, target: { idx: 4, color: 'var(--accent-bright)' } }
+    },
+    activeI: 1,
+    activeJ: 2,
+    windowStart: 1,
+    windowEnd: 2,
+    metrics: [
+      { label: 'Current i', value: '1' },
+      { label: 'Jump Reach', value: '1 + 3 = 4', highlight: true },
+      { label: 'farthest', value: '4' },
+      { label: 'Target Reached?', value: 'Yes (4 >= 4)', highlight: true }
+    ],
+    formula: 'farthest = max(0, 1 + nums[1]) = 4;',
+    action: 'At index 1, jump power is 3. Reach is 1 + 3 = 4. farthest expands to 4.',
+    explain: 'Index 1 can jump directly to index 4 (the target destination).',
+    intuition: 'We continue scanning the remainder of window [1..2] to maintain BFS invariant.'
   },
   {
-    title: '5. Execute Jump 2: Jumps = 2, New Window = [3...4], Target 4 in range!',
+    title: '5. Level 1 Scan: i = 2 -> farthest = max(4, 2 + 1) = 4',
+    phase: 'SCAN_WINDOW',
+    codeLine: 19,
+    track: {
+      label: 'Evaluating i = 2 in Window [1..2]',
+      items: [
+        { val: 'nums[0]=2', status: 'visited' },
+        { val: 'nums[1]=3', status: 'visited' },
+        { val: 'nums[2]=1', status: 'current' },
+        { val: 'nums[3]=1', status: 'selected' },
+        { val: 'nums[4]=4', status: 'match' }
+      ],
+      pointers: { i: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    activeI: 2,
+    activeJ: 2,
+    windowStart: 1,
+    windowEnd: 2,
+    metrics: [
+      { label: 'Current i', value: '2' },
+      { label: 'Jump Reach', value: '2 + 1 = 3' },
+      { label: 'farthest', value: 'max(4, 3) = 4' },
+      { label: 'Level 1 Done', value: 'true' }
+    ],
+    formula: 'farthest = max(4, 2 + nums[2]) = 4;',
+    action: 'At index 2, jump power is 1 (reach = 3). farthest remains 4. Window [1..2] fully inspected.',
+    explain: 'Both candidates in Level 1 evaluated. Best forward horizon is index 4.',
+    intuition: 'Index 1 provided the superior jump reach of 4.'
+  },
+  {
+    title: '6. Advance to Jump Level 2: Window [3..4], jumps = 2',
+    phase: 'NEXT_LEVEL',
+    codeLine: 23,
+    track: {
+      label: 'Jump Level 2 Window: [3..4]',
+      items: [
+        { val: 'nums[0]=2', status: 'visited' },
+        { val: 'nums[1]=3', status: 'visited' },
+        { val: 'nums[2]=1', status: 'visited' },
+        { val: 'nums[3]=1', status: 'match' },
+        { val: 'nums[4]=4', status: 'match' }
+      ],
+      pointers: { L: { idx: 3, color: 'var(--accent-bright)' }, R: { idx: 4, color: 'var(--accent-bright)' } }
+    },
+    activeI: 3,
+    activeJ: 4,
+    windowStart: 3,
+    windowEnd: 4,
+    metrics: [
+      { label: 'Jumps Made', value: '2', highlight: true },
+      { label: 'New Window', value: '[3..4]' },
+      { label: 'Right Boundary', value: 'r = 4' },
+      { label: 'Target Reached?', value: 'true (r >= 4)', highlight: true }
+    ],
+    formula: 'l = 2 + 1 = 3; r = farthest = 4; jumps++; // jumps: 1 -> 2',
+    action: 'Commit Jump 2. Window expands to [3..4]. Right boundary r = 4 touches target index 4.',
+    explain: 'Right boundary r (4) is now >= n - 1 (4). While loop condition (r < n - 1) terminates.',
+    intuition: 'Target index 4 is contained in BFS Level 2.'
+  },
+  {
+    title: '7. Reconstruct Optimal Jump Trajectory',
+    phase: 'VERIFY',
+    codeLine: 27,
+    track: {
+      label: 'Optimal 2-Hop Path: 0 -> 1 -> 4',
+      items: [
+        { val: 'nums[0]=2', status: 'match' },
+        { val: 'nums[1]=3', status: 'match' },
+        { val: 'nums[2]=1', status: 'dim' },
+        { val: 'nums[3]=1', status: 'dim' },
+        { val: 'nums[4]=4', status: 'match' }
+      ],
+      pointers: { start: { idx: 0, color: 'var(--accent-bright)' }, mid: { idx: 1, color: 'var(--accent-bright)' }, end: { idx: 4, color: 'var(--accent-bright)' } }
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: 0,
+    windowEnd: 4,
+    metrics: [
+      { label: 'Total Jumps', value: '2', highlight: true },
+      { label: 'Path Taken', value: '0 -> 1 (+1) -> 4 (+3)' },
+      { label: 'Indices Visited', value: '3 / 5' },
+      { label: 'Optimality', value: 'Guaranteed' }
+    ],
+    formula: 'jumps = 2; // Optimal BFS shortest path',
+    action: 'Verify jump chain: Jump 1 moves 0 -> 1 (cost 1). Jump 2 moves 1 -> 4 (cost 1). Total jumps = 2.',
+    explain: 'Any greedy step in BFS explores all reachable nodes at depth d before depth d + 1, ensuring minimum jumps.',
+    intuition: 'No path can reach index 4 in fewer than 2 jumps.'
+  },
+  {
+    title: '8. Terminal Confirmation: Return jumps = 2',
     phase: 'COMPLETED',
-    codeLine: 25,
-    nums: [2, 3, 1, 1, 4],
-    l: 3,
-    r: 4,
-    farthest: 4,
-    jumps: 2,
-    variables: { jumps: 2, destinationReached: true },
-    explain: 'Since r = 4 >= target (n - 1), we have arrived at the destination in a minimum of 2 jumps.',
-    intuition: 'Total minimum jumps = 2 (0 -> 1 -> 4).'
+    codeLine: 29,
+    track: {
+      label: 'Destination 4 Reached in Minimum 2 Jumps',
+      items: [
+        { val: 'nums[0]=2', status: 'match' },
+        { val: 'nums[1]=3', status: 'match' },
+        { val: 'nums[2]=1', status: 'match' },
+        { val: 'nums[3]=1', status: 'match' },
+        { val: 'nums[4]=4', status: 'match' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Minimum Jumps', value: '2', highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1) auxiliary' }
+    ],
+    formula: 'return jumps; // 2',
+    action: 'Algorithm completes. Return 2.',
+    explain: 'Array [2, 3, 1, 1, 4] requires exactly 2 jumps to reach the final index. Achieved in linear O(N) time without extra memory.',
+    intuition: 'Window-based BFS avoids the explicit queue allocation of standard BFS.',
+    customCard: {
+      title: 'BFS Window Complexity Summary',
+      rows: [
+        { label: 'Minimum Jumps', value: '2', accent: true },
+        { label: 'Resource Profile', value: 'O(N) time, O(1) space', accent: true }
+      ]
+    }
   }
 ];
-
-export default function JumpGameIiVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Current Window: [{step.l} ... {step.r}]
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Farthest Reach: Index {step.farthest}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Minimum Jumps = {step.jumps}
-        </span>
-      </div>
-
-      {/* Stones Array Track */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Stepping Stones & Jump Windows</span>
-
-        <div className="flex items-center justify-center gap-3 overflow-x-auto w-full py-2">
-          {step.nums.map((jump, idx) => {
-            const inWindow = idx >= step.l && idx <= step.r;
-            const isFarthest = idx === step.farthest && step.farthest > 0;
-            const isTarget = idx === step.nums.length - 1;
-
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-500';
-            if (inWindow) {
-              borderClass = 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg';
-            } else if (isTarget && isFarthest) {
-              borderClass = 'border-emerald-500 bg-emerald-500/20 text-emerald-300 ring-2 ring-emerald-500/30';
-            } else if (isFarthest) {
-              borderClass = 'border-blue-500 bg-blue-500/20 text-blue-300 ring-2 ring-blue-500/30';
-            }
-
-            return (
-              <div key={idx} className="flex flex-col items-center gap-1 min-w-[56px]">
-                <div className={`w-14 h-16 rounded-xl border flex flex-col items-center justify-center font-mono font-bold transition-all ${borderClass}`}>
-                  <span className="text-xs">{inWindow ? '👟' : isTarget ? '🎯' : '🪨'}</span>
-                  <span className="text-sm font-black">{jump}</span>
-                </div>
-                <span className="text-[10px] font-mono text-[#5b6076]">idx [{idx}]</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

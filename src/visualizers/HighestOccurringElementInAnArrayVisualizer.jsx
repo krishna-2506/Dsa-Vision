@@ -126,28 +126,28 @@ export default function HighestOccurringElementInAnArrayVisualizer({ currentStep
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>Frequency Extrema</span>
           <span className="text-cyan-400 font-bold">Single Pass Hash Scan</span>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-center font-mono">
-            <span className="text-xs text-slate-400 font-bold block mb-1">Most Frequent</span>
+            <span className="text-xs text-[var(--chalk-dim)] font-bold block mb-1">Most Frequent</span>
             <span className="text-2xl font-extrabold text-cyan-300">{step.maxElem}</span>
             <span className="text-xs text-cyan-400 block mt-1">{step.maxFreq} occurrences</span>
           </div>
 
           <div className="p-4 rounded-xl bg-purple-500/15 border border-purple-500/30 text-center font-mono">
-            <span className="text-xs text-slate-400 font-bold block mb-1">Least Frequent</span>
+            <span className="text-xs text-[var(--chalk-dim)] font-bold block mb-1">Least Frequent</span>
             <span className="text-2xl font-extrabold text-purple-300">{step.minElem}</span>
             <span className="text-xs text-purple-400 block mt-1">{step.minFreq} occurrence</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

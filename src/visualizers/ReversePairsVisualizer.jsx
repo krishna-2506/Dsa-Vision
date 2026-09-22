@@ -290,7 +290,7 @@ export default function ReversePairsVisualizer({ currentStep = 0 }) {
                 className={`w-12 h-12 rounded-xl border flex items-center justify-center font-mono font-bold text-base transition-all duration-300 ${
                   isPairElem
                     ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-200'
+                    : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
                 }`}
               >
                 {val}
@@ -302,8 +302,8 @@ export default function ReversePairsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Two-pointer partition status */}
-      <div className="w-full bg-[#12131b] border border-[#222538] rounded-xl p-3 flex flex-col gap-2 text-xs font-mono">
-        <div className="flex items-center justify-between text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex flex-col gap-2 text-xs font-mono">
+        <div className="flex items-center justify-between text-[var(--chalk-dim)]">
           <span>Sorted Left: <strong className="text-indigo-300">{JSON.stringify(step.leftSub)}</strong></span>
           <span>Sorted Right: <strong className="text-emerald-300">{JSON.stringify(step.rightSub)}</strong></span>
           <span className="text-amber-400 font-semibold">nums[i] &gt; 2 * nums[j]</span>

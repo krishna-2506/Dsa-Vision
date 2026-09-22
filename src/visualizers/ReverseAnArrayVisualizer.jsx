@@ -123,7 +123,7 @@ export default function ReverseAnArrayVisualizer({ currentStep = 0 }) {
         <span className="px-3 py-1 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
           Right: {step.right}
         </span>
-        <span className="text-xs font-mono text-[#8a8ea3] px-3 py-1 rounded-lg bg-[#141622] border border-[#272b3d]">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] px-3 py-1 rounded-lg bg-[#141622] border border-[#272b3d]">
           Phase: {step.phase}
         </span>
       </div>
@@ -135,7 +135,7 @@ export default function ReverseAnArrayVisualizer({ currentStep = 0 }) {
           const isRight = step.right === idx;
           const isBoth = isLeft && isRight;
 
-          let style = 'bg-[#181a24] text-white border-[#2b2e40]';
+          let style = 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]';
           if (step.phase === 'COMPLETED') {
             style = 'bg-emerald-500/20 text-emerald-200 border-emerald-500/50 shadow-sm';
           } else if (isBoth) {
@@ -150,11 +150,11 @@ export default function ReverseAnArrayVisualizer({ currentStep = 0 }) {
             <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[50px]">
               <div className="h-5 flex items-center text-[9px] font-mono font-bold">
                 {isBoth ? (
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">Center</span>
+                  <span className="px-1.5 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">Center</span>
                 ) : (
                   <>
-                    {isLeft && <span className="px-1.5 py-0.5 rounded bg-blue-500 text-white">L</span>}
-                    {isRight && <span className="px-1.5 py-0.5 rounded bg-purple-500 text-white">R</span>}
+                    {isLeft && <span className="px-1.5 py-0.5 rounded bg-blue-500 text-[var(--chalk)]">L</span>}
+                    {isRight && <span className="px-1.5 py-0.5 rounded bg-purple-500 text-[var(--chalk)]">R</span>}
                   </>
                 )}
               </div>

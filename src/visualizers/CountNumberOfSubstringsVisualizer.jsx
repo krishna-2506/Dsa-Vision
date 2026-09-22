@@ -1,29 +1,44 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Count Number of Substrings with Exactly K Distinct Characters',
-  category: 'Strings',
+  category: 'Strings & Sliding Window',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Counts the number of substrings containing exactly K distinct characters using the exact(K) = atMost(K) - atMost(K - 1) sliding window technique.'
+  spaceComplexity: 'O(1) Auxiliary (26 character frequency array)',
+  description: 'Counts the number of substrings containing exactly K distinct characters using the algebraic sliding window reduction: exact(K) = atMost(K) - atMost(K - 1).'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'AtMost Subtraction Reduction Invariant',
+  nodes: [
+    { id: 'root', label: 'Exact-K Sliding Window Reduction', children: ['reduction-identity', 'at-most-k-window', 'distinct-expansion', 'left-contraction', 'complexity'] },
+    { id: 'reduction-identity', label: '1. Set Difference Reduction', detail: 'The count of substrings with exactly K distinct characters equals atMost(K) - atMost(K - 1).' },
+    { id: 'at-most-k-window', label: '2. Monotonic Upper Bound Window', detail: 'atMost(K) maintains a window with at most K distinct characters; each right expansion contributes (right - left + 1) valid substrings.' },
+    { id: 'distinct-expansion', label: '3. Frequency Cardinality', detail: 'Maintain freq[26] and a distinct count; whenever freq[s[right]] increments from 0, distinct increases by 1.' },
+    { id: 'left-contraction', label: '4. Left Boundary Eviction', detail: 'When distinct > K, increment left and decrement freq[s[left]] until distinct <= K.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Two sliding window passes yield O(N) linear time and O(1) space with 26-entry tables.' }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Count Substrings with Exactly K Distinct Characters
-// Time: O(N) | Space: O(1)
+// Time Complexity: O(N) | Space Complexity: O(1)
 #include <string>
 #include <vector>
 using namespace std;
 
 class Solution {
+private:
     long long atMostK(const string& s, int k) {
-        if (k < 0) return 0;
+        if (k <= 0) return 0;
         vector<int> freq(26, 0);
         int distinct = 0, left = 0;
         long long count = 0;
 
-        for (int right = 0; right < s.size(); right++) {
+        for (int right = 0; right < (int)s.size(); right++) {
             if (freq[s[right] - 'a'] == 0) distinct++;
             freq[s[right] - 'a']++;
 
@@ -37,38 +52,39 @@ class Solution {
         }
         return count;
     }
+
 public:
     long long substrCount(string s, int k) {
         return atMostK(s, k) - atMostK(s, k - 1);
     }
 };`,
   python: `# Python 3 Count Substrings with Exactly K Distinct Characters
-# Time: O(N) | Space: O(1)
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def substrCount(self, s: str, k: int) -> int:
-        def at_most(k: int) -> int:
-            if k <= 0:
+        def at_most(limit: int) -> int:
+            if limit <= 0:
                 return 0
             freq = {}
             left = 0
-            count = 0
+            total = 0
 
-            for right in range(len(s)):
-                ch = s[right]
+            for right, ch in enumerate(s):
                 freq[ch] = freq.get(ch, 0) + 1
 
-                while len(freq) > k:
-                    freq[s[left]] -= 1
-                    if freq[s[left]] == 0:
-                        del freq[s[left]]
+                while len(freq) > limit:
+                    left_ch = s[left]
+                    freq[left_ch] -= 1
+                    if freq[left_ch] == 0:
+                        del freq[left_ch]
                     left += 1
 
-                count += (right - left + 1)
-            return count
+                total += (right - left + 1)
+            return total
 
         return at_most(k) - at_most(k - 1)`,
   java: `// Java Count Substrings with Exactly K Distinct Characters
-// Time: O(N) | Space: O(1)
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     private long atMost(String s, int k) {
         if (k <= 0) return 0;
@@ -96,21 +112,23 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Count Substrings with Exactly K Distinct Characters
-// Time: O(N) | Space: O(1)
+// Time Complexity: O(N) | Space Complexity: O(1)
 var substrCount = function(s, k) {
-    function atMost(k) {
-        if (k <= 0) return 0;
-        const freq = new Map();
-        let left = 0, count = 0;
+    function atMost(limit) {
+        if (limit <= 0) return 0;
+        const freq = new Array(26).fill(0);
+        const base = 'a'.charCodeAt(0);
+        let left = 0, distinct = 0, count = 0;
 
         for (let right = 0; right < s.length; right++) {
-            const ch = s[right];
-            freq.set(ch, (freq.get(ch) || 0) + 1);
+            const rCode = s.charCodeAt(right) - base;
+            if (freq[rCode] === 0) distinct++;
+            freq[rCode]++;
 
-            while (freq.size > k) {
-                const lCh = s[left];
-                freq.set(lCh, freq.get(lCh) - 1);
-                if (freq.get(lCh) === 0) freq.delete(lCh);
+            while (distinct > limit) {
+                const lCode = s.charCodeAt(left) - base;
+                freq[lCode]--;
+                if (freq[lCode] === 0) distinct--;
                 left++;
             }
 
@@ -125,106 +143,238 @@ var substrCount = function(s, k) {
 
 export const steps = [
   {
-    title: '1. Problem Setup: s = "abaaca", k = 1',
-    phase: 'INIT',
-    codeLine: 28,
-    s: 'abaaca',
-    k: 1,
-    activeWindow: [0, 0],
-    atMostK: null,
-    atMostKMinus1: null,
-    variables: { s: '"abaaca"', k: 1, strategy: 'exact(k) = atMost(k) - atMost(k-1)' },
-    explain: 'Directly maintaining exactly K distinct characters in a sliding window is tricky because shrinking can violate lower bounds. Decomposing into atMost(K) - atMost(K-1) makes shrinking monotonic and easy.',
-    intuition: 'Every window with <= K distinct characters includes all windows with <= K-1 distinct characters.'
+    title: '1. Decomposition Setup: exact(K) = atMost(K) - atMost(K - 1)',
+    phase: 'INITIAL',
+    codeLine: 26,
+    track: {
+      label: 'Input String: s = "pqpqs", Target K = 2',
+      items: [
+        { val: 'p', status: 'default' },
+        { val: 'q', status: 'default' },
+        { val: 'p', status: 'default' },
+        { val: 'q', status: 'default' },
+        { val: 's', status: 'default' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: null,
+    windowEnd: null,
+    metrics: [
+      { label: 'Target K', value: '2' },
+      { label: 'Strategy', value: 'atMost(2) - atMost(1)' },
+      { label: 'String Length', value: '5' }
+    ],
+    formula: 'exact(2) = atMost(2) - atMost(1)',
+    action: 'Initialize sliding window to compute atMost(2), counting all substrings with <= 2 distinct characters.',
+    explain: 'Enforcing exactly K directly in a sliding window is non-monotonic. Computing atMost(K) - atMost(K-1) guarantees monotonic expansion and shrinking.',
+    intuition: 'Every valid window of length L ending at right adds exactly L new valid substrings.'
   },
   {
-    title: '2. Compute atMost(1): Substrings with <= 1 Distinct',
+    title: '2. atMost(2) - Step 1: Right = 0 ("p"), Window [0..0]',
+    phase: 'AT_MOST_2',
+    codeLine: 16,
+    track: {
+      label: 'atMost(2) Window: "p"',
+      items: [
+        { val: 'p', status: 'current' },
+        { val: 'q', status: 'default' },
+        { val: 'p', status: 'default' },
+        { val: 'q', status: 'default' },
+        { val: 's', status: 'default' }
+      ],
+      pointers: { L: { idx: 0, color: 'var(--accent-bright)' }, R: { idx: 0, color: 'var(--accent-bright)' } }
+    },
+    activeI: 0,
+    activeJ: 0,
+    windowStart: 0,
+    windowEnd: 0,
+    metrics: [
+      { label: 'Distinct', value: '1 <= 2' },
+      { label: 'Window Len', value: '1' },
+      { label: 'Added Substrings', value: '+1 (["p"])' },
+      { label: 'atMost(2) Total', value: '1' }
+    ],
+    formula: 'count += (0 - 0 + 1) = 1; // Substrings ending at 0: ["p"]',
+    action: 'Add char "p". Distinct = 1 <= 2. Add (0 - 0 + 1) = 1 to total.',
+    explain: 'Single-char substring "p" has 1 distinct character <= 2.',
+    intuition: 'A window of size 1 adds 1 new substring.'
+  },
+  {
+    title: '3. atMost(2) - Step 2: Right = 1 ("q"), Window [0..1]',
+    phase: 'AT_MOST_2',
+    codeLine: 16,
+    track: {
+      label: 'atMost(2) Window: "pq"',
+      items: [
+        { val: 'p', status: 'selected' },
+        { val: 'q', status: 'current' },
+        { val: 'p', status: 'default' },
+        { val: 'q', status: 'default' },
+        { val: 's', status: 'default' }
+      ],
+      pointers: { L: { idx: 0, color: 'var(--accent-bright)' }, R: { idx: 1, color: 'var(--accent-bright)' } }
+    },
+    activeI: 0,
+    activeJ: 1,
+    windowStart: 0,
+    windowEnd: 1,
+    metrics: [
+      { label: 'Distinct', value: '2 <= 2' },
+      { label: 'Window Len', value: '2' },
+      { label: 'Added Substrings', value: '+2 (["pq", "q"])' },
+      { label: 'atMost(2) Total', value: '3' }
+    ],
+    formula: 'count += (1 - 0 + 1) = 1 + 2 = 3; // ["pq", "q"]',
+    action: 'Add char "q". Distinct = 2 <= 2. Add (1 - 0 + 1) = 2 new substrings ending at index 1.',
+    explain: 'Substrings ending at index 1: "pq" and "q", both having <= 2 distinct characters.',
+    intuition: 'Right pointer expansion adds all suffixes of the current valid window.'
+  },
+  {
+    title: '4. atMost(2) - Step 3: Right = 2 ("p"), Window [0..2]',
+    phase: 'AT_MOST_2',
+    codeLine: 16,
+    track: {
+      label: 'atMost(2) Window: "pqp"',
+      items: [
+        { val: 'p', status: 'selected' },
+        { val: 'q', status: 'selected' },
+        { val: 'p', status: 'current' },
+        { val: 'q', status: 'default' },
+        { val: 's', status: 'default' }
+      ],
+      pointers: { L: { idx: 0, color: 'var(--accent-bright)' }, R: { idx: 2, color: 'var(--accent-bright)' } }
+    },
+    activeI: 0,
+    activeJ: 2,
+    windowStart: 0,
+    windowEnd: 2,
+    metrics: [
+      { label: 'Distinct', value: '2 <= 2' },
+      { label: 'Window Len', value: '3' },
+      { label: 'Added Substrings', value: '+3 (["pqp", "qp", "p"])' },
+      { label: 'atMost(2) Total', value: '6' }
+    ],
+    formula: 'count += (2 - 0 + 1) = 3 + 3 = 6; // ["pqp", "qp", "p"]',
+    action: '"p" is already present. Distinct remains 2. Add (2 - 0 + 1) = 3 substrings.',
+    explain: 'Substrings ending at index 2: "pqp", "qp", "p". All satisfy <= 2 distinct characters.',
+    intuition: 'Re-occurrence of known characters does not increase distinct cardinality.'
+  },
+  {
+    title: '5. atMost(2) - Step 4: Right = 3 ("q"), Window [0..3]',
+    phase: 'AT_MOST_2',
+    codeLine: 16,
+    track: {
+      label: 'atMost(2) Window: "pqpq"',
+      items: [
+        { val: 'p', status: 'selected' },
+        { val: 'q', status: 'selected' },
+        { val: 'p', status: 'selected' },
+        { val: 'q', status: 'current' },
+        { val: 's', status: 'default' }
+      ],
+      pointers: { L: { idx: 0, color: 'var(--accent-bright)' }, R: { idx: 3, color: 'var(--accent-bright)' } }
+    },
+    activeI: 0,
+    activeJ: 3,
+    windowStart: 0,
+    windowEnd: 3,
+    metrics: [
+      { label: 'Distinct', value: '2 <= 2' },
+      { label: 'Window Len', value: '4' },
+      { label: 'Added Substrings', value: '+4 (["pqpq", "qpq", "pq", "q"])' },
+      { label: 'atMost(2) Total', value: '10' }
+    ],
+    formula: 'count += (3 - 0 + 1) = 6 + 4 = 10;',
+    action: '"q" re-occurs. Distinct = 2 <= 2. Add 4 substrings ending at index 3.',
+    explain: 'Substrings ending at 3: "pqpq", "qpq", "pq", "q". All contain only "p" and "q". Total reaches 10.',
+    intuition: 'Window reaches length 4 with only 2 distinct characters.'
+  },
+  {
+    title: '6. atMost(2) - Step 5: Right = 4 ("s"), Evict Left to 3 -> Total = 12',
+    phase: 'AT_MOST_2',
+    codeLine: 21,
+    track: {
+      label: 'atMost(2) Window: "qs" after Left Shifts',
+      items: [
+        { val: 'p', status: 'visited' },
+        { val: 'q', status: 'visited' },
+        { val: 'p', status: 'visited' },
+        { val: 'q', status: 'selected' },
+        { val: 's', status: 'current' }
+      ],
+      pointers: { L: { idx: 3, color: 'var(--accent-bright)' }, R: { idx: 4, color: 'var(--accent-bright)' } }
+    },
+    activeI: 3,
+    activeJ: 4,
+    windowStart: 3,
+    windowEnd: 4,
+    metrics: [
+      { label: 'Distinct', value: '2 ("q", "s")' },
+      { label: 'Left Shifted', value: '0 -> 3 (evicted "p")' },
+      { label: 'Added Substrings', value: '+2 (["qs", "s"])' },
+      { label: 'atMost(2) Result', value: '12', highlight: true }
+    ],
+    formula: 'while (distinct > 2) left++; count += (4 - 3 + 1) = 10 + 2 = 12;',
+    action: 'Char "s" makes distinct = 3 > 2. Advance left from 0 to 3 to completely eliminate "p". Add (4 - 3 + 1) = 2.',
+    explain: 'Shrinking drops all occurrences of "p". New valid window [3..4] has 2 distinct chars ("q", "s"). Total atMost(2) = 12.',
+    intuition: 'Contraction restores the <= K invariant before adding the new window size.'
+  },
+  {
+    title: '7. Compute atMost(1): Substrings with <= 1 Distinct Character',
     phase: 'AT_MOST_1',
-    codeLine: 24,
-    s: 'abaaca',
-    k: 1,
-    activeWindow: [3, 4],
-    atMostK: 7,
-    atMostKMinus1: 0,
-    variables: { 'Substrings with <= 1 char': '["a", "b", "a", "a", "aa", "c", "a"]', count: 7 },
-    explain: 'Only single identical character runs qualify: "a", "b", "a", "a", "aa", "c", "a". atMost(1) = 7.',
-    intuition: 'Substrings with at most 1 distinct character.'
+    codeLine: 31,
+    track: {
+      label: 'atMost(1) Mono-Character Runs: "p", "q", "p", "q", "s"',
+      items: [
+        { val: 'p', status: 'match' },
+        { val: 'q', status: 'match' },
+        { val: 'p', status: 'match' },
+        { val: 'q', status: 'match' },
+        { val: 's', status: 'match' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: null,
+    windowEnd: null,
+    metrics: [
+      { label: 'atMost(2)', value: '12' },
+      { label: 'atMost(1)', value: '5 (all single chars)', highlight: true },
+      { label: 'Single Chars', value: '["p", "q", "p", "q", "s"]' }
+    ],
+    formula: 'atMost(1) = 1 + 1 + 1 + 1 + 1 = 5;',
+    action: 'Run atMost with limit = 1. Substrings with <= 1 distinct character are exactly the 5 single-letter substrings.',
+    explain: 'No adjacent identical letters exist in "pqpqs", so every length > 1 substring has >= 2 distinct characters. Hence atMost(1) = 5.',
+    intuition: 'Subtracting atMost(1) from atMost(2) strips away all mono-character substrings.'
   },
   {
-    title: '3. Compute atMost(0): Substrings with 0 Distinct',
-    phase: 'AT_MOST_0',
-    codeLine: 11,
-    s: 'abaaca',
-    k: 1,
-    activeWindow: [0, 0],
-    atMostK: 7,
-    atMostKMinus1: 0,
-    variables: { 'atMost(0)': '0 (no non-empty substring has 0 chars)' },
-    explain: 'A non-empty string cannot have 0 distinct characters, so atMost(0) = 0.',
-    intuition: 'Base boundary condition.'
-  },
-  {
-    title: '4. Result: exact(1) = 7 - 0 = 7 Substrings',
+    title: '8. Exact-K Subtraction: 12 - 5 = 7 Substrings with Exactly 2 Distinct',
     phase: 'COMPLETED',
-    codeLine: 29,
-    s: 'abaaca',
-    k: 1,
-    activeWindow: [0, 5],
-    exactCount: 7,
-    variables: { 'atMost(1)': 7, 'atMost(0)': 0, 'exact(1)': '7 - 0 = 7' },
-    explain: 'For s = "abaaca" and k = 1, there are exactly 7 substrings containing exactly 1 distinct character.',
-    intuition: 'The exact(k) = atMost(k) - atMost(k - 1) identity works for any value of k in linear O(N) time.'
+    codeLine: 31,
+    track: {
+      label: 'Input String: s = "pqpqs" (All 7 Substrings Enumerated)',
+      items: [
+        { val: 'p', status: 'match' },
+        { val: 'q', status: 'match' },
+        { val: 'p', status: 'match' },
+        { val: 'q', status: 'match' },
+        { val: 's', status: 'match' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    windowStart: null,
+    windowEnd: null,
+    metrics: [
+      { label: 'Exact(2) Count', value: '7', highlight: true },
+      { label: 'Formula', value: '12 - 5 = 7' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1) (26 buckets)' }
+    ],
+    formula: 'return atMostK(s, 2) - atMostK(s, 1); // 12 - 5 = 7',
+    action: 'Return 7. The 7 substrings with exactly 2 distinct characters are: ["pq", "pqp", "pqpq", "qp", "qpq", "pq", "qs"].',
+    explain: 'By algebraic set difference, exactly(K) = atMost(K) - atMost(K - 1) seamlessly solves exact-cardinality substring problems in O(N).',
+    intuition: 'Avoid complex lookaheads by reducing exact queries into two monotonic prefix sliding windows.'
   }
 ];
-
-export default function CountNumberOfSubstringsVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Target K Distinct: {step.k}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Exact Substrings: {step.exactCount || 7}
-        </span>
-      </div>
-
-      {/* String Stream */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          String Stream &amp; Window Decomposition
-        </span>
-
-        <div className="flex items-center justify-center gap-2 py-2 font-mono">
-          {step.s.split('').map((ch, idx) => (
-            <div
-              key={idx}
-              className="w-12 h-16 rounded-xl border border-[#272b3c] bg-[#161824] flex flex-col items-center justify-center text-slate-300"
-            >
-              <span className="text-[9px] text-[#8a8ea3]">[{idx}]</span>
-              <span className="text-base font-bold text-amber-300 mt-0.5">{ch}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Math Formula Card */}
-        <div className="w-full border-t border-[#272b3c] pt-3 flex flex-col items-center gap-1 font-mono text-xs">
-          <span className="text-cyan-300">
-            Formula:{' '}
-            <span className="text-emerald-400 font-bold">
-              exact({step.k}) = atMost({step.k}) - atMost({step.k - 1})
-            </span>
-          </span>
-        </div>
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

@@ -214,15 +214,15 @@ export default function CombinationSumIiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Sorted Candidates with Duplicate Highlight */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-5 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Sorted Candidate Pool</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-5 flex flex-col items-center gap-3">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Sorted Candidate Pool</span>
 
         <div className="flex items-center justify-center gap-2.5 overflow-x-auto w-full py-1">
           {step.candidates.map((val, idx) => {
             const isCurrent = idx === step.currentIndex;
             const isDuplicate = idx > 0 && val === step.candidates[idx - 1];
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-400';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
             if (isCurrent && step.skippedDuplicate) {
               borderClass = 'border-rose-500 bg-rose-500/20 text-rose-300 ring-2 ring-rose-500/40 line-through';
             } else if (isCurrent) {
@@ -234,7 +234,7 @@ export default function CombinationSumIiVisualizer({ currentStep = 0 }) {
             return (
               <div key={idx} className={`w-12 h-16 rounded-xl border flex flex-col items-center justify-center font-mono font-bold transition-all ${borderClass}`}>
                 <span className="text-base">{val}</span>
-                <span className="text-[8px] text-slate-500">[{idx}]</span>
+                <span className="text-[8px] text-[var(--chalk-faint)]">[{idx}]</span>
               </div>
             );
           })}
@@ -242,7 +242,7 @@ export default function CombinationSumIiVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Solutions Container */}
-      <div className="w-full bg-[#12131b] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
+      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
         <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Discovered Unique Combinations</span>
         <div className="flex items-center gap-2 flex-wrap">
           {step.results.map((combo, idx) => (
@@ -250,12 +250,12 @@ export default function CombinationSumIiVisualizer({ currentStep = 0 }) {
               [{combo.join(', ')}]
             </span>
           ))}
-          {step.results.length === 0 && <span className="text-xs text-slate-500 italic">Exploring paths...</span>}
+          {step.results.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Exploring paths...</span>}
         </div>
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

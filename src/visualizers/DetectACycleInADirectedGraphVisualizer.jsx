@@ -165,15 +165,15 @@ export default function DetectACycleInADirectedGraphVisualizer({ currentStep = 0
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>Vertex In-Degree Status</span>
           <span className="text-cyan-400 font-bold">Kahn's Zero In-Degree Queue</span>
         </div>
 
         <div className="grid grid-cols-4 gap-2 text-xs font-mono">
           {[0, 1, 2, 3].map(v => (
-            <div key={v} className="p-3 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col items-center">
+            <div key={v} className="p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center">
               <span className="text-[#64748b]">Node {v}</span>
               <span className={`text-base font-bold mt-1 ${
                 step.indegree[v] === 0 ? 'text-emerald-400' : 'text-amber-400'
@@ -190,7 +190,7 @@ export default function DetectACycleInADirectedGraphVisualizer({ currentStep = 0
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

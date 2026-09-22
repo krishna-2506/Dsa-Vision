@@ -190,9 +190,9 @@ export default function IntroductionToDoublyLlVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual DLL Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center overflow-x-auto gap-2 py-8">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
         {/* Left NULL */}
-        <div className="w-12 h-16 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-[10px] text-[#8a8ea3]">
+        <div className="w-12 h-16 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-[10px] text-[var(--chalk-dim)]">
           NULL
         </div>
 
@@ -218,20 +218,20 @@ export default function IntroductionToDoublyLlVisualizer({ currentStep = 0 }) {
                 </div>
 
                 <div className={`h-16 rounded-xl border flex items-center overflow-hidden transition-all ${
-                  isActive ? 'border-cyan-400 shadow-lg shadow-cyan-500/20 scale-105' : 'border-[#272b3c] bg-[#12131b]'
+                  isActive ? 'border-cyan-400 shadow-lg shadow-cyan-500/20 scale-105' : 'border-[var(--line)] bg-[var(--board-raised)]'
                 }`}>
                   {/* Prev pointer slot */}
-                  <div className="w-6 h-full bg-[#161824] border-r border-[#272b3c] flex items-center justify-center text-[9px] font-mono text-[#8a8ea3]">
+                  <div className="w-6 h-full bg-[var(--board-raised-2)] border-r border-[var(--line)] flex items-center justify-center text-[9px] font-mono text-[var(--chalk-dim)]">
                     &bull;
                   </div>
 
                   {/* Data slot */}
-                  <div className="w-12 h-full flex items-center justify-center font-mono font-bold text-base text-white px-2">
+                  <div className="w-12 h-full flex items-center justify-center font-mono font-bold text-base text-[var(--chalk)] px-2">
                     {val}
                   </div>
 
                   {/* Next pointer slot */}
-                  <div className="w-6 h-full bg-[#161824] border-l border-[#272b3c] flex items-center justify-center text-[9px] font-mono text-[#8a8ea3]">
+                  <div className="w-6 h-full bg-[var(--board-raised-2)] border-l border-[var(--line)] flex items-center justify-center text-[9px] font-mono text-[var(--chalk-dim)]">
                     &bull;
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export default function IntroductionToDoublyLlVisualizer({ currentStep = 0 }) {
             <div className="flex flex-col items-center justify-center text-xs font-mono text-[#3b4261] font-bold px-1">
               <span>&rarr;</span>
             </div>
-            <div className="w-12 h-16 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-[10px] text-[#8a8ea3]">
+            <div className="w-12 h-16 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-[10px] text-[var(--chalk-dim)]">
               NULL
             </div>
           </>
@@ -256,14 +256,14 @@ export default function IntroductionToDoublyLlVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Feature comparison */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] grid grid-cols-2 gap-4 text-xs font-mono text-[#8a8ea3]">
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] grid grid-cols-2 gap-4 text-xs font-mono text-[var(--chalk-dim)]">
         <div className="flex flex-col gap-1">
-          <span className="text-white font-bold">Advantages of DLL:</span>
+          <span className="text-[var(--chalk)] font-bold">Advantages of DLL:</span>
           <span>&bull; Bi-directional traversal</span>
           <span>&bull; O(1) deletion with node pointer</span>
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-white font-bold">Trade-offs:</span>
+          <span className="text-[var(--chalk)] font-bold">Trade-offs:</span>
           <span>&bull; Extra memory for prev pointer</span>
           <span>&bull; Two pointer updates per operation</span>
         </div>

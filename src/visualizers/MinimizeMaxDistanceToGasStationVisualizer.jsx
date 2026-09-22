@@ -252,8 +252,8 @@ export default function MinimizeMaxDistanceToGasStationVisualizer({ currentStep 
       </div>
 
       {/* Segment Highway Visualizer */}
-      <div className="w-full p-5 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3]">Highway Segments & Station Placements:</span>
+      <div className="w-full p-5 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)]">Highway Segments & Station Placements:</span>
         <div className="w-full flex items-center justify-between gap-2 overflow-x-auto py-2">
           {step.stations.map((pos, idx) => {
             const nextPos = step.stations[idx + 1];
@@ -267,7 +267,7 @@ export default function MinimizeMaxDistanceToGasStationVisualizer({ currentStep 
                   <div className="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400 text-cyan-300 flex items-center justify-center font-mono font-bold text-sm">
                     {pos}
                   </div>
-                  <span className="text-[10px] text-[#8a8ea3] font-mono">km</span>
+                  <span className="text-[10px] text-[var(--chalk-dim)] font-mono">km</span>
                 </div>
 
                 {/* Gap Segment */}
@@ -296,13 +296,13 @@ export default function MinimizeMaxDistanceToGasStationVisualizer({ currentStep 
       </div>
 
       {/* Floating Point Range */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex items-center justify-around font-mono text-sm">
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-around font-mono text-sm">
         <div className="flex items-center gap-2">
-          <span className="text-[#8a8ea3]">Low:</span>
+          <span className="text-[var(--chalk-dim)]">Low:</span>
           <span className="text-blue-400 font-bold">{step.low.toFixed(4)}</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[#8a8ea3]">High:</span>
+          <span className="text-[var(--chalk-dim)]">High:</span>
           <span className="text-purple-400 font-bold">{step.high.toFixed(4)}</span>
         </div>
       </div>

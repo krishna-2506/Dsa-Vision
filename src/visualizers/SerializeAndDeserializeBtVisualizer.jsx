@@ -268,7 +268,7 @@ export default function SerializeAndDeserializeBtVisualizer({ currentStep = 0 })
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Phase: <strong className="text-cyan-400">{step.mode}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -276,21 +276,21 @@ export default function SerializeAndDeserializeBtVisualizer({ currentStep = 0 })
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Encoded Serialized Byte Stream</span>
           <span className="text-emerald-400 font-bold">O(N) Reversible</span>
         </div>
 
         {/* Serialized stream badge */}
-        <div className="w-full p-4 rounded-xl bg-[#0f1016] border border-[#242738] flex flex-col items-center gap-2">
+        <div className="w-full p-4 rounded-xl bg-[#0f1016] border border-[var(--line)] flex flex-col items-center gap-2">
           <span className="text-xs font-mono text-[#6c7292]">Stream String Buffer:</span>
           <span className="text-lg font-mono font-bold text-emerald-400 tracking-wider break-all bg-emerald-500/10 px-4 py-2 rounded-lg border border-emerald-500/20">
             &quot;{step.stream}&quot;
           </span>
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           Tokens separated by commas. &apos;#&apos; represents null pointer branches, guaranteeing unique deserialization.
         </div>
       </div>

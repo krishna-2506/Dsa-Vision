@@ -158,8 +158,8 @@ export default function RecursiveBubbleSortVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Array Elements */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           Array State Across Recursive Calls
         </span>
 
@@ -178,10 +178,10 @@ export default function RecursiveBubbleSortVisualizer({ currentStep = 0 }) {
                       ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300'
                       : idx < step.activeN
                       ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300'
-                      : 'border-[#272b3c] bg-[#161824] text-slate-400'
+                      : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
                   }`}
                 >
-                  <span className="text-[9px] text-[#8a8ea3]">[{idx}]</span>
+                  <span className="text-[9px] text-[var(--chalk-dim)]">[{idx}]</span>
                   <span className="text-base font-bold mt-1">{val}</span>
                   {isSortedEnd && (
                     <span className="text-[8px] text-emerald-400 mt-0.5">fixed</span>
@@ -194,7 +194,7 @@ export default function RecursiveBubbleSortVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

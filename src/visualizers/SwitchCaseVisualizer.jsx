@@ -127,9 +127,9 @@ export default function SwitchCaseVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Case Dispatcher</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Case Dispatcher</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
@@ -144,11 +144,11 @@ export default function SwitchCaseVisualizer({ currentStep = 0 }) {
                 className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
                   isMatch
                     ? 'bg-emerald-500/20 border-emerald-500/60 text-emerald-300 scale-105 shadow-lg shadow-emerald-500/10'
-                    : 'bg-[#12131b] border-[#272b3c] text-slate-400 opacity-60'
+                    : 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk-dim)] opacity-60'
                 }`}
               >
-                <span className="text-[10px] font-mono text-slate-400">case {d.num}:</span>
-                <span className="text-xs font-bold font-mono mt-1 text-slate-200">{d.name}</span>
+                <span className="text-[10px] font-mono text-[var(--chalk-dim)]">case {d.num}:</span>
+                <span className="text-xs font-bold font-mono mt-1 text-[var(--chalk)]">{d.name}</span>
                 {isMatch && (
                   <span className="text-[9px] font-mono mt-1 text-emerald-400 font-semibold px-1.5 py-0.5 rounded bg-emerald-500/20">
                     MATCHED
@@ -157,13 +157,13 @@ export default function SwitchCaseVisualizer({ currentStep = 0 }) {
               </div>
             );
           })}
-          <div className="p-3 rounded-xl border bg-[#12131b] border-[#272b3c] text-slate-500 flex flex-col items-center justify-center text-center opacity-40">
+          <div className="p-3 rounded-xl border bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk-faint)] flex flex-col items-center justify-center text-center opacity-40">
             <span className="text-[10px] font-mono">default:</span>
             <span className="text-xs font-mono mt-1">Invalid</span>
           </div>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

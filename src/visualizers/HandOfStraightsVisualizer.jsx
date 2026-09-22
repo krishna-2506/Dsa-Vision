@@ -205,21 +205,21 @@ export default function HandOfStraightsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Formed Straights Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
           Formed Straight Groups
         </span>
 
         <div className="flex flex-wrap items-center justify-center gap-3 py-2 font-mono">
           {step.groupsFormed.length === 0 ? (
-            <span className="text-xs text-slate-500 italic">No groups formed yet</span>
+            <span className="text-xs text-[var(--chalk-faint)] italic">No groups formed yet</span>
           ) : (
             step.groupsFormed.map((grp, idx) => (
               <div
                 key={idx}
                 className="px-4 py-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center gap-2 shadow-lg"
               >
-                <span className="text-xs text-[#8a8ea3]">G{idx + 1}:</span>
+                <span className="text-xs text-[var(--chalk-dim)]">G{idx + 1}:</span>
                 <span className="text-sm font-bold text-emerald-300">
                   [{grp.join(', ')}]
                 </span>
@@ -229,7 +229,7 @@ export default function HandOfStraightsVisualizer({ currentStep = 0 }) {
         </div>
 
         {/* Frequencies of Remaining Cards */}
-        <div className="w-full border-t border-[#272b3c] pt-3 flex flex-col items-center gap-2">
+        <div className="w-full border-t border-[var(--line)] pt-3 flex flex-col items-center gap-2">
           <span className="text-[11px] font-mono text-cyan-300">
             Card Frequencies (count):
           </span>
@@ -239,8 +239,8 @@ export default function HandOfStraightsVisualizer({ currentStep = 0 }) {
                 key={c}
                 className={`px-2.5 py-1 rounded-lg border ${
                   count > 0
-                    ? 'border-amber-500/40 bg-[#161824] text-amber-300'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-600 line-through'
+                    ? 'border-amber-500/40 bg-[var(--board-raised-2)] text-amber-300'
+                    : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)] line-through'
                 }`}
               >
                 Card {c}: {count}
@@ -251,7 +251,7 @@ export default function HandOfStraightsVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

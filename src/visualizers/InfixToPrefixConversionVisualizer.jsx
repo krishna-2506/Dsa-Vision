@@ -243,7 +243,7 @@ export default function InfixToPrefixConversionVisualizer({ currentStep = 0 }) {
   return (
     <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
       <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[#161824] border border-[#272b3c] text-[#8a8ea3]">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
           Stage: <strong className="text-cyan-400">{step.phase}</strong>
         </div>
         <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
@@ -252,8 +252,8 @@ export default function InfixToPrefixConversionVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Main Display */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Expression State at Current Pipeline Stage</span>
           <span className="text-cyan-400 font-bold">Polish Notation</span>
         </div>
@@ -267,13 +267,13 @@ export default function InfixToPrefixConversionVisualizer({ currentStep = 0 }) {
 
         {/* Pipeline steps guide */}
         <div className="grid grid-cols-3 gap-2 w-full text-center text-xs font-mono pt-2">
-          <div className={`p-2.5 rounded-xl border ${step.phase.includes('REVERSE_SWAP') ? 'bg-amber-500/20 border-amber-500/40 text-amber-200' : 'bg-[#161824] border-[#25283a] text-[#6d7494]'}`}>
+          <div className={`p-2.5 rounded-xl border ${step.phase.includes('REVERSE_SWAP') ? 'bg-amber-500/20 border-amber-500/40 text-amber-200' : 'bg-[var(--board-raised-2)] border-[#25283a] text-[#6d7494]'}`}>
             1. Rev &amp; Swap ()
           </div>
-          <div className={`p-2.5 rounded-xl border ${step.phase.includes('PROCESS') || step.phase.includes('FLUSH') ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200' : 'bg-[#161824] border-[#25283a] text-[#6d7494]'}`}>
+          <div className={`p-2.5 rounded-xl border ${step.phase.includes('PROCESS') || step.phase.includes('FLUSH') ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200' : 'bg-[var(--board-raised-2)] border-[#25283a] text-[#6d7494]'}`}>
             2. Mod Postfix
           </div>
-          <div className={`p-2.5 rounded-xl border ${step.phase === 'FINAL_REVERSE' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200' : 'bg-[#161824] border-[#25283a] text-[#6d7494]'}`}>
+          <div className={`p-2.5 rounded-xl border ${step.phase === 'FINAL_REVERSE' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200' : 'bg-[var(--board-raised-2)] border-[#25283a] text-[#6d7494]'}`}>
             3. Final Reverse
           </div>
         </div>

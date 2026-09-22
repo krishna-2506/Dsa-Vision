@@ -111,28 +111,28 @@ export default function EasyAndMediumVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-2xl p-5 shadow-xl space-y-4">
-        <div className="flex justify-between items-center border-b border-[#272b3c] pb-3">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pattern Derivation Engine</span>
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-2xl p-5 shadow-xl space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--line)] pb-3">
+          <span className="text-xs font-semibold text-[var(--chalk-dim)] uppercase tracking-wider">Pattern Derivation Engine</span>
           <span className="text-xs font-mono px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             {step.phase}
           </span>
         </div>
 
-        <div className="p-3 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs font-mono text-indigo-300">
-          Strategy: <span className="text-slate-200">{step.activeRule}</span>
+        <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs font-mono text-indigo-300">
+          Strategy: <span className="text-[var(--chalk)]">{step.activeRule}</span>
         </div>
 
         <div className="space-y-2">
           {step.gridRows.map(([label, content], idx) => (
-            <div key={idx} className="flex justify-between items-center p-2.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs font-mono">
-              <span className="text-slate-400">{label}</span>
+            <div key={idx} className="flex justify-between items-center p-2.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs font-mono">
+              <span className="text-[var(--chalk-dim)]">{label}</span>
               <span className="text-emerald-400 font-bold tracking-widest">{content}</span>
             </div>
           ))}
         </div>
 
-        <div className="p-3.5 rounded-xl bg-[#12131b] border border-[#272b3c] text-xs text-slate-300 leading-relaxed">
+        <div className="p-3.5 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] text-xs text-[var(--chalk-dim)] leading-relaxed">
           {step.explanation}
         </div>
       </div>

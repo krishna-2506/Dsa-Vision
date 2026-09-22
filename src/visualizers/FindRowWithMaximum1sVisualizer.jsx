@@ -249,7 +249,7 @@ export default function FindRowWithMaximum1sVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Grid Display with Row Counts */}
-      <div className="p-4 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-2.5">
+      <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-2.5">
         {step.matrix.map((row, rIdx) => {
           const isCurrent = step.currentRow === rIdx;
           const isWinner = step.phase === 'COMPLETED' && step.maxRow === rIdx;
@@ -279,7 +279,7 @@ export default function FindRowWithMaximum1sVisualizer({ currentStep = 0 }) {
 
               <div className="w-16 text-right">
                 <span className={`text-xs font-mono px-2 py-0.5 rounded ${
-                  count !== null ? 'bg-[#181a26] text-white border border-[#2d3144]' : 'text-[#42465c]'
+                  count !== null ? 'bg-[#181a26] text-[var(--chalk)] border border-[#2d3144]' : 'text-[#42465c]'
                 }`}>
                   {count !== null ? `${count} ones` : '-'}
                 </span>

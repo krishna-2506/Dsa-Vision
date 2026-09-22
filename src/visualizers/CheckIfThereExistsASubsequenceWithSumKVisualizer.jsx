@@ -200,11 +200,11 @@ export default function CheckIfThereExistsASubsequenceWithSumKVisualizer({ curre
       </div>
 
       {/* Array Element Blocks */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-center gap-3 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center gap-3 font-mono">
         {step.array.map((val, idx) => {
           const isSelected = step.selected.includes(idx);
 
-          let style = 'border-[#272b3c] bg-[#12131b] text-[#555a73]';
+          let style = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-faint)]';
           if (step.matched && isSelected) {
             style = 'border-emerald-400 bg-emerald-500/25 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/25';
           } else if (isSelected) {

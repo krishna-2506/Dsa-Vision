@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Next Permutation',
@@ -7,6 +7,19 @@ export const meta = {
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1) In-Place',
   description: 'Rearranges numbers into the lexicographically next greater permutation in-place. Follows the 3-step pivot algorithm: find the rightmost dip, swap with the next greater element, and reverse the tail suffix.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Next Permutation 3-Step Strategy',
+  nodes: [
+    { id: 'root', label: 'Next Permutation Invariant', children: ['find-dip', 'find-successor', 'swap-pivot', 'reverse-tail'] },
+    { id: 'find-dip', label: '1. Rightmost Dip i', detail: 'Scan from right to find first i where nums[i] < nums[i+1]; suffix [i+1..N-1] is descending' },
+    { id: 'find-successor', label: '2. Next Greater Successor j', detail: 'Scan suffix from right to find first nums[j] > nums[i]; minimal increment for prefix' },
+    { id: 'swap-pivot', label: '3. Swap nums[i] & nums[j]', detail: 'Prefix advances to next lexicographical order; suffix remains strictly descending' },
+    { id: 'reverse-tail', label: '4. Reverse Suffix [i+1..N-1]', detail: 'Reversing descending suffix produces ascending order, making it minimal' }
+  ]
 };
 
 export const solutions = {
@@ -49,6 +62,7 @@ public:
     }
 };`,
   python: `# Python 3 Optimal Next Permutation
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def nextPermutation(self, nums: list[int]) -> None:
         n = len(nums)
@@ -73,6 +87,7 @@ class Solution:
         # Step 3: Reverse the suffix
         nums[ind + 1:] = reversed(nums[ind + 1:])`,
   java: `// Java Optimal Next Permutation
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public void nextPermutation(int[] nums) {
         int n = nums.length;
@@ -86,196 +101,288 @@ class Solution {
             }
         }
         
-        if (ind != -1) {
-            // Step 2: Find element to swap
-            for (int i = n - 1; i > ind; i--) {
-                if (nums[i] > nums[ind]) {
-                    int temp = nums[i];
-                    nums[i] = nums[ind];
-                    nums[ind] = temp;
-                    break;
-                }
+        if (ind == -1) {
+            reverse(nums, 0, n - 1);
+            return;
+        }
+        
+        // Step 2: Find element to swap
+        for (int i = n - 1; i > ind; i--) {
+            if (nums[i] > nums[ind]) {
+                swap(nums, i, ind);
+                break;
             }
         }
         
-        // Step 3: Reverse suffix
-        int l = ind + 1, r = n - 1;
-        while (l < r) {
-            int temp = nums[l];
-            nums[l] = nums[r];
-            nums[r] = temp;
-            l++;
-            r--;
+        // Step 3: Reverse the suffix
+        reverse(nums, ind + 1, n - 1);
+    }
+    
+    private void reverse(int[] nums, int start, int end) {
+        while (start < end) {
+            swap(nums, start++, end--);
         }
+    }
+    
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
     }
 }`,
   javascript: `// JavaScript Optimal Next Permutation
+// Time Complexity: O(N) | Space Complexity: O(1)
 var nextPermutation = function(nums) {
     const n = nums.length;
     let ind = -1;
-    
-    // Step 1: Find break point
+
     for (let i = n - 2; i >= 0; i--) {
         if (nums[i] < nums[i + 1]) {
             ind = i;
             break;
         }
     }
-    
-    if (ind !== -1) {
-        // Step 2: Find successor to swap
-        for (let i = n - 1; i > ind; i--) {
-            if (nums[i] > nums[ind]) {
-                [nums[i], nums[ind]] = [nums[ind], nums[i]];
-                break;
-            }
+
+    if (ind === -1) {
+        nums.reverse();
+        return;
+    }
+
+    for (let i = n - 1; i > ind; i--) {
+        if (nums[i] > nums[ind]) {
+            [nums[i], nums[ind]] = [nums[ind], nums[i]];
+            break;
         }
     }
-    
-    // Step 3: Reverse suffix
-    let l = ind + 1, r = n - 1;
-    while (l < r) {
-        [nums[l], nums[r]] = [nums[r], nums[l]];
-        l++;
-        r--;
+
+    let left = ind + 1, right = n - 1;
+    while (left < right) {
+        [nums[left], nums[right]] = [nums[right], nums[left]];
+        left++;
+        right--;
     }
 };`
 };
 
 export const steps = [
   {
-    title: '1. Initial Permutation: [1, 2, 5, 4, 3]',
-    phase: 'INITIAL',
-    codeLine: 11,
-    array: [1, 2, 5, 4, 3],
-    pivot: null,
-    successor: null,
-    reverseRange: null,
-    variables: { array: '[1, 2, 5, 4, 3]', step: 'Scan from right for first dip' },
-    explain: 'Starting from the right end, we look for the first index i where nums[i] < nums[i+1]. Everything to the right of this index is currently sorted in descending order.',
-    intuition: 'A descending suffix is the highest possible permutation for those digits. To make the next permutation, we must alter the digit right before it.'
+    title: '1. Initial State: nums = [1, 2, 5, 4, 3]',
+    phase: 'SETUP',
+    track: {
+      label: 'Array nums',
+      items: [1, 2, 5, 4, 3],
+      pointers: []
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Array Size N', value: '5' },
+      { label: 'Target', value: 'Next Lexicographical Order' },
+      { label: 'Breakpoint ind', value: 'Unidentified' }
+    ],
+    variables: { array: '[1, 2, 5, 4, 3]', goal: 'Find minimal lexicographical increment' },
+    formula: 'Find rightmost i such that nums[i] < nums[i+1]',
+    action: 'Initialize search for rightmost pivot dip from index N - 2 down to 0',
+    explain: 'A suffix that is in strictly descending order represents the maximum possible permutation of those digits. To create the next permutation, we must change the first digit to the left of this descending suffix.',
+    intuition: 'If an entire array is descending (e.g. 5,4,3,2,1), reversing it gives the smallest permutation (1,2,3,4,5).'
   },
   {
-    title: '2. Found Breakpoint: i = 1 (val 2) < nums[2] (val 5)',
-    phase: 'FIND_PIVOT',
-    codeLine: 16,
-    array: [1, 2, 5, 4, 3],
-    pivot: 1,
-    successor: null,
-    reverseRange: null,
-    variables: { ind: 1, 'nums[ind]': 2, 'nums[ind+1]': 5 },
-    explain: 'At index 1, nums[1] = 2 is strictly less than nums[2] = 5. Index 1 is our pivot breakpoint!',
-    intuition: 'Digit 2 needs to be replaced with the next slightly larger digit from the descending suffix [5, 4, 3].'
+    title: '2. Scan from Right: nums[3]=4 > nums[4]=3 (Descending)',
+    phase: 'SCAN_DIP',
+    track: {
+      label: 'Array nums',
+      items: [1, 2, 5, { value: 4, status: 'current' }, { value: 3, status: 'current' }],
+      pointers: [{ index: 3, label: 'i' }]
+    },
+    activeI: 3,
+    activeJ: 4,
+    metrics: [
+      { label: 'Comparing', value: 'nums[3]=4 vs nums[4]=3' },
+      { label: 'Check nums[i] < nums[i+1]', value: 'False (4 > 3)' },
+      { label: 'Descending Suffix', value: '[4, 3]' }
+    ],
+    variables: { i: 3, 'nums[i]': 4, 'nums[i+1]': 3, conditionMet: false },
+    formula: 'nums[3] < nums[4] is False ==> continue scanning left',
+    action: 'nums[3] is 4 > 3. Continue scanning leftward for dip',
+    explain: 'At index 3, 4 is greater than 3. The descending suffix extends to [4, 3]. We continue scanning left.',
+    intuition: 'Digits 4 and 3 cannot be rearranged to form a larger value than 43.'
   },
   {
-    title: '3. Find Smallest Successor > 2: Found 3 at index 4',
+    title: '3. Scan from Right: nums[2]=5 > nums[3]=4 (Descending)',
+    phase: 'SCAN_DIP',
+    track: {
+      label: 'Array nums',
+      items: [1, 2, { value: 5, status: 'current' }, { value: 4, status: 'current' }, { value: 3, status: 'current' }],
+      pointers: [{ index: 2, label: 'i' }]
+    },
+    activeI: 2,
+    activeJ: 3,
+    metrics: [
+      { label: 'Comparing', value: 'nums[2]=5 vs nums[3]=4' },
+      { label: 'Check nums[i] < nums[i+1]', value: 'False (5 > 4)' },
+      { label: 'Descending Suffix', value: '[5, 4, 3]' }
+    ],
+    variables: { i: 2, 'nums[i]': 5, 'nums[i+1]': 4, conditionMet: false },
+    formula: 'nums[2] < nums[3] is False ==> continue scanning left',
+    action: 'nums[2] is 5 > 4. Suffix [5, 4, 3] is strictly descending',
+    explain: 'At index 2, 5 > 4. The suffix [5, 4, 3] is fully descending and cannot be incremented further.',
+    intuition: 'The maximum permutation for digits 5, 4, 3 is 543. We must step one index to the left.'
+  },
+  {
+    title: '4. Breakpoint Found: nums[1]=2 < nums[2]=5 => ind = 1',
+    phase: 'BREAKPOINT_FOUND',
+    track: {
+      label: 'Array nums',
+      items: [
+        1,
+        { value: 2, status: 'match' },
+        { value: 5, status: 'current' },
+        { value: 4, status: 'current' },
+        { value: 3, status: 'current' }
+      ],
+      pointers: [{ index: 1, label: 'pivot (ind)' }]
+    },
+    activeI: 1,
+    activeJ: 2,
+    metrics: [
+      { label: 'Breakpoint Index', value: 'ind = 1', highlight: true },
+      { label: 'Pivot Value', value: 'nums[1] = 2' },
+      { label: 'Descending Suffix', value: '[5, 4, 3] (idx 2..4)' }
+    ],
+    variables: { ind: 1, 'nums[ind]': 2, 'nums[ind+1]': 5, pivotValue: 2 },
+    formula: 'nums[1] < nums[2] (2 < 5) ==> ind = 1',
+    action: 'Breakpoint found at index 1! Value 2 needs to be replaced with the next smallest element > 2 in suffix',
+    explain: 'At index 1, nums[1] = 2 is strictly less than nums[2] = 5. Index 1 is our pivot breakpoint. Suffix [5, 4, 3] will supply the replacement candidate.',
+    intuition: 'Replacing 2 with the smallest possible larger digit from the suffix yields the smallest increase.'
+  },
+  {
+    title: '5. Find Successor: nums[4] = 3 is the Smallest Val > 2 in Suffix',
     phase: 'FIND_SUCCESSOR',
-    codeLine: 28,
-    array: [1, 2, 5, 4, 3],
-    pivot: 1,
-    successor: 4,
-    reverseRange: null,
-    variables: { successorIndex: 4, 'nums[4]': 3, pivotVal: 2 },
-    explain: 'Scanning suffix from right: 3 > 2. So index 4 is the smallest element in the suffix that is greater than nums[ind].',
-    intuition: 'Swapping 2 with 3 ensures the prefix grows by the minimal possible amount.'
+    track: {
+      label: 'Array nums',
+      items: [
+        1,
+        { value: 2, status: 'match' },
+        5,
+        4,
+        { value: 3, status: 'match' }
+      ],
+      pointers: [
+        { index: 1, label: 'pivot' },
+        { index: 4, label: 'successor' }
+      ]
+    },
+    activeI: 1,
+    activeJ: 4,
+    metrics: [
+      { label: 'Pivot', value: '2 at idx 1' },
+      { label: 'Successor', value: '3 at idx 4', highlight: true },
+      { label: 'Scan Target', value: 'First nums[j] > 2 from right' }
+    ],
+    variables: { ind: 1, successorIdx: 4, 'nums[ind]': 2, 'nums[succ]': 3 },
+    formula: 'for (j = n-1; j > ind; j--) if (nums[j] > nums[ind]) ==> j = 4',
+    action: 'Found successor 3 at index 4 (3 > 2). Swap pivot (idx 1) with successor (idx 4)',
+    explain: 'Scanning the descending suffix from right to left, the first value greater than 2 is 3 at index 4. Because the suffix is descending, this first element is guaranteed to be the smallest element in the suffix that is greater than 2.',
+    intuition: 'Swapping 2 with 3 ensures the prefix grows by the absolute minimum amount.'
   },
   {
-    title: '4. Swap nums[1] (2) with nums[4] (3): [1, 3, 5, 4, 2]',
+    title: '6. Swap Pivot & Successor: swap(nums[1], nums[4]) => [1, 3, 5, 4, 2]',
     phase: 'SWAP_PIVOT',
-    codeLine: 30,
-    array: [1, 3, 5, 4, 2],
-    pivot: 1,
-    successor: 4,
-    reverseRange: null,
-    variables: { 'action': 'swap(nums[1], nums[4])', array: '[1, 3, 5, 4, 2]' },
-    explain: 'After swapping, nums[1] is now 3. Notice the suffix [5, 4, 2] is still strictly in descending order.',
-    intuition: 'Now the new prefix [1, 3] is established. To make the permutation minimal overall, the suffix must be in ascending order.'
+    track: {
+      label: 'Array nums (After Swap)',
+      items: [
+        1,
+        { value: 3, status: 'match' },
+        5,
+        4,
+        { value: 2, status: 'current' }
+      ],
+      pointers: [
+        { index: 1, label: 'new prefix' }
+      ]
+    },
+    activeI: 1,
+    activeJ: 4,
+    metrics: [
+      { label: 'New Prefix', value: '[1, 3]' },
+      { label: 'Suffix to Reverse', value: '[5, 4, 2] (idx 2..4)' },
+      { label: 'Swap Completed', value: '2 <-> 3' }
+    ],
+    variables: {
+      arrayAfterSwap: '[1, 3, 5, 4, 2]',
+      newPrefix: '[1, 3]',
+      suffixState: 'Descending [5, 4, 2]'
+    },
+    formula: 'swap(nums[1], nums[4]); array = [1, 3, 5, 4, 2];',
+    action: 'Swap complete. Prefix is now [1, 3]. Suffix [5, 4, 2] remains sorted in descending order',
+    explain: 'After swapping, nums[1] is 3. The suffix [5, 4, 2] is still strictly descending. To make the new permutation as small as possible, this suffix must be sorted in ascending order.',
+    intuition: 'Reversing a descending array turns it into ascending order in O(K) time without an expensive O(K log K) sort!'
   },
   {
-    title: '5. Reverse Suffix [ind+1 ... end]: [5, 4, 2] -> [2, 4, 5]',
+    title: '7. Reverse Suffix [ind + 1 .. N - 1]: [5, 4, 2] -> [2, 4, 5]',
     phase: 'REVERSE_SUFFIX',
-    codeLine: 36,
-    array: [1, 3, 2, 4, 5],
-    pivot: null,
-    successor: null,
-    reverseRange: [2, 4],
-    variables: { 'action': 'reverse(suffix)', final: '[1, 3, 2, 4, 5]' },
-    explain: 'Reversing a descending sequence produces an ascending sequence in O(K) time without sorting.',
-    intuition: 'An ascending tail gives the smallest possible magnitude for the suffix.'
+    track: {
+      label: 'Array nums (Suffix Reversed)',
+      items: [
+        1,
+        { value: 3, status: 'match' },
+        { value: 2, status: 'match' },
+        { value: 4, status: 'match' },
+        { value: 5, status: 'match' }
+      ],
+      pointers: [
+        { index: 2, label: 'L' },
+        { index: 4, label: 'R' }
+      ]
+    },
+    activeI: 2,
+    activeJ: 4,
+    windowStart: 2,
+    windowEnd: 4,
+    metrics: [
+      { label: 'Reversed Window', value: 'indices 2..4' },
+      { label: 'Old Suffix', value: '[5, 4, 2]' },
+      { label: 'New Suffix', value: '[2, 4, 5]', highlight: true }
+    ],
+    variables: {
+      reversedRange: '[2..4]',
+      finalArray: '[1, 3, 2, 4, 5]',
+      reverseEfficiency: 'O(N) two-pointer flip'
+    },
+    formula: 'reverse(nums, ind + 1, n - 1): [5, 4, 2] ==> [2, 4, 5]',
+    action: 'Reverse the suffix in-place using two pointers (left = 2, right = 4)',
+    explain: 'Reversing suffix elements at indices 2 through 4 transforms [5, 4, 2] into [2, 4, 5]. Combined with prefix [1, 3], we get [1, 3, 2, 4, 5].',
+    intuition: 'Ascending order gives the smallest possible lexicographical value for the remaining tail.'
   },
   {
-    title: '6. Completed Next Permutation: [1, 3, 2, 4, 5]',
+    title: '8. Completed: Next Permutation is [1, 3, 2, 4, 5]',
     phase: 'COMPLETED',
-    codeLine: 36,
-    array: [1, 3, 2, 4, 5],
-    pivot: null,
-    successor: null,
-    reverseRange: null,
-    variables: { result: '[1, 3, 2, 4, 5]', timeComplexity: 'O(N)' },
-    explain: 'The next permutation is [1, 3, 2, 4, 5]. Algorithm executed in linear O(N) time with O(1) extra space!',
-    intuition: 'Perfect next lexicographical ordering guaranteed by mathematical construction.'
+    track: {
+      label: 'Final Permutation',
+      items: [
+        { value: 1, status: 'match' },
+        { value: 3, status: 'match' },
+        { value: 2, status: 'match' },
+        { value: 4, status: 'match' },
+        { value: 5, status: 'match' }
+      ],
+      pointers: []
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Next Permutation', value: '[1, 3, 2, 4, 5]', highlight: true },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1) In-Place' }
+    ],
+    variables: {
+      input: '[1, 2, 5, 4, 3]',
+      output: '[1, 3, 2, 4, 5]',
+      passes: 'Single backward scan + swap + reverse'
+    },
+    formula: 'Lexicographically next permutation established in-place',
+    action: 'Algorithm finished. Return [1, 3, 2, 4, 5].',
+    explain: 'The algorithm runs in strictly linear O(N) time with O(1) auxiliary space, finding the exact next lexicographical permutation without generating any other permutations.',
+    intuition: 'Mathematical construction guarantees this is the immediate successor permutation.'
   }
 ];
-
-export default function NextPermutationVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Current Phase */}
-      <span className="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-[#161824] border border-[#272b3c] text-indigo-300">
-        Phase: {step.phase}
-      </span>
-
-      {/* Array Elements */}
-      <div className="w-full flex items-center justify-center gap-3 py-4">
-        {step.array.map((val, idx) => {
-          const isPivot = step.pivot === idx;
-          const isSuccessor = step.successor === idx;
-          const inReverseRange = step.reverseRange && idx >= step.reverseRange[0] && idx <= step.reverseRange[1];
-
-          let style = 'bg-[#181a24] text-white border-[#2b2e40]';
-          if (isPivot) style = 'bg-rose-500/20 text-rose-300 border-rose-500 scale-105 shadow-md shadow-rose-500/20';
-          else if (isSuccessor) style = 'bg-amber-500/20 text-amber-300 border-amber-500 scale-105 shadow-md shadow-amber-500/20';
-          else if (inReverseRange) style = 'bg-indigo-500/20 text-indigo-300 border-indigo-500/60';
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[52px]">
-              {/* Pointer labels */}
-              <div className="h-5 flex items-center text-[10px] font-mono font-bold">
-                {isPivot && <span className="px-1.5 py-0.5 rounded bg-rose-500 text-white">Pivot</span>}
-                {isSuccessor && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">Next &gt;</span>}
-                {inReverseRange && !isPivot && !isSuccessor && (
-                  <span className="text-indigo-400 text-[10px]">rev</span>
-                )}
-              </div>
-
-              {/* Number Card */}
-              <div className={`w-14 h-14 rounded-xl border flex items-center justify-center font-mono text-xl font-bold transition-all duration-300 ${style}`}>
-                {val}
-              </div>
-
-              <span className="text-[10px] font-mono text-[#5b5e6e]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Explanatory Legend */}
-      <div className="flex items-center gap-6 text-xs font-mono text-[#8a8ea3]">
-        <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-rose-500/30 border border-rose-500"></span>
-          <span>Pivot (nums[i] &lt; nums[i+1])</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-amber-500/30 border border-amber-500"></span>
-          <span>Successor (nums[j] &gt; nums[i])</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-indigo-500/30 border border-indigo-500"></span>
-          <span>Reversed Tail</span>
-        </div>
-      </div>
-    </div>
-  );
-}

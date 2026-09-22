@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Min Insertions/Deletions to Convert String A to B',
+  title: 'Min Insertions / Deletions to Convert String A to B (DP-30)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * M)',
+  timeComplexity: 'O(N × M) Time',
   spaceComplexity: 'O(M) Space-Optimized',
-  description: 'Calculates the minimum total insertions and deletions needed to transform string A into string B. By preserving their Longest Common Subsequence (LCS), deletions = |A| - LCS and insertions = |B| - LCS.'
+  description: 'Calculates the minimum total deletions and insertions needed to transform word1 into word2. By preserving their Longest Common Subsequence (LCS), Deletions = |word1| - LCS and Insertions = |word2| - LCS.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Min Insertions & Deletions (DP-30)',
+  nodes: [
+    { id: 'root', label: 'String Transformation Minimizer', children: ['reduction', 'lcs-tabulation', 'ops-formula'] },
+    { id: 'reduction', label: '1. Invariant Reduction', detail: 'Any character present in the LCS of both strings does not need to be deleted or inserted.' },
+    { id: 'lcs-tabulation', label: '2. Compute LCS Grid', children: ['match-case', 'mismatch-case'] },
+    { id: 'match-case', label: 'Match', detail: 'word1[i-1] == word2[j-1] => 1 + dp[i-1][j-1]' },
+    { id: 'mismatch-case', label: 'Mismatch', detail: 'max(dp[i-1][j], dp[i][j-1])' },
+    { id: 'ops-formula', label: '3. Minimum Operations Formula', detail: 'Deletions = |word1| - LCS, Insertions = |word2| - LCS, Total = Deletions + Insertions' }
+  ]
 };
 
 export const solutions = {
@@ -19,7 +33,7 @@ using namespace std;
 
 class Solution {
 public:
-    int minOperations(string word1, string word2) {
+    int minDistance(string word1, string word2) {
         int n = word1.size(), m = word2.size();
         vector<int> prev(m + 1, 0), cur(m + 1, 0);
 
@@ -32,15 +46,13 @@ public:
         }
 
         int lcs = prev[m];
-        int deletions = n - lcs;
-        int insertions = m - lcs;
-        return deletions + insertions;
+        return (n - lcs) + (m - lcs);
     }
 };`,
   python: `# Python 3 Minimum Insertions/Deletions to Convert A to B
 # Time: O(N * M) | Space: O(M)
 class Solution:
-    def minOperations(self, word1: str, word2: str) -> int:
+    def minDistance(self, word1: str, word2: str) -> int:
         n, m = len(word1), len(word2)
         prev = [0] * (m + 1)
 
@@ -58,7 +70,7 @@ class Solution:
   java: `// Java Minimum Insertions/Deletions to Convert A to B
 // Time: O(N * M) | Space: O(M)
 class Solution {
-    public int minOperations(String word1, String word2) {
+    public int minDistance(String word1, String word2) {
         int n = word1.length(), m = word2.length();
         int[] prev = new int[m + 1];
         int[] cur = new int[m + 1];
@@ -71,7 +83,7 @@ class Solution {
                     cur[j] = Math.max(prev[j], cur[j - 1]);
                 }
             }
-            System.arraycopy(cur, 0, prev, 0, m + 1);
+            prev = cur.clone();
         }
 
         int lcs = prev[m];
@@ -80,7 +92,7 @@ class Solution {
 }`,
   javascript: `// JavaScript Minimum Insertions/Deletions to Convert A to B
 // Time: O(N * M) | Space: O(M)
-var minOperations = function(word1, word2) {
+var minDistance = function(word1, word2) {
     const n = word1.length, m = word2.length;
     let prev = new Array(m + 1).fill(0);
 
@@ -103,140 +115,171 @@ var minOperations = function(word1, word2) {
 
 export const steps = [
   {
-    title: '1. Strings: A = "sea", B = "eat"',
-    phase: 'INITIAL',
-    codeLine: 12,
-    a: 'sea',
-    b: 'eat',
-    n: 3,
-    m: 3,
-    lcs: 0,
-    deletions: null,
-    insertions: null,
-    variables: { a: 'sea', b: 'eat', formula: 'Total Ops = (lenA - LCS) + (lenB - LCS)' },
-    explain: 'We want to convert "sea" into "eat" using minimum character deletions and insertions.',
-    intuition: 'Keep the longest common subsequence intact so we do minimal work.'
+    phase: 'SETUP',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'Deletions = |word1| - LCS | Insertions = |word2| - LCS',
+    action: 'Initialize LCS table for word1 = "sea" (rows) and word2 = "eat" (columns).',
+    explain: 'Instead of brute force string mutations, we compute the Longest Common Subsequence. Characters belonging to the LCS stay untouched. All non-LCS characters in word1 must be deleted, and all non-LCS characters in word2 must be inserted.',
+    intuition: 'Preserving the maximal common anchor minimizes both deletions and insertions.',
+    metrics: [
+      { label: '|word1|', value: 3 },
+      { label: '|word2|', value: 3 },
+      { label: 'LCS', value: 0 }
+    ]
   },
   {
-    title: '2. Compute LCS: "ea" is Common to Both (Length = 2)',
-    phase: 'LCS',
-    codeLine: 18,
-    a: 'sea',
-    b: 'eat',
-    n: 3,
-    m: 3,
-    lcs: 2,
-    commonSeq: 'ea',
-    variables: { lcs: 2, preservedCharacters: '"ea"' },
-    explain: 'The LCS between "sea" and "eat" is "ea" with length 2.',
-    intuition: '"ea" does not need to be deleted or re-inserted.'
+    phase: 'FILL_ROW_1',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 1, c: 1 },
+    formula: 'word1[0] ("s") not in "eat" => dp[1][1..3] = 0',
+    action: 'Process row 1 (char "s"): no match against any character in "eat".',
+    explain: 'Character "s" does not appear in "eat". Every cell in row 1 evaluates to max(dp[0][j], dp[1][j-1]) = 0. "s" is a deletion candidate.',
+    intuition: 'No common prefix can start with "s".',
+    metrics: [
+      { label: 'Active Char', value: 'word1[0]: "s"' },
+      { label: 'Row 1 Max', value: 0 }
+    ]
   },
   {
-    title: '3. Calculate Operations: Deletions = 3 - 2 = 1, Insertions = 3 - 2 = 1',
-    phase: 'OPERATIONS',
-    codeLine: 23,
-    a: 'sea',
-    b: 'eat',
-    n: 3,
-    m: 3,
-    lcs: 2,
-    deletions: 1,
-    insertions: 1,
-    variables: { 'Deletions from A': 'Delete \'s\' (1 op)', 'Insertions from B': 'Insert \'t\' (1 op)' },
-    explain: 'Delete \'s\' from "sea" -> "ea". Insert \'t\' -> "eat". Total operations = 1 + 1 = 2.',
-    intuition: 'Minimal edit path.'
+    phase: 'FILL_ROW_2',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 1, 1, 1],
+      [0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 2, c: 1 },
+    dependencyCells: [{ r: 1, c: 0, label: 'diag' }],
+    formula: 'word1[1] == word2[0] ("e" == "e") => dp[2][1] = 1 + dp[1][0] = 1',
+    action: 'Process row 2 (char "e"): matches word2[0] = "e" at column 1.',
+    explain: 'Match found! Character "e" matches immediately. Cell [2, 1] becomes 1. Subsequent cells [2, 2] and [2, 3] inherit 1.',
+    intuition: 'First common subsequence character is "e".',
+    metrics: [
+      { label: 'Active Char', value: 'word1[1]: "e"' },
+      { label: 'Match At', value: 'col 1 ("e")' },
+      { label: 'LCS so far', value: 1, highlight: true }
+    ]
   },
   {
-    title: '4. Final Result: Minimum Operations = 2 (1 Deletion + 1 Insertion)',
+    phase: 'FILL_ROW_3_MATCH',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 1, 1, 1],
+      [0, 1, 2, 0]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 3, c: 2 },
+    dependencyCells: [{ r: 2, c: 1, label: 'diag' }],
+    formula: 'word1[2] == word2[1] ("a" == "a") => dp[3][2] = 1 + dp[2][1] = 2',
+    action: 'Process row 3 (char "a"): matches word2[1] = "a" at column 2.',
+    explain: 'At cell [3, 2], character "a" matches. Diagonal predecessor dp[2][1] is 1, so dp[3][2] = 1 + 1 = 2! Subsequence "ea" is confirmed.',
+    intuition: 'Common subsequence extends to "ea" with length 2.',
+    metrics: [
+      { label: 'Active Char', value: 'word1[2]: "a"' },
+      { label: 'dp[3][2]', value: 2, highlight: true }
+    ]
+  },
+  {
+    phase: 'FILL_ROW_3_COMPLETE',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 1, 1, 1],
+      [0, 1, 2, 2]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 3, c: 3 },
+    dependencyCells: [{ r: 2, c: 3, label: 'up=1' }, { r: 3, c: 2, label: 'left=2' }],
+    formula: 'word1[2] != word2[2] ("a" != "t") => dp[3][3] = max(1, 2) = 2',
+    action: 'Process terminal cell [3, 3]: mismatch between "a" and "t". LCS = 2.',
+    explain: 'Final entry dp[3][3] takes max(dp[2][3], dp[3][2]) = 2. The Longest Common Subsequence between "sea" and "eat" is "ea" with length 2.',
+    intuition: 'Table complete! Now calculate operation counts.',
+    metrics: [
+      { label: 'LCS Length', value: 2, highlight: true },
+      { label: 'LCS String', value: '"ea"' }
+    ]
+  },
+  {
+    phase: 'DELETION_ANALYSIS',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 1, 1, 1],
+      [0, 1, 2, 2]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 3, c: 3 },
+    formula: 'Deletions = |word1| - LCS = 3 - 2 = 1 (Delete "s")',
+    action: 'Analyze required deletions from word1.',
+    explain: 'String word1 has length 3 ("sea") and LCS has length 2 ("ea"). The remaining character "s" must be deleted from word1. Deletions required = 1.',
+    intuition: 'Only non-LCS characters in the source string are deleted.',
+    metrics: [
+      { label: '|word1|', value: 3 },
+      { label: 'LCS', value: 2 },
+      { label: 'Deletions', value: 1, highlight: true }
+    ]
+  },
+  {
+    phase: 'INSERTION_ANALYSIS',
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 1, 1, 1],
+      [0, 1, 2, 2]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 3, c: 3 },
+    formula: 'Insertions = |word2| - LCS = 3 - 2 = 1 (Insert "t")',
+    action: 'Analyze required insertions into word1.',
+    explain: 'String word2 has length 3 ("eat") and LCS has length 2 ("ea"). The character "t" in word2 is missing from the LCS and must be inserted. Insertions required = 1.',
+    intuition: 'Only non-LCS characters in the target string are inserted.',
+    metrics: [
+      { label: '|word2|', value: 3 },
+      { label: 'LCS', value: 2 },
+      { label: 'Insertions', value: 1, highlight: true }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 26,
-    a: 'sea',
-    b: 'eat',
-    n: 3,
-    m: 3,
-    lcs: 2,
-    deletions: 1,
-    insertions: 1,
-    totalOps: 2,
-    variables: { totalOperations: 2, steps: 'Delete \'s\', Insert \'t\'' },
-    explain: 'Transformation complete in 2 operations. Solved in O(N * M) time and O(M) space.',
-    intuition: 'Optimal string conversion verified.'
+    grid: [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 1, 1, 1],
+      [0, 1, 2, 2]
+    ],
+    rowLabels: ['∅', 's', 'e', 'a'],
+    colLabels: ['∅', 'e', 'a', 't'],
+    activeCell: { r: 3, c: 3 },
+    formula: 'Total Operations = Deletions (1) + Insertions (1) = 2',
+    action: 'Transformation pipeline complete: "sea" ➔ delete "s" ➔ "ea" ➔ insert "t" ➔ "eat".',
+    explain: 'Minimum operations = 1 deletion + 1 insertion = 2 operations. Optimal time complexity O(N × M) with O(M) space optimization.',
+    intuition: '2 operations is mathematically minimal since LCS "ea" is the largest invariant.',
+    metrics: [
+      { label: 'Deletions', value: 1 },
+      { label: 'Insertions', value: 1 },
+      { label: 'Total Ops', value: 2, highlight: true }
+    ]
   }
 ];
-
-export default function MinimumInsertionsOrDeletionsToConvertStringAToBVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          A: "{step.a}" ➔ B: "{step.b}"
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Total Ops: {step.deletions !== null ? step.deletions + step.insertions : '—'}
-        </span>
-      </div>
-
-      {/* String Comparison Display */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Transformation Mapping (Delete vs Insert)
-        </span>
-
-        <div className="flex items-center justify-around w-full max-w-md pt-2">
-          {/* String A */}
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xs font-mono font-bold text-cyan-400">Word A ("sea")</span>
-            <div className="flex gap-1.5 mt-1">
-              <span className="w-10 h-10 rounded-xl border border-rose-500/50 bg-rose-500/15 text-rose-300 flex items-center justify-center font-mono font-bold">
-                s (Del)
-              </span>
-              <span className="w-10 h-10 rounded-xl border border-emerald-500 bg-emerald-500/25 text-emerald-300 flex items-center justify-center font-mono font-bold">
-                e
-              </span>
-              <span className="w-10 h-10 rounded-xl border border-emerald-500 bg-emerald-500/25 text-emerald-300 flex items-center justify-center font-mono font-bold">
-                a
-              </span>
-            </div>
-          </div>
-
-          <span className="text-slate-500 font-mono text-xl font-bold">➔</span>
-
-          {/* String B */}
-          <div className="flex flex-col items-center gap-1">
-            <span className="text-xs font-mono font-bold text-amber-400">Word B ("eat")</span>
-            <div className="flex gap-1.5 mt-1">
-              <span className="w-10 h-10 rounded-xl border border-emerald-500 bg-emerald-500/25 text-emerald-300 flex items-center justify-center font-mono font-bold">
-                e
-              </span>
-              <span className="w-10 h-10 rounded-xl border border-emerald-500 bg-emerald-500/25 text-emerald-300 flex items-center justify-center font-mono font-bold">
-                a
-              </span>
-              <span className="w-10 h-10 rounded-xl border border-blue-500/50 bg-blue-500/15 text-blue-300 flex items-center justify-center font-mono font-bold">
-                t (Ins)
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Ops breakdown */}
-        {step.deletions !== null && (
-          <div className="w-full max-w-md bg-[#161824] border border-[#272b3c] rounded-xl p-3 flex items-center justify-around text-xs font-mono">
-            <span className="text-rose-400 font-semibold">Deletions: {step.deletions}</span>
-            <span className="text-slate-500 font-bold">+</span>
-            <span className="text-blue-400 font-semibold">Insertions: {step.insertions}</span>
-            <span className="text-slate-500 font-bold">=</span>
-            <span className="text-emerald-400 font-bold">Total: {step.deletions + step.insertions}</span>
-          </div>
-        )}
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

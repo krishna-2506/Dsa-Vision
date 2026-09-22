@@ -1,47 +1,90 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Sliding Window Maximum',
-  category: 'Stack and Queues',
+  category: 'Stack and Queues & Sliding Window',
   difficulty: 'Hard',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(K)',
-  description: 'Finds the maximum value in every contiguous sliding window of size k in linear time using a monotonic decreasing double-ended queue (deque).'
+  spaceComplexity: 'O(K) Auxiliary',
+  description: 'Finds the maximum value in every contiguous sliding window of size K in linear time using a monotonic decreasing double-ended queue (deque).'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Monotonic Decreasing Deque Invariant',
+  nodes: [
+    { id: 'root', label: 'Monotonic Deque Strategy', children: ['front-eviction', 'back-pruning', 'push-index', 'record-max', 'complexity'] },
+    { id: 'front-eviction', label: '1. Window Bounds Eviction', detail: 'If the front index dq.front() <= i - K, it has slid outside the active window of size K; pop it from the front.' },
+    { id: 'back-pruning', label: '2. Monotonicity Pruning', detail: 'While !dq.empty() and nums[dq.back()] <= nums[i], pop from back; smaller, older elements can never be the maximum again.' },
+    { id: 'push-index', label: '3. Store Indices in Deque', detail: 'Push the current index i to the back of the deque, maintaining strictly decreasing element values.' },
+    { id: 'record-max', label: '4. Extract Window Peak', detail: 'When i >= K - 1, the maximum element in the current window is always at the front: nums[dq.front()].' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Each index enters and exits the deque at most once -> O(N) time with O(K) space.' }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++: Sliding Window Maximum using Monotonic Deque
+  cpp: `// C++ Sliding Window Maximum using Monotonic Deque
 // Time Complexity: O(N) | Space Complexity: O(K)
 #include <vector>
 #include <deque>
 using namespace std;
 
-vector<int> maxSlidingWindow(vector<int>& nums, int k) {
-    deque<int> dq;
-    vector<int> result;
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        deque<int> dq; // Stores indices in decreasing order of values
+        vector<int> result;
 
-    for (int i = 0; i < nums.size(); i++) {
-        // 1. Remove indices out of window bounds
-        if (!dq.empty() && dq.front() <= i - k) {
-            dq.pop_front();
+        for (int i = 0; i < (int)nums.size(); i++) {
+            // 1. Remove indices out of window bounds
+            if (!dq.empty() && dq.front() <= i - k) {
+                dq.pop_front();
+            }
+
+            // 2. Remove smaller elements from back
+            while (!dq.empty() && nums[dq.back()] <= nums[i]) {
+                dq.pop_back();
+            }
+
+            // 3. Push current index
+            dq.push_back(i);
+
+            // 4. Record maximum when window is full
+            if (i >= k - 1) {
+                result.push_back(nums[dq.front()]);
+            }
         }
 
-        // 2. Maintain decreasing order in deque
-        while (!dq.empty() && nums[dq.back()] <= nums[i]) {
-            dq.pop_back();
-        }
-
-        // 3. Add current index
-        dq.push_back(i);
-
-        // 4. Record maximum when window reaches size k
-        if (i >= k - 1) {
-            result.push_back(nums[dq.front()]);
-        }
+        return result;
     }
-    return result;
-}`,
-  java: `// Java: Sliding Window Maximum using Deque
+};`,
+  python: `# Python 3 Sliding Window Maximum using Monotonic Deque
+# Time Complexity: O(N) | Space Complexity: O(K)
+from collections import deque
+
+class Solution:
+    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:
+        dq = deque() # indices
+        result = []
+
+        for i, x in enumerate(nums):
+            # Remove indices outside window
+            if dq and dq[0] <= i - k:
+                dq.popleft()
+
+            # Remove smaller elements
+            while dq and nums[dq[-1]] <= x:
+                dq.pop()
+
+            dq.append(i)
+
+            if i >= k - 1:
+                result.append(nums[dq[0]])
+
+        return result`,
+  java: `// Java Sliding Window Maximum using Monotonic Deque
+// Time Complexity: O(N) | Space Complexity: O(K)
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -67,40 +110,22 @@ class Solution {
                 result[idx++] = nums[dq.peekFirst()];
             }
         }
+
         return result;
     }
 }`,
-  python: `# Python 3: Sliding Window Maximum
-from collections import deque
-
-def max_sliding_window(nums: list[int], k: int) -> list[int]:
-    dq = deque()
-    result = []
-
-    for i in range(len(nums)):
-        if dq and dq[0] <= i - k:
-            dq.popleft()
-
-        while dq and nums[dq[-1]] <= nums[i]:
-            dq.pop()
-
-        dq.append(i)
-
-        if i >= k - 1:
-            result.append(nums[dq[0]])
-
-    return result`,
-  javascript: `// JavaScript: Sliding Window Maximum
-function maxSlidingWindow(nums, k) {
-    const dq = [];
+  javascript: `// JavaScript Sliding Window Maximum using Monotonic Deque
+// Time Complexity: O(N) | Space Complexity: O(K)
+var maxSlidingWindow = function(nums, k) {
+    const dq = []; // store indices
     const result = [];
 
     for (let i = 0; i < nums.length; i++) {
-        if (dq.length > 0 && dq[0] <= i - k) {
+        if (dq.length && dq[0] <= i - k) {
             dq.shift();
         }
 
-        while (dq.length > 0 && nums[dq[dq.length - 1]] <= nums[i]) {
+        while (dq.length && nums[dq[dq.length - 1]] <= nums[i]) {
             dq.pop();
         }
 
@@ -110,153 +135,295 @@ function maxSlidingWindow(nums, k) {
             result.push(nums[dq[0]]);
         }
     }
+
     return result;
-}`
+};`
 };
 
 export const steps = [
   {
-    title: '1. Initialize: nums = [1, 3, -1, -3, 5, 3, 6, 7], k = 3',
-    phase: 'INIT',
-    codeLine: 12,
-    i: 0,
-    windowStart: 0,
-    windowEnd: 0,
-    deque: [0],
-    result: [],
-    nums: [1, 3, -1, -3, 5, 3, 6, 7],
-    explain: 'i=0: Push index 0 (val 1) to deque. Window not full yet.'
+    title: '1. Setup & Monotonic Deque Invariant',
+    phase: 'INITIAL',
+    track: {
+      label: 'nums = [1, 3, -1, -3, 5, 3, 6, 7] (Window K = 3)',
+      items: [
+        { val: 1 },
+        { val: 3 },
+        { val: -1 },
+        { val: -3 },
+        { val: 5 },
+        { val: 3 },
+        { val: 6 },
+        { val: 7 }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Window Size (K)', value: 3 },
+      { label: 'Deque State', value: '[] (Empty)' },
+      { label: 'Result Maxima', value: '[]' },
+      { label: 'Time Complexity', value: 'O(N) Amortized', highlight: true }
+    ],
+    formula: 'deque<int> dq; // Maintains indices with values in strictly decreasing order',
+    action: 'Initialize an empty double-ended queue to store candidate indices for window maxima.',
+    explain: 'Goal: Find the maximum value in every contiguous window of size K = 3.',
+    intuition: 'If nums[i] >= nums[j] and i > j, nums[j] can NEVER be the maximum in any future window. We prune it immediately from the deque.',
+    variables: {
+      'nums': '[1, 3, -1, -3, 5, 3, 6, 7]',
+      'k': 3,
+      'dq': '[]',
+      'result': '[]'
+    }
   },
   {
-    title: '2. i = 1 (val = 3): 3 >= 1 &rarr; Pop 0, Push 1',
-    phase: 'POP_BACK',
-    codeLine: 19,
-    i: 1,
-    windowStart: 0,
-    windowEnd: 1,
-    deque: [1],
-    result: [],
-    nums: [1, 3, -1, -3, 5, 3, 6, 7],
-    explain: '3 dominates 1 in future windows. Pop 0. Deque = [1].'
-  },
-  {
-    title: '3. i = 2 (val = -1): First Window [1, 3, -1] &rarr; Max = 3!',
-    phase: 'FIRST_MAX',
-    codeLine: 27,
-    i: 2,
+    title: '2. Window 1: Indices 0..2 ([1, 3, -1] -> Max = 3)',
+    phase: 'WINDOW_MAX',
+    track: {
+      label: 'Window [0..2] = [1, 3, -1]: 3 dominates 1 (popped). Deque has [1 (val 3), 2 (val -1)]',
+      items: [
+        { val: 1, status: 'mismatch', badge: 'Popped' },
+        { val: 3, status: 'match', badge: '👑 Max = 3 (idx 1)' },
+        { val: -1, status: 'active', badge: 'idx 2' },
+        { val: -3 },
+        { val: 5 },
+        { val: 3 },
+        { val: 6 },
+        { val: 7 }
+      ]
+    },
+    activeI: 0,
+    activeJ: 2,
     windowStart: 0,
     windowEnd: 2,
-    deque: [1, 2],
-    result: [3],
-    nums: [1, 3, -1, -3, 5, 3, 6, 7],
-    explain: '-1 is smaller than 3, so append 2. Window [0..2] is complete! Front of deque is index 1 (val 3). Result += 3.'
+    metrics: [
+      { label: 'Active Window', value: '[1, 3, -1]' },
+      { label: 'Deque Indices', value: '[1, 2] (vals: 3, -1)' },
+      { label: 'Window Max', value: 'nums[dq[0]] = 3', highlight: true },
+      { label: 'Results', value: '[3]' }
+    ],
+    formula: 'dq = [1, 2]; max = nums[1] = 3; result.push_back(3);',
+    action: 'Process indices 0, 1, 2. Value 3 pops 1 from back. -1 is smaller than 3, so pushed. Deque front is index 1.',
+    explain: 'At index 2, first full window is reached (i >= K - 1). Deque front is index 1 with value 3. Result: [3].',
+    intuition: 'Deque front always holds the index of the largest value in the current window.',
+    variables: {
+      'i': 2,
+      'dq': '[1, 2]',
+      'result': '[3]'
+    }
   },
   {
-    title: '4. i = 3 (val = -3): Window [3, -1, -3] &rarr; Max = 3',
-    phase: 'SLIDE',
-    codeLine: 27,
-    i: 3,
+    title: '3. Window 2: Index 3 ([-3] enters -> Window [3, -1, -3] -> Max = 3)',
+    phase: 'WINDOW_MAX',
+    track: {
+      label: 'Window [1..3] = [3, -1, -3]: -3 is pushed. Deque: [1, 2, 3]',
+      items: [
+        { val: 1 },
+        { val: 3, status: 'match', badge: '👑 Max = 3 (idx 1)' },
+        { val: -1, status: 'active' },
+        { val: -3, status: 'active', badge: 'idx 3' },
+        { val: 5 },
+        { val: 3 },
+        { val: 6 },
+        { val: 7 }
+      ]
+    },
+    activeI: 1,
+    activeJ: 3,
     windowStart: 1,
     windowEnd: 3,
-    deque: [1, 2, 3],
-    result: [3, 3],
-    nums: [1, 3, -1, -3, 5, 3, 6, 7],
-    explain: 'Window slides to [1..3]. Index 1 is still inside window. Front remains index 1 (val 3).'
+    metrics: [
+      { label: 'Active Window', value: '[3, -1, -3]' },
+      { label: 'Deque Indices', value: '[1, 2, 3] (3, -1, -3)' },
+      { label: 'Window Max', value: 3, highlight: true },
+      { label: 'Results', value: '[3, 3]' }
+    ],
+    formula: 'dq.front() = 1 > 3 - 3 (in bounds); dq.push(3); max = nums[1] = 3;',
+    action: 'i = 3: dq.front() = 1 is inside window [1..3]. -3 is pushed to back. Deque front remains index 1.',
+    explain: 'Values in deque are decreasing: 3 > -1 > -3. Front index 1 holds maximum 3. Result updates to [3, 3].',
+    intuition: 'Smaller subsequent elements are retained because they might become maximums when earlier elements expire.',
+    variables: {
+      'i': 3,
+      'dq': '[1, 2, 3]',
+      'result': '[3, 3]'
+    }
   },
   {
-    title: '5. i = 4 (val = 5): Evict expired idx 1; 5 dominates all &rarr; Deque = [4], Max = 5',
-    phase: 'DOMINATE',
-    codeLine: 19,
-    i: 4,
+    title: '4. Window 3: Index 4 ([5] enters -> Clears Deque! Max = 5)',
+    phase: 'WINDOW_MAX',
+    track: {
+      label: 'Window [2..4] = [-1, -3, 5]: 5 is larger than all elements in deque -> POPS ALL!',
+      items: [
+        { val: 1 },
+        { val: 3, status: 'mismatch', badge: 'Expired' },
+        { val: -1, status: 'mismatch', badge: 'Popped by 5' },
+        { val: -3, status: 'mismatch', badge: 'Popped by 5' },
+        { val: 5, status: 'match', badge: '👑 Max = 5 (idx 4)' },
+        { val: 3 },
+        { val: 6 },
+        { val: 7 }
+      ]
+    },
+    activeI: 2,
+    activeJ: 4,
     windowStart: 2,
     windowEnd: 4,
-    deque: [4],
-    result: [3, 3, 5],
-    nums: [1, 3, -1, -3, 5, 3, 6, 7],
-    explain: 'Index 1 is out of window (<= 4 - 3 = 1). 5 >= -3 and 5 >= -1 &rarr; Deque emptied, then index 4 pushed. Max = 5!'
+    metrics: [
+      { label: 'Active Window', value: '[-1, -3, 5]' },
+      { label: 'New Element', value: 'nums[4] = 5' },
+      { label: 'Deque Purged', value: 'Pops -3, -1, 3 expired' },
+      { label: 'New Deque', value: '[4] (val: 5)', highlight: true }
+    ],
+    formula: 'dq.pop_front() (idx 1 expired); while(nums[dq.back()] <= 5) pop; dq = [4];',
+    action: 'Index 1 expired (1 <= 4 - 3). 5 is greater than -3 and -1, popping them both! Only index 4 remains in deque.',
+    explain: 'Window [2..4] has maximum 5. Deque front is 4. Result: [3, 3, 5].',
+    intuition: 'A large new element completely clears all smaller predecessors.',
+    variables: {
+      'i': 4,
+      'dq': '[4]',
+      'result': '[3, 3, 5]'
+    }
   },
   {
-    title: '6. Process remaining up to EOF: Final Result = [3, 3, 5, 5, 6, 7]',
-    phase: 'DONE',
-    codeLine: 30,
-    i: 7,
+    title: '5. Window 4: Index 5 ([3] enters -> Window [5, 3] -> Max = 5)',
+    phase: 'WINDOW_MAX',
+    track: {
+      label: 'Window [3..5] = [-3, 5, 3]: 3 is pushed behind 5. Deque: [4 (val 5), 5 (val 3)]',
+      items: [
+        { val: 1 },
+        { val: 3 },
+        { val: -1 },
+        { val: -3, status: 'mismatch', badge: 'Expired' },
+        { val: 5, status: 'match', badge: '👑 Max = 5' },
+        { val: 3, status: 'active', badge: 'idx 5' },
+        { val: 6 },
+        { val: 7 }
+      ]
+    },
+    activeI: 3,
+    activeJ: 5,
+    windowStart: 3,
+    windowEnd: 5,
+    metrics: [
+      { label: 'Active Window', value: '[-3, 5, 3]' },
+      { label: 'Deque State', value: '[4, 5] (vals: 5, 3)' },
+      { label: 'Window Max', value: 5, highlight: true },
+      { label: 'Results', value: '[3, 3, 5, 5]' }
+    ],
+    formula: 'dq.push(5); max = nums[dq[0]] = nums[4] = 5;',
+    action: 'i = 5: 3 is smaller than 5, pushed to back. Deque front remains index 4 (value 5).',
+    explain: 'Window [-3, 5, 3] maximum is 5. Result: [3, 3, 5, 5].',
+    intuition: 'Decreasing invariant preserved: 5 > 3.',
+    variables: {
+      'i': 5,
+      'dq': '[4, 5]',
+      'result': '[3, 3, 5, 5]'
+    }
+  },
+  {
+    title: '6. Window 5: Index 6 ([6] enters -> Clears Deque! Max = 6)',
+    phase: 'WINDOW_MAX',
+    track: {
+      label: 'Window [4..6] = [5, 3, 6]: 6 is larger than 3 and 5 -> POPS ALL! Deque: [6]',
+      items: [
+        { val: 1 },
+        { val: 3 },
+        { val: -1 },
+        { val: -3 },
+        { val: 5, status: 'mismatch', badge: 'Popped by 6' },
+        { val: 3, status: 'mismatch', badge: 'Popped by 6' },
+        { val: 6, status: 'match', badge: '👑 Max = 6 (idx 6)' },
+        { val: 7 }
+      ]
+    },
+    activeI: 4,
+    activeJ: 6,
+    windowStart: 4,
+    windowEnd: 6,
+    metrics: [
+      { label: 'Active Window', value: '[5, 3, 6]' },
+      { label: 'Pops Occurred', value: 'nums[5]=3 and nums[4]=5 popped' },
+      { label: 'New Deque', value: '[6] (val: 6)', highlight: true },
+      { label: 'Results', value: '[3, 3, 5, 5, 6]' }
+    ],
+    formula: 'while(nums[dq.back()] <= 6) dq.pop_back(); dq = [6];',
+    action: 'Value 6 pops both 3 and 5 from deque. Deque becomes [6]. Window maximum is 6.',
+    explain: 'Window [4..6] = [5, 3, 6] has maximum 6. Result: [3, 3, 5, 5, 6].',
+    intuition: '6 dominates the entire window.',
+    variables: {
+      'i': 6,
+      'dq': '[6]',
+      'result': '[3, 3, 5, 5, 6]'
+    }
+  },
+  {
+    title: '7. Window 6: Index 7 ([7] enters -> Clears Deque! Max = 7)',
+    phase: 'WINDOW_MAX',
+    track: {
+      label: 'Window [5..7] = [3, 6, 7]: 7 pops 6 -> Deque: [7]. Max = 7',
+      items: [
+        { val: 1 },
+        { val: 3 },
+        { val: -1 },
+        { val: -3 },
+        { val: 5 },
+        { val: 3, status: 'mismatch', badge: 'Expired' },
+        { val: 6, status: 'mismatch', badge: 'Popped by 7' },
+        { val: 7, status: 'match', badge: '👑 Max = 7 (idx 7)' }
+      ]
+    },
+    activeI: 5,
+    activeJ: 7,
     windowStart: 5,
     windowEnd: 7,
-    deque: [7],
-    result: [3, 3, 5, 5, 6, 7],
-    nums: [1, 3, -1, -3, 5, 3, 6, 7],
-    explain: 'Each element is enqueued and dequeued at most once &rarr; strictly O(N) total time.'
+    metrics: [
+      { label: 'Active Window', value: '[3, 6, 7]' },
+      { label: 'Deque State', value: '[7] (val: 7)', highlight: true },
+      { label: 'Window Max', value: 7, highlight: true },
+      { label: 'Final Results', value: '[3, 3, 5, 5, 6, 7]' }
+    ],
+    formula: 'dq.pop_back() (6 popped); dq = [7]; result.push(7);',
+    action: 'Final element 7 enters, popping 6 from back. Window [5..7] has maximum 7.',
+    explain: 'Last window [3, 6, 7] evaluated. All 6 sliding windows processed in linear time.',
+    intuition: 'Array traversal completes.',
+    variables: {
+      'i': 7,
+      'dq': '[7]',
+      'result': '[3, 3, 5, 5, 6, 7]'
+    }
+  },
+  {
+    title: '8. Result: Sliding Window Maximums = [3, 3, 5, 5, 6, 7]',
+    phase: 'COMPLETED',
+    track: {
+      label: 'All 6 Window Maxima Computed in O(N) Time',
+      items: [
+        { val: 1 },
+        { val: 3, status: 'match', badge: 'Max 1 & 2' },
+        { val: -1 },
+        { val: -3 },
+        { val: 5, status: 'match', badge: 'Max 3 & 4' },
+        { val: 3 },
+        { val: 6, status: 'match', badge: 'Max 5' },
+        { val: 7, status: 'match', badge: 'Max 6' }
+      ]
+    },
+    activeI: null,
+    activeJ: null,
+    metrics: [
+      { label: 'Total Windows', value: 'N - K + 1 = 6' },
+      { label: 'Maxima Array', value: '[3, 3, 5, 5, 6, 7]', highlight: true },
+      { label: 'Time Complexity', value: 'O(N) Strict' },
+      { label: 'Space Complexity', value: 'O(K) Deque' }
+    ],
+    formula: 'return result = [3, 3, 5, 5, 6, 7];',
+    action: 'Return the collected array of window maxima.',
+    explain: 'Each of the 8 elements entered and left the deque at most once, strictly achieving O(N) linear time.',
+    intuition: 'Monotonic deque achieves optimal O(N) time where a heap or balanced BST would take O(N log K).',
+    variables: {
+      'result': '[3, 3, 5, 5, 6, 7]',
+      'timeComplexity': 'O(N)',
+      'spaceComplexity': 'O(K)'
+    }
   }
 ];
-
-export default function SlidingWindowMaximumVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Current Window Max: <strong className="text-base text-cyan-200">{step.result[step.result.length - 1] ?? '...'}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Window: <strong>[{step.windowStart} .. {step.windowEnd}] (k=3)</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
-          <span>Array &amp; Sliding Window Frame</span>
-          <span className="text-cyan-400 font-bold">Monotonic Deque O(N)</span>
-        </div>
-
-        {/* Array with Window Highlight */}
-        <div className="grid grid-cols-8 gap-1.5 w-full pt-2">
-          {step.nums.map((num, idx) => {
-            const inWindow = idx >= step.windowStart && idx <= step.windowEnd;
-            const isFront = step.deque[0] === idx;
-
-            return (
-              <div key={idx} className="flex flex-col items-center gap-1">
-                <div
-                  className={`w-11 h-12 rounded-xl border-2 flex flex-col items-center justify-center font-mono font-bold text-sm transition-all ${
-                    isFront
-                      ? 'bg-cyan-500/30 border-cyan-400 text-cyan-100 shadow-md shadow-cyan-500/20 scale-105'
-                      : inWindow
-                      ? 'bg-purple-500/20 border-purple-400 text-purple-200'
-                      : 'bg-[#161824] border-[#292d3f] text-[#555b7b]'
-                  }`}
-                >
-                  {num}
-                </div>
-                <span className="text-[9px] font-mono text-[#525875]">[{idx}]</span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Deque contents */}
-        <div className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-[#0f1016] border border-[#242738]">
-          <span className="text-xs font-mono text-[#737998]">Monotonic Deque Indices (Values):</span>
-          <div className="flex items-center gap-2">
-            {step.deque.map((idx, i) => (
-              <div
-                key={i}
-                className="px-2.5 py-1 rounded bg-cyan-500/20 border border-cyan-500/40 text-cyan-200 font-mono text-xs font-bold"
-              >
-                idx {idx} ({step.nums[idx]})
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Result Array */}
-        <div className="w-full flex items-center gap-2 text-xs font-mono text-[#8a8ea3]">
-          <span>Generated Maxima:</span>
-          <span className="text-emerald-300 font-bold bg-[#161824] px-3 py-1 rounded-lg border border-[#272b3c]">
-            [{step.result.join(', ')}]
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}

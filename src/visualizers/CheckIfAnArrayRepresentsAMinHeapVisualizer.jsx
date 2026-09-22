@@ -166,8 +166,8 @@ export default function CheckIfAnArrayRepresentsAMinHeapVisualizer({ currentStep
       </div>
 
       {/* Binary Heap Tree View */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Complete Binary Tree Representation</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Complete Binary Tree Representation</span>
 
         {/* Level 0: Root */}
         <div className="flex justify-center">
@@ -175,7 +175,7 @@ export default function CheckIfAnArrayRepresentsAMinHeapVisualizer({ currentStep
             step.currentNode === 0 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-emerald-500 bg-emerald-500/15 text-emerald-300'
           }`}>
             <span className="text-sm">{step.arr[0]}</span>
-            <span className="text-[9px] text-slate-400">[0]</span>
+            <span className="text-[9px] text-[var(--chalk-dim)]">[0]</span>
           </div>
         </div>
 
@@ -185,7 +185,7 @@ export default function CheckIfAnArrayRepresentsAMinHeapVisualizer({ currentStep
             const isParent = step.currentNode === idx;
             const isChild = step.leftChild === idx || step.rightChild === idx;
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-300';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
             if (isParent) {
               borderClass = 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40';
             } else if (isChild) {
@@ -195,7 +195,7 @@ export default function CheckIfAnArrayRepresentsAMinHeapVisualizer({ currentStep
             return (
               <div key={idx} className={`w-12 h-12 rounded-full border flex flex-col items-center justify-center font-mono font-bold ${borderClass}`}>
                 <span className="text-xs">{step.arr[idx]}</span>
-                <span className="text-[8px] text-slate-400">[{idx}]</span>
+                <span className="text-[8px] text-[var(--chalk-dim)]">[{idx}]</span>
               </div>
             );
           })}
@@ -206,7 +206,7 @@ export default function CheckIfAnArrayRepresentsAMinHeapVisualizer({ currentStep
           {[3, 4, 5].map((idx) => {
             const isChild = step.leftChild === idx || step.rightChild === idx;
 
-            let borderClass = 'border-[#272b3c] bg-[#161824] text-slate-400';
+            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
             if (isChild) {
               borderClass = 'border-blue-500 bg-blue-500/20 text-blue-300 ring-2 ring-blue-500/40';
             }
@@ -214,7 +214,7 @@ export default function CheckIfAnArrayRepresentsAMinHeapVisualizer({ currentStep
             return (
               <div key={idx} className={`w-11 h-11 rounded-full border flex flex-col items-center justify-center font-mono font-bold ${borderClass}`}>
                 <span className="text-xs">{step.arr[idx]}</span>
-                <span className="text-[8px] text-slate-500">[{idx}]</span>
+                <span className="text-[8px] text-[var(--chalk-faint)]">[{idx}]</span>
               </div>
             );
           })}
@@ -222,7 +222,7 @@ export default function CheckIfAnArrayRepresentsAMinHeapVisualizer({ currentStep
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

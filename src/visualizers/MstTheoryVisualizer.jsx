@@ -79,33 +79,33 @@ export default function MstTheoryVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
           <span>MST 4-Point Core Axioms</span>
           <span className="text-emerald-400 font-bold">V - 1 Edges Required</span>
         </div>
 
         <div className="grid grid-cols-2 gap-3 w-full font-mono text-xs">
-          <div className="p-3 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col gap-1">
+          <div className="p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-1">
             <span className="text-cyan-400 font-bold">1. Spanning</span>
-            <span className="text-slate-400 text-[11px]">Must span across all V vertices of the graph.</span>
+            <span className="text-[var(--chalk-dim)] text-[11px]">Must span across all V vertices of the graph.</span>
           </div>
-          <div className="p-3 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col gap-1">
+          <div className="p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-1">
             <span className="text-purple-400 font-bold">2. Exact Edges</span>
-            <span className="text-slate-400 text-[11px]">Exactly |E| = |V| - 1 edges selected.</span>
+            <span className="text-[var(--chalk-dim)] text-[11px]">Exactly |E| = |V| - 1 edges selected.</span>
           </div>
-          <div className="p-3 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col gap-1">
+          <div className="p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-1">
             <span className="text-amber-400 font-bold">3. Acyclic</span>
-            <span className="text-slate-400 text-[11px]">Must be strictly connected and free of cycles.</span>
+            <span className="text-[var(--chalk-dim)] text-[11px]">Must be strictly connected and free of cycles.</span>
           </div>
-          <div className="p-3 rounded-xl bg-[#161824] border border-[#272b3c] flex flex-col gap-1">
+          <div className="p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-1">
             <span className="text-emerald-400 font-bold">4. Minimal Sum</span>
-            <span className="text-slate-400 text-[11px]">Sum of edge weights must be the absolute minimum.</span>
+            <span className="text-[var(--chalk-dim)] text-[11px]">Sum of edge weights must be the absolute minimum.</span>
           </div>
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.explanation}
       </div>
     </div>

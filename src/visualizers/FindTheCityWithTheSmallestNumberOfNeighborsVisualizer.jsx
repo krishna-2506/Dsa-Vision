@@ -160,8 +160,8 @@ export default function FindTheCityWithTheSmallestNumberOfNeighborsVisualizer({ 
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
           <span>Reachable Neighbors Within Distance &le; 4</span>
           <span className="text-emerald-400 font-bold">Smallest Neighbor Count</span>
         </div>
@@ -175,7 +175,7 @@ export default function FindTheCityWithTheSmallestNumberOfNeighborsVisualizer({ 
                 className={`p-3 rounded-xl border flex flex-col items-center transition-all ${
                   isBest
                     ? 'bg-emerald-500/25 border-emerald-500/50 text-emerald-200 shadow-md ring-1 ring-emerald-400'
-                    : 'bg-[#161824] border-[#272b3c] text-slate-400'
+                    : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
                 }`}
               >
                 <span className="font-bold">City {c}</span>
@@ -188,7 +188,7 @@ export default function FindTheCityWithTheSmallestNumberOfNeighborsVisualizer({ 
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.info}
       </div>
     </div>

@@ -227,13 +227,13 @@ export default function FindNthRootOfANumberVisualizer({ currentStep = 0 }) {
       </div>
 
       {/* Visual Search Space Range */}
-      <div className="w-full p-5 rounded-2xl bg-[#161824] border border-[#272b3c] flex flex-col items-center gap-4">
-        <div className="text-xs font-mono text-[#8a8ea3]">Active Binary Search Range</div>
+      <div className="w-full p-5 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4">
+        <div className="text-xs font-mono text-[var(--chalk-dim)]">Active Binary Search Range</div>
         
         <div className="w-full flex items-center justify-between px-4 text-sm font-mono">
           <div className="flex flex-col items-center">
             <span className="text-blue-400 font-bold">low</span>
-            <span className="text-xl text-white font-bold">{step.low}</span>
+            <span className="text-xl text-[var(--chalk)] font-bold">{step.low}</span>
           </div>
 
           {step.mid !== null && (
@@ -247,20 +247,20 @@ export default function FindNthRootOfANumberVisualizer({ currentStep = 0 }) {
 
           <div className="flex flex-col items-center">
             <span className="text-purple-400 font-bold">high</span>
-            <span className="text-xl text-white font-bold">{step.high}</span>
+            <span className="text-xl text-[var(--chalk)] font-bold">{step.high}</span>
           </div>
         </div>
 
         {/* Calculation Visual */}
         {step.mid !== null && (
-          <div className="w-full p-3 rounded-xl bg-[#12131b] border border-[#202436] flex items-center justify-center gap-3 font-mono text-sm">
-            <span className="text-[#8a8ea3]">Computation:</span>
+          <div className="w-full p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-center gap-3 font-mono text-sm">
+            <span className="text-[var(--chalk-dim)]">Computation:</span>
             <span className="text-amber-300 font-bold">{step.mid}</span>
-            <span className="text-white">^</span>
+            <span className="text-[var(--chalk)]">^</span>
             <span className="text-purple-300 font-bold">{step.n}</span>
-            <span className="text-white">=</span>
+            <span className="text-[var(--chalk)]">=</span>
             <span className="text-emerald-400 font-bold">{step.powerVal}</span>
-            <span className="text-[#8a8ea3] text-xs">
+            <span className="text-[var(--chalk-dim)] text-xs">
               ({step.powerVal > step.m ? `> ${step.m}` : step.powerVal < step.m ? `< ${step.m}` : `= ${step.m}`})
             </span>
           </div>

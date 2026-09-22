@@ -181,8 +181,8 @@ export default function RightleftViewOfBinaryTreeVisualizer({ currentStep = 0 })
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Tree Perspective Projection</span>
           <span className="text-purple-400 font-bold">O(H) Recursive Traversal</span>
         </div>
@@ -216,10 +216,10 @@ export default function RightleftViewOfBinaryTreeVisualizer({ currentStep = 0 })
         </div>
 
         <div className="grid grid-cols-2 gap-3 w-full text-center text-xs font-mono pt-2">
-          <div className="p-2.5 rounded-xl bg-[#161824] border border-[#26293a] text-cyan-300">
+          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-cyan-300">
             Left View: Root &rarr; Left &rarr; Right
           </div>
-          <div className="p-2.5 rounded-xl bg-[#161824] border border-[#26293a] text-purple-300">
+          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-purple-300">
             Right View: Root &rarr; Right &rarr; Left
           </div>
         </div>

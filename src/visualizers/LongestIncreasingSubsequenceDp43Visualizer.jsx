@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by DualArrayRenderer via rendererType
 
 export const meta = {
   title: 'Longest Increasing Subsequence | DP-43 (Binary Search)',
@@ -6,7 +6,21 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O(N log N)',
   spaceComplexity: 'O(N)',
-  description: 'Calculates the length of the Longest Increasing Subsequence using Patience Sorting with Binary Search (std::lower_bound) in O(N log N) time, drastically outperforming the O(N^2) DP approach.'
+  description: 'Calculates the length of the Longest Increasing Subsequence using Patience Sorting with Binary Search (std::lower_bound) in O(N log N) time, drastically outperforming the O(N²) DP approach.'
+};
+
+export const rendererType = 'dual-array';
+
+export const ideaMap = {
+  title: 'LIS via Binary Search (DP-43)',
+  nodes: [
+    { id: 'root', label: 'LIS in O(N log N)', children: ['patience', 'binary-search', 'invariant'] },
+    { id: 'patience', label: '1. Patience Sorting Concept', detail: 'tails[k] stores the smallest ending element of any increasing subsequence of length k+1' },
+    { id: 'binary-search', label: '2. Binary Search (lower_bound)', children: ['append', 'replace'] },
+    { id: 'append', label: 'Append Condition', detail: 'If x > all tails, append x (LIS length expands by 1)' },
+    { id: 'replace', label: 'Replace Condition', detail: 'Find first tails[i] >= x and overwrite it with x (greedily tightens the tail)' },
+    { id: 'invariant', label: '3. Invariant & Result', detail: 'tails array remains strictly increasing at all times; final length equals max LIS' }
+  ]
 };
 
 export const solutions = {
@@ -86,139 +100,218 @@ var lengthOfLIS = function(nums) {
 
 export const steps = [
   {
-    title: '1. Initialize Patience Piles: tails = []',
-    phase: 'INIT',
-    codeLine: 10,
-    nums: [10, 9, 2, 5, 3, 7, 101, 18],
-    currentIndex: -1,
-    currentVal: null,
-    tails: [],
-    replacedIndex: -1,
-    variables: { tails: '[]', length: 0 },
-    explain: 'tails[k] stores the smallest tail of all increasing subsequences of length (k + 1) discovered so far.',
-    intuition: 'Greedily keeping tails as small as possible maximizes future chances for extension.'
+    phase: 'SETUP',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: ['—'] }
+    ],
+    activeI: null,
+    activePrev: null,
+    formula: 'tails[k] = smallest tail of all increasing subsequences of length (k + 1)',
+    action: 'Initialize empty tails array for patience sorting.',
+    explain: 'Instead of comparing against all previous elements in O(N²), patience sorting maintains a sorted array tails where tails[k] is the minimum end-value of an LIS of length k+1. Because tails is always strictly sorted, we locate insertion points using binary search in O(log N).',
+    intuition: 'Greedily keeping tails as small as possible maximizes future opportunities to extend the subsequence.',
+    metrics: [
+      { label: 'LIS Length', value: 0, highlight: true },
+      { label: 'Tails Count', value: 0 },
+      { label: 'Complexity', value: 'O(N log N)' }
+    ],
+    customCard: {
+      title: 'Patience Sorting Principle',
+      rows: [
+        { label: 'Greedy Choice', value: 'Smaller tail values make it easier for upcoming numbers to exceed them' },
+        { label: 'Binary Search', value: 'Use lower_bound(tails, x) to find first element >= x' }
+      ]
+    }
   },
   {
-    title: '2. Process [10, 9, 2]: Overwriting tails[0]',
-    phase: 'OVERWRITE',
-    codeLine: 16,
-    nums: [10, 9, 2, 5, 3, 7, 101, 18],
-    currentIndex: 2,
-    currentVal: 2,
-    tails: [2],
-    replacedIndex: 0,
-    variables: { '10 -> 9 -> 2': 'Each strictly decreases pile 0', tails: '[2]' },
-    explain: '10 placed in tails[0]. 9 replaces 10 (smaller tail of len 1). 2 replaces 9. Smallest tail of len 1 is now 2.',
-    intuition: 'A subsequence starting with 2 is much more promising than one starting with 10.'
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [10] }
+    ],
+    activeI: 0,
+    activePrev: 0,
+    formula: 'x = 10: tails is empty => append 10 => tails = [10]',
+    action: 'Process x=10: First number forms the initial tail of length 1.',
+    explain: 'tails is currently empty. 10 becomes the tail of the first subsequence of length 1.',
+    intuition: 'Every sequence of length 1 begins with the elements themselves.',
+    metrics: [
+      { label: 'Current x', value: 10 },
+      { label: 'LIS Length', value: 1, highlight: true },
+      { label: 'Action', value: 'Append' }
+    ]
   },
   {
-    title: '3. Process 5 and 3: Extend then tighten',
-    phase: 'APPEND_UPDATE',
-    codeLine: 14,
-    nums: [10, 9, 2, 5, 3, 7, 101, 18],
-    currentIndex: 4,
-    currentVal: 3,
-    tails: [2, 3],
-    replacedIndex: 1,
-    variables: { 'x=5': 'tails=[2, 5]', 'x=3': 'replaces 5 at tails[1]', tails: '[2, 3]' },
-    explain: '5 > 2, so it creates a new length 2: tails=[2, 5]. Then 3 < 5, so binary search replaces 5 with 3: tails=[2, 3].',
-    intuition: 'Subsequence of length 2 can now end at 3 instead of 5.'
+    phase: 'REPLACE',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [9] }
+    ],
+    activeI: 1,
+    activePrev: 0,
+    formula: 'x = 9: lower_bound finds tails[0]=10 >= 9 => replace 10 with 9',
+    action: 'Process x=9: 9 <= 10, replaces 10 at tails[0].',
+    explain: 'Binary search finds tails[0]=10 >= 9. We replace 10 with 9. An increasing subsequence of length 1 ending at 9 is strictly better than ending at 10, because any number > 10 is also > 9.',
+    intuition: 'Tightening tails[0] from 10 to 9 increases potential future extensions.',
+    metrics: [
+      { label: 'Current x', value: 9 },
+      { label: 'LIS Length', value: 1 },
+      { label: 'Action', value: 'Replace at idx 0' }
+    ],
+    customCard: {
+      title: 'Binary Search Check: x = 9',
+      rows: [
+        { label: 'Target', value: 'First element >= 9 in [10] -> index 0 (10)', accent: true },
+        { label: 'Replacement', value: 'tails[0] becomes 9 (better tail)' }
+      ]
+    }
   },
   {
-    title: '4. Process 7, 101, 18: Final LIS Length = 4',
+    phase: 'REPLACE',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [2] }
+    ],
+    activeI: 2,
+    activePrev: 0,
+    formula: 'x = 2: lower_bound finds tails[0]=9 >= 2 => replace 9 with 2',
+    action: 'Process x=2: 2 <= 9, replaces 9 at tails[0].',
+    explain: '2 replaces 9 at tails[0]. Length 1 now has optimal tail 2.',
+    intuition: 'A minimum tail of 2 gives maximum headroom for subsequent elements.',
+    metrics: [
+      { label: 'Current x', value: 2 },
+      { label: 'LIS Length', value: 1 },
+      { label: 'Action', value: 'Replace at idx 0' }
+    ]
+  },
+  {
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [2, 5] }
+    ],
+    activeI: 3,
+    activePrev: 1,
+    formula: 'x = 5: 5 > tails[0]=2 => append 5 => tails = [2, 5]',
+    action: 'Process x=5: 5 is greater than all existing tails, append to form length 2.',
+    explain: '5 > 2. Binary search finds no element >= 5, so 5 is appended. We now have an increasing subsequence of length 2: [2, 5].',
+    intuition: 'When a number exceeds all current tails, the maximum LIS length increments by 1.',
+    metrics: [
+      { label: 'Current x', value: 5 },
+      { label: 'LIS Length', value: 2, highlight: true },
+      { label: 'Action', value: 'Append (New LIS Length)' }
+    ],
+    customCard: {
+      title: 'Length Extension: x = 5',
+      rows: [
+        { label: 'Condition', value: '5 > tails[last]=2 => Append', accent: true },
+        { label: 'New State', value: 'tails = [2, 5] (len 1 tail=2, len 2 tail=5)' }
+      ]
+    }
+  },
+  {
+    phase: 'REPLACE',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [2, 3] }
+    ],
+    activeI: 4,
+    activePrev: 1,
+    formula: 'x = 3: lower_bound in [2, 5] finds tails[1]=5 >= 3 => replace 5 with 3',
+    action: 'Process x=3: 3 replaces 5 at tails[1].',
+    explain: 'Binary search on [2, 5] locates index 1 (val 5). We replace 5 with 3. Subsequence of length 2 can now end at 3 instead of 5 ([2, 3] is better than [2, 5]).',
+    intuition: 'Decreasing the tail of length 2 from 5 to 3 makes it easier to extend later.',
+    metrics: [
+      { label: 'Current x', value: 3 },
+      { label: 'LIS Length', value: 2 },
+      { label: 'Action', value: 'Replace at idx 1' }
+    ]
+  },
+  {
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [2, 3, 7] }
+    ],
+    activeI: 5,
+    activePrev: 2,
+    formula: 'x = 7: 7 > tails[1]=3 => append 7 => tails = [2, 3, 7]',
+    action: 'Process x=7: 7 exceeds all tails, append to reach length 3.',
+    explain: '7 > 3. Appending 7 creates a valid LIS of length 3: [2, 3, 7]. LIS length reaches 3.',
+    intuition: 'Because we previously tightened tails[1] to 3, 7 easily extends the sequence.',
+    metrics: [
+      { label: 'Current x', value: 7 },
+      { label: 'LIS Length', value: 3, highlight: true },
+      { label: 'Action', value: 'Append' }
+    ]
+  },
+  {
+    phase: 'EXTEND',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [2, 3, 7, 101] }
+    ],
+    activeI: 6,
+    activePrev: 3,
+    formula: 'x = 101: 101 > tails[2]=7 => append 101 => tails = [2, 3, 7, 101]',
+    action: 'Process x=101: 101 exceeds all tails, append to reach length 4.',
+    explain: '101 > 7. Appending 101 establishes an LIS of length 4: [2, 3, 7, 101].',
+    intuition: 'The maximum LIS length reaches 4.',
+    metrics: [
+      { label: 'Current x', value: 101 },
+      { label: 'LIS Length', value: 4, highlight: true },
+      { label: 'Action', value: 'Append' }
+    ]
+  },
+  {
+    phase: 'REPLACE',
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [2, 3, 7, 18] }
+    ],
+    activeI: 7,
+    activePrev: 3,
+    formula: 'x = 18: lower_bound in [2, 3, 7, 101] finds tails[3]=101 >= 18 => replace with 18',
+    action: 'Process x=18: 18 replaces 101 at tails[3].',
+    explain: 'Binary search finds tails[3]=101 >= 18. We replace 101 with 18. An LIS of length 4 ending at 18 ([2, 3, 7, 18]) is far better than ending at 101.',
+    intuition: 'Even on the last element, tightening the tail ensures the invariant is maintained.',
+    metrics: [
+      { label: 'Current x', value: 18 },
+      { label: 'LIS Length', value: 4, highlight: true },
+      { label: 'Action', value: 'Replace at idx 3' }
+    ],
+    customCard: {
+      title: 'Final Step Inspection',
+      rows: [
+        { label: 'Search Result', value: 'lower_bound(18) = index 3 (value was 101)', accent: true },
+        { label: 'Updated Tail', value: 'tails[3] = 18' }
+      ]
+    }
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 18,
-    nums: [10, 9, 2, 5, 3, 7, 101, 18],
-    currentIndex: 7,
-    currentVal: 18,
-    tails: [2, 3, 7, 18],
-    replacedIndex: 3,
-    variables: { '7': 'extends to [2, 3, 7]', '101': 'extends to [2, 3, 7, 101]', '18': 'replaces 101 at tails[3]', 'LIS Length': 4 },
-    explain: '7 appends to length 3. 101 appends to length 4. 18 replaces 101 at tails[3]. Final length is tails.length = 4.',
-    intuition: 'One valid LIS of length 4 is [2, 3, 7, 18] or [2, 3, 7, 101].'
+    tracks: [
+      { label: 'nums', items: [10, 9, 2, 5, 3, 7, 101, 18] },
+      { label: 'tails', items: [2, 3, 7, 18] }
+    ],
+    activeI: null,
+    activePrev: null,
+    formula: 'tails.length = 4 => Longest Increasing Subsequence Length = 4',
+    action: 'Input stream complete. Return tails.length as the optimal LIS length.',
+    explain: 'The final tails array is [2, 3, 7, 18] with length 4. One corresponding LIS is [2, 3, 7, 18] (or [2, 3, 7, 101]). The algorithm completed in O(N log N) time and O(N) auxiliary space.',
+    intuition: 'Patience sorting computes the exact maximum length without storing all predecessor branches.',
+    metrics: [
+      { label: 'Final LIS Length', value: 4, highlight: true },
+      { label: 'Final Tails', value: '[2, 3, 7, 18]' },
+      { label: 'Time Complexity', value: 'O(N log N)' }
+    ],
+    customCard: {
+      title: 'Algorithm Summary',
+      rows: [
+        { label: 'Total Elements', value: '8 elements processed' },
+        { label: 'Comparisons', value: 'O(N log N) total binary searches' }
+      ]
+    }
   }
 ];
-
-export default function LongestIncreasingSubsequenceDp43Visualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Approach: O(N log N) Patience Sorting
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          LIS Length: {step.tails.length}
-        </span>
-      </div>
-
-      {/* Array Cards */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-5 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Input Array Stream
-        </span>
-
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          {step.nums.map((num, idx) => {
-            const isProcessed = idx <= step.currentIndex;
-            const isCurrent = idx === step.currentIndex;
-
-            return (
-              <div
-                key={idx}
-                className={`w-12 h-14 rounded-xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                  isCurrent
-                    ? 'border-cyan-500 bg-cyan-500/25 text-cyan-300 ring-2 ring-cyan-500/40 shadow-lg scale-110'
-                    : isProcessed
-                    ? 'border-[#3b4261] bg-[#161824] text-slate-300'
-                    : 'border-[#272b3c] bg-[#12131b] text-slate-600'
-                }`}
-              >
-                <span className="text-[9px] text-[#8a8ea3]">[{idx}]</span>
-                <span className="text-sm font-bold">{num}</span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Tails Piles Array */}
-        <div className="w-full border-t border-[#272b3c] pt-4 flex flex-col items-center gap-3">
-          <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">
-            Active Tails Piles (Length = {step.tails.length})
-          </span>
-
-          <div className="flex items-center justify-center gap-3">
-            {step.tails.length === 0 ? (
-              <span className="text-xs font-mono text-slate-500 italic">Piles empty</span>
-            ) : (
-              step.tails.map((val, idx) => {
-                const isReplaced = idx === step.replacedIndex;
-                return (
-                  <div
-                    key={idx}
-                    className={`w-16 h-20 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                      isReplaced
-                        ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg scale-105'
-                        : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
-                    }`}
-                  >
-                    <span className="text-[9px] text-[#8a8ea3]">Len {idx + 1}</span>
-                    <span className="text-base font-bold mt-1">{val}</span>
-                    <span className="text-[8px] text-slate-400 mt-1">tail[{idx}]</span>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

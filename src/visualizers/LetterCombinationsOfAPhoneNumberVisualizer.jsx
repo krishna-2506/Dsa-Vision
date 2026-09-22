@@ -205,8 +205,8 @@ export default function LetterCombinationsOfAPhoneNumberVisualizer({ currentStep
       </div>
 
       {/* Keypad Visualizer */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">Phone Keypad Input</span>
+      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
+        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Phone Keypad Input</span>
 
         <div className="flex items-center justify-center gap-6">
           {['2', '3'].map((d) => {
@@ -216,10 +216,10 @@ export default function LetterCombinationsOfAPhoneNumberVisualizer({ currentStep
               <div key={d} className={`w-20 h-24 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all ${
                 isActive 
                   ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
-                  : 'border-[#272b3c] bg-[#161824] text-slate-400'
+                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
               }`}>
                 <span className="text-2xl font-black">{d}</span>
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">{keypad[d]}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-[var(--chalk-dim)] mt-1">{keypad[d]}</span>
               </div>
             );
           })}
@@ -227,7 +227,7 @@ export default function LetterCombinationsOfAPhoneNumberVisualizer({ currentStep
       </div>
 
       {/* Generated Combinations Grid */}
-      <div className="w-full bg-[#12131b] border border-emerald-500/30 rounded-2xl p-5 flex flex-col gap-2">
+      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-5 flex flex-col gap-2">
         <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Generated Word Combinations</span>
         <div className="grid grid-cols-3 gap-2">
           {step.results.map((word, idx) => (
@@ -239,7 +239,7 @@ export default function LetterCombinationsOfAPhoneNumberVisualizer({ currentStep
       </div>
 
       {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
+      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
         {step.explain}
       </div>
     </div>

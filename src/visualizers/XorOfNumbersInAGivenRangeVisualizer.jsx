@@ -153,10 +153,10 @@ export default function XorOfNumbersInAGivenRangeVisualizer({ currentStep = 0 })
       </div>
 
       {/* Prefix Computation Cards */}
-      <div className="w-full p-6 rounded-2xl bg-[#161824] border border-[#272b3c] flex items-center justify-around gap-4 font-mono">
+      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-around gap-4 font-mono">
         {/* findXOR(R) */}
         <div className="flex flex-col items-center gap-2">
-          <span className="text-xs text-[#8a8ea3]">PrefixXOR(R={step.r}):</span>
+          <span className="text-xs text-[var(--chalk-dim)]">PrefixXOR(R={step.r}):</span>
           <div className="w-20 h-20 rounded-xl border border-blue-400 bg-blue-500/15 text-blue-200 flex items-center justify-center text-2xl font-bold shadow-md shadow-blue-500/20">
             {step.xorR !== null ? step.xorR : '?'}
           </div>
@@ -166,7 +166,7 @@ export default function XorOfNumbersInAGivenRangeVisualizer({ currentStep = 0 })
 
         {/* findXOR(L-1) */}
         <div className="flex flex-col items-center gap-2">
-          <span className="text-xs text-[#8a8ea3]">PrefixXOR(L-1={step.l - 1}):</span>
+          <span className="text-xs text-[var(--chalk-dim)]">PrefixXOR(L-1={step.l - 1}):</span>
           <div className="w-20 h-20 rounded-xl border border-purple-400 bg-purple-500/15 text-purple-200 flex items-center justify-center text-2xl font-bold shadow-md shadow-purple-500/20">
             {step.xorLminus1 !== null ? step.xorLminus1 : '?'}
           </div>
@@ -176,7 +176,7 @@ export default function XorOfNumbersInAGivenRangeVisualizer({ currentStep = 0 })
 
         {/* Final Result */}
         <div className="flex flex-col items-center gap-2">
-          <span className="text-xs text-[#8a8ea3]">Range XOR:</span>
+          <span className="text-xs text-[var(--chalk-dim)]">Range XOR:</span>
           <div className="w-20 h-20 rounded-xl border border-emerald-400 bg-emerald-500/20 text-emerald-200 flex items-center justify-center text-2xl font-bold shadow-md shadow-emerald-500/20">
             {step.finalAns !== null ? step.finalAns : '?'}
           </div>
@@ -184,13 +184,13 @@ export default function XorOfNumbersInAGivenRangeVisualizer({ currentStep = 0 })
       </div>
 
       {/* Cyclic Pattern Table */}
-      <div className="w-full p-4 rounded-xl bg-[#12131b] border border-[#202436] flex flex-col gap-2 font-mono text-xs">
-        <span className="text-[#8a8ea3] font-bold">Prefix XOR Cyclic Modulo Table:</span>
+      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
+        <span className="text-[var(--chalk-dim)] font-bold">Prefix XOR Cyclic Modulo Table:</span>
         <div className="grid grid-cols-4 gap-2 text-center">
-          <div className="p-2 rounded bg-[#161824] border border-[#272b3c] text-blue-300">rem 0 &rarr; N</div>
-          <div className="p-2 rounded bg-[#161824] border border-[#272b3c] text-cyan-300">rem 1 &rarr; 1</div>
-          <div className="p-2 rounded bg-[#161824] border border-[#272b3c] text-purple-300">rem 2 &rarr; N+1</div>
-          <div className="p-2 rounded bg-[#161824] border border-[#272b3c] text-emerald-300">rem 3 &rarr; 0</div>
+          <div className="p-2 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-blue-300">rem 0 &rarr; N</div>
+          <div className="p-2 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-cyan-300">rem 1 &rarr; 1</div>
+          <div className="p-2 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-purple-300">rem 2 &rarr; N+1</div>
+          <div className="p-2 rounded bg-[var(--board-raised-2)] border border-[var(--line)] text-emerald-300">rem 3 &rarr; 0</div>
         </div>
       </div>
     </div>

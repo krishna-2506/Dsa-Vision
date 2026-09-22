@@ -172,8 +172,8 @@ export default function LargestRectangleInAHistogramVisualizer({ currentStep = 0
       </div>
 
       {/* Histogram Rendering */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[#8a8ea3] flex items-center justify-between w-full px-2">
+      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
           <span>Histogram Columns</span>
           <span className="text-emerald-400 font-bold">Monotonic Stack Single-Pass</span>
         </div>
@@ -206,7 +206,7 @@ export default function LargestRectangleInAHistogramVisualizer({ currentStep = 0
           })}
         </div>
 
-        <div className="text-xs font-mono text-[#8a8ea3] bg-[#161824] px-4 py-2 rounded-xl border border-[#272b3c] text-center w-full">
+        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
           When a smaller bar is encountered, previous bars expand horizontally as much as possible until blocked by their boundaries.
         </div>
       </div>

@@ -142,7 +142,7 @@ export default function MiddleOfALinkedlistTortoisehareMethodVisualizer({ curren
           const isFast = step.fastIdx === idx;
           const isMiddleFinal = step.phase === 'COMPLETED' && step.slowIdx === idx;
 
-          let nodeStyle = 'bg-[#181a24] text-white border-[#2b2e40]';
+          let nodeStyle = 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]';
           if (isMiddleFinal) {
             nodeStyle = 'bg-emerald-500/25 text-emerald-300 border-emerald-400 scale-110 shadow-lg shadow-emerald-500/20';
           } else if (isSlow && isFast) {
@@ -158,8 +158,8 @@ export default function MiddleOfALinkedlistTortoisehareMethodVisualizer({ curren
               <div className="flex flex-col items-center gap-1 min-w-[56px]">
                 {/* Pointer Markers above node */}
                 <div className="h-6 flex items-center gap-1 text-[10px] font-mono font-bold">
-                  {isSlow && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-white">🐢 Slow</span>}
-                  {isFast && <span className="px-1.5 py-0.5 rounded bg-indigo-500 text-white">🐇 Fast</span>}
+                  {isSlow && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">🐢 Slow</span>}
+                  {isFast && <span className="px-1.5 py-0.5 rounded bg-indigo-500 text-[var(--chalk)]">🐇 Fast</span>}
                 </div>
 
                 {/* Node Box */}

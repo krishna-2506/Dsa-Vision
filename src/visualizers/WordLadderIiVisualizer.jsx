@@ -180,15 +180,15 @@ export default function WordLadderIiVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="p-6 rounded-2xl bg-[#12131b] border border-[#242738] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[#8a8ea3]">
+      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
+        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
           <span>All Shortest Transformation Paths</span>
           <span className="text-purple-400 font-bold">Level-by-Level Set Deletion</span>
         </div>
 
         <div className="w-full space-y-3">
           {step.paths.map((path, idx) => (
-            <div key={idx} className="p-3 rounded-xl bg-[#161824] border border-[#272b3c] flex items-center gap-2 flex-wrap">
+            <div key={idx} className="p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center gap-2 flex-wrap">
               <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-purple-950 text-purple-300 font-bold mr-1">
                 Path #{idx + 1}
               </span>
@@ -197,7 +197,7 @@ export default function WordLadderIiVisualizer({ currentStep = 0 }) {
                   <span className={`px-2.5 py-1 rounded-lg font-bold border ${
                     w === 'cog'
                       ? 'bg-emerald-500/25 border-emerald-400 text-emerald-200 shadow-md'
-                      : 'bg-[#12131b] border-[#242738] text-slate-300'
+                      : 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk-dim)]'
                   }`}>
                     {w}
                   </span>
@@ -209,7 +209,7 @@ export default function WordLadderIiVisualizer({ currentStep = 0 }) {
         </div>
       </div>
 
-      <div className="w-full p-3.5 rounded-xl bg-[#161824] border border-[#272b3c] text-xs font-mono text-[#94a3b8]">
+      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
         {step.explanation}
       </div>
     </div>

@@ -1,12 +1,26 @@
-import React from 'react';
+// DATA-ONLY — rendered by DpGridRenderer via rendererType
 
 export const meta = {
-  title: 'Print Longest Common Subsequence (DP 26)',
+  title: 'Print Longest Common Subsequence (DP-26)',
   category: 'Dynamic Programming',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * M) Table + O(N + M) Backtrack',
-  spaceComplexity: 'O(N * M)',
-  description: 'Constructs and returns the actual string characters of the Longest Common Subsequence by computing the 2D DP matrix and backtracking from (N, M) following diagonal matches and maximum neighbor paths.'
+  timeComplexity: 'O(N × M) Table + O(N + M) Traceback',
+  spaceComplexity: 'O(N × M) Grid',
+  description: 'Constructs the exact string of the Longest Common Subsequence between s1 and s2 by building the 2D DP matrix and backtracking from (N, M) following character match diagonals and maximum neighbor paths.'
+};
+
+export const rendererType = 'dp-grid';
+
+export const ideaMap = {
+  title: 'Print Longest Common Subsequence (DP-26)',
+  nodes: [
+    { id: 'root', label: 'Print LCS Rebuilder', children: ['dp-matrix', 'backtrack-rules', 'complexity'] },
+    { id: 'dp-matrix', label: '1. Tabulation Matrix dp[i][j]', detail: 'dp[i][j] = length of LCS between s1[0..i-1] and s2[0..j-1]' },
+    { id: 'backtrack-rules', label: '2. Traceback Protocol from (N, M)', children: ['diag-match', 'max-step'] },
+    { id: 'diag-match', label: 'Match s1[i-1] == s2[j-1]', detail: 'Character belongs to LCS! Prepend to result and jump diagonally to dp[i-1][j-1]' },
+    { id: 'max-step', label: 'Mismatch', detail: 'Step towards max(dp[i-1][j], dp[i][j-1]) without collecting character' },
+    { id: 'complexity', label: '3. Efficiency', detail: 'Reconstruction takes linear O(N + M) time after O(N * M) table fill' }
+  ]
 };
 
 export const solutions = {
@@ -23,6 +37,7 @@ public:
         int n = s1.size(), m = s2.size();
         vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
 
+        // 1. Build LCS table
         for (int i = 1; i <= n; i++) {
             for (int j = 1; j <= m; j++) {
                 if (s1[i - 1] == s2[j - 1]) dp[i][j] = 1 + dp[i - 1][j - 1];
@@ -30,7 +45,7 @@ public:
             }
         }
 
-        // Backtrack to reconstruct string
+        // 2. Backtrack to reconstruct string
         string lcs = "";
         int i = n, j = m;
         while (i > 0 && j > 0) {
@@ -124,7 +139,7 @@ var printLCS = function(s1, s2) {
         }
     }
 
-    let lcs = [];
+    const lcs = [];
     let i = n, j = m;
     while (i > 0 && j > 0) {
         if (s1[i - 1] === s2[j - 1]) {
@@ -143,105 +158,236 @@ var printLCS = function(s1, s2) {
 
 export const steps = [
   {
-    title: '1. S1 = "abade", S2 = "baed", Complete 2D Matrix Table',
-    phase: 'TABLE_BUILT',
-    codeLine: 18,
-    s1: 'abade',
-    s2: 'baed',
-    currI: 5,
-    currJ: 4,
-    collected: [],
-    variables: { s1: 'abade', s2: 'baed', maxLcsLength: 3, backtrackStart: '(5, 4)' },
-    explain: 'After filling the 2D DP matrix, cell (5, 4) holds length 3. We begin backtracking backwards from (5, 4).',
-    intuition: 'Tracing back arrows allows us to reconstruct the exact string sequence.'
+    phase: 'SETUP',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'dp[i][j] = 0 when i = 0 or j = 0',
+    action: 'Initialize (N+1) × (M+1) grid for s1 = "abade" and s2 = "baed".',
+    explain: 'Row 0 represents the empty string prefix of s1, and column 0 represents the empty prefix of s2. The LCS with any empty string is 0.',
+    intuition: 'Building the full 2D table allows recovering the exact characters later via backward pointer traversal.',
+    metrics: [
+      { label: '|s1|', value: 5 },
+      { label: '|s2|', value: 4 },
+      { label: 'Reconstructed', value: '""' }
+    ]
   },
   {
-    title: '2. Cell (5, 4): S1[4]=\'e\' != S2[3]=\'d\', Move Left to (5, 3)',
-    phase: 'BACKTRACK',
-    codeLine: 28,
-    s1: 'abade',
-    s2: 'baed',
-    currI: 5,
-    currJ: 3,
-    collected: [],
-    variables: { char1: 'e', char2: 'd', branch: 'dp[5][3] >= dp[4][4] -> move left' },
-    explain: 'Characters \'e\' and \'d\' do not match. Move left to cell (5, 3) where dp[5][3] = 3.',
-    intuition: 'Branching follows maximum score neighbor.'
+    phase: 'FILL_ROW_1',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 1, c: 2 },
+    dependencyCells: [{ r: 0, c: 1, label: 'diag' }],
+    formula: 's1[0] == s2[1] ("a" == "a") => dp[1][2] = 1 + dp[0][1] = 1',
+    action: 'Process s1[0] = "a": matches s2[1] = "a".',
+    explain: 'At cell [1, 2], both characters match. We take diagonal neighbor dp[0][1] (0) + 1 = 1. Remaining cells in row 1 carry over 1.',
+    intuition: 'A match of length 1 ("a") is established.',
+    metrics: [
+      { label: 'Active Char', value: 's1[0]: "a"' },
+      { label: 'Row 1 Max', value: 1 }
+    ]
   },
   {
-    title: '3. Match: S1[4]=\'e\' == S2[2]=\'e\', Collect \'e\' and move diagonal to (4, 2)',
-    phase: 'COLLECT',
-    codeLine: 24,
-    s1: 'abade',
-    s2: 'baed',
-    currI: 4,
-    currJ: 2,
-    collected: ['e'],
-    variables: { match: '\'e\'', collectedSoFar: '["e"]', nextCell: '(4, 2)' },
-    explain: 'Characters match! Collect character \'e\'. Move diagonally to (4, 2).',
-    intuition: 'Diagonal transition indicates this character was part of the common subsequence.'
+    phase: 'FILL_ROW_2',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 2, c: 1 },
+    dependencyCells: [{ r: 1, c: 0, label: 'diag' }],
+    formula: 's1[1] == s2[0] ("b" == "b") => dp[2][1] = 1 + dp[1][0] = 1',
+    action: 'Process s1[1] = "b": matches s2[0] = "b".',
+    explain: 'At cell [2, 1], character "b" matches immediately. Subsequent cells [2, 2..4] evaluate to max(dp[1][j], dp[2][j-1]) = 1.',
+    intuition: 'Prefix "ab" of s1 against prefixes of s2 maintains maximum LCS length 1.',
+    metrics: [
+      { label: 'Active Char', value: 's1[1]: "b"' },
+      { label: 'Row 2 Max', value: 1 }
+    ]
   },
   {
-    title: '4. Backtrack Complete: Collected [\'e\', \'a\', \'b\'] -> Reverse -> "bae"',
+    phase: 'FILL_ROW_3',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 1, 2, 2, 2],
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 3, c: 2 },
+    dependencyCells: [{ r: 2, c: 1, label: 'diag' }],
+    formula: 's1[2] == s2[1] ("a" == "a") => dp[3][2] = 1 + dp[2][1] = 2',
+    action: 'Process s1[2] = second "a": matches s2[1] = "a" to create length 2.',
+    explain: 'Taking 1 + dp[2][1] (1 + 1) produces length 2! Prefix "aba" and prefix "ba" share subsequence "ba" of length 2.',
+    intuition: 'Subsequence length grows to 2 ("ba").',
+    metrics: [
+      { label: 'Active Char', value: 's1[2]: "a"' },
+      { label: 'dp[3][2]', value: 2, highlight: true }
+    ]
+  },
+  {
+    phase: 'FILL_ROW_4',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 1, 2, 2, 2],
+      [0, 1, 2, 2, 3],
+      [0, 0, 0, 0, 0]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 4, c: 4 },
+    dependencyCells: [{ r: 3, c: 3, label: 'diag' }],
+    formula: 's1[3] == s2[3] ("d" == "d") => dp[4][4] = 1 + dp[3][3] = 3',
+    action: 'Process s1[3] = "d": matches s2[3] = "d" at column 4.',
+    explain: 'At cell [4, 4], "d" matches "d", extending LCS from dp[3][3] (2) to 3! Subsequence "bad" is formed.',
+    intuition: 'Max LCS length is now 3.',
+    metrics: [
+      { label: 'Active Char', value: 's1[3]: "d"' },
+      { label: 'dp[4][4]', value: 3, highlight: true }
+    ]
+  },
+  {
+    phase: 'FILL_ROW_5_COMPLETE',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 1, 2, 2, 2],
+      [0, 1, 2, 2, 3],
+      [0, 1, 2, 3, 3]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 5, c: 4 },
+    formula: 'Table complete! dp[5][4] = 3 (Max LCS length = 3)',
+    action: 'Final cell [5, 4] completed: LCS length is 3. Begin backtracking!',
+    explain: 'Row 5 processes terminal "e", which matches col 3 giving dp[5][3] = 3. Final cell [5, 4] = 3. Now we start from [5, 4] and trace the optimal path backward.',
+    intuition: 'Backtracking reverses the forward dynamic programming decisions.',
+    metrics: [
+      { label: 'Total Rows', value: 6 },
+      { label: 'Total Cols', value: 5 },
+      { label: 'LCS Length', value: 3, highlight: true }
+    ]
+  },
+  {
+    phase: 'BACKTRACK_1',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 1, 2, 2, 2],
+      [0, 1, 2, 2, 3],
+      [0, 1, 2, 3, 3]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 5, c: 4 },
+    dependencyCells: [{ r: 4, c: 4, label: 'up=3' }, { r: 5, c: 3, label: 'left=3' }],
+    formula: 's1[4] ("e") != s2[3] ("d") => dp[5][3] >= dp[4][4], move LEFT to [5, 3]',
+    action: 'At [5, 4]: characters "e" and "d" do not match. Move LEFT to [5, 3].',
+    explain: 'Since s1[4] ("e") != s2[3] ("d"), we compare neighbors. dp[5][3] is 3. We move left into column 3 to inspect character "e".',
+    intuition: 'Mismatches guide the pointer towards where the score originated.',
+    metrics: [
+      { label: 'Current Pointer', value: '[5, 4]' },
+      { label: 'Action', value: 'Step LEFT' },
+      { label: 'Collected', value: '[]' }
+    ]
+  },
+  {
+    phase: 'BACKTRACK_2',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 1, 2, 2, 2],
+      [0, 1, 2, 2, 3],
+      [0, 1, 2, 3, 3]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 5, c: 3 },
+    dependencyCells: [{ r: 4, c: 2, label: 'diag' }],
+    formula: 's1[4] == s2[2] ("e" == "e") => Collect \'e\', jump DIAG to [4, 2]',
+    action: 'At [5, 3]: Match found! Character "e" == "e".',
+    explain: 'Both characters match! Character "e" is part of our LCS. We collect "e" and step diagonally to cell [4, 2].',
+    intuition: 'Every diagonal step captures an identical character in both strings.',
+    metrics: [
+      { label: 'Collected Char', value: '"e"', highlight: true },
+      { label: 'Next Pointer', value: '[4, 2]' },
+      { label: 'Tokens', value: '["e"]' }
+    ]
+  },
+  {
+    phase: 'BACKTRACK_3',
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 1, 2, 2, 2],
+      [0, 1, 2, 2, 3],
+      [0, 1, 2, 3, 3]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 4, c: 2 },
+    dependencyCells: [{ r: 3, c: 2, label: 'up=2' }, { r: 4, c: 1, label: 'left=1' }],
+    formula: 's1[3] ("d") != s2[1] ("a") => dp[3][2] (2) > dp[4][1] (1), move UP to [3, 2]',
+    action: 'At [4, 2]: mismatch between "d" and "a". Top neighbor is larger (2 > 1). Move UP.',
+    explain: 'Since top neighbor dp[3][2] = 2 is strictly greater than left neighbor dp[4][1] = 1, the optimal path came from above. Move UP to [3, 2].',
+    intuition: 'Discarding non-matching character s1[3] ("d").',
+    metrics: [
+      { label: 'Current Pointer', value: '[4, 2]' },
+      { label: 'Action', value: 'Step UP' },
+      { label: 'Tokens', value: '["e"]' }
+    ]
+  },
+  {
     phase: 'COMPLETED',
-    codeLine: 34,
-    s1: 'abade',
-    s2: 'baed',
-    currI: 0,
-    currJ: 0,
-    collected: ['b', 'a', 'e'],
-    variables: { finalLCS: '"bae"', length: 3 },
-    explain: 'Backtracking sequence: \'e\', then \'a\', then \'b\'. Reversing gives final LCS = "bae"!',
-    intuition: 'Backtracking from bottom-right to top-left takes only O(N + M) time.'
+    grid: [
+      [0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1],
+      [0, 1, 1, 1, 1],
+      [0, 1, 2, 2, 2],
+      [0, 1, 2, 2, 3],
+      [0, 1, 2, 3, 3]
+    ],
+    rowLabels: ['∅', 'a', 'b', 'a', 'd', 'e'],
+    colLabels: ['∅', 'b', 'a', 'e', 'd'],
+    activeCell: { r: 0, c: 0 },
+    formula: 'reverse(["e", "a", "b"]) = "bae"',
+    action: 'At [3, 2] match "a" -> [2, 1] match "b". Reversing collected list gives "bae"!',
+    explain: 'From [3, 2], "a" matches "a" -> collected ["e", "a"], jump to [2, 1]. At [2, 1], "b" matches "b" -> collected ["e", "a", "b"], jump to [1, 0]. Loop terminates. Reversing ["e", "a", "b"] produces final string "bae"!',
+    intuition: 'Linear backtrack reconstructed the optimal LCS "bae" in O(N + M) operations.',
+    metrics: [
+      { label: 'LCS String', value: '"bae"', highlight: true },
+      { label: 'Length', value: 3 },
+      { label: 'Matches in s1', value: 'a[b]a[d][e] / a[b][a]d[e]' }
+    ]
   }
 ];
-
-export default function PrintLongestCommonSubsequenceDp26Visualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Current Pointer: ({step.currI}, {step.currJ})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Reconstructed LCS: "{step.collected.join('') || '...'}"
-        </span>
-      </div>
-
-      {/* String Reconstructed Tokens */}
-      <div className="w-full bg-[#12131b] border border-[#272b3c] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[#8a8ea3] uppercase tracking-wider">
-          Backtracking Token Reconstruction
-        </span>
-
-        <div className="flex items-center justify-center gap-3 py-2">
-          {['b', 'a', 'e'].map((ch, idx) => {
-            const isGathered = step.collected.includes(ch);
-
-            return (
-              <div
-                key={idx}
-                className={`w-16 h-18 rounded-2xl border flex flex-col items-center justify-center font-mono transition-all duration-300 ${
-                  isGathered
-                    ? 'border-emerald-500 bg-emerald-500/25 text-emerald-300 ring-2 ring-emerald-500/40 shadow-lg scale-105'
-                    : 'border-[#272b3c] bg-[#161824] text-slate-600'
-                }`}
-              >
-                <span className="text-xs text-[#8a8ea3]">Char {idx}</span>
-                <span className="text-lg font-bold mt-0.5">{isGathered ? ch : '—'}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[#161824] border border-[#272b3c] rounded-xl p-3 text-xs font-mono text-center text-[#8a8ea3]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}
