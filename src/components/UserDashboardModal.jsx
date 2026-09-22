@@ -9,10 +9,12 @@ import {
   Clock,
   LogOut,
   ChevronRight,
-  BarChart3
+  BarChart3,
+  Timer
 } from 'lucide-react';
 import { api } from '../services/api';
 import { sound } from '../services/audio';
+import { useFocus } from '../context/FocusContext';
 
 export default function UserDashboardModal({
   isOpen,
@@ -28,6 +30,7 @@ export default function UserDashboardModal({
   const [allUsers, setAllUsers] = useState([]);
   const [comparisonUser, setComparisonUser] = useState(null);
   const [comparisonStats, setComparisonStats] = useState(null);
+  const { focusMinutesToday, sessionsCompletedToday, setIsModalOpen } = useFocus();
 
   const loadStats = useCallback(async () => {
     if (!currentUser?.id) return;
@@ -253,6 +256,31 @@ export default function UserDashboardModal({
                 <span className="text-xl font-bold text-amber-600 dark:text-amber-400">{user.streak || 1}</span>
                 <span className="text-[9.5px] text-[var(--chalk-faint)] block">DAYS ACTIVE</span>
               </div>
+            </div>
+
+            {/* Daily Focus & Deep Work Card */}
+            <div className="bg-[var(--board-raised-2)] p-3.5 rounded-md border border-[var(--line)] flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-md bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center">
+                  <Timer className="w-5 h-5 text-indigo-400" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-mono font-bold text-[var(--chalk)]">Focus &amp; Deep Work Today</h4>
+                  <p className="text-[11px] font-sans text-[var(--chalk-dim)]">
+                    {sessionsCompletedToday} focus rounds completed ({focusMinutesToday} focused minutes).
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  onClose();
+                  setIsModalOpen(true);
+                }}
+                className="px-2.5 py-1.5 rounded bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-400 text-xs font-mono font-medium transition-all cursor-pointer flex items-center gap-1"
+              >
+                <span>Launch Timer</span>
+                <ChevronRight className="w-3 h-3" />
+              </button>
             </div>
           </div>
         )}

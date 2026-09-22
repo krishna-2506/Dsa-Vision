@@ -10,6 +10,7 @@ import SkillExportModal from './components/SkillExportModal';
 import AuthModal from './components/AuthModal';
 import UserDashboardModal from './components/UserDashboardModal';
 import ImportQuestionModal from './components/ImportQuestionModal';
+import FocusModal from './components/focus/FocusModal';
 import { api } from './services/api';
 import { db } from './services/db';
 import { authService } from './services/auth';
@@ -436,6 +437,12 @@ export default function App() {
           const matched = questions.find((q) => q.id === qId);
           if (matched) handleOpenArticle(matched);
         }}
+      />
+
+      {/* AlgoFocus Pomodoro & Study Room Modal */}
+      <FocusModal
+        activeQuestion={activeQuestion}
+        onNavigateQuestion={handleOpenStudio}
       />
 
       {/* ── Normal, Clean Footer ── */}

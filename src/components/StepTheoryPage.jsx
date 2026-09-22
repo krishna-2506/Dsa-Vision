@@ -497,7 +497,14 @@ export default function StepTheoryPage({
               {VisualizerComponent ? (
                 <div className="space-y-4">
                   <div className="p-4 rounded-xl bg-[var(--bg-card)] border border-[var(--border-subtle)]">
-                    <VisualizerComponent />
+                    <React.Suspense fallback={
+                      <div className="w-full h-40 flex flex-col items-center justify-center gap-2">
+                        <div className="w-6 h-6 rounded-full border-2 border-[var(--accent)] border-t-transparent animate-spin" />
+                        <span className="text-xs font-mono text-[var(--text-tertiary)]">Loading step visualizer...</span>
+                      </div>
+                    }>
+                      <VisualizerComponent />
+                    </React.Suspense>
                   </div>
                 </div>
               ) : (

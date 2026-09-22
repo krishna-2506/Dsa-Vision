@@ -32,7 +32,7 @@ function YoutubeIcon({ className = "w-4 h-4" }) {
 }
 import { sound } from '../services/audio';
 import { api } from '../services/api';
-import { visualizersRegistry } from '../visualizers';
+import { visualizersRegistry, loadVisualizer } from '../visualizers';
 import VisualizerErrorBoundary from './VisualizerErrorBoundary';
 import CodeViewer from './CodeViewer';
 import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
@@ -243,10 +243,7 @@ export default function ProblemArticlePage({
       isMounted = false;
     };
   }, [question?.id]);
-
-  if (!question) return null;
-
-  const diffKey = (question.difficulty || 'medium').toLowerCase();
+  const diffKey = (question?.difficulty || 'medium').toLowerCase();
   const diffCfg = DIFF_CONFIG[diffKey] || DIFF_CONFIG.medium;
 
   const [visStep, setVisStep] = useState(0);
@@ -259,7 +256,23 @@ export default function ProblemArticlePage({
   const fileInputRef = useRef(null);
 
   const currentKey = question?.component_key || question?.componentKey;
-  const visualizerEntry = currentKey ? visualizersRegistry[currentKey] : null;
+  const [loadedModule, setLoadedModule] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (currentKey) {
+      loadVisualizer(currentKey).then((mod) => {
+        if (isMounted && mod) setLoadedModule(mod);
+      });
+    } else {
+      setLoadedModule(null);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [currentKey]);
+
+  const visualizerEntry = loadedModule || (currentKey ? visualizersRegistry[currentKey] : null);
   const VisualizerComponent = visualizerEntry?.Component || null;
   const hasVisualizer = Boolean(VisualizerComponent);
 
@@ -313,6 +326,8 @@ export default function ProblemArticlePage({
     }, 1200 / visSpeed);
     return () => clearInterval(interval);
   }, [isVisPlaying, totalSteps, visSpeed]);
+
+  if (!question) return null;
 
   // Copy refined master prompt
   const handleCopyMasterPrompt = () => {
@@ -714,11 +729,18 @@ export default function ProblemArticlePage({
                     <div className="lg:col-span-7 space-y-4">
                       <div className="w-full flex items-center justify-center p-4 bg-[var(--board-raised)] rounded-md border border-[var(--line)] min-h-[240px]">
                         <VisualizerErrorBoundary onReset={() => setVisStep(0)}>
-                          <VisualizerComponent
-                            currentStep={visStep}
-                            onStepChange={setVisStep}
-                            approachTier={selectedTier}
-                          />
+                          <React.Suspense fallback={
+                            <div className="w-full h-48 flex flex-col items-center justify-center gap-2.5">
+                              <div className="w-6 h-6 rounded-full border-2 border-[var(--indigo)] border-t-transparent animate-spin" />
+                              <span className="text-xs font-mono text-[var(--chalk-dim)]">Loading visualizer...</span>
+                            </div>
+                          }>
+                            <VisualizerComponent
+                              currentStep={visStep}
+                              onStepChange={setVisStep}
+                              approachTier={selectedTier}
+                            />
+                          </React.Suspense>
                         </VisualizerErrorBoundary>
                       </div>
 
@@ -882,11 +904,18 @@ export default function ProblemArticlePage({
                   <div className="space-y-4">
                     <div className="w-full flex items-center justify-center p-4 bg-[var(--board-raised)] rounded-md border border-[var(--line)] min-h-[240px]">
                       <VisualizerErrorBoundary onReset={() => setVisStep(0)}>
-                        <VisualizerComponent
-                          currentStep={visStep}
-                          onStepChange={setVisStep}
-                          approachTier={selectedTier}
-                        />
+                        <React.Suspense fallback={
+                          <div className="w-full h-48 flex flex-col items-center justify-center gap-2.5">
+                            <div className="w-6 h-6 rounded-full border-2 border-[var(--indigo)] border-t-transparent animate-spin" />
+                            <span className="text-xs font-mono text-[var(--chalk-dim)]">Loading visualizer...</span>
+                          </div>
+                        }>
+                          <VisualizerComponent
+                            currentStep={visStep}
+                            onStepChange={setVisStep}
+                            approachTier={selectedTier}
+                          />
+                        </React.Suspense>
                       </VisualizerErrorBoundary>
                     </div>
 

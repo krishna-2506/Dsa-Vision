@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { sound } from '../services/audio';
 import AlgoVisionLogo from './AlgoVisionLogo';
+import FocusNavbarPill from './focus/FocusNavbarPill';
 
 export default function Navbar({
   activeView,
@@ -191,6 +192,9 @@ export default function Navbar({
               <span>Skill</span>
             </button>
           )}
+
+          {/* AlgoFocus Pomodoro Companion Pill */}
+          <FocusNavbarPill />
 
           {/* Code Lab Workbench */}
           <button

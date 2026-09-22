@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sound } from '../services/audio';
-import { visualizersRegistry } from '../visualizers';
+import { visualizersRegistry, loadVisualizer } from '../visualizers';
 import { api } from '../services/api';
 import CodeViewer from './CodeViewer';
 import VisualizerUploader from './VisualizerUploader';
@@ -101,7 +101,23 @@ export default function VisualizerStudio({
   onNavigateQuestion
 }) {
   const currentKey = question.component_key || question.componentKey;
-  const visualizerEntry = visualizersRegistry[currentKey] || null;
+  const [loadedModule, setLoadedModule] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (currentKey) {
+      loadVisualizer(currentKey).then((mod) => {
+        if (isMounted && mod) setLoadedModule(mod);
+      });
+    } else {
+      setLoadedModule(null);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [currentKey]);
+
+  const visualizerEntry = loadedModule || (currentKey ? visualizersRegistry[currentKey] : null);
   const Component = visualizerEntry?.Component || null;
   const [activeTier, setActiveTier] = useState('optimal'); // 'intuitive' | 'better' | 'optimal'
   const [showReportModal, setShowReportModal] = useState(false);
@@ -855,13 +871,20 @@ export default function VisualizerStudio({
                   onReset={() => setCurrentStep(0)}
                   onSwitchToCode={() => setViewMode('code_only')}
                 >
-                  <Component
-                    currentStep={currentStep}
-                    onStepChange={setCurrentStep}
-                    customInput={customInput}
-                    customTarget={customTarget}
-                    approachTier={activeTier}
-                  />
+                  <React.Suspense fallback={
+                    <div className="w-full h-56 flex flex-col items-center justify-center gap-3 bg-[var(--board-raised-2)] rounded-xl border border-[var(--line)]">
+                      <div className="w-7 h-7 rounded-full border-2 border-[var(--indigo)] border-t-transparent animate-spin" />
+                      <span className="text-xs font-mono text-[var(--chalk-dim)]">Loading Interactive Visualizer...</span>
+                    </div>
+                  }>
+                    <Component
+                      currentStep={currentStep}
+                      onStepChange={setCurrentStep}
+                      customInput={customInput}
+                      customTarget={customTarget}
+                      approachTier={activeTier}
+                    />
+                  </React.Suspense>
                 </VisualizerErrorBoundary>
               ) : (
                 <div
