@@ -9,7 +9,7 @@ export const meta = {
   description: 'Verifies whether every opening bracket has an exact matching closing bracket in correct nesting order using a Last-In-First-Out (LIFO) stack.'
 };
 
-export const rendererType = 'array-scan';
+export const rendererType = 'stack';
 
 export const ideaMap = {
   title: 'LIFO Symmetric Bracket Matching Invariant',

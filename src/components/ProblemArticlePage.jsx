@@ -813,11 +813,11 @@ export default function ProblemArticlePage({
                     sound?.playSuccess?.();
                     onLaunchStudio(question);
                   }}
-                  className="btn-secondary flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-[var(--indigo)] hover:text-blue-400 transition-colors cursor-pointer"
-                  title="Open in full split-screen Studio with Code Viewer"
+                  className="btn-secondary flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-amber-300 hover:text-white border-amber-500/30 hover:border-amber-500 transition-colors cursor-pointer"
+                  title="Expand to Fullscreen Studio with Zoom and Interactive Controls"
                 >
-                  <Maximize2 className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Studio</span>
+                  <Maximize2 className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="hidden sm:inline">Fullscreen Studio</span>
                 </button>
               )}
             </div>
@@ -840,7 +840,7 @@ export default function ProblemArticlePage({
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     {/* Left 7 Cols: Interactive Canvas, Controls & Pedagogical Explanation */}
                     <div className="lg:col-span-7 space-y-4">
-                      <div className="w-full flex items-center justify-center p-4 bg-[var(--board-raised)] rounded-md border border-[var(--line)] min-h-[240px]">
+                      <div className="w-full overflow-x-auto flex items-center justify-center p-4 bg-[var(--board-raised)] rounded-md border border-[var(--line)] min-h-[260px]">
                         <VisualizerErrorBoundary onReset={() => setVisStep(0)}>
                           <React.Suspense fallback={
                             <div className="w-full h-48 flex flex-col items-center justify-center gap-2.5">
@@ -985,7 +985,7 @@ export default function ProblemArticlePage({
 
                     {/* Right 5 Cols: Live Synchronized CodeViewer */}
                     <div className="lg:col-span-5 h-full">
-                      <div className="rounded-md overflow-hidden border border-[var(--line)] bg-[var(--board)] shadow-sm flex flex-col h-[520px]">
+                      <div className="rounded-md overflow-hidden border border-[var(--line)] bg-[var(--board)] shadow-sm flex flex-col min-h-[380px] max-h-[580px]">
                         <div className="flex items-center justify-between px-3.5 py-2 bg-[var(--board-raised)] border-b border-[var(--line)] text-xs font-mono">
                           <span className="text-[var(--ink-muted)] flex items-center gap-1.5 font-medium">
                             <Code2 className="w-3.5 h-3.5 text-blue-400" />
@@ -1015,7 +1015,7 @@ export default function ProblemArticlePage({
                 {/* ── 2. Canvas Only Mode ── */}
                 {visViewMode === 'canvas' && (
                   <div className="space-y-4">
-                    <div className="w-full flex items-center justify-center p-4 bg-[var(--board-raised)] rounded-md border border-[var(--line)] min-h-[240px]">
+                    <div className="w-full overflow-x-auto flex items-center justify-center p-4 bg-[var(--board-raised)] rounded-md border border-[var(--line)] min-h-[260px]">
                       <VisualizerErrorBoundary onReset={() => setVisStep(0)}>
                         <React.Suspense fallback={
                           <div className="w-full h-48 flex flex-col items-center justify-center gap-2.5">
@@ -1229,7 +1229,7 @@ export default function ProblemArticlePage({
                       )}
                     </div>
 
-                    <div className="rounded-md overflow-hidden border border-[var(--line)] bg-[var(--board)] shadow-sm min-h-[500px]">
+                    <div className="rounded-md overflow-hidden border border-[var(--line)] bg-[var(--board)] shadow-sm flex flex-col min-h-[380px] max-h-[580px]">
                       <CodeViewer
                         solutions={activeTierSolutions}
                         initialLanguage={selectedLanguage}

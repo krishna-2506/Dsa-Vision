@@ -9,7 +9,7 @@ export const meta = {
   description: 'Finds the first greater element to the right of each item in an array using a monotonic decreasing stack traversed from right to left in linear time.'
 };
 
-export const rendererType = 'array-scan';
+export const rendererType = 'stack';
 
 export const ideaMap = {
   title: 'Monotonic Decreasing Stack Right-to-Left Invariant',

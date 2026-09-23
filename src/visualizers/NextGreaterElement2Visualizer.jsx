@@ -9,7 +9,7 @@ export const meta = {
   description: 'Finds the next greater circular element for every item in an array using a monotonic stack traversing a virtual 2N doubled array from right to left.'
 };
 
-export const rendererType = 'array-scan';
+export const rendererType = 'stack';
 
 export const ideaMap = {
   title: 'Virtual 2N Doubled Monotonic Stack Invariant',

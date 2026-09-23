@@ -9,6 +9,8 @@ export const meta = {
   description: 'First-In-First-Out (FIFO) queue implemented using a circular array with `front`, `rear`, and `count` variables to allow continuous reuse of array slots without shifting elements.'
 };
 
+export const rendererType = 'queue';
+
 export const solutions = {
   cpp: `// C++: Circular Queue using Array
 // Time: O(1) all ops | Space: O(capacity)
@@ -254,81 +256,3 @@ export const steps = [
   }
 ];
 
-export default function ImplementQueueUsingArraysVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metrics Bar */}
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Action: <strong className="text-emerald-400">{step.action}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300">
-          front % 5: <strong>{step.front % 5}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">
-          rear % 5: <strong>{step.rear % 5}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Size: <strong>{step.currSize} / 5</strong>
-        </div>
-        {step.returned !== null && (
-          <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300">
-            Returned: <strong>{step.returned}</strong>
-          </div>
-        )}
-      </div>
-
-      {/* Circular Array Visualizer */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Circular Array Ring Buffer</span>
-          <span className="text-emerald-400 font-bold">FIFO Model</span>
-        </div>
-
-        <div className="grid grid-cols-5 gap-3 w-full max-w-md pt-4">
-          {step.array.map((val, idx) => {
-            const isFront = step.currSize > 0 && idx === (step.front % 5);
-            const isRearNext = idx === (step.rear % 5);
-            const isOccupied = val !== null;
-
-            return (
-              <div key={idx} className="flex flex-col items-center gap-2">
-                <div
-                  className={`w-14 h-16 rounded-xl border-2 flex flex-col items-center justify-center font-mono font-bold text-lg transition-all duration-300 relative ${
-                    isFront
-                      ? 'bg-blue-500/25 border-blue-400 text-blue-200 shadow-lg shadow-blue-500/20'
-                      : isOccupied
-                      ? 'bg-[#181a26] border-[#343a54] text-[var(--chalk)]'
-                      : 'bg-[#0f1016] border-dashed border-[var(--line)] text-[#3d425c]'
-                  }`}
-                >
-                  {isFront && (
-                    <span className="absolute -top-3 px-1 py-0.5 rounded text-[8px] bg-blue-500 text-[var(--chalk)] font-bold">
-                      FRONT
-                    </span>
-                  )}
-                  {isRearNext && !isFront && step.currSize < 5 && (
-                    <span className="absolute -bottom-3 px-1 py-0.5 rounded text-[8px] bg-indigo-600 text-[var(--chalk)] font-bold">
-                      REAR
-                    </span>
-                  )}
-                  <span>{val !== null ? val : '-'}</span>
-                </div>
-                <span className="text-[10px] font-mono text-[#5b617d]">Idx [{idx}]</span>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] flex items-center gap-3">
-          <span>Formula:</span>
-          <span className="text-blue-300">enqueue at (rear % cap)</span>
-          <span className="text-[#3b4261]">|</span>
-          <span className="text-emerald-300">dequeue at (front % cap)</span>
-        </div>
-      </div>
-    </div>
-  );
-}

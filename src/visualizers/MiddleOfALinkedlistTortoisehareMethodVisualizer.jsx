@@ -1,25 +1,45 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Middle of a Linked List (Tortoise & Hare Method)',
   category: 'Linked List & Two Pointers',
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Finds the middle node of a singly linked list in a single pass using the two-pointer Tortoise and Hare algorithm. Fast pointer advances by 2 while slow pointer advances by 1.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Finds the middle node of a singly linked list in a single pass using the Tortoise and Hare algorithm where fast pointer advances by 2 while slow pointer advances by 1.'
 };
 
+export const ideaMap = [
+  {
+    id: 'two-speed-ratio',
+    title: 'Two-to-One Speed Ratio',
+    description: 'Because fast travels at 2x the speed of slow, whenever fast reaches the end of the list (distance N), slow has traveled exactly distance N/2.'
+  },
+  {
+    id: 'odd-termination',
+    title: 'Odd Length Termination',
+    description: 'If N is odd, fast terminates exactly on the last node (fast.next == null). Slow rests at the exact unique middle node.'
+  },
+  {
+    id: 'even-termination',
+    title: 'Even Length Termination',
+    description: 'If N is even, fast hops past the last node to NULL (fast == null). Slow lands on the second middle node, conforming to standard LeetCode conventions.'
+  },
+  {
+    id: 'single-pass-efficiency',
+    title: 'Strict Single Pass',
+    description: 'Eliminates the two-pass approach (counting length then iterating N/2). Finds the middle node in N/2 iterations.'
+  },
+  {
+    id: 'constant-space',
+    title: 'O(1) Auxiliary Memory',
+    description: 'Requires only two node reference pointers (slow and fast) with zero memory reallocation.'
+  }
+];
+
 export const solutions = {
-  cpp: `// C++ Optimal Tortoise and Hare (Slow & Fast Pointers)
+  cpp: `// C++: Tortoise and Hare (Slow & Fast Pointers)
 // Time Complexity: O(N) | Space Complexity: O(1)
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode(int x) : val(x), next(NULL) {}
- * };
- */
 class Solution {
 public:
     ListNode* middleNode(ListNode* head) {
@@ -27,25 +47,14 @@ public:
         ListNode* fast = head;
 
         while (fast != nullptr && fast->next != nullptr) {
-            slow = slow->next;       // Tortoise moves 1 step
-            fast = fast->next->next; // Hare moves 2 steps
+            slow = slow->next;       // 1 step
+            fast = fast->next->next; // 2 steps
         }
 
-        return slow; // Slow points to the middle node
+        return slow; // Middle node
     }
 };`,
-  python: `# Python 3 Optimal Tortoise & Hare Method
-class Solution:
-    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        slow = head
-        fast = head
-
-        while fast and fast.next:
-            slow = slow.next       # Moves 1 step
-            fast = fast.next.next  # Moves 2 steps
-
-        return slow`,
-  java: `// Java Optimal Tortoise and Hare Method
+  java: `// Java: Tortoise and Hare (Slow & Fast Pointers)
 class Solution {
     public ListNode middleNode(ListNode head) {
         ListNode slow = head;
@@ -59,8 +68,18 @@ class Solution {
         return slow;
     }
 }`,
-  javascript: `// JavaScript Optimal Tortoise and Hare Method
-var middleNode = function(head) {
+  python: `# Python 3: Tortoise and Hare
+class Solution:
+    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        slow = fast = head
+
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+
+        return slow`,
+  javascript: `// JavaScript: Tortoise and Hare
+function middleNode(head) {
     let slow = head;
     let fast = head;
 
@@ -70,123 +89,163 @@ var middleNode = function(head) {
     }
 
     return slow;
-};`
+}`
 };
 
 export const steps = [
   {
-    title: '1. Initialize: slow = head (1), fast = head (1)',
-    phase: 'INITIALIZATION',
-    codeLine: 16,
-    nodes: [1, 2, 3, 4, 5],
-    slowIdx: 0,
-    fastIdx: 0,
-    variables: { 'slow.val': 1, 'fast.val': 1, step: 'Both at Head node' },
-    explain: 'Both slow (Tortoise) and fast (Hare) pointers begin at the head node.',
-    intuition: 'Since fast moves at twice the speed of slow (2x), when fast reaches the end of the list, slow must be at exactly half the distance (N/2).'
+    stepIndex: 1,
+    title: 'Initialize Slow and Fast Pointers at Head',
+    explanation: 'Linked list nodes: [1 -> 2 -> 3 -> 4 -> 5 -> 6]. Initialize slow = head (node 1) and fast = head (node 1).',
+    activeLine: 6,
+    activeIdeaId: 'two-speed-ratio',
+    nodes: [1, 2, 3, 4, 5, 6],
+    pointers: { head: 0, slow: 0, fast: 0 },
+    highlightIndices: [0],
+    variables: { slow: 'Node(1)', fast: 'Node(1)', stepCount: 0 },
+    customCard: {
+      title: 'Initial Position',
+      rows: [
+        { label: 'List Length', value: '6 (Even)' },
+        { label: 'slow pointer', value: 'node[0] (val=1)' },
+        { label: 'fast pointer', value: 'node[0] (val=1)' },
+        { label: 'Loop Check', value: 'fast != null && fast.next != null (True)' }
+      ]
+    }
   },
   {
-    title: '2. Step 1: slow moves to 2, fast leaps to 3',
-    phase: 'ADVANCING',
-    codeLine: 20,
-    nodes: [1, 2, 3, 4, 5],
-    slowIdx: 1,
-    fastIdx: 2,
-    variables: { 'slow.val': 2, 'fast.val': 3, fastNext: 4 },
-    explain: 'slow advances 1 step from 1 -> 2. fast advances 2 steps from 1 -> 3.',
-    intuition: 'Distance traveled: slow = 1 step, fast = 2 steps.'
+    stepIndex: 2,
+    title: 'Iteration 1: Slow -> Node 2, Fast -> Node 3',
+    explanation: 'slow advances 1 step from node 1 to node 2. fast advances 2 steps from node 1 to node 3.',
+    activeLine: 9,
+    activeIdeaId: 'two-speed-ratio',
+    nodes: [1, 2, 3, 4, 5, 6],
+    pointers: { head: 0, slow: 1, fast: 2 },
+    highlightIndices: [1, 2],
+    variables: { slow: 'Node(2)', fast: 'Node(3)', stepCount: 1 },
+    customCard: {
+      title: 'First Hop (2:1 Ratio)',
+      rows: [
+        { label: 'slow', value: 'node 2 (index 1)' },
+        { label: 'fast', value: 'node 3 (index 2)' },
+        { label: 'Loop Condition', value: 'fast.next != null (True)' }
+      ]
+    }
   },
   {
-    title: '3. Step 2: slow moves to 3, fast leaps to 5',
-    phase: 'ADVANCING',
-    codeLine: 20,
-    nodes: [1, 2, 3, 4, 5],
-    slowIdx: 2,
-    fastIdx: 4,
-    variables: { 'slow.val': 3, 'fast.val': 5, fastNext: 'NULL' },
-    explain: 'slow advances 1 step from 2 -> 3. fast advances 2 steps from 3 -> 5. fast is now at the last node.',
-    intuition: 'fast->next is NULL, meaning loop termination condition is satisfied on next check.'
+    stepIndex: 3,
+    title: 'Iteration 2: Slow -> Node 3, Fast -> Node 5',
+    explanation: 'slow advances 1 step to node 3. fast advances 2 steps across node 4 to node 5.',
+    activeLine: 10,
+    activeIdeaId: 'two-speed-ratio',
+    nodes: [1, 2, 3, 4, 5, 6],
+    pointers: { head: 0, slow: 2, fast: 4 },
+    highlightIndices: [2, 4],
+    variables: { slow: 'Node(3)', fast: 'Node(5)', stepCount: 2 },
+    customCard: {
+      title: 'Second Hop',
+      rows: [
+        { label: 'slow position', value: 'node 3 (index 2)' },
+        { label: 'fast position', value: 'node 5 (index 4)' },
+        { label: 'Upcoming', value: 'fast is one node away from list tail' }
+      ]
+    }
   },
   {
-    title: '4. Fast Reached End: slow is at Middle Node (3)!',
-    phase: 'COMPLETED',
-    codeLine: 24,
+    stepIndex: 4,
+    title: 'Iteration 3: Slow -> Node 4, Fast -> NULL',
+    explanation: 'slow advances 1 step to node 4. fast advances 2 steps past node 6 into NULL. Loop condition fails.',
+    activeLine: 9,
+    activeIdeaId: 'even-termination',
+    nodes: [1, 2, 3, 4, 5, 6],
+    pointers: { head: 0, slow: 3 },
+    highlightIndices: [3],
+    variables: { slow: 'Node(4)', fast: 'NULL', stepCount: 3 },
+    customCard: {
+      title: 'Fast Pointer Exits (Even Length)',
+      rows: [
+        { label: 'fast', value: 'NULL (hopped past node 6)' },
+        { label: 'slow', value: 'node 4 (val=4)', accent: true },
+        { label: 'Loop Check', value: 'fast == null -> Loop Terminates' }
+      ]
+    }
+  },
+  {
+    stepIndex: 5,
+    title: 'Middle Node Identified: Node 4 (Second Middle)',
+    explanation: 'For an even length list of 6 nodes, the two middle candidates are 3 and 4. Standard definition returns the second middle (node 4).',
+    activeLine: 13,
+    activeIdeaId: 'even-termination',
+    nodes: [1, 2, 3, 4, 5, 6],
+    pointers: { head: 0, slow: 3 },
+    highlightIndices: [3],
+    modifiedIndices: [3],
+    variables: { middleNode: 'Node(4)', value: 4 },
+    customCard: {
+      title: 'Result Verification',
+      rows: [
+        { label: 'Middle Node Value', value: '4', accent: true },
+        { label: 'Sublist from Middle', value: '4 -> 5 -> 6 -> NULL' },
+        { label: 'Total Iterations', value: '3 steps (N/2)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Proof for Odd Length Lists (N = 5)',
+    explanation: 'Consider odd list [1, 2, 3, 4, 5]. Step 1: slow=2, fast=3. Step 2: slow=3, fast=5. fast.next is NULL, terminating with slow exactly at node 3.',
+    activeLine: 8,
+    activeIdeaId: 'odd-termination',
     nodes: [1, 2, 3, 4, 5],
-    slowIdx: 2,
-    fastIdx: 4,
-    variables: { middleNode: 3, totalNodes: 5, timeComplexity: 'O(N/2) = O(N)' },
-    explain: 'fast.next is null, so the while loop terminates. The slow pointer points directly to Node 3, the exact middle of the list!',
-    intuition: 'Single traversal with zero node counters or extra memory.'
+    pointers: { head: 0, slow: 2, fast: 4 },
+    highlightIndices: [2, 4],
+    variables: { slow: 'Node(3)', fast: 'Node(5) (tail)' },
+    customCard: {
+      title: 'Odd Length Behavior',
+      rows: [
+        { label: 'Odd Count Termination', value: 'fast.next == NULL' },
+        { label: 'Exact Middle Node', value: 'Node 3 (index 2)' },
+        { label: 'Equidistant', value: '2 nodes before, 2 nodes after' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Complexity Comparison: 1-Pass vs 2-Pass',
+    explanation: '2-pass approach visits N nodes to count length + N/2 nodes to locate middle = 1.5N operations. Tortoise & Hare visits exactly N nodes in a single forward sweep.',
+    activeLine: 8,
+    activeIdeaId: 'single-pass-efficiency',
+    nodes: [1, 2, 3, 4, 5, 6],
+    pointers: { head: 0, slow: 3 },
+    highlightIndices: [3],
+    variables: { onePassOps: 'N', twoPassOps: '1.5N', speedup: '33% fewer reads' },
+    customCard: {
+      title: 'Algorithmic Efficiency',
+      rows: [
+        { label: 'Tortoise & Hare', value: 'O(N) time, 1 pass' },
+        { label: 'Length-Count method', value: 'O(N) time, 2 passes' },
+        { label: 'Auxiliary Memory', value: 'O(1) (2 pointers)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Algorithm Complete: Return Slow Pointer',
+    explanation: 'Return slow pointer referencing Node 4. Time complexity is O(N) and auxiliary space complexity is O(1).',
+    activeLine: 13,
+    activeIdeaId: 'constant-space',
+    nodes: [1, 2, 3, 4, 5, 6],
+    pointers: { middle: 3 },
+    highlightIndices: [3],
+    modifiedIndices: [3],
+    variables: { result: 'Node(4)', time: 'O(N)', space: 'O(1)' },
+    customCard: {
+      title: 'Final Summary',
+      rows: [
+        { label: 'Returned Node', value: 'Node(4)', accent: true },
+        { label: 'Time Complexity', value: 'O(N) Linear' },
+        { label: 'Space Complexity', value: 'O(1) Constant' }
+      ]
+    }
   }
 ];
-
-export default function MiddleOfALinkedlistTortoisehareMethodVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Pointers Legend */}
-      <div className="flex items-center gap-4 text-xs font-mono">
-        <span className="px-3 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          🐢 Tortoise (Slow): Node {step.nodes[step.slowIdx]}
-        </span>
-        <span className="px-3 py-1 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-semibold">
-          🐇 Hare (Fast): Node {step.nodes[step.fastIdx]}
-        </span>
-      </div>
-
-      {/* Linked List Nodes & Arrows */}
-      <div className="w-full flex items-center justify-center gap-1.5 py-6 overflow-x-auto">
-        {step.nodes.map((val, idx) => {
-          const isSlow = step.slowIdx === idx;
-          const isFast = step.fastIdx === idx;
-          const isMiddleFinal = step.phase === 'COMPLETED' && step.slowIdx === idx;
-
-          let nodeStyle = 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]';
-          if (isMiddleFinal) {
-            nodeStyle = 'bg-emerald-500/25 text-emerald-300 border-emerald-400 scale-110 shadow-lg shadow-emerald-500/20';
-          } else if (isSlow && isFast) {
-            nodeStyle = 'bg-purple-500/25 text-purple-300 border-purple-400 scale-105';
-          } else if (isSlow) {
-            nodeStyle = 'bg-amber-500/20 text-amber-300 border-amber-400 scale-105 shadow-md shadow-amber-500/20';
-          } else if (isFast) {
-            nodeStyle = 'bg-indigo-500/20 text-indigo-300 border-indigo-400 scale-105 shadow-md shadow-indigo-500/20';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="flex flex-col items-center gap-1 min-w-[56px]">
-                {/* Pointer Markers above node */}
-                <div className="h-6 flex items-center gap-1 text-[10px] font-mono font-bold">
-                  {isSlow && <span className="px-1.5 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">🐢 Slow</span>}
-                  {isFast && <span className="px-1.5 py-0.5 rounded bg-indigo-500 text-[var(--chalk)]">🐇 Fast</span>}
-                </div>
-
-                {/* Node Box */}
-                <div className={`w-14 h-14 rounded-2xl border flex flex-col items-center justify-center font-mono font-bold transition-all duration-300 ${nodeStyle}`}>
-                  <span className="text-lg">{val}</span>
-                  <span className="text-[8px] text-[#636882]">next</span>
-                </div>
-
-                <span className="text-[10px] font-mono text-[#5b6076]">idx {idx}</span>
-              </div>
-
-              {/* Arrow */}
-              {idx < step.nodes.length - 1 && (
-                <div className="text-[#3e4258] font-mono text-lg select-none px-1">
-                  →
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
-
-        {/* Null Terminator */}
-        <div className="text-[#3e4258] font-mono text-lg select-none px-1">→</div>
-        <div className="w-12 h-12 rounded-xl border border-dashed border-[#2d3042] flex items-center justify-center text-xs font-mono text-[#5b6076]">
-          NULL
-        </div>
-      </div>
-    </div>
-  );
-}

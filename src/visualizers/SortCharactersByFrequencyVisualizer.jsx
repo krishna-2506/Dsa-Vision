@@ -9,6 +9,8 @@ export const meta = {
   description: 'Sorts characters of a string in decreasing order of their frequency count using a frequency map and priority sorting.'
 };
 
+export const rendererType = 'array-scan';
+
 export const solutions = {
   cpp: `// C++ Sort Characters by Frequency
 // Time Complexity: O(N log K) | Space Complexity: O(K)
@@ -125,43 +127,3 @@ export const steps = [
   }
 ];
 
-export default function SortCharactersByFrequencyVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Unique Characters = {Object.keys(step.freqMap).length}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Sorted Result = {step.result ? `"${step.result}"` : 'Constructing'}
-        </span>
-      </div>
-
-      {/* Frequency Cards */}
-      <div className="w-full flex items-center justify-center gap-3 py-3 overflow-x-auto">
-        {Object.entries(step.freqMap).map(([char, count]) => (
-          <div key={char} className="flex flex-col items-center gap-1 min-w-[50px]">
-            <div className="w-13 h-16 rounded-xl border border-indigo-500/30 bg-gradient-to-b from-indigo-500/20 to-indigo-950/30 flex flex-col items-center justify-center font-mono text-indigo-200 shadow-md">
-              <span className="text-base font-bold text-amber-300">'{char}'</span>
-              <span className="text-[11px] text-emerald-400 font-semibold">{count}×</span>
-            </div>
-            <span className="text-[9px] font-mono text-[#5b6076]">count</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Result Output Card */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-4 flex flex-col items-center gap-2 text-xs font-mono">
-        <span className="text-[11px] text-emerald-400 font-semibold uppercase tracking-wider">
-          Frequency-Sorted String:
-        </span>
-        <div className="px-6 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200 font-mono font-bold text-xl tracking-wider">
-          {step.result ? `"${step.result}"` : '""'}
-        </div>
-      </div>
-    </div>
-  );
-}

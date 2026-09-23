@@ -9,6 +9,8 @@ export const meta = {
   description: 'Implements a FIFO queue using two LIFO stacks (`input` and `output`). Elements are pushed directly to `input`. When reading or removing, elements are lazily transferred to `output`, reversing their order into FIFO.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++: Implement Queue using Two Stacks (Amortized O(1))
 #include <stack>
@@ -198,84 +200,3 @@ export const steps = [
   }
 ];
 
-export default function ImplementQueueUsingStackVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Queue Op: <strong className="text-cyan-400">{step.action}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-          Amortized Complexity: <strong>O(1)</strong>
-        </div>
-      </div>
-
-      {/* Dual Stack Display */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-        {/* Input Stack */}
-        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
-          <span className="text-xs font-mono text-[var(--chalk-dim)] flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-            Input Stack (Ingress)
-          </span>
-
-          <div className="w-44 h-48 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2.5 gap-2 bg-[#0f1016]">
-            {step.input.length === 0 ? (
-              <span className="text-xs font-mono text-[#4e5370] m-auto">Empty</span>
-            ) : (
-              step.input.map((val, idx) => {
-                const isTop = idx === step.input.length - 1;
-                return (
-                  <div
-                    key={idx}
-                    className={`w-full py-1.5 px-3 rounded-lg border font-mono text-sm flex items-center justify-between transition-all ${
-                      isTop ? 'bg-blue-500/20 border-blue-400 text-blue-200' : 'bg-[#181a26] border-[#292d3f] text-[#a9b0d1]'
-                    }`}
-                  >
-                    <span>{val}</span>
-                    {isTop && <span className="text-[9px] px-1 rounded bg-blue-500 text-[var(--chalk)] font-bold">TOP</span>}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Output Stack */}
-        <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
-          <span className="text-xs font-mono text-[var(--chalk-dim)] flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            Output Stack (Egress / FIFO)
-          </span>
-
-          <div className="w-44 h-48 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2.5 gap-2 bg-[#0f1016]">
-            {step.output.length === 0 ? (
-              <span className="text-xs font-mono text-[#4e5370] m-auto">Empty</span>
-            ) : (
-              step.output.map((val, idx) => {
-                const isTop = idx === step.output.length - 1;
-                return (
-                  <div
-                    key={idx}
-                    className={`w-full py-1.5 px-3 rounded-lg border font-mono text-sm flex items-center justify-between transition-all ${
-                      isTop ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200' : 'bg-[#181a26] border-[#292d3f] text-[#a9b0d1]'
-                    }`}
-                  >
-                    <span>{val}</span>
-                    {isTop && <span className="text-[9px] px-1 rounded bg-emerald-500 text-[var(--chalk)] font-bold">FRONT</span>}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-        Each element is transferred from input to output at most once &rarr; each operation takes amortized O(1) time!
-      </div>
-    </div>
-  );
-}

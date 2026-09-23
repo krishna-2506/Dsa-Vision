@@ -9,6 +9,8 @@ export const meta = {
   description: 'Converts a Roman numeral string to its corresponding integer value by handling additive and subtractive roman numeral rules.'
 };
 
+export const rendererType = 'array-scan';
+
 export const solutions = {
   cpp: `// C++ Roman to Integer
 // Time Complexity: O(N) | Space Complexity: O(1)
@@ -200,52 +202,3 @@ export const steps = [
   }
 ];
 
-export default function RomanToIntegerVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Current Action: {step.action}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Running Total = {step.runningTotal}
-        </span>
-      </div>
-
-      {/* Roman Numeral Symbols */}
-      <div className="w-full flex items-center justify-center gap-2 py-3 overflow-x-auto">
-        {step.s.split('').map((ch, idx) => {
-          const isCurrent = idx === step.currIdx;
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1 min-w-[48px]">
-              <div
-                className={`w-12 h-14 rounded-xl border flex flex-col items-center justify-center font-serif font-bold text-lg transition-all ${
-                  isCurrent
-                    ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30 shadow-lg'
-                    : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
-                }`}
-              >
-                <span>{ch}</span>
-              </div>
-              <span className="text-[9px] font-mono text-[#5b6076]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Conversion total badge */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-4 flex flex-col items-center gap-1 text-xs font-mono">
-        <span className="text-[11px] text-indigo-400 font-semibold uppercase tracking-wider">
-          Converted Value:
-        </span>
-        <span className="text-2xl font-mono font-bold text-emerald-300">
-          {step.runningTotal}
-        </span>
-      </div>
-    </div>
-  );
-}

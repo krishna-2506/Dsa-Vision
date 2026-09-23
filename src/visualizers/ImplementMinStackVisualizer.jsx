@@ -9,6 +9,8 @@ export const meta = {
   description: 'Implements a stack data structure supporting push, pop, top, and retrieving the minimum element in strictly O(1) time by maintaining each node with the current historical minimum.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++ Optimal Min Stack with Historical Min Pairs
 // Time Complexity: O(1) for all operations | Space Complexity: O(N)
@@ -205,52 +207,3 @@ export const steps = [
   }
 ];
 
-export default function ImplementMinStackVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* getMin() Output Gauge */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs font-mono">
-          <span className="text-emerald-400 font-bold">O(1) getMin():</span>
-          <span className="text-emerald-200 text-base font-extrabold">{step.currentMin ?? 'None'}</span>
-        </div>
-        <div className="px-3 py-2 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)]">
-          Last Action: <strong className="text-amber-300">{step.action}</strong>
-        </div>
-      </div>
-
-      {/* Stack Container with Dual Values (val & min) */}
-      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl min-w-[280px]">
-        <span className="text-xs font-mono text-[var(--chalk-dim)]">Stack Frame Storage:</span>
-
-        <div className="w-60 h-56 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2.5 gap-2 bg-[#0f1016]">
-          {step.stack.length === 0 ? (
-            <span className="text-xs font-mono text-[#4e5370] m-auto">Empty Stack</span>
-          ) : (
-            step.stack.map((item, idx) => {
-              const isTop = idx === step.stack.length - 1;
-              return (
-                <div
-                  key={idx}
-                  className={`w-full py-2 px-3 rounded-lg border flex items-center justify-between font-mono text-sm transition-all duration-300 ${
-                    isTop ? 'bg-amber-500/20 border-amber-500/40 text-amber-200 shadow-md' : 'bg-[#181a26] border-[#2c3046] text-[#c0c5dd]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {isTop && <span className="text-[9px] px-1 rounded bg-amber-500 text-[var(--chalk)] font-bold">TOP</span>}
-                    <span className="font-bold text-base">{item.val}</span>
-                  </div>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#10121a] border border-[#262a3c] text-emerald-400">
-                    min: {item.min}
-                  </span>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

@@ -195,6 +195,17 @@ function formatActiveLines(activeLine) {
   return null;
 }
 
+function findDriverStartIndex(lines, lang) {
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i].trim();
+    if (lang === 'cpp' && /^(int|void)\s+main\s*\(/.test(l)) return i;
+    if (lang === 'java' && /public\s+static\s+void\s+main\s*\(/.test(l)) return i;
+    if (lang === 'python' && (/^if\s+__name__\s*==\s*['"]__main__['"]/.test(l) || /^#\s*(testing|driver|test\s+runner|example\s+run)/i.test(l))) return i;
+    if ((lang === 'javascript' || lang === 'typescript') && (/^\/\/\s*(testing|driver|test\s+runner|example\s+run)/i.test(l))) return i;
+  }
+  return -1;
+}
+
 export default function CodeViewer({
   solutions = {},
   initialLanguage = 'cpp',
@@ -206,6 +217,7 @@ export default function CodeViewer({
     availableLangs.includes(initialLanguage) ? initialLanguage : availableLangs[0] || 'cpp'
   );
   const [copied, setCopied] = useState(false);
+  const [showDriver, setShowDriver] = useState(false);
   const tableRef = useRef(null);
 
   const currentLang = availableLangs.includes(selectedLang)
@@ -225,6 +237,22 @@ export default function CodeViewer({
   const lines = activeCode.split('\n');
   const formattedLineBadge = formatActiveLines(activeLine);
 
+  const driverStartIndex = useMemo(
+    () => findDriverStartIndex(lines, currentLang),
+    [lines, currentLang]
+  );
+  const hasDriver = driverStartIndex > 15;
+
+  // Auto-expand driver if active line falls within it
+  useEffect(() => {
+    if (hasDriver && !showDriver && activeLine) {
+      const activeNums = Array.isArray(activeLine) ? activeLine : [Number(activeLine)];
+      if (activeNums.some((n) => n > driverStartIndex)) {
+        setShowDriver(true);
+      }
+    }
+  }, [activeLine, hasDriver, showDriver, driverStartIndex]);
+
   // Auto-scroll active line into view smoothly
   useEffect(() => {
     if (activeLine && tableRef.current) {
@@ -233,7 +261,7 @@ export default function CodeViewer({
         activeRows[0].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
-  }, [activeLine]);
+  }, [activeLine, showDriver]);
 
   return (
     <div className="code-col h-full rounded-lg border border-[var(--line)] overflow-hidden bg-[var(--code-bg)] flex flex-col">
@@ -284,6 +312,20 @@ export default function CodeViewer({
             </a>
           )}
 
+          {hasDriver && (
+            <button
+              onClick={() => setShowDriver((prev) => !prev)}
+              className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono border transition-all cursor-pointer ${
+                showDriver
+                  ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-400'
+                  : 'border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
+              }`}
+              title={showDriver ? 'Collapse main() driver code' : 'Expand main() driver code'}
+            >
+              <span>{showDriver ? 'Hide Driver' : 'Show Driver'}</span>
+            </button>
+          )}
+
           <button
             onClick={handleCopy}
             className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-[var(--line)] transition-all cursor-pointer"
@@ -306,7 +348,7 @@ export default function CodeViewer({
 
       {/* Code Block with Synchronized Line Highlighting & Gutter Pointer */}
       <pre className="code max-h-[560px] flex-1 overflow-y-auto" ref={tableRef}>
-        {lines.map((line, idx) => {
+        {(hasDriver && !showDriver ? lines.slice(0, driverStartIndex) : lines).map((line, idx) => {
           const lineNum = idx + 1;
           const isCur = isLineActive(activeLine, lineNum);
           return (
@@ -323,6 +365,30 @@ export default function CodeViewer({
             </div>
           );
         })}
+
+        {hasDriver && !showDriver && (
+          <div
+            onClick={() => setShowDriver(true)}
+            className="flex items-center justify-between mx-3 my-2.5 px-3 py-2 rounded bg-[var(--board-raised)] hover:bg-[var(--board-hover)] border border-dashed border-indigo-500/30 cursor-pointer text-xs font-mono text-[var(--chalk-dim)] hover:text-indigo-400 transition-colors select-none"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-indigo-400">▶</span>
+              <span>main() test driver collapsed ({lines.length - driverStartIndex} lines)</span>
+            </span>
+            <span className="text-[11px] font-semibold text-indigo-400 underline">Click to expand</span>
+          </div>
+        )}
+
+        {hasDriver && showDriver && (
+          <div className="flex justify-end p-2 bg-[var(--board-raised-2)] border-t border-[var(--line)]">
+            <button
+              onClick={() => setShowDriver(false)}
+              className="text-[11px] font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-colors px-2 py-0.5"
+            >
+              ▲ Collapse main() driver
+            </button>
+          </div>
+        )}
       </pre>
     </div>
   );

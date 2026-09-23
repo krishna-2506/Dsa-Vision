@@ -9,6 +9,8 @@ export const meta = {
   description: 'Converts infix expressions into prefix (Polish) notation by reversing the infix string, inverting brackets, applying modified infix-to-postfix conversion, and reversing the result.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++: Infix to Prefix Conversion
 // Time Complexity: O(N) | Space Complexity: O(N)
@@ -237,47 +239,3 @@ export const steps = [
   }
 ];
 
-export default function InfixToPrefixConversionVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Stage: <strong className="text-cyan-400">{step.phase}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          3-Stage Pipeline: Reverse &rarr; Postfix &rarr; Reverse
-        </div>
-      </div>
-
-      {/* Main Display */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Expression State at Current Pipeline Stage</span>
-          <span className="text-cyan-400 font-bold">Polish Notation</span>
-        </div>
-
-        <div className="w-full p-5 rounded-xl bg-[#0f1016] border border-[#232637] flex flex-col items-center gap-2">
-          <span className="text-xs font-mono text-[#5b617d]">Current Output / Buffer:</span>
-          <span className="text-2xl font-mono font-black text-cyan-400 tracking-widest bg-cyan-500/10 px-5 py-2.5 rounded-xl border border-cyan-500/25">
-            {step.currentForm}
-          </span>
-        </div>
-
-        {/* Pipeline steps guide */}
-        <div className="grid grid-cols-3 gap-2 w-full text-center text-xs font-mono pt-2">
-          <div className={`p-2.5 rounded-xl border ${step.phase.includes('REVERSE_SWAP') ? 'bg-amber-500/20 border-amber-500/40 text-amber-200' : 'bg-[var(--board-raised-2)] border-[#25283a] text-[#6d7494]'}`}>
-            1. Rev &amp; Swap ()
-          </div>
-          <div className={`p-2.5 rounded-xl border ${step.phase.includes('PROCESS') || step.phase.includes('FLUSH') ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200' : 'bg-[var(--board-raised-2)] border-[#25283a] text-[#6d7494]'}`}>
-            2. Mod Postfix
-          </div>
-          <div className={`p-2.5 rounded-xl border ${step.phase === 'FINAL_REVERSE' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200' : 'bg-[var(--board-raised-2)] border-[#25283a] text-[#6d7494]'}`}>
-            3. Final Reverse
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

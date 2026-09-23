@@ -9,6 +9,8 @@ export const meta = {
   description: 'Converts postfix expressions (Reverse Polish) to prefix (Polish) notation by scanning left to right with a stack, merging operands as `operator + op1 + op2`.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++: Postfix to Prefix Conversion
 // Time Complexity: O(N) | Space Complexity: O(N)
@@ -152,50 +154,3 @@ export const steps = [
   }
 ];
 
-export default function PostfixToPrefixConversionVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Token: <strong className="text-amber-400 text-sm">{step.char}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Index: <strong>[{step.idx}]</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Format: <strong>operator + op1 + op2</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Prefix Construction Stack</span>
-          <span className="text-cyan-400 font-bold">L-to-R Scan</span>
-        </div>
-
-        <div className="w-full max-w-md h-52 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-3 gap-2 bg-[#0f1016]">
-          {step.stack.map((item, idx) => {
-            const isTop = idx === step.stack.length - 1;
-            return (
-              <div
-                key={idx}
-                className={`w-full py-2 px-3 rounded-lg border font-mono text-sm font-bold flex items-center justify-between transition-all ${
-                  isTop ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#292d3f] text-[#a9b0d1]'
-                }`}
-              >
-                <span>{item}</span>
-                {isTop && <span className="text-[9px] px-1 rounded bg-cyan-500 text-black font-bold">TOP</span>}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          Formula: <span className="text-amber-300">temp = operator + op1 + op2</span> (op1 popped second, op2 popped first).
-        </div>
-      </div>
-    </div>
-  );
-}

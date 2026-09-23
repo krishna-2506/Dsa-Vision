@@ -1,13 +1,41 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Reverse a Stack using Recursion',
-  category: 'Recursion',
+  category: 'Recursion & Stack',
   difficulty: 'Medium',
   timeComplexity: 'O(N^2)',
-  spaceComplexity: 'O(N) recursion stack',
+  spaceComplexity: 'O(N) Call Stack',
   description: 'Reverses a stack completely in-place using recursion without any loops or auxiliary data structures by peeling off elements and inserting them at the bottom recursively.'
 };
+
+export const ideaMap = [
+  {
+    id: 'recursive-peeling',
+    title: 'Top Element Peeling',
+    description: 'Pop the top element and hold it in the current recursion call frame. Recursively reverse the remaining N-1 elements.'
+  },
+  {
+    id: 'insert-at-bottom',
+    title: 'Insert at Bottom Subroutine',
+    description: 'To place element x at the bottom of a stack: if empty, push x; otherwise pop top, recursively insert x at the bottom, then push top back.'
+  },
+  {
+    id: 'base-case-reversal',
+    title: 'Empty Stack Base Case',
+    description: 'When the stack becomes completely empty, the recursion reaches its deepest point and starts unwinding bottom insertions.'
+  },
+  {
+    id: 'lifo-inversion',
+    title: 'Inverting LIFO Order',
+    description: 'Inserting the original top element at the very bottom on each unwinding step completely reverses the stack orientation.'
+  },
+  {
+    id: 'quadratic-amortization',
+    title: 'O(N^2) Recursive Work',
+    description: 'Inserting at the bottom of stacks of size 0, 1, ..., N-1 requires 1 + 2 + ... + N = O(N^2) total operations.'
+  }
+];
 
 export const solutions = {
   cpp: `// C++ Reverse Stack using Recursion
@@ -35,30 +63,11 @@ public:
         int top = st.top();
         st.pop();
 
-        reverseStack(st); // Recurse on remaining stack
-
-        insertAtBottom(st, top); // Place top at the bottom
+        reverseStack(st);
+        insertAtBottom(st, top);
     }
 };`,
-  python: `# Python 3 Reverse Stack using Recursion
-class Solution:
-    def reverseStack(self, st: list[int]) -> None:
-        def insert_at_bottom(element):
-            if not st:
-                st.append(element)
-                return
-
-            top = st.pop()
-            insert_at_bottom(element)
-            st.append(top)
-
-        if not st:
-            return
-
-        top = st.pop()
-        self.reverseStack(st)
-        insert_at_bottom(top)`,
-  java: `// Java Reverse Stack using Recursion
+  java: `// Java: Reverse Stack using Recursion
 import java.util.Stack;
 
 class Solution {
@@ -81,166 +90,206 @@ class Solution {
         insertAtBottom(st, top);
     }
 }`,
-  javascript: `// JavaScript Reverse Stack using Recursion
-var reverseStack = function(st) {
-    const insertAtBottom = (element) => {
-        if (st.length === 0) {
-            st.push(element);
-            return;
-        }
+  python: `# Python 3: Reverse Stack using Recursion
+class Solution:
+    def insertAtBottom(self, st: list[int], element: int) -> None:
+        if not st:
+            st.append(element)
+            return
 
-        const top = st.pop();
-        insertAtBottom(element);
-        st.push(top);
-    };
+        top = st.pop()
+        self.insertAtBottom(st, element)
+        st.append(top)
 
+    def reverseStack(self, st: list[int]) -> None:
+        if not st:
+            return
+
+        top = st.pop()
+        self.reverseStack(st)
+        self.insertAtBottom(st, top)`,
+  javascript: `// JavaScript: Reverse Stack using Recursion
+function insertAtBottom(st, element) {
+    if (st.length === 0) {
+        st.push(element);
+        return;
+    }
+
+    const top = st.pop();
+    insertAtBottom(st, element);
+    st.push(top);
+}
+
+function reverseStack(st) {
     if (st.length === 0) return;
 
     const top = st.pop();
     reverseStack(st);
-    insertAtBottom(top);
-};`
+    insertAtBottom(st, top);
+}`
 };
 
 export const steps = [
   {
-    title: '1. Initial State: Stack [Bottom: 1, 2, Top: 3]',
-    phase: 'INITIAL',
-    codeLine: 24,
-    stack: [1, 2, 3],
-    callStack: [],
-    poppedElem: null,
-    insertingElem: null,
-    variables: { stack: '[1, 2, 3]', topElement: 3, strategy: 'Unwind stack into call stack frames' },
-    explain: 'Goal is to flip the stack so 3 is at the bottom and 1 is at the top, without using arrays or queues.',
-    intuition: 'The function call stack itself serves as the temporary holding mechanism.'
+    stepIndex: 1,
+    title: 'Initial Stack: [1, 2, 3, 4]',
+    explanation: 'Initial stack from bottom to top is [1, 2, 3, 4] (bottom=1, top=4). We want to reverse it completely so bottom=4 and top=1 using recursion only.',
+    activeLine: 18,
+    activeIdeaId: 'recursive-peeling',
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [],
+    highlightIndices: [3],
+    pointers: { top: 3 },
+    variables: { bottom: 1, top: 4, size: 4 },
+    customCard: {
+      title: 'Initial Stack State',
+      rows: [
+        { label: 'Stack (bottom to top)', value: '[1, 2, 3, 4]' },
+        { label: 'Top Element', value: '4' },
+        { label: 'Target State', value: '[4, 3, 2, 1] reversed' }
+      ]
+    }
   },
   {
-    title: '2. Pop 3 & Recurse: Stack is now [1, 2]',
-    phase: 'POP_AND_RECURSE',
-    codeLine: 27,
-    stack: [1, 2],
-    callStack: ['Frame 1: hold 3'],
-    poppedElem: 3,
-    insertingElem: null,
-    variables: { popped: 3, remainingStack: '[1, 2]' },
-    explain: 'Pop 3 and preserve it in recursive call frame 1. Recurse on [1, 2].',
-    intuition: 'Store 3 in the execution stack.'
+    stepIndex: 2,
+    title: 'Recursive Peeling: All Elements Held in Call Stack',
+    explanation: 'Peel off elements into call frames: pop 4 (frame 1), pop 3 (frame 2), pop 2 (frame 3), pop 1 (frame 4). Base case reached at empty stack [].',
+    activeLine: 23,
+    activeIdeaId: 'base-case-reversal',
+    track: [],
+    auxiliaryTrack: [1, 2, 3, 4],
+    highlightIndices: [],
+    pointers: {},
+    variables: { stack: '[] (empty)', callStack: '[1, 2, 3, 4]' },
+    customCard: {
+      title: 'Call Stack Frames',
+      rows: [
+        { label: 'Frame 1 (top)', value: 'Holds element: 4' },
+        { label: 'Frame 2', value: 'Holds element: 3' },
+        { label: 'Frame 3', value: 'Holds element: 2' },
+        { label: 'Frame 4 (bottom)', value: 'Holds element: 1' }
+      ]
+    }
   },
   {
-    title: '3. Pop 2 & Recurse: Stack is now [1]',
-    phase: 'POP_AND_RECURSE',
-    codeLine: 27,
-    stack: [1],
-    callStack: ['Frame 1: hold 3', 'Frame 2: hold 2'],
-    poppedElem: 2,
-    insertingElem: null,
-    variables: { popped: 2, remainingStack: '[1]' },
-    explain: 'Pop 2 and preserve it in frame 2. Recurse on [1].',
-    intuition: 'Store 2 in the execution stack.'
+    stepIndex: 3,
+    title: 'Unwind Frame 4: insertAtBottom([], 1) -> [1]',
+    explanation: 'Stack is empty. insertAtBottom([], 1) directly pushes 1. Stack becomes [1].',
+    activeLine: 6,
+    activeIdeaId: 'insert-at-bottom',
+    track: [1],
+    auxiliaryTrack: [2, 3, 4],
+    highlightIndices: [0],
+    pointers: { top: 0 },
+    variables: { insertedAtBottom: 1, stack: '[1]' },
+    customCard: {
+      title: 'First Bottom Insertion',
+      rows: [
+        { label: 'Element Inserted', value: '1' },
+        { label: 'Stack Condition', value: 'Empty -> Direct push' },
+        { label: 'Stack State', value: '[1]' }
+      ]
+    }
   },
   {
-    title: '4. Pop 1 & Base Case: Stack is Empty []',
-    phase: 'POP_AND_RECURSE',
-    codeLine: 27,
-    stack: [],
-    callStack: ['Frame 1: hold 3', 'Frame 2: hold 2', 'Frame 3: hold 1'],
-    poppedElem: 1,
-    insertingElem: null,
-    variables: { popped: 1, stack: '[] (Empty - Base Case reached)' },
-    explain: 'All original elements are held across call frames. Now insertAtBottom begins unwinding.',
-    intuition: 'Stack is empty. Base case triggers insertion phase.'
+    stepIndex: 4,
+    title: 'Unwind Frame 3: insertAtBottom([1], 2) -> [2, 1]',
+    explanation: 'To insert 2 at bottom of [1]: pop 1, stack is now []. Push 2 at bottom. Push 1 back on top! Stack becomes [2, 1].',
+    activeLine: 12,
+    activeIdeaId: 'insert-at-bottom',
+    track: [2, 1],
+    auxiliaryTrack: [3, 4],
+    highlightIndices: [0],
+    pointers: { top: 1 },
+    variables: { insertedAtBottom: 2, stack: '[2, 1]' },
+    customCard: {
+      title: 'Second Bottom Insertion',
+      rows: [
+        { label: 'Target to place at bottom', value: '2' },
+        { label: 'Mechanism', value: 'Pop 1 -> Push 2 -> Restore 1' },
+        { label: 'Resulting Stack', value: '[2, 1]' }
+      ]
+    }
   },
   {
-    title: '5. insertAtBottom(1), then insertAtBottom(2): Stack is [2, 1]',
-    phase: 'INSERT_AT_BOTTOM',
-    codeLine: 12,
-    stack: [2, 1], // Bottom is 2, Top is 1
-    callStack: ['Frame 1: hold 3'],
-    poppedElem: null,
-    insertingElem: 2,
-    variables: { inserted: '1 then 2 at bottom', currentStack: '[Bottom: 2, Top: 1]' },
-    explain: 'insertAtBottom pushes 1 into empty stack, then pushes 2 at the bottom beneath 1.',
-    intuition: '2 placed below 1.'
+    stepIndex: 5,
+    title: 'Unwind Frame 2: insertAtBottom([2, 1], 3) (Part 1 - Emptying)',
+    explanation: 'To insert 3 at bottom of [2, 1]: pop 1, pop 2. Stack is empty. Push 3 at bottom of stack.',
+    activeLine: 6,
+    activeIdeaId: 'insert-at-bottom',
+    track: [3],
+    auxiliaryTrack: [2, 1],
+    highlightIndices: [0],
+    pointers: { top: 0 },
+    variables: { bottomPlaced: 3, poppedTemporarily: '[1, 2]' },
+    customCard: {
+      title: 'Inserting 3 at Foundation',
+      rows: [
+        { label: 'Popped Elements', value: '1, then 2' },
+        { label: 'Base Action', value: 'Pushed 3 to empty floor' },
+        { label: 'Stack State', value: '[3]' }
+      ]
+    }
   },
   {
-    title: '6. insertAtBottom(3): Final Reversed Stack [Bottom: 3, 2, Top: 1]',
-    phase: 'RESULT',
-    codeLine: 31,
-    stack: [3, 2, 1], // Bottom is 3, Top is 1
-    callStack: [],
-    poppedElem: null,
-    insertingElem: 3,
-    variables: { finalStack: '[Bottom: 3, 2, Top: 1]', original: '[Bottom: 1, 2, Top: 3]' },
-    explain: '3 is inserted at the bottom beneath [2, 1]. Stack is completely reversed in-place!',
-    intuition: 'Pure recursive stack inversion.'
+    stepIndex: 6,
+    title: 'insertAtBottom([2, 1], 3) (Part 2 - Restoring Stack)',
+    explanation: 'Restore popped elements above 3: push back 2, push back 1. Stack is now [3, 2, 1]!',
+    activeLine: 13,
+    activeIdeaId: 'lifo-inversion',
+    track: [3, 2, 1],
+    auxiliaryTrack: [4],
+    highlightIndices: [0, 1, 2],
+    pointers: { top: 2 },
+    variables: { stack: '[3, 2, 1]', remainingToInsert: 4 },
+    customCard: {
+      title: 'Restoration Complete',
+      rows: [
+        { label: 'Restored Order', value: 'Pushed 2, then pushed 1' },
+        { label: 'Current Stack (bottom to top)', value: '[3, 2, 1]' },
+        { label: 'Next Call', value: 'insertAtBottom([3, 2, 1], 4)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Unwind Frame 1: insertAtBottom([3, 2, 1], 4) at Root',
+    explanation: 'Pop 1, pop 2, pop 3. Push 4 to empty bottom. Restore 3, 2, 1 above it. Stack becomes [4, 3, 2, 1]!',
+    activeLine: 13,
+    activeIdeaId: 'lifo-inversion',
+    track: [4, 3, 2, 1],
+    auxiliaryTrack: [],
+    highlightIndices: [0],
+    pointers: { bottom: 0, top: 3 },
+    variables: { bottomElement: 4, finalStack: '[4, 3, 2, 1]' },
+    customCard: {
+      title: 'Final Bottom Insertion of Element 4',
+      rows: [
+        { label: 'Action', value: 'Peel 1, 2, 3 -> Place 4 at bottom -> Restore 3, 2, 1' },
+        { label: 'New Bottom', value: '4' },
+        { label: 'New Top', value: '1' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Stack Inversion Complete: [4, 3, 2, 1]',
+    explanation: 'Stack is completely reversed in-place without any loops or auxiliary arrays. Bottom is 4, top is 1. Time complexity O(N^2), space O(N) call stack.',
+    activeLine: 25,
+    activeIdeaId: 'quadratic-amortization',
+    track: [4, 3, 2, 1],
+    auxiliaryTrack: [],
+    highlightIndices: [0, 1, 2, 3],
+    pointers: { bottom: 0, top: 3 },
+    variables: { original: '[1, 2, 3, 4]', reversed: '[4, 3, 2, 1]' },
+    customCard: {
+      title: 'Reversal Verified',
+      rows: [
+        { label: 'Original Stack (bottom to top)', value: '[1, 2, 3, 4]' },
+        { label: 'Reversed Stack (bottom to top)', value: '[4, 3, 2, 1]', accent: true },
+        { label: 'Time Complexity', value: 'O(N^2)' },
+        { label: 'Space Complexity', value: 'O(N) Call Stack' }
+      ]
+    }
   }
 ];
-
-export default function ReverseAStackVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          Operation: Reverse Stack via Pure Recursion
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-semibold">
-          Call Stack Frames: {step.callStack.length}
-        </span>
-      </div>
-
-      {/* Visual Canvas */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] grid grid-cols-2 gap-6 font-mono">
-        {/* Physical Stack Tower */}
-        <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
-          <span className="text-xs text-amber-400 font-bold">Data Stack:</span>
-          <div className="w-36 h-48 border-b-4 border-l-2 border-r-2 border-amber-400/50 rounded-b-xl flex flex-col-reverse items-center p-2 gap-2 bg-[#0e1017]">
-            {step.stack.map((val, idx) => {
-              const isTop = idx === step.stack.length - 1;
-              return (
-                <div
-                  key={idx}
-                  className={`w-full py-2 rounded-lg border text-center font-bold text-sm transition-all ${
-                    isTop ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk)]'
-                  }`}
-                >
-                  {val} {isTop && <span className="text-[10px] text-amber-300 font-normal">&larr; TOP</span>}
-                </div>
-              );
-            })}
-          </div>
-          <span className="text-[10px] text-[var(--chalk-dim)]">BOTTOM OF STACK</span>
-        </div>
-
-        {/* Recursive Call Stack Frames */}
-        <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)]">
-          <span className="text-xs text-cyan-400 font-bold">Call Stack Frames (Memory):</span>
-          <div className="w-full h-48 flex flex-col-reverse items-center justify-start gap-2 overflow-y-auto p-2 bg-[#0e1017] rounded-xl border border-[#1e2233]">
-            {step.callStack.length === 0 ? (
-              <span className="text-xs text-[#5b6076] my-auto">No Active Call Frames</span>
-            ) : (
-              step.callStack.map((frame, idx) => (
-                <div
-                  key={idx}
-                  className="w-full py-2 px-3 rounded-lg border border-cyan-500/30 bg-cyan-500/15 text-cyan-300 text-xs font-semibold text-center"
-                >
-                  {frame}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Result Card */}
-      {step.phase === 'RESULT' && (
-        <div className="w-full p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center gap-2 text-emerald-300 font-mono text-base font-bold">
-          <span>🎉 Stack Reversed: [Bottom: 3, 2, Top: 1] in O(N&sup2;) Time and O(N) Call Stack</span>
-        </div>
-      )}
-    </div>
-  );
-}

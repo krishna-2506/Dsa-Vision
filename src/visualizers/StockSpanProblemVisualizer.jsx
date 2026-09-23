@@ -1,13 +1,41 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Stock Span Problem',
   category: 'Stack and Queues',
   difficulty: 'Medium',
-  timeComplexity: 'Amortized O(1) per day',
+  timeComplexity: 'Amortized O(1) per call',
   spaceComplexity: 'O(N)',
-  description: 'Calculates the consecutive days up to today where stock price was less than or equal to today’s price, using a monotonic stack storing pairs of (price, span).'
+  description: 'Calculates the consecutive days up to today where the stock price was less than or equal to today’s price, using a monotonic stack storing pairs of (price, span).'
 };
+
+export const ideaMap = [
+  {
+    id: 'span-definition',
+    title: 'Stock Span Definition',
+    description: 'The span of a stock on day i is the maximum number of consecutive days up to i for which the price was <= price[i].'
+  },
+  {
+    id: 'previous-greater-element',
+    title: 'Previous Greater Element Mapping',
+    description: 'Span equals current index i minus the index of the previous strictly greater price (or i + 1 if no greater price exists).'
+  },
+  {
+    id: 'monotonic-stack-pairs',
+    title: 'Compressed Pair Stack',
+    description: 'Store {price, span} pairs in monotonically decreasing price order. If current price >= top.price, absorb top.span into current span and pop.'
+  },
+  {
+    id: 'span-aggregation',
+    title: 'Span Aggregation Invariant',
+    description: 'When popping a smaller price, its span is already known and completely submerged beneath today’s price. We simply add top.span to current span.'
+  },
+  {
+    id: 'amortized-analysis',
+    title: 'Amortized O(1) Guarantee',
+    description: 'Each daily price is pushed to the stack once and popped at most once across all N calls, yielding O(1) amortized time per query.'
+  }
+];
 
 export const solutions = {
   cpp: `// C++: Stock Span using Monotonic Stack
@@ -32,14 +60,15 @@ public:
         return span;
     }
 };`,
-  java: `// Java: Stock Span using Stack
-import java.util.Stack;
+  java: `// Java: Stock Span using ArrayDeque Stack
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 class StockSpanner {
-    private Stack<int[]> st; // [price, span]
+    private Deque<int[]> st; // [price, span]
 
     public StockSpanner() {
-        st = new Stack<>();
+        st = new ArrayDeque<>();
     }
 
     public int next(int price) {
@@ -51,29 +80,29 @@ class StockSpanner {
         return span;
     }
 }`,
-  python: `# Python 3: Stock Span
+  python: `# Python 3: Stock Span using List Stack
 class StockSpanner:
     def __init__(self):
-        self.stack = [] # (price, span)
+        self.st = [] # (price, span)
 
     def next(self, price: int) -> int:
         span = 1
-        while self.stack and self.stack[-1][0] <= price:
-            span += self.stack.pop()[1]
-        self.stack.append((price, span))
+        while self.st and self.st[-1][0] <= price:
+            span += self.st.pop()[1]
+        self.st.append((price, span))
         return span`,
-  javascript: `// JavaScript: Stock Span
+  javascript: `// JavaScript: Stock Span using Array Stack
 class StockSpanner {
     constructor() {
-        this.stack = []; // { price, span }
+        this.st = []; // { price, span }
     }
 
     next(price) {
         let span = 1;
-        while (this.stack.length > 0 && this.stack[this.stack.length - 1].price <= price) {
-            span += this.stack.pop().span;
+        while (this.st.length > 0 && this.st[this.st.length - 1].price <= price) {
+            span += this.st.pop().span;
         }
-        this.stack.push({ price, span });
+        this.st.push({ price, span });
         return span;
     }
 }`
@@ -81,156 +110,167 @@ class StockSpanner {
 
 export const steps = [
   {
-    title: '1. Day 1: next(100) &rarr; Stack empty &rarr; Span = 1',
-    phase: 'FIRST_DAY',
-    codeLine: 16,
-    day: 1,
-    price: 100,
-    span: 1,
-    stack: [{ price: 100, span: 1 }],
-    history: [{ day: 1, price: 100, span: 1 }],
-    explain: 'First price 100. No previous days. Span = 1. Stack = [{100, 1}].'
+    stepIndex: 1,
+    title: 'Initialize Stock Spanner and Empty Stack',
+    explanation: 'Daily prices stream: [100, 80, 60, 70, 60, 75, 85]. We will compute span for each day using a monotonic stack of (price, span) pairs.',
+    activeLine: 9,
+    activeIdeaId: 'span-definition',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [0, 0, 0, 0, 0, 0, 0],
+    highlightIndices: [0],
+    pointers: { day: 0 },
+    variables: { day: 0, price: 100, span: 1, stack: '[]' },
+    customCard: {
+      title: 'Day 0 Call: next(100)',
+      rows: [
+        { label: 'Current Price', value: '100' },
+        { label: 'Stack State', value: 'Empty' },
+        { label: 'Calculated Span', value: '1 (only today)' }
+      ]
+    }
   },
   {
-    title: '2. Day 2: next(80) &rarr; 80 < 100 &rarr; Span = 1',
-    phase: 'PROCESS',
-    codeLine: 16,
-    day: 2,
-    price: 80,
-    span: 1,
-    stack: [{ price: 100, span: 1 }, { price: 80, span: 1 }],
-    history: [
-      { day: 1, price: 100, span: 1 },
-      { day: 2, price: 80, span: 1 }
-    ],
-    explain: '80 is less than 100. Previous day cannot be absorbed. Span = 1. Push {80, 1}.'
+    stepIndex: 2,
+    title: 'Day 0 & 1: Prices 100 and 80 (Strict Decreasing)',
+    explanation: 'next(100) -> span 1, push {100, 1}. next(80) -> top is 100 > 80, no pop. span is 1, push {80, 1}. Stack: [{100, 1}, {80, 1}].',
+    activeLine: 16,
+    activeIdeaId: 'monotonic-stack-pairs',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [1, 1, 0, 0, 0, 0, 0],
+    highlightIndices: [0, 1],
+    pointers: { day: 1 },
+    variables: { day: 1, price: 80, span: 1, stack: '[{100, 1}, {80, 1}]' },
+    customCard: {
+      title: 'Day 1 Call: next(80)',
+      rows: [
+        { label: 'Current Price', value: '80' },
+        { label: 'Stack Top Price', value: '100 > 80 (no absorption)' },
+        { label: 'Span', value: '1' }
+      ]
+    }
   },
   {
-    title: '3. Day 3: next(60) &rarr; 60 < 80 &rarr; Span = 1',
-    phase: 'PROCESS',
-    codeLine: 16,
-    day: 3,
-    price: 60,
-    span: 1,
-    stack: [{ price: 100, span: 1 }, { price: 80, span: 1 }, { price: 60, span: 1 }],
-    history: [
-      { day: 1, price: 100, span: 1 },
-      { day: 2, price: 80, span: 1 },
-      { day: 3, price: 60, span: 1 }
-    ],
-    explain: '60 is smaller than 80. Span = 1. Push {60, 1}.'
+    stepIndex: 3,
+    title: 'Day 2: next(60) -> span = 1',
+    explanation: 'Price is 60. Stack top is 80 > 60. No elements popped. span = 1. Push {60, 1}. Stack: [{100, 1}, {80, 1}, {60, 1}].',
+    activeLine: 16,
+    activeIdeaId: 'monotonic-stack-pairs',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [1, 1, 1, 0, 0, 0, 0],
+    highlightIndices: [2],
+    pointers: { day: 2 },
+    variables: { day: 2, price: 60, span: 1, stackSize: 3 },
+    customCard: {
+      title: 'Day 2 Call: next(60)',
+      rows: [
+        { label: 'Current Price', value: '60' },
+        { label: 'Stack Top', value: '80' },
+        { label: 'Span', value: '1' }
+      ]
+    }
   },
   {
-    title: '4. Day 4: next(70) &rarr; 70 >= 60 &rarr; Absorb Day 3! Span = 1 + 1 = 2',
-    phase: 'ABSORB',
-    codeLine: 18,
-    day: 4,
-    price: 70,
-    span: 2,
-    stack: [{ price: 100, span: 1 }, { price: 80, span: 1 }, { price: 70, span: 2 }],
-    history: [
-      { day: 1, price: 100, span: 1 },
-      { day: 2, price: 80, span: 1 },
-      { day: 3, price: 60, span: 1 },
-      { day: 4, price: 70, span: 2 }
-    ],
-    explain: 'Price 70 is >= 60. Pop {60, 1} and add its span (1) to today. Span = 2. Push {70, 2}.'
+    stepIndex: 4,
+    title: 'Day 3: next(70) Absorbs Day 2 (60) -> span = 2',
+    explanation: 'Price is 70. Stack top is {60, 1} <= 70. Pop {60, 1} and accumulate span += 1 (span becomes 2). Next top is 80 > 70 (stop). Push {70, 2}.',
+    activeLine: 14,
+    activeIdeaId: 'span-aggregation',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [1, 1, 1, 2, 0, 0, 0],
+    highlightIndices: [2, 3],
+    pointers: { day: 3 },
+    variables: { day: 3, price: 70, absorbed: '{60, 1}', span: 2 },
+    customCard: {
+      title: 'Day 3 Call: next(70) Absorption',
+      rows: [
+        { label: 'Current Price', value: '70' },
+        { label: 'Popped Node', value: '{price: 60, span: 1}' },
+        { label: 'Accumulated Span', value: '1 + 1 = 2 days', accent: true },
+        { label: 'Remaining Stack', value: '[{100, 1}, {80, 1}, {70, 2}]' }
+      ]
+    }
   },
   {
-    title: '5. Day 5: next(60) &rarr; Span = 1',
-    phase: 'PROCESS',
-    codeLine: 16,
-    day: 5,
-    price: 60,
-    span: 1,
-    stack: [{ price: 100, span: 1 }, { price: 80, span: 1 }, { price: 70, span: 2 }, { price: 60, span: 1 }],
-    history: [
-      { day: 1, price: 100, span: 1 },
-      { day: 2, price: 80, span: 1 },
-      { day: 3, price: 60, span: 1 },
-      { day: 4, price: 70, span: 2 },
-      { day: 5, price: 60, span: 1 }
-    ],
-    explain: '60 < 70. Span = 1. Push {60, 1}.'
+    stepIndex: 5,
+    title: 'Day 4: next(60) -> span = 1',
+    explanation: 'Price is 60. Stack top is 70 > 60. No pop. span = 1. Push {60, 1}. Stack: [{100, 1}, {80, 1}, {70, 2}, {60, 1}].',
+    activeLine: 16,
+    activeIdeaId: 'monotonic-stack-pairs',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [1, 1, 1, 2, 1, 0, 0],
+    highlightIndices: [4],
+    pointers: { day: 4 },
+    variables: { day: 4, price: 60, span: 1 },
+    customCard: {
+      title: 'Day 4 Call: next(60)',
+      rows: [
+        { label: 'Price', value: '60' },
+        { label: 'Top', value: '70' },
+        { label: 'Span', value: '1' }
+      ]
+    }
   },
   {
-    title: '6. Day 6: next(75) &rarr; 75 >= 60 (pop) & 75 >= 70 (pop) &rarr; Span = 1 + 1 + 2 = 4!',
-    phase: 'MULTI_ABSORB',
-    codeLine: 18,
-    day: 6,
-    price: 75,
-    span: 4,
-    stack: [{ price: 100, span: 1 }, { price: 80, span: 1 }, { price: 75, span: 4 }],
-    history: [
-      { day: 1, price: 100, span: 1 },
-      { day: 2, price: 80, span: 1 },
-      { day: 3, price: 60, span: 1 },
-      { day: 4, price: 70, span: 2 },
-      { day: 5, price: 60, span: 1 },
-      { day: 6, price: 75, span: 4 }
-    ],
-    explain: '75 absorbs Day 5 (span 1) and Day 4 (span 2). Total span = 1 + 1 + 2 = 4 consecutive days!'
+    stepIndex: 6,
+    title: 'Day 5: next(75) Absorbs {60, 1} and {70, 2} -> span = 4',
+    explanation: 'Price is 75. Pop {60, 1} (span = 1 + 1 = 2). Pop {70, 2} (span = 2 + 2 = 4). Next top is 80 > 75 (stop). Push {75, 4}. Span covers 4 consecutive days!',
+    activeLine: 14,
+    activeIdeaId: 'span-aggregation',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [1, 1, 1, 2, 1, 4, 0],
+    highlightIndices: [3, 4, 5],
+    pointers: { day: 5 },
+    variables: { day: 5, price: 75, span: 4, absorbedSpans: '1 + 2 = 3' },
+    customCard: {
+      title: 'Multi-Day Absorption',
+      rows: [
+        { label: 'Price Today', value: '75' },
+        { label: 'Absorbed Days', value: 'Day 4 (60) + Day 3 (70)' },
+        { label: 'Total Span', value: '1 + 1 + 2 = 4 days', accent: true },
+        { label: 'Stack Top after pop', value: '80' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Day 6: next(85) Absorbs {75, 4} and {80, 1} -> span = 6',
+    explanation: 'Price is 85. Pop {75, 4} (span = 1 + 4 = 5). Pop {80, 1} (span = 5 + 1 = 6). Next top is 100 > 85 (stop). Push {85, 6}. Span is 6 days!',
+    activeLine: 14,
+    activeIdeaId: 'span-aggregation',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [1, 1, 1, 2, 1, 4, 6],
+    highlightIndices: [1, 2, 3, 4, 5, 6],
+    pointers: { day: 6 },
+    variables: { day: 6, price: 85, span: 6, finalAbsorption: '4 + 1 = 5' },
+    customCard: {
+      title: 'Major Breakthrough Span',
+      rows: [
+        { label: 'Current Price', value: '85' },
+        { label: 'Absorbed Elements', value: '{75, 4} and {80, 1}' },
+        { label: 'Total Span', value: '6 days', accent: true },
+        { label: 'Only Unbeaten Day', value: 'Day 0 (100)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'All Days Processed: Complete Spans Array Generated',
+    explanation: 'The resulting spans for [100, 80, 60, 70, 60, 75, 85] are [1, 1, 1, 2, 1, 4, 6]. Monotonic stack guarantees amortized O(1) time per call.',
+    activeLine: 17,
+    activeIdeaId: 'amortized-analysis',
+    track: [100, 80, 60, 70, 60, 75, 85],
+    auxiliaryTrack: [1, 1, 1, 2, 1, 4, 6],
+    highlightIndices: [],
+    pointers: {},
+    variables: { finalSpans: '[1, 1, 1, 2, 1, 4, 6]', amortizedTime: 'O(1) per call' },
+    customCard: {
+      title: 'Final Stock Spans Summary',
+      rows: [
+        { label: 'Input Daily Prices', value: '[100, 80, 60, 70, 60, 75, 85]' },
+        { label: 'Output Daily Spans', value: '[1, 1, 1, 2, 1, 4, 6]', accent: true },
+        { label: 'Total Operations', value: 'N pushes + N pops max' },
+        { label: 'Time Complexity', value: 'Amortized O(1)' }
+      ]
+    }
   }
 ];
-
-export default function StockSpanProblemVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Today Price: <strong className="text-amber-400 text-sm">${step.price}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-          Computed Span: <strong className="text-base text-emerald-200">{step.span} days</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Daily Prices &amp; Computed Spans</span>
-          <span className="text-emerald-400 font-bold">Monotonic Pair Stack</span>
-        </div>
-
-        {/* History Bars */}
-        <div className="flex items-end justify-center gap-3 w-full h-40 pt-4 px-2 border-b border-[#26293a]">
-          {step.history.map((h, i) => {
-            const isToday = i === step.history.length - 1;
-            return (
-              <div key={i} className="flex flex-col items-center flex-1 h-full justify-end">
-                <span className="text-[10px] font-mono font-bold text-emerald-400 mb-1">
-                  +{h.span}
-                </span>
-                <div
-                  style={{ height: `${(h.price / 100) * 100}%` }}
-                  className={`w-full rounded-t-sm border flex items-center justify-center font-mono text-xs font-bold transition-all ${
-                    isToday
-                      ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-md shadow-amber-500/20'
-                      : 'bg-[#1a1d2c] border-[#31364d] text-[#b4bad4]'
-                  }`}
-                >
-                  {h.price}
-                </div>
-                <span className="text-[9px] font-mono text-[#5a607e] mt-1">D{h.day}</span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Internal Stack */}
-        <div className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-[#0f1016] border border-[var(--line)] overflow-x-auto">
-          <span className="text-xs font-mono text-[#6c7292] mr-2">Stack:</span>
-          {step.stack.map((item, idx) => (
-            <div
-              key={idx}
-              className="px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-400/40 font-mono text-xs font-bold text-emerald-200"
-            >
-              ${item.price} ({item.span}d)
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

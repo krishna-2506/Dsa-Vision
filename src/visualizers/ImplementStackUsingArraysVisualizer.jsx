@@ -9,6 +9,8 @@ export const meta = {
   description: 'A Last-In-First-Out (LIFO) stack implemented using a fixed-size contiguous array managed with a single pointer/index `top` pointing to the most recent element.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++: Stack Implementation using Array
 // Time Complexity: O(1) all ops | Space: O(capacity)
@@ -230,71 +232,3 @@ export const steps = [
   }
 ];
 
-export default function ImplementStackUsingArraysVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Status Bar */}
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Operation: <strong className="text-cyan-400">{step.action}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300">
-          topIndex: <strong className="text-amber-200">{step.topIndex}</strong>
-        </div>
-        {step.returnValue !== null && (
-          <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-            Returned: <strong>{step.returnValue}</strong>
-          </div>
-        )}
-      </div>
-
-      {/* Array Slots Visualization */}
-      <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Array Memory Buffer (Capacity = 5)</span>
-          <span className="text-[#595f7a]">LIFO Stack</span>
-        </div>
-
-        <div className="grid grid-cols-5 gap-3 w-full max-w-md pt-4">
-          {step.array.map((val, idx) => {
-            const isTop = idx === step.topIndex;
-            const isFilled = val !== null;
-            return (
-              <div key={idx} className="flex flex-col items-center gap-2">
-                <div
-                  className={`w-14 h-16 rounded-xl border-2 flex flex-col items-center justify-center font-mono font-bold text-lg transition-all duration-300 relative ${
-                    isTop
-                      ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-lg shadow-cyan-500/20 scale-105'
-                      : isFilled
-                      ? 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-                      : 'bg-[#0f1016] border-dashed border-[var(--line)] text-[#3d425c]'
-                  }`}
-                >
-                  {isTop && (
-                    <span className="absolute -top-3 px-1.5 py-0.5 rounded text-[9px] bg-cyan-500 text-black font-black uppercase tracking-wider">
-                      TOP
-                    </span>
-                  )}
-                  <span>{val !== null ? val : '-'}</span>
-                </div>
-                <span className="text-[10px] font-mono text-[#5b617d]">[{idx}]</span>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Stack Pointer Indicator */}
-        <div className="mt-2 text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] flex items-center gap-2">
-          <span>Pointer Status:</span>
-          {step.topIndex === -1 ? (
-            <span className="text-rose-400 font-bold">Stack Empty (topIndex = -1)</span>
-          ) : (
-            <span className="text-cyan-300 font-bold">Top Element at Index [{step.topIndex}] = {step.array[step.topIndex]}</span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

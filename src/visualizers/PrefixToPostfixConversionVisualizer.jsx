@@ -9,6 +9,8 @@ export const meta = {
   description: 'Converts prefix expressions into postfix (Reverse Polish) notation by scanning right to left with a stack, merging operands and operators as `op1 + op2 + operator`.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++: Prefix to Postfix Conversion
 // Time Complexity: O(N) | Space Complexity: O(N)
@@ -152,50 +154,3 @@ export const steps = [
   }
 ];
 
-export default function PrefixToPostfixConversionVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Token: <strong className="text-amber-400 text-sm">{step.char}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Index: <strong>[{step.idx}]</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300">
-          Rule: <strong>op1 + op2 + operator</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Postfix Construction Stack</span>
-          <span className="text-purple-400 font-bold">R-to-L Scan</span>
-        </div>
-
-        <div className="w-full max-w-md h-52 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-3 gap-2 bg-[#0f1016]">
-          {step.stack.map((item, idx) => {
-            const isTop = idx === step.stack.length - 1;
-            return (
-              <div
-                key={idx}
-                className={`w-full py-2 px-3 rounded-lg border font-mono text-sm font-bold flex items-center justify-between transition-all ${
-                  isTop ? 'bg-purple-500/20 border-purple-400 text-purple-200' : 'bg-[#181a26] border-[#292d3f] text-[#a9b0d1]'
-                }`}
-              >
-                <span>{item}</span>
-                {isTop && <span className="text-[9px] px-1 rounded bg-purple-500 text-[var(--chalk)] font-bold">TOP</span>}
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          Prefix to Postfix eliminates all parentheses while preserving correct operational precedence.
-        </div>
-      </div>
-    </div>
-  );
-}

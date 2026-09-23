@@ -9,6 +9,8 @@ export const meta = {
   description: 'Calculates the peak nesting depth of a valid parentheses string using a single running depth counter.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++ Maximum Nesting Depth of the Parentheses
 // Time Complexity: O(N) | Space Complexity: O(1)
@@ -147,59 +149,3 @@ export const steps = [
   }
 ];
 
-export default function MaximumNestingDepthOfTheParenthesesVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Current Depth = {step.currentDepth}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Nesting Depth = {step.maxDepth}
-        </span>
-      </div>
-
-      {/* Characters Stream */}
-      <div className="w-full flex items-center justify-center gap-1.5 py-3 overflow-x-auto">
-        {step.s.split('').map((ch, idx) => {
-          const isCurrent = idx === step.currIdx;
-          const isParen = ch === '(' || ch === ')';
-
-          let borderClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk-dim)]';
-          if (isCurrent) {
-            borderClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30 shadow-lg';
-          } else if (isParen) {
-            borderClass = 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300 font-bold';
-          }
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1 min-w-[32px]">
-              <div className={`w-8 h-10 rounded-xl border flex items-center justify-center font-mono text-sm transition-all ${borderClass}`}>
-                {ch}
-              </div>
-              <span className="text-[8px] font-mono text-[#5b6076]">{idx}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Depth Level Indicator */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-4 flex flex-col items-center gap-2">
-        <span className="text-[11px] font-mono text-[var(--chalk-dim)]">Depth Gauge:</span>
-        <div className="w-full max-w-xs flex gap-2">
-          {[1, 2, 3].map((lvl) => (
-            <div
-              key={lvl}
-              className={`flex-1 h-3 rounded-full transition-all duration-300 ${
-                lvl <= step.currentDepth ? 'bg-amber-400 shadow-sm shadow-amber-400/50' : 'bg-[#222538]'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}

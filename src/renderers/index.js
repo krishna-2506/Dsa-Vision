@@ -27,7 +27,14 @@ const RENDERER_MAP = {
   'interval-dp':   React.lazy(() => import('./IntervalDpRenderer.jsx')),
   'dual-array':    React.lazy(() => import('./DualArrayRenderer.jsx')),
   'stock-trading': React.lazy(() => import('./StockTradingRenderer.jsx')),
-  'generic':       React.lazy(() => import('./GenericRenderer.jsx')),
+  'linked-list':      React.lazy(() => import('./LinkedListRenderer.jsx')),
+  'tree':             React.lazy(() => import('./TreeRenderer.jsx')),
+  'bst':              React.lazy(() => import('./TreeRenderer.jsx')),
+  'stack':            React.lazy(() => import('./StackQueueRenderer.jsx')),
+  'queue':            React.lazy(() => import('./StackQueueRenderer.jsx')),
+  'stack-queue':      React.lazy(() => import('./StackQueueRenderer.jsx')),
+  'monotonic-stack':  React.lazy(() => import('./StackQueueRenderer.jsx')),
+  'generic':          React.lazy(() => import('./GenericRenderer.jsx')),
 };
 
 /**

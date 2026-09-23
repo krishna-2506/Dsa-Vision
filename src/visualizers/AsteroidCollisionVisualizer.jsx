@@ -1,4 +1,4 @@
-export const rendererType = 'array-scan';
+export const rendererType = 'stack';
 
 export const meta = {
   title: 'Asteroid Collision',

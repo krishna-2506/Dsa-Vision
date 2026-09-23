@@ -1,23 +1,45 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Delete the Middle Node of a Linked List',
   category: 'Linked List & Two Pointers',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Deletes the middle node of a singly linked list in a single pass using the tortoise and hare method with offset pointer initialization.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Deletes the middle node of a singly linked list in a single pass using the two-pointer Tortoise and Hare method with an offset fast pointer to stop slow directly at the middle predecessor.'
 };
+
+export const ideaMap = [
+  {
+    id: 'offset-initialization',
+    title: 'Two-Step Offset Initialization',
+    description: 'Initializing fast = head.next.next offsets fast by two steps ahead. When fast reaches the end, slow halts precisely on the predecessor of the middle node.'
+  },
+  {
+    id: 'predecessor-targeting',
+    title: 'Predecessor Pointer Targeting',
+    description: 'Deleting a node in a singly linked list requires a reference to the preceding node so its next pointer can bypass the target node.'
+  },
+  {
+    id: 'single-node-edge-case',
+    title: 'Single Node Base Case',
+    description: 'If the list has 0 or 1 node, deleting the middle leaves an empty list (null), which must be handled prior to pointer traversal.'
+  },
+  {
+    id: 'constant-time-unlink',
+    title: 'O(1) In-Place Link Bypass',
+    description: 'Unlinking the middle node takes O(1) operations: slow.next = slow.next.next, leaving the original list structure intact.'
+  },
+  {
+    id: 'single-pass-invariant',
+    title: 'Strict Single Pass O(N)',
+    description: 'Avoids two passes (calculating length N followed by iterating N/2). The middle node is removed in N/2 pointer movements.'
+  }
+];
 
 export const solutions = {
-  cpp: `// C++ Delete the Middle Node of a Linked List
+  cpp: `// C++: Two-Pointer Offset Middle Deletion
 // Time Complexity: O(N) | Space Complexity: O(1)
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x, ListNode *n = nullptr) : val(x), next(n) {}
-};
-
 class Solution {
 public:
     ListNode* deleteMiddle(ListNode* head) {
@@ -26,36 +48,20 @@ public:
         ListNode* slow = head;
         ListNode* fast = head->next->next; // 2 steps offset
 
-        while (fast && fast->next) {
+        while (fast != nullptr && fast->next != nullptr) {
             slow = slow->next;
             fast = fast->next->next;
         }
 
-        // slow is now immediately before middle node
-        ListNode* midNode = slow->next;
+        // slow is directly before the middle node
+        ListNode* mid = slow->next;
         slow->next = slow->next->next;
-        delete midNode;
+        delete mid;
 
         return head;
     }
 };`,
-  python: `# Python 3 Delete the Middle Node of a Linked List
-class Solution:
-    def deleteMiddle(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        if not head or not head.next:
-            return None
-
-        slow = head
-        fast = head.next.next
-
-        while fast and fast.next:
-            slow = slow.next
-            fast = fast.next.next
-
-        # Unlink middle node
-        slow.next = slow.next.next
-        return head`,
-  java: `// Java Delete the Middle Node of a Linked List
+  java: `// Java: Two-Pointer Offset Middle Deletion
 class Solution {
     public ListNode deleteMiddle(ListNode head) {
         if (head == null || head.next == null) return null;
@@ -72,145 +78,200 @@ class Solution {
         return head;
     }
 }`,
-  javascript: `// JavaScript Delete the Middle Node of a Linked List
-var deleteMiddle = function(head) {
+  python: `# Python 3: Two-Pointer Offset Middle Deletion
+class Solution:
+    def deleteMiddle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if not head or not head.next:
+            return None
+
+        slow = head
+        fast = head.next.next
+
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+
+        slow.next = slow.next.next
+        return head`,
+  javascript: `// JavaScript: Two-Pointer Offset Middle Deletion
+function deleteMiddle(head) {
     if (!head || !head.next) return null;
 
     let slow = head;
-    let fast = head.next ? head.next.next : null;
+    let fast = head.next.next;
 
-    while (fast && fast.next) {
+    while (fast !== null && fast.next !== null) {
         slow = slow.next;
         fast = fast.next.next;
     }
 
     slow.next = slow.next.next;
     return head;
-};`
+}`
 };
 
 export const steps = [
   {
-    title: '1. Linked List: [1, 3, 4, 7, 1, 2, 6], Length = 7, Middle Index = 3 (val 7)',
-    phase: 'INITIAL',
-    codeLine: 13,
+    stepIndex: 1,
+    title: 'Initialize Slow at Head and Fast at Head.next.next',
+    explanation: 'List: [1 -> 3 -> 4 -> 7 -> 1 -> 2 -> 6]. Initialize slow = head (Node 1, idx 0) and fast = head.next.next (Node 4, idx 2).',
+    activeLine: 6,
+    activeIdeaId: 'offset-initialization',
     nodes: [1, 3, 4, 7, 1, 2, 6],
-    slowIdx: 0,
-    fastIdx: 2,
-    deletedIdx: -1,
-    variables: { slow: 'Node(1)', fast: 'Node(4)', middleIdx: 3 },
-    explain: 'Offset trick: Initializing fast two nodes ahead (head.next.next) stops slow precisely one node before the middle!',
-    intuition: 'Avoids needing a separate prev pointer.'
+    pointers: { head: 0, slow: 0, fast: 2 },
+    highlightIndices: [0, 2],
+    variables: { slow: 'Node(1)', fast: 'Node(4)', offset: 2 },
+    customCard: {
+      title: 'Setup & Offset Rationale',
+      rows: [
+        { label: 'List Length', value: '7 nodes (middle is index 3: val=7)' },
+        { label: 'slow Pointer', value: 'node[0] (val=1)' },
+        { label: 'fast Pointer', value: 'node[2] (val=4)' },
+        { label: 'Invariant', value: 'When fast terminates, slow is exactly at mid - 1' }
+      ]
+    }
   },
   {
-    title: '2. Advance: slow moves to Node 3 (idx 1), fast moves to Node 1 (idx 4)',
-    phase: 'ADVANCING',
-    codeLine: 18,
+    stepIndex: 2,
+    title: 'Iteration 1: Advance Slow by 1 and Fast by 2',
+    explanation: 'slow moves from Node 1 to Node 3 (idx 1). fast moves 2 steps from Node 4 to Node 1 (idx 4).',
+    activeLine: 9,
+    activeIdeaId: 'offset-initialization',
     nodes: [1, 3, 4, 7, 1, 2, 6],
-    slowIdx: 1,
-    fastIdx: 4,
-    deletedIdx: -1,
-    variables: { slow: 'Node(3)', fast: 'Node(1)' },
-    explain: 'Slow moves 1 step; fast moves 2 steps.',
-    intuition: 'Half-speed traversal.'
+    pointers: { head: 0, slow: 1, fast: 4 },
+    highlightIndices: [1, 4],
+    visitedIndices: [0, 2],
+    variables: { slow: 'Node(3)', fast: 'Node(1)', step: 1 },
+    customCard: {
+      title: 'Iteration 1 Status',
+      rows: [
+        { label: 'slow Position', value: 'index 1 (val=3)' },
+        { label: 'fast Position', value: 'index 4 (val=1)' },
+        { label: 'fast.next Check', value: 'fast.next is Node(2) != null (Continue)' },
+        { label: 'Distance Traveled', value: 'slow: 1 step, fast: 2 steps' }
+      ]
+    }
   },
   {
-    title: '3. Advance: slow moves to Node 4 (idx 2), fast moves to Node 6 (idx 6) -> Tail reached!',
-    phase: 'POSITIONED',
-    codeLine: 18,
+    stepIndex: 3,
+    title: 'Iteration 2: Advance Slow by 1 and Fast by 2',
+    explanation: 'slow moves from Node 3 to Node 4 (idx 2). fast moves 2 steps from Node 1 to Node 6 (idx 6).',
+    activeLine: 9,
+    activeIdeaId: 'predecessor-targeting',
     nodes: [1, 3, 4, 7, 1, 2, 6],
-    slowIdx: 2,
-    fastIdx: 6,
-    deletedIdx: -1,
-    variables: { slow: 'Node(4) [PREV]', targetToDelete: 'Node(7) [MIDDLE]' },
-    explain: 'Fast reached the tail node (fast.next is null). Slow is at Node 4, which is directly before middle Node 7!',
-    intuition: 'Positioned right before target.'
+    pointers: { head: 0, slow: 2, fast: 6 },
+    highlightIndices: [2, 6],
+    visitedIndices: [0, 1, 2, 4],
+    variables: { slow: 'Node(4)', fast: 'Node(6)', step: 2 },
+    customCard: {
+      title: 'Iteration 2 Status',
+      rows: [
+        { label: 'slow Position', value: 'index 2 (val=4)' },
+        { label: 'fast Position', value: 'index 6 (val=6, tail)' },
+        { label: 'fast.next Check', value: 'fast.next == null (Tail reached!)' },
+        { label: 'Loop Decision', value: 'Exit while loop' }
+      ]
+    }
   },
   {
-    title: '4. Delete: slow.next = slow.next.next (Node 4 connects to Node 1, deleting Node 7)',
-    phase: 'DELETED',
-    codeLine: 24,
+    stepIndex: 4,
+    title: 'Loop Terminates: Fast Reached Tail Node',
+    explanation: 'fast.next is null, so the while loop terminates. Notice that slow is at index 2 (Node 4), directly before middle Node 7 (idx 3).',
+    activeLine: 12,
+    activeIdeaId: 'predecessor-targeting',
     nodes: [1, 3, 4, 7, 1, 2, 6],
-    slowIdx: 2,
-    fastIdx: 6,
-    deletedIdx: 3,
-    variables: { slow: 'Node(4)', unlinked: 'Node(7)', newNext: 'Node(1)' },
-    explain: 'Unlink middle node by making Node 4 point directly to Node 1.',
-    intuition: 'Middle element deleted.'
+    pointers: { head: 0, slow: 2, fast: 6 },
+    highlightIndices: [2, 3],
+    variables: { slow: 'Node(4)', targetMid: 'Node(7)', status: 'Ready to unlink' },
+    customCard: {
+      title: 'Target Identified',
+      rows: [
+        { label: 'Predecessor (slow)', value: 'Node 4 (index 2)' },
+        { label: 'Middle Target (slow.next)', value: 'Node 7 (index 3)' },
+        { label: 'Successor (slow.next.next)', value: 'Node 1 (index 4)' },
+        { label: 'Action Needed', value: 'slow.next = slow.next.next' }
+      ]
+    }
   },
   {
-    title: '5. Completed: Resulting List is [1, 3, 4, 1, 2, 6]',
-    phase: 'COMPLETED',
-    codeLine: 27,
+    stepIndex: 5,
+    title: 'Identify Middle Node: mid = slow.next',
+    explanation: 'Reference midNode = slow.next (Node 7). This is the node to be unlinked and deleted.',
+    activeLine: 14,
+    activeIdeaId: 'constant-time-unlink',
+    nodes: [1, 3, 4, 7, 1, 2, 6],
+    pointers: { head: 0, slow: 2, target: 3 },
+    highlightIndices: [2, 3],
+    deletedIndices: [3],
+    variables: { slow: 'Node(4)', midNode: 'Node(7)' },
+    customCard: {
+      title: 'Isolate Middle Node',
+      rows: [
+        { label: 'Target to Remove', value: 'Node 7 (Index 3)' },
+        { label: 'New Pointer Target', value: 'slow.next -> Node 1 (Index 4)' },
+        { label: 'Safety Check', value: 'Predecessor holds reference to chain continuation' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Bypass Middle Node: slow.next = slow.next.next',
+    explanation: 'Reassign slow.next to point directly to Node 1 (idx 4), skipping Node 7 completely in O(1) time.',
+    activeLine: 15,
+    activeIdeaId: 'constant-time-unlink',
+    nodes: [1, 3, 4, 7, 1, 2, 6],
+    pointers: { head: 0, slow: 2 },
+    highlightIndices: [2, 4],
+    modifiedIndices: [2],
+    deletedIndices: [3],
+    variables: { 'slow.next': 'Node(1)', bypassed: 'Node(7)' },
+    customCard: {
+      title: 'Link Bypassed',
+      rows: [
+        { label: 'New Link', value: 'Node 4 -> Node 1', accent: true },
+        { label: 'Node 7 Status', value: 'Orphaned (unreachable from head)' },
+        { label: 'Complexity', value: 'O(1) pointer adjustment' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Deallocate Middle Node',
+    explanation: 'Node 7 is cleanly deallocated from memory. The resulting linked list has 6 nodes.',
+    activeLine: 16,
+    activeIdeaId: 'constant-time-unlink',
     nodes: [1, 3, 4, 1, 2, 6],
-    slowIdx: -1,
-    fastIdx: -1,
-    deletedIdx: -1,
-    variables: { result: '[1, 3, 4, 1, 2, 6]', timeComplexity: 'O(N)', spaceComplexity: 'O(1)' },
-    explain: 'The middle node has been successfully removed in a single traversal.',
-    intuition: 'Optimal O(N) time and O(1) space.'
+    pointers: { head: 0, slow: 2 },
+    highlightIndices: [2, 3],
+    modifiedIndices: [2],
+    variables: { midNode: 'deallocated', listLength: 6 },
+    customCard: {
+      title: 'Memory Cleaned',
+      rows: [
+        { label: 'Node Deleted', value: 'Node 7 freed', accent: true },
+        { label: 'Remaining Nodes', value: '[1, 3, 4, 1, 2, 6]' },
+        { label: 'Structure', value: '1 -> 3 -> 4 -> 1 -> 2 -> 6 -> null' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Return Head of Updated Linked List',
+    explanation: 'The middle node has been deleted in a single pass. Return head (Node 1).',
+    activeLine: 18,
+    activeIdeaId: 'single-pass-invariant',
+    nodes: [1, 3, 4, 1, 2, 6],
+    pointers: { head: 0 },
+    highlightIndices: [0],
+    variables: { head: 'Node(1)', totalLength: 6 },
+    customCard: {
+      title: 'Deletion Complete',
+      rows: [
+        { label: 'Final List', value: '1 -> 3 -> 4 -> 1 -> 2 -> 6 -> null', accent: true },
+        { label: 'Time Complexity', value: 'O(N) - single pass' },
+        { label: 'Space Complexity', value: 'O(1) - auxiliary pointers only' },
+        { label: 'Return', value: 'head' }
+      ]
+    }
   }
 ];
-
-export default function DeleteTheMiddleNodeInLlVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Slow: {step.slowIdx !== -1 ? `Node(${step.nodes[step.slowIdx]})` : 'Done'}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-semibold">
-          Fast: {step.fastIdx !== -1 ? `Node(${step.nodes[step.fastIdx]})` : 'Done'}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Nodes Remaining: {step.nodes.length - (step.deletedIdx !== -1 ? 1 : 0)}
-        </span>
-      </div>
-
-      {/* Nodes list */}
-      <div className="w-full flex items-center justify-center gap-2 py-4 overflow-x-auto">
-        {step.nodes.map((val, idx) => {
-          const isSlow = idx === step.slowIdx;
-          const isFast = idx === step.fastIdx;
-          const isDeleted = idx === step.deletedIdx;
-
-          let ringClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
-          if (isDeleted) {
-            ringClass = 'border-rose-500/50 bg-rose-500/10 text-rose-300 line-through opacity-50';
-          } else if (isSlow) {
-            ringClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30';
-          } else if (isFast) {
-            ringClass = 'border-indigo-500 bg-indigo-500/20 text-indigo-300 ring-2 ring-indigo-500/30';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="flex flex-col items-center gap-1 min-w-[48px]">
-                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${ringClass}`}>
-                  {val}
-                </div>
-                <div className="flex gap-1 text-[8px] font-mono">
-                  {isSlow && <span className="text-amber-400">slow</span>}
-                  {isFast && <span className="text-indigo-400">fast</span>}
-                  {isDeleted && <span className="text-rose-400">del</span>}
-                </div>
-              </div>
-              {idx < step.nodes.length - 1 && (
-                <span className="text-[var(--chalk-faint)] font-mono text-sm">→</span>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* Footer Info */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[var(--chalk-dim)]">Offset fast pointer by 2 steps</span>
-        <span className="text-emerald-400 font-semibold">Single Pass O(N)</span>
-      </div>
-    </div>
-  );
-}

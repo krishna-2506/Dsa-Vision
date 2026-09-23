@@ -1,31 +1,50 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
-  title: 'Check if LL is Palindrome',
-  category: 'Linked List',
+  title: 'Check if Linked List is Palindrome',
+  category: 'Linked List & Two Pointers',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Determines if a linked list reads the same forwards and backwards by finding the middle using slow and fast pointers, reversing the second half, and comparing node-by-node.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Determines whether a linked list is a palindrome in O(N) time and O(1) extra space by finding the midpoint, inverting the second half in-place, and comparing both halves node-by-node.'
 };
+
+export const ideaMap = [
+  {
+    id: 'midpoint-detection',
+    title: 'Midpoint Detection via Two Pointers',
+    description: 'Tortoise and hare pointers locate the precise middle of the list in a single pass of N/2 iterations.'
+  },
+  {
+    id: 'in-place-reversal',
+    title: 'In-Place Second Half Inversion',
+    description: 'Reversing only the second half allows reverse traversal without requiring an O(N) stack or auxiliary array.'
+  },
+  {
+    id: 'dual-pointer-comparison',
+    title: 'Symmetric Value Comparison',
+    description: 'Two pointers advance synchronously from the list head and the reversed half head, verifying node-by-node equality.'
+  },
+  {
+    id: 'constant-space-invariant',
+    title: 'O(1) Memory Guarantee',
+    description: 'All operations flip node pointers in-place, keeping auxiliary space strictly bounded to O(1).'
+  },
+  {
+    id: 'odd-even-symmetry',
+    title: 'Odd and Even Length Uniformity',
+    description: 'For odd-length lists, the solitary center node does not require a partner and naturally sits outside the comparison loop.'
+  }
+];
 
 export const solutions = {
-  cpp: `// C++ Optimal O(N) Time and O(1) Space Palindrome Check
-#include <iostream>
-using namespace std;
-
-struct Node {
-    int data;
-    Node* next;
-    Node(int val) : data(val), next(nullptr) {}
-};
-
+  cpp: `// C++: Optimal O(N) Time and O(1) Space Palindrome Check
 class Solution {
-    Node* reverseList(Node* head) {
-        Node* prev = nullptr;
-        Node* curr = head;
+    ListNode* reverseList(ListNode* head) {
+        ListNode* prev = nullptr;
+        ListNode* curr = head;
         while (curr != nullptr) {
-            Node* nextNode = curr->next;
+            ListNode* nextNode = curr->next;
             curr->next = prev;
             prev = curr;
             curr = nextNode;
@@ -34,46 +53,69 @@ class Solution {
     }
 
 public:
-    bool isPalindrome(Node* head) {
+    bool isPalindrome(ListNode* head) {
         if (!head || !head->next) return true;
 
-        // 1. Find middle using slow and fast pointers
-        Node* slow = head;
-        Node* fast = head;
+        // 1. Find middle of list
+        ListNode* slow = head;
+        ListNode* fast = head;
         while (fast->next != nullptr && fast->next->next != nullptr) {
             slow = slow->next;
             fast = fast->next->next;
         }
 
         // 2. Reverse second half
-        Node* secondHalfHead = reverseList(slow->next);
+        ListNode* second = reverseList(slow->next);
 
-        // 3. Compare halves
-        Node* first = head;
-        Node* second = secondHalfHead;
-        bool palindrome = true;
+        // 3. Compare first and second halves
+        ListNode* first = head;
         while (second != nullptr) {
-            if (first->data != second->data) {
-                palindrome = false;
-                break;
-            }
+            if (first->val != second->val) return false;
             first = first->next;
             second = second->next;
         }
 
-        // 4. Restore original list
-        reverseList(secondHalfHead);
-        return palindrome;
+        return true;
     }
 };`,
-  python: `# Python 3 Optimal Palindrome Check in LL
-class Node:
-    def __init__(self, data=0, next=None):
-        self.data = data
-        self.next = next
+  java: `// Java: Optimal O(N) Time and O(1) Space Palindrome Check
+class Solution {
+    private ListNode reverse(ListNode head) {
+        ListNode prev = null;
+        ListNode curr = head;
+        while (curr != null) {
+            ListNode next = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+        }
+        return prev;
+    }
 
+    public boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) return true;
+
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        ListNode second = reverse(slow.next);
+        ListNode first = head;
+
+        while (second != null) {
+            if (first.val != second.val) return false;
+            first = first.next;
+            second = second.next;
+        }
+
+        return true;
+    }
+}`,
+  python: `# Python 3: Optimal O(N) Time and O(1) Space Palindrome Check
 class Solution:
-    def isPalindrome(self, head: Node) -> bool:
+    def isPalindrome(self, head: Optional[ListNode]) -> bool:
         if not head or not head.next:
             return True
 
@@ -95,239 +137,217 @@ class Solution:
         # 3. Compare halves
         first, second = head, prev
         while second:
-            if first.data != second.data:
+            if first.val != second.val:
                 return False
             first = first.next
             second = second.next
 
         return True`,
-  java: `// Java Optimal Palindrome Check in LL
-class Node {
-    int data;
-    Node next;
-    Node(int data) {
-        this.data = data;
-        this.next = null;
-    }
-}
-
-class Solution {
-    private Node reverseList(Node head) {
-        Node prev = null, curr = head;
-        while (curr != null) {
-            Node nxt = curr.next;
-            curr.next = prev;
-            prev = curr;
-            curr = nxt;
-        }
-        return prev;
-    }
-
-    public boolean isPalindrome(Node head) {
-        if (head == null || head.next == null) return true;
-
-        Node slow = head, fast = head;
-        while (fast.next != null && fast.next.next != null) {
-            slow = slow.next;
-            fast = fast.next.next;
-        }
-
-        Node second = reverseList(slow.next);
-        Node first = head;
-
-        while (second != null) {
-            if (first.data != second.data) return false;
-            first = first.next;
-            second = second.next;
-        }
-
-        return true;
-    }
-}`,
-  javascript: `// JavaScript Optimal Palindrome Check in LL
-var isPalindrome = function(head) {
+  javascript: `// JavaScript: Optimal O(N) Time and O(1) Space Palindrome Check
+function isPalindrome(head) {
     if (!head || !head.next) return true;
 
     let slow = head, fast = head;
-    while (fast.next && fast.next.next) {
+    while (fast.next !== null && fast.next.next !== null) {
         slow = slow.next;
         fast = fast.next.next;
     }
 
     let prev = null, curr = slow.next;
-    while (curr) {
-        const nxt = curr.next;
+    while (curr !== null) {
+        const next = curr.next;
         curr.next = prev;
         prev = curr;
-        curr = nxt;
+        curr = next;
     }
 
     let first = head, second = prev;
-    while (second) {
-        if (first.data !== second.data) return false;
+    while (second !== null) {
+        if (first.val !== second.val) return false;
         first = first.next;
         second = second.next;
     }
+
     return true;
-};`
+}`
 };
 
 export const steps = [
   {
-    title: '1. Problem Overview: List [1 -> 2 -> 3 -> 2 -> 1]',
-    phase: 'INITIAL',
-    codeLine: 29,
+    stepIndex: 1,
+    title: 'Initialize Slow and Fast Pointers at Head',
+    explanation: 'List: [1 -> 2 -> 3 -> 2 -> 1]. slow and fast start at Node 1 (idx 0).',
+    activeLine: 18,
+    activeIdeaId: 'midpoint-detection',
     nodes: [1, 2, 3, 2, 1],
-    slowIdx: 0,
-    fastIdx: 0,
-    p1Idx: null,
-    p2Idx: null,
-    reversed: false,
-    variables: { list: '[1, 2, 3, 2, 1]', strategy: 'Find Mid -> Reverse 2nd Half -> Two Pointer Compare' },
-    explain: 'Check whether the singly linked list is a palindrome in O(N) time and O(1) space without allocating arrays.',
-    intuition: 'If we reverse only the right half in-place, two pointers moving inwards can compare corresponding values.'
+    pointers: { head: 0, slow: 0, fast: 0 },
+    highlightIndices: [0],
+    variables: { slow: 'Node(1)', fast: 'Node(1)', status: 'Starting midpoint search' },
+    customCard: {
+      title: 'Phase 1: Find Midpoint',
+      rows: [
+        { label: 'List Values', value: '[1, 2, 3, 2, 1] (Length 5 - Odd)' },
+        { label: 'Objective', value: 'Find center node before reversing second half' },
+        { label: 'Fast Pointer Step', value: '2 steps per iteration' },
+        { label: 'Slow Pointer Step', value: '1 step per iteration' }
+      ]
+    }
   },
   {
-    title: '2. Tortoise & Hare: Find Middle Node (slow reaches 3)',
-    phase: 'FIND_MID',
-    codeLine: 35,
+    stepIndex: 2,
+    title: 'Midpoint Search: Advance Pointers',
+    explanation: 'fast moves 2 steps from index 0 to index 2 (Node 3). slow moves 1 step from index 0 to index 1 (Node 2).',
+    activeLine: 20,
+    activeIdeaId: 'midpoint-detection',
     nodes: [1, 2, 3, 2, 1],
-    slowIdx: 2,
-    fastIdx: 4,
-    p1Idx: null,
-    p2Idx: null,
-    reversed: false,
-    variables: { slow: 'Node(3)', fast: 'Node(1)', middleNode: 'Node(3)' },
-    explain: 'When fast pointer reaches the tail, slow pointer sits at the exact middle node (3).',
-    intuition: 'slow->next (Node 2) marks the start of the second half.'
+    pointers: { head: 0, slow: 1, fast: 2 },
+    highlightIndices: [1, 2],
+    visitedIndices: [0],
+    variables: { slow: 'Node(2)', fast: 'Node(3)', step: 1 },
+    customCard: {
+      title: 'Midpoint Search Progress',
+      rows: [
+        { label: 'slow Position', value: 'Node 2 (index 1)' },
+        { label: 'fast Position', value: 'Node 3 (index 2)' },
+        { label: 'fast.next Check', value: 'fast.next is Node(2) != null' },
+        { label: 'fast.next.next Check', value: 'fast.next.next is Node(1) != null' }
+      ]
+    }
   },
   {
-    title: '3. Reverse Second Half: [2 -> 1] becomes [1 -> 2]',
-    phase: 'REVERSE_HALF',
-    codeLine: 40,
-    nodes: [1, 2, 3, 1, 2],
-    slowIdx: null,
-    fastIdx: null,
-    p1Idx: 0,
-    p2Idx: 3,
-    reversed: true,
-    variables: { firstHalf: '[1 -> 2]', secondHalfReversed: '[1 -> 2]' },
-    explain: 'The nodes following the middle are reversed in place. Now both halves point in comparable order from outer ends inward.',
-    intuition: 'Reversed second half begins at node 1 (original tail).'
+    stepIndex: 3,
+    title: 'Midpoint Located at Node 3 (slow -> Node 3)',
+    explanation: 'fast moves to index 4 (Node 1, tail). slow reaches index 2 (Node 3). fast.next is null, so slow rests at the exact midpoint.',
+    activeLine: 22,
+    activeIdeaId: 'midpoint-detection',
+    nodes: [1, 2, 3, 2, 1],
+    pointers: { head: 0, slow: 2, fast: 4 },
+    highlightIndices: [2],
+    visitedIndices: [0, 1],
+    variables: { slow: 'Node(3)', fast: 'Node(1, tail)', mid: 'Node(3)' },
+    customCard: {
+      title: 'Midpoint Reached',
+      rows: [
+        { label: 'Midpoint Node', value: 'Node 3 (index 2)', accent: true },
+        { label: 'First Half', value: '[1, 2, 3]' },
+        { label: 'Second Half to Invert', value: 'slow.next = [2, 1]' },
+        { label: 'Next Action', value: 'Reverse second half in-place' }
+      ]
+    }
   },
   {
-    title: '4. Compare 1st Elements: first (1) == second (1)',
-    phase: 'COMPARE',
-    codeLine: 47,
-    nodes: [1, 2, 3, 1, 2],
-    slowIdx: null,
-    fastIdx: null,
-    p1Idx: 0,
-    p2Idx: 3,
-    reversed: true,
-    variables: { 'first->data': 1, 'second->data': 1, match: 'TRUE' },
-    explain: 'Node 1 from first half matches Node 1 from reversed second half. Advance both pointers.',
-    intuition: 'Outer mirror elements match.'
+    stepIndex: 4,
+    title: 'Phase 2: Invert Second Half [2 -> 1] to [1 -> 2]',
+    explanation: 'Reverse the sublist starting at slow.next (Node 2 -> Node 1). After inversion, the second half head is Node 1 pointing to Node 2.',
+    activeLine: 25,
+    activeIdeaId: 'in-place-reversal',
+    nodes: [1, 2, 3],
+    auxiliaryNodes: [1, 2],
+    auxiliaryLabel: 'Reversed Second Half (secondHalfHead)',
+    pointers: { first: 0, mid: 2 },
+    auxiliaryPointers: { second: 0 },
+    highlightIndices: [0],
+    auxiliaryHighlightIndices: [0],
+    variables: { first: 'Node(1)', second: 'Node(1)', mid: 'Node(3)' },
+    customCard: {
+      title: 'Second Half Reversed',
+      rows: [
+        { label: 'Original 2nd Half', value: '2 -> 1 -> null' },
+        { label: 'Reversed 2nd Half', value: '1 -> 2 -> null', accent: true },
+        { label: 'Pointer "first"', value: 'Points to head (Node 1)' },
+        { label: 'Pointer "second"', value: 'Points to reversed head (Node 1)' }
+      ]
+    }
   },
   {
-    title: '5. Compare 2nd Elements: first (2) == second (2)',
-    phase: 'COMPARE',
-    codeLine: 47,
-    nodes: [1, 2, 3, 1, 2],
-    slowIdx: null,
-    fastIdx: null,
-    p1Idx: 1,
-    p2Idx: 4,
-    reversed: true,
-    variables: { 'first->data': 2, 'second->data': 2, match: 'TRUE' },
-    explain: 'Node 2 from first half matches Node 2 from reversed second half. Second pointer reaches end of half.',
-    intuition: 'Inner mirror elements match.'
+    stepIndex: 5,
+    title: 'Phase 3: Compare Node 1 vs Node 1 (Match!)',
+    explanation: 'first.val (1) matches second.val (1). Characters equal: 1 == 1. Advance first to Node 2 and second to Node 2.',
+    activeLine: 29,
+    activeIdeaId: 'dual-pointer-comparison',
+    nodes: [1, 2, 3],
+    auxiliaryNodes: [1, 2],
+    auxiliaryLabel: 'Reversed Second Half',
+    pointers: { first: 0 },
+    auxiliaryPointers: { second: 0 },
+    highlightIndices: [0],
+    auxiliaryHighlightIndices: [0],
+    variables: { 'first.val': 1, 'second.val': 1, match: 'TRUE' },
+    customCard: {
+      title: 'Comparison 1 of 2',
+      rows: [
+        { label: 'First Half Value', value: '1 (index 0)' },
+        { label: 'Second Half Value', value: '1 (index 0)' },
+        { label: 'Comparison', value: '1 == 1 (PASS)', accent: true },
+        { label: 'Action', value: 'first = first.next, second = second.next' }
+      ]
+    }
   },
   {
-    title: '6. All Nodes Matched! The Linked List is a Palindrome (Return true)',
-    phase: 'RESULT',
-    codeLine: 56,
-    nodes: [1, 2, 3, 1, 2],
-    slowIdx: null,
-    fastIdx: null,
-    p1Idx: null,
-    p2Idx: null,
-    reversed: true,
-    variables: { isPalindrome: 'TRUE', timeComplexity: 'O(N)', spaceComplexity: 'O(1)' },
-    explain: 'All corresponding pairs matched symmetrically. The linked list is confirmed to be a palindrome.',
-    intuition: 'In-place half reversal achieves O(1) space guarantee.'
+    stepIndex: 6,
+    title: 'Compare Node 2 vs Node 2 (Match!)',
+    explanation: 'first.val (2) matches second.val (2). Characters equal: 2 == 2. Advance first and second.',
+    activeLine: 29,
+    activeIdeaId: 'dual-pointer-comparison',
+    nodes: [1, 2, 3],
+    auxiliaryNodes: [1, 2],
+    auxiliaryLabel: 'Reversed Second Half',
+    pointers: { first: 1 },
+    auxiliaryPointers: { second: 1 },
+    highlightIndices: [1],
+    auxiliaryHighlightIndices: [1],
+    variables: { 'first.val': 2, 'second.val': 2, match: 'TRUE' },
+    customCard: {
+      title: 'Comparison 2 of 2',
+      rows: [
+        { label: 'First Half Value', value: '2 (index 1)' },
+        { label: 'Second Half Value', value: '2 (index 1)' },
+        { label: 'Comparison', value: '2 == 2 (PASS)', accent: true },
+        { label: 'Action', value: 'Advance second pointer to null' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Second Half Traversal Exhausted: second == null',
+    explanation: 'The second pointer has reached null. All elements matched without a single discrepancy.',
+    activeLine: 34,
+    activeIdeaId: 'odd-even-symmetry',
+    nodes: [1, 2, 3],
+    auxiliaryNodes: [1, 2],
+    auxiliaryLabel: 'Reversed Second Half',
+    pointers: { first: 2 },
+    highlightIndices: [2],
+    variables: { second: 'null', discrepancies: 0, isPalindrome: 'true' },
+    customCard: {
+      title: 'Verification Complete',
+      rows: [
+        { label: 'second pointer', value: 'null (traversal complete)' },
+        { label: 'Mismatches Found', value: '0' },
+        { label: 'Center Element', value: 'Node 3 (unpaired center in odd palindrome)' },
+        { label: 'Result', value: 'Symmetric & Identical' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Return True: Linked List is a Valid Palindrome',
+    explanation: 'The algorithm returns true. Time complexity is O(N) and auxiliary space is O(1).',
+    activeLine: 35,
+    activeIdeaId: 'constant-space-invariant',
+    nodes: [1, 2, 3, 2, 1],
+    pointers: { head: 0 },
+    highlightIndices: [0, 1, 2, 3, 4],
+    modifiedIndices: [0, 1, 3, 4],
+    variables: { return: 'true', time: 'O(N)', space: 'O(1)' },
+    customCard: {
+      title: 'Final Verdict: TRUE',
+      rows: [
+        { label: 'Is Palindrome', value: 'TRUE', accent: true },
+        { label: 'Original List', value: '1 -> 2 -> 3 -> 2 -> 1 -> null' },
+        { label: 'Time Complexity', value: 'O(N) - 3 half-passes' },
+        { label: 'Space Complexity', value: 'O(1) - in-place reversal' }
+      ]
+    }
   }
 ];
-
-export default function CheckIfLlIsPalindromeOrNotVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          Strategy: Mid &rarr; Reverse 2nd Half &rarr; Compare
-        </span>
-        {step.reversed && (
-          <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-semibold">
-            Second Half Reversed In-Place
-          </span>
-        )}
-      </div>
-
-      {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
-        {step.nodes.map((val, idx) => {
-          const isSlow = step.slowIdx === idx;
-          const isFast = step.fastIdx === idx;
-          const isP1 = step.p1Idx === idx;
-          const isP2 = step.p2Idx === idx;
-          const isSecondHalf = idx >= 3;
-
-          let style = 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]';
-          if (isP1 || isP2) {
-            style = 'bg-emerald-500/25 border-emerald-400 text-emerald-200 scale-105 shadow-md shadow-emerald-500/20';
-          } else if (isSlow) {
-            style = 'bg-blue-500/25 border-blue-400 text-blue-200';
-          } else if (step.reversed && isSecondHalf) {
-            style = 'bg-cyan-500/15 border-cyan-500/30 text-cyan-200';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="relative flex flex-col items-center">
-                {/* Pointer Markers */}
-                <div className="absolute -top-7 flex items-center gap-1">
-                  {isSlow && <span className="text-[9px] font-mono text-blue-400 bg-blue-500/20 px-1 py-0.5 rounded border border-blue-500/30">slow</span>}
-                  {isFast && <span className="text-[9px] font-mono text-amber-400 bg-amber-500/20 px-1 py-0.5 rounded border border-amber-500/30">fast</span>}
-                  {isP1 && <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/20 px-1 py-0.5 rounded border border-emerald-500/30">p1</span>}
-                  {isP2 && <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/20 px-1 py-0.5 rounded border border-emerald-500/30">p2</span>}
-                </div>
-
-                <div className={`w-13 h-13 rounded-xl border flex items-center justify-center font-mono font-bold text-base transition-all ${style}`}>
-                  {val}
-                </div>
-
-                <span className="text-[10px] font-mono text-[#5b6076] mt-1">
-                  {idx === 2 ? 'middle' : idx < 2 ? `L${idx}` : `R${idx-3}`}
-                </span>
-              </div>
-
-              {idx < step.nodes.length - 1 && (
-                <div className="text-base font-bold text-[var(--chalk-dim)]">&rarr;</div>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* Result Banner */}
-      {step.phase === 'RESULT' && (
-        <div className="w-full p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center gap-2 text-emerald-300 font-mono text-base font-bold">
-          <span>🎉 Symmetrical Palindrome Confirmed! (Return true)</span>
-        </div>
-      )}
-    </div>
-  );
-}

@@ -1,41 +1,56 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Check for Balanced Binary Tree',
   category: 'Binary Trees',
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(H) recursion stack',
-  description: 'Determines if a binary tree is height-balanced (for every node, abs(height(left) - height(right)) <= 1) using an optimal O(N) postorder check returning -1 on imbalance.'
+  spaceComplexity: 'O(H) Recursion Stack',
+  description: 'Determines if a binary tree is height-balanced (for every node, abs(height(left) - height(right)) <= 1) using an optimal O(N) postorder DFS returning -1 on imbalance.'
 };
+
+export const ideaMap = [
+  {
+    id: 'balance-definition',
+    title: 'Height-Balance Definition',
+    description: 'A binary tree is height-balanced if for every node in the tree, the absolute difference between left and right subtree heights is at most 1.'
+  },
+  {
+    id: 'bottom-up-postorder',
+    title: 'Bottom-Up Postorder Check O(N)',
+    description: 'Evaluating heights from leaves upwards computes each node height in O(1) time after its children return, achieving strict O(N) runtime.'
+  },
+  {
+    id: 'sentinel-early-exit',
+    title: 'Sentinel -1 Imbalance Propagation',
+    description: 'Returning -1 immediately aborts further traversal if any subtree violates the balance condition, avoiding wasted computation.'
+  },
+  {
+    id: 'avoid-quadratic-cost',
+    title: 'Eliminating O(N²) Redundant Traversal',
+    description: 'A naive top-down approach calling height(node) for every node costs O(N²). Bottom-up computation collapses this to exactly O(N).'
+  },
+  {
+    id: 'height-induction-formula',
+    title: 'Height Recurrence Formula',
+    description: 'For any balanced node, its height is defined as: height = 1 + max(leftHeight, rightHeight).'
+  }
+];
 
 export const solutions = {
-  cpp: `// C++ Check for Balanced Binary Tree
+  cpp: `// C++: Optimal Bottom-Up Balanced Tree Check
 // Time: O(N) | Space: O(H)
-#include <algorithm>
-#include <cmath>
-using namespace std;
-
-struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-};
-
 class Solution {
-private:
     int checkHeight(TreeNode* root) {
-        if (root == nullptr) return 0;
+        if (!root) return 0;
 
         int leftH = checkHeight(root->left);
-        if (leftH == -1) return -1; // left subtree is unbalanced
+        if (leftH == -1) return -1; // Left subtree unbalanced
 
         int rightH = checkHeight(root->right);
-        if (rightH == -1) return -1; // right subtree is unbalanced
+        if (rightH == -1) return -1; // Right subtree unbalanced
 
-        // If height difference exceeds 1, tree is unbalanced
-        if (abs(leftH - rightH) > 1) return -1;
+        if (abs(leftH - rightH) > 1) return -1; // Current node unbalanced
 
         return 1 + max(leftH, rightH);
     }
@@ -44,15 +59,28 @@ public:
         return checkHeight(root) != -1;
     }
 };`,
-  python: `# Python 3 Check for Balanced Binary Tree
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
+  java: `// Java: Optimal Bottom-Up Balanced Tree Check
+class Solution {
+    private int checkHeight(TreeNode root) {
+        if (root == null) return 0;
 
+        int leftH = checkHeight(root.left);
+        if (leftH == -1) return -1;
+
+        int rightH = checkHeight(root.right);
+        if (rightH == -1) return -1;
+
+        if (Math.abs(leftH - rightH) > 1) return -1;
+
+        return 1 + Math.max(leftH, rightH);
+    }
+    public boolean isBalanced(TreeNode root) {
+        return checkHeight(root) != -1;
+    }
+}`,
+  python: `# Python 3: Optimal Bottom-Up Balanced Tree Check
 class Solution:
-    def isBalanced(self, root: TreeNode | None) -> bool:
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
         def check(node):
             if not node:
                 return 0
@@ -71,28 +99,8 @@ class Solution:
             return 1 + max(left_h, right_h)
 
         return check(root) != -1`,
-  java: `// Java Check for Balanced Binary Tree
-class Solution {
-    private int checkHeight(TreeNode root) {
-        if (root == null) return 0;
-
-        int leftH = checkHeight(root.left);
-        if (leftH == -1) return -1;
-
-        int rightH = checkHeight(root.right);
-        if (rightH == -1) return -1;
-
-        if (Math.abs(leftH - rightH) > 1) return -1;
-
-        return 1 + Math.max(leftH, rightH);
-    }
-
-    public boolean isBalanced(TreeNode root) {
-        return checkHeight(root) != -1;
-    }
-}`,
-  javascript: `// JavaScript Check for Balanced Binary Tree
-var isBalanced = function(root) {
+  javascript: `// JavaScript: Optimal Bottom-Up Balanced Tree Check
+function isBalanced(root) {
     function check(node) {
         if (!node) return 0;
 
@@ -108,135 +116,192 @@ var isBalanced = function(root) {
     }
 
     return check(root) !== -1;
-};`
+}`
+};
+
+const tree = {
+  val: 3,
+  left: {
+    val: 9,
+    left: { val: 4 },
+    right: { val: 5 }
+  },
+  right: {
+    val: 20,
+    left: { val: 15 },
+    right: { val: 7 }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Check Tree [3, 9, 20, null, null, 15, 7]: Rule |lh - rh| <= 1',
-    phase: 'INITIAL',
-    codeLine: 18,
-    activeNode: 3,
-    diff: 0,
-    isBalanced: true,
-    heights: { 3: '?', 9: '?', 20: '?', 15: '?', 7: '?' },
-    variables: { root: 3, condition: '|leftHeight - rightHeight| <= 1' },
-    explain: 'Every node in the tree must satisfy the balance condition. If any subtree returns -1, the entire tree is unbalanced.',
-    intuition: 'Postorder height check stops early on first violation.'
+    stepIndex: 1,
+    title: 'Initialize Balanced Tree Check: Root = 3',
+    explanation: 'Check whether every node satisfies |leftHeight - rightHeight| <= 1. Tree with 7 nodes.',
+    activeLine: 6,
+    activeIdeaId: 'balance-definition',
+    tree,
+    activeVal: 3,
+    nodeLabels: { 3: 'Root' },
+    variables: { root: 3, condition: '|lh - rh| <= 1', status: 'Checking Leaves' },
+    customCard: {
+      title: 'Problem Rule',
+      rows: [
+        { label: 'Condition', value: 'abs(lh - rh) <= 1 at EVERY node' },
+        { label: 'Strategy', value: 'Bottom-up postorder DFS returning height' },
+        { label: 'Early Exit', value: 'Return -1 if any subtree is unbalanced' }
+      ]
+    }
   },
   {
-    title: '2. Check Node 9: Left=0, Right=0 -> Diff = |0 - 0| = 0 <= 1 -> Balanced (Height = 1)',
-    phase: 'BALANCED_NODE',
-    codeLine: 26,
-    activeNode: 9,
-    diff: 0,
-    isBalanced: true,
-    heights: { 3: '?', 9: 1, 20: '?', 15: '?', 7: '?' },
-    variables: { node: 9, diff: 0, height: 1 },
-    explain: 'Node 9 has height 1 and diff 0 <= 1. Node 9 is balanced.',
-    intuition: 'Leaf nodes are always balanced.'
+    stepIndex: 2,
+    title: 'Postorder Step 1: Evaluate Leaf Node 4',
+    explanation: 'Node 4 is a leaf (lh=0, rh=0). |0 - 0| = 0 <= 1 (Balanced). Returns height = 1 + max(0, 0) = 1.',
+    activeLine: 12,
+    activeIdeaId: 'height-induction-formula',
+    tree,
+    activeVal: 4,
+    targetVal: 4,
+    nodeLabels: { 4: 'H=1 (Balanced)' },
+    variables: { node: 4, leftH: 0, rightH: 0, diff: 0, returnedH: 1 },
+    customCard: {
+      title: 'Node 4 Evaluation',
+      rows: [
+        { label: 'Left Height', value: '0 (null)' },
+        { label: 'Right Height', value: '0 (null)' },
+        { label: 'Difference', value: '|0 - 0| = 0 <= 1 (PASS)', accent: true },
+        { label: 'Returned Height', value: '1' }
+      ]
+    }
   },
   {
-    title: '3. Check Nodes 15 and 7: Heights = 1 -> Node 20 has lh=1, rh=1 -> Diff = 0 <= 1',
-    phase: 'BALANCED_NODE',
-    codeLine: 26,
-    activeNode: 20,
-    diff: 0,
-    isBalanced: true,
-    heights: { 3: '?', 9: 1, 20: 2, 15: 1, 7: 1 },
-    variables: { node: 20, diff: 0, height: 2 },
-    explain: 'Node 20 has left height 1 and right height 1. Diff is 0 <= 1. Height is 2. Balanced!',
-    intuition: 'Subtree 20 is balanced.'
+    stepIndex: 3,
+    title: 'Postorder Step 2: Evaluate Leaf Node 5',
+    explanation: 'Node 5 is a leaf (lh=0, rh=0). |0 - 0| = 0 <= 1 (Balanced). Returns height = 1 + max(0, 0) = 1.',
+    activeLine: 12,
+    activeIdeaId: 'height-induction-formula',
+    tree,
+    activeVal: 5,
+    targetVal: 5,
+    visitedVals: [4],
+    nodeLabels: { 4: 'H=1', 5: 'H=1 (Balanced)' },
+    variables: { node: 5, leftH: 0, rightH: 0, diff: 0, returnedH: 1 },
+    customCard: {
+      title: 'Node 5 Evaluation',
+      rows: [
+        { label: 'Left Height', value: '0 (null)' },
+        { label: 'Right Height', value: '0 (null)' },
+        { label: 'Difference', value: '|0 - 0| = 0 <= 1 (PASS)', accent: true },
+        { label: 'Returned Height', value: '1' }
+      ]
+    }
   },
   {
-    title: '4. Check Root 3: lh=1 (Node 9), rh=2 (Node 20) -> Diff = |1 - 2| = 1 <= 1',
-    phase: 'BALANCED_NODE',
-    codeLine: 26,
-    activeNode: 3,
-    diff: 1,
-    isBalanced: true,
-    heights: { 3: 3, 9: 1, 20: 2, 15: 1, 7: 1 },
-    variables: { root: 3, leftH: 1, rightH: 2, diff: 1, height: 3 },
-    explain: 'At root 3: |1 - 2| = 1 <= 1. Balance condition is satisfied at every single node.',
-    intuition: 'Height difference 1 is allowed.'
+    stepIndex: 4,
+    title: 'Postorder Step 3: Evaluate Parent Node 9',
+    explanation: 'Node 9 has left child 4 (H=1) and right child 5 (H=1). Difference |1 - 1| = 0 <= 1. Returns H = 1 + max(1, 1) = 2.',
+    activeLine: 14,
+    activeIdeaId: 'height-induction-formula',
+    tree,
+    activeVal: 9,
+    targetVal: 9,
+    visitedVals: [4, 5],
+    nodeLabels: { 4: 'H=1', 5: 'H=1', 9: 'H=2 (Balanced)' },
+    variables: { node: 9, leftH: 1, rightH: 1, diff: 0, returnedH: 2 },
+    customCard: {
+      title: 'Left Subtree Root: Node 9',
+      rows: [
+        { label: 'Left Subtree Height', value: '1 (Node 4)' },
+        { label: 'Right Subtree Height', value: '1 (Node 5)' },
+        { label: 'Height Difference', value: '|1 - 1| = 0 <= 1 (PASS)', accent: true },
+        { label: 'Node 9 Height', value: '2' }
+      ]
+    }
   },
   {
-    title: '5. Completed: Binary Tree is Height-Balanced -> return true',
-    phase: 'COMPLETED',
-    codeLine: 31,
-    activeNode: 3,
-    diff: 1,
-    isBalanced: true,
-    heights: { 3: 3, 9: 1, 20: 2, 15: 1, 7: 1 },
-    variables: { result: true, finalHeight: 3 },
-    explain: 'Every node in the tree has height difference <= 1. Tree is height-balanced.',
-    intuition: 'Optimal O(N) time with O(H) call stack.'
+    stepIndex: 5,
+    title: 'Postorder Step 4: Evaluate Leaf Nodes 15 and 7',
+    explanation: 'Leaves 15 and 7 in right subtree evaluate to height 1 each with difference 0.',
+    activeLine: 12,
+    activeIdeaId: 'bottom-up-postorder',
+    tree,
+    activeVal: 15,
+    highlightedVals: [15, 7],
+    visitedVals: [4, 5, 9],
+    nodeLabels: { 9: 'H=2', 15: 'H=1', 7: 'H=1' },
+    variables: { leavesEvaluated: '[15, 7]', height: 1 },
+    customCard: {
+      title: 'Right Subtree Leaves',
+      rows: [
+        { label: 'Node 15 Height', value: '1' },
+        { label: 'Node 7 Height', value: '1' },
+        { label: 'Balance Check', value: 'Both balanced' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Postorder Step 5: Evaluate Parent Node 20',
+    explanation: 'Node 20 has left child 15 (H=1) and right child 7 (H=1). Difference |1 - 1| = 0 <= 1. Returns H = 1 + max(1, 1) = 2.',
+    activeLine: 14,
+    activeIdeaId: 'height-induction-formula',
+    tree,
+    activeVal: 20,
+    targetVal: 20,
+    visitedVals: [4, 5, 9, 15, 7],
+    nodeLabels: { 9: 'H=2', 20: 'H=2 (Balanced)' },
+    variables: { node: 20, leftH: 1, rightH: 1, diff: 0, returnedH: 2 },
+    customCard: {
+      title: 'Right Subtree Root: Node 20',
+      rows: [
+        { label: 'Left Subtree Height', value: '1 (Node 15)' },
+        { label: 'Right Subtree Height', value: '1 (Node 7)' },
+        { label: 'Height Difference', value: '|1 - 1| = 0 <= 1 (PASS)', accent: true },
+        { label: 'Node 20 Height', value: '2' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Postorder Step 6: Evaluate Root Node 3',
+    explanation: 'Root 3 has left subtree 9 (H=2) and right subtree 20 (H=2). Difference |2 - 2| = 0 <= 1. Tree is balanced!',
+    activeLine: 14,
+    activeIdeaId: 'balance-definition',
+    tree,
+    activeVal: 3,
+    targetVal: 3,
+    visitedVals: [9, 20],
+    nodeLabels: { 3: 'Root H=3 (BALANCED)', 9: 'Left H=2', 20: 'Right H=2' },
+    variables: { node: 3, leftH: 2, rightH: 2, diff: 0, overallHeight: 3 },
+    customCard: {
+      title: 'Final Root Evaluation',
+      rows: [
+        { label: 'Left Child H', value: '2 (Node 9)' },
+        { label: 'Right Child H', value: '2 (Node 20)' },
+        { label: 'Root Difference', value: '|2 - 2| = 0 <= 1 (PASS)', accent: true },
+        { label: 'Tree Status', value: 'Height-Balanced' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Return True: Binary Tree is Height-Balanced',
+    explanation: 'checkHeight(root) returned 3 != -1. The tree is verified height-balanced in O(N) time and O(H) space.',
+    activeLine: 18,
+    activeIdeaId: 'avoid-quadratic-cost',
+    tree,
+    activeVal: 3,
+    highlightedVals: [3, 9, 20, 4, 5, 15, 7],
+    nodeLabels: { 3: 'BALANCED' },
+    variables: { isBalanced: 'TRUE', timeComplexity: 'O(N)', spaceComplexity: 'O(H)' },
+    customCard: {
+      title: 'Verification Complete',
+      rows: [
+        { label: 'Result', value: 'TRUE (Balanced)', accent: true },
+        { label: 'Time Complexity', value: 'O(N) - single bottom-up pass' },
+        { label: 'Space Complexity', value: 'O(H) recursion stack' },
+        { label: 'Nodes Checked', value: 'All 7 nodes verified' }
+      ]
+    }
   }
 ];
-
-export default function CheckForBalancedBinaryTreeVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Active Node: {step.activeNode}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          |lh - rh| = {step.diff} (Limit: ≤ 1)
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Balanced: {step.isBalanced ? 'YES' : 'NO'}
-        </span>
-      </div>
-
-      {/* Tree Visualization */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Subtree Balance Verification</span>
-
-        <div className="flex flex-col items-center gap-4 py-2 w-full">
-          {/* Root 3 */}
-          <div className="flex justify-center">
-            <div className={`w-14 h-14 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-              step.activeNode === 3 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-emerald-500 bg-emerald-500/15 text-emerald-300'
-            }`}>
-              <span className="text-sm">3</span>
-              <span className="text-[10px] text-amber-400">h={step.heights[3]}</span>
-            </div>
-          </div>
-
-          {/* Level 1: 9 and 20 */}
-          <div className="flex justify-center gap-24">
-            {[9, 20].map((val) => (
-              <div key={val} className={`w-14 h-14 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-              }`}>
-                <span className="text-sm">{val}</span>
-                <span className="text-[10px] text-amber-400">h={step.heights[val]}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Level 2: 15 and 7 */}
-          <div className="flex justify-end gap-6 pr-12">
-            {[15, 7].map((val) => (
-              <div key={val} className={`w-13 h-13 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-              }`}>
-                <span className="text-sm">{val}</span>
-                <span className="text-[10px] text-amber-400">h={step.heights[val]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

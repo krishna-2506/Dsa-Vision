@@ -1,38 +1,19 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
-  ArrowLeft,
-  Play,
-  Pause,
-  RotateCcw,
-  Repeat,
-  ExternalLink,
-  Save,
-  Check,
-  Clock,
-  Cpu,
-  BookOpen,
-  Download,
-  Layers,
   Sparkles,
   UploadCloud,
-  ChevronLeft,
-  ChevronRight,
+  Code2,
   Search,
   X,
-  MessageSquare,
-  ThumbsUp,
-  Send,
-  Lock,
-  Plus,
-  Flag,
-  Code2,
-  Keyboard,
-  Compass
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { sound } from '../services/audio';
 import { visualizersRegistry, loadVisualizer } from '../visualizers';
 import { api } from '../services/api';
+import { generateMasterVisualizerPrompt } from '../utils/aiVisualizerPrompt';
 import CodeViewer from './CodeViewer';
 import VisualizerUploader from './VisualizerUploader';
 import ReportSolutionModal from './ReportSolutionModal';
@@ -41,6 +22,12 @@ import VisualizerErrorBoundary from './VisualizerErrorBoundary';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import BetaCodeVisualizer from './sandbox/BetaCodeVisualizer';
 import IdeaMapView from './IdeaMapView';
+
+// Decomposed Subcomponents & Custom Hook
+import { useVisualizerPlayback } from '../hooks/useVisualizerPlayback';
+import StudioHeader from './studio/StudioHeader';
+import StudioTransportHud from './studio/StudioTransportHud';
+import StudioDiscussionHub from './studio/StudioDiscussionHub';
 
 function isArrayQuestion(q) {
   if (!q) return false;
@@ -68,28 +55,6 @@ function isArrayQuestion(q) {
     q.step_no === 3 ||
     q.step_no === 2
   );
-}
-
-function formatComplexity(text) {
-  if (!text) return '—';
-  const s = String(text);
-  // First try to extract a Big-O token like O(N), O(N log N), O(N²), O(V+E), etc.
-  const match = s.match(/O\([^)]{1,20}\)/i);
-  if (match) return match[0];
-  // Fall back: strip known prefixes and truncate
-  let cleaned = s
-    .replace(/^[-:=*#\s]+/, '')
-    .replace(/^(?:the\s+)?(?:time|space)\s+complexity\s+(?:of[^:]*?)?(?:is|:|-|=)\s*/i, '')
-    .replace(/^(?:time|space)\s*(?:complexity)?\s*[:=-]\s*/i, '')
-    .trim();
-  return cleaned.length <= 24 ? cleaned : cleaned.slice(0, 22) + '…';
-}
-
-function getYouTubeEmbedUrl(url) {
-  if (!url || typeof url !== 'string') return null;
-  const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/;
-  const match = url.match(regExp);
-  return match ? `https://www.youtube-nocookie.com/embed/${match[1]}?rel=0&modestbranding=1` : null;
 }
 
 export default function VisualizerStudio({
@@ -125,9 +90,8 @@ export default function VisualizerStudio({
   const [activeTier, setActiveTier] = useState('optimal'); // 'intuitive' | 'better' | 'optimal'
   const [showReportModal, setShowReportModal] = useState(false);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
-  const embedUrl = useMemo(() => getYouTubeEmbedUrl(question.youtube_url), [question.youtube_url]);
   const activeApproachData = visualizerEntry?.approaches?.[activeTier] || null;
+
   const currentApproachObj = useMemo(() => {
     const list = Array.isArray(question.approaches_data) ? question.approaches_data : [];
     if (list.length === 0) return null;
@@ -135,53 +99,58 @@ export default function VisualizerStudio({
     if (activeTier === 'better') return list.length >= 3 ? list[1] : (list.length === 2 ? list[0] : list[0]);
     return list[list.length - 1];
   }, [question.approaches_data, activeTier]);
+
   const stepsList = activeApproachData?.steps || visualizerEntry?.steps || null;
-  const maxSteps = stepsList?.length || 6;
+  const maxSteps = stepsList?.length || 8;
   const hasVisualizer = Boolean(Component);
 
-  const [currentStep, setCurrentStep] = useState(0);
-  const currentStepData = stepsList && stepsList[currentStep] ? stepsList[currentStep] : null;
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
-  const [loop, setLoop] = useState(false);
   const [solutions, setSolutions] = useState({});
-  // Open split screen by default when visualizer exists so user sees both animation & synced code
   const [viewMode, setViewMode] = useState(hasVisualizer ? 'split' : 'code_only');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploader, setShowUploader] = useState(false);
-  const [showApproach, setShowApproach] = useState(false);
   const [showJumper, setShowJumper] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [jumperSearch, setJumperSearch] = useState('');
   const [copiedDirect, setCopiedDirect] = useState(false);
 
+  // Keyboard shortcut for Fullscreen (F to toggle, Escape to exit)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return;
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        setIsFullscreen((prev) => !prev);
+      } else if (e.key === 'Escape' && isFullscreen) {
+        e.preventDefault();
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFullscreen]);
+
   // Discussion Comments, Public Notes & Private Notes State
-  const [hubTab, setHubTab] = useState('comments'); // 'comments' | 'public_notes' | 'private_notes'
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const [isPostingComment, setIsPostingComment] = useState(false);
   const [publicNotes, setPublicNotes] = useState([]);
-  const [showAddPublicNote, setShowAddPublicNote] = useState(false);
-  const [newNoteTitle, setNewNoteTitle] = useState('');
-  const [newNoteContent, setNewNoteContent] = useState('');
-  const [isPostingNote, setIsPostingNote] = useState(false);
   const [privateNotes, setPrivateNotes] = useState('');
   const [privateNotesSaved, setPrivateNotesSaved] = useState(false);
+
   // Custom Input Sandbox & Preset State
-  const [customInput, _setCustomInput] = useState('');
-  const [customTarget, _setCustomTarget] = useState('');
-  const [reviewSaved, setReviewSaved] = useState(false);
+  const [customInput] = useState('');
+  const [customTarget] = useState('');
   const [isBarDragging, setIsBarDragging] = useState(false);
   const [isCodeColDragging, setIsCodeColDragging] = useState(false);
   const [preloadedUploadCode, setPreloadedUploadCode] = useState('');
   const barFileInputRef = useRef(null);
 
-  // Find index and previous / next questions
+  // Previous / Next question navigation calculations
   const currentIndex = questions ? questions.findIndex((q) => q.id === question.id) : -1;
   const prevQuestion = currentIndex > 0 ? questions[currentIndex - 1] : null;
   const nextQuestion =
     currentIndex >= 0 && currentIndex < questions.length - 1 ? questions[currentIndex + 1] : null;
 
-  // Filter questions in the quick jumper dropdown
+  // Filter questions in the quick jumper
   const filteredJumperQuestions = (questions || []).filter((q) => {
     if (!jumperSearch.trim()) return true;
     const s = jumperSearch.toLowerCase().trim();
@@ -194,16 +163,57 @@ export default function VisualizerStudio({
     );
   });
 
-  const timerRef = useRef(null);
+  const handleSelectTier = useCallback((tier) => {
+    setActiveTier((curr) => {
+      if (curr === tier) return curr;
+      sound?.playStep?.(640);
+      return tier;
+    });
+  }, []);
 
-  // Sync mode and fetch comments & notes when question or user changes
+  const handleSavePrivateNotes = useCallback(async () => {
+    if (currentUser?.id) {
+      await api.savePrivateNote(currentUser.id, question.id, privateNotes);
+    } else {
+      await api.saveNotes(question.id, privateNotes);
+    }
+    sound?.playStep?.(680);
+    setPrivateNotesSaved(true);
+    setTimeout(() => setPrivateNotesSaved(false), 2000);
+  }, [currentUser?.id, question.id, privateNotes]);
+
+  // Integrated Playback Hook
+  const {
+    currentStep,
+    setCurrentStep,
+    isPlaying,
+    speed,
+    setSpeed,
+    loop,
+    setLoop,
+    togglePlay,
+    handleNextStep,
+    handlePrevStep,
+    handleReset,
+    triggerCompletionCelebration
+  } = useVisualizerPlayback({
+    maxSteps,
+    onNavigatePrev: () => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion),
+    onNavigateNext: () => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion),
+    onOpenJumper: () => setShowJumper((j) => !j),
+    onOpenShortcuts: () => setShowShortcutsModal(true),
+    onSaveNotes: handleSavePrivateNotes,
+    onSelectTier: handleSelectTier
+  });
+
+  const currentStepData = stepsList && stepsList[currentStep] ? stepsList[currentStep] : null;
+
+  // Reset steps & mode when question changes
   useEffect(() => {
-    const hasComponent = Boolean(visualizersRegistry[question.component_key || question.componentKey]);
-    setViewMode(hasComponent ? 'split' : 'code_only');
-    setShowApproach(false);
+    const hasComp = Boolean(visualizersRegistry[question.component_key || question.componentKey]);
+    setViewMode(hasComp ? 'split' : 'code_only');
     setShowUploader(false);
-    setCurrentStep(0);
-    setIsPlaying(false);
+    handleReset();
 
     let isMounted = true;
     api.getComments(question.id).then((data) => {
@@ -223,9 +233,9 @@ export default function VisualizerStudio({
     return () => {
       isMounted = false;
     };
-  }, [question.id, question.component_key, question.componentKey, question.notes, currentUser?.id]);
+  }, [question.id, question.component_key, question.componentKey, question.notes, currentUser?.id, handleReset]);
 
-  // Fetch solutions dynamically whenever question or active approach tier changes
+  // Fetch solutions whenever question or active approach tier changes
   useEffect(() => {
     let isMounted = true;
     api.getCodeSolutions(question.id, activeTier).then((data) => {
@@ -254,17 +264,6 @@ export default function VisualizerStudio({
     };
   }, [question.id, activeTier, currentKey, visualizerEntry]);
 
-  const handleSelectTier = useCallback((tier) => {
-    setActiveTier((curr) => {
-      if (curr === tier) return curr;
-      setCurrentStep(0);
-      setIsPlaying(false);
-      sound.playStep(640);
-      return tier;
-    });
-  }, []);
-
-
   const handleDirectCopyPrompt = () => {
     const promptText = generateMasterVisualizerPrompt(question, solutions);
     navigator.clipboard.writeText(promptText);
@@ -273,204 +272,8 @@ export default function VisualizerStudio({
     setTimeout(() => setCopiedDirect(false), 2500);
   };
 
-  const handlePostComment = async (e) => {
-    e.preventDefault();
-    if (!newComment.trim()) return;
-    setIsPostingComment(true);
-    const res = await api.addComment(question.id, {
-      userId: currentUser?.id || 'usr_guest',
-      username: currentUser?.username || 'Guest Coder',
-      avatar: currentUser?.avatar || '⚡',
-      content: newComment.trim()
-    });
-    setIsPostingComment(false);
-    if (res.success && res.data) {
-      setComments((prev) => [res.data, ...prev]);
-      setNewComment('');
-      sound.playStep(720);
-    }
-  };
-
-  const handleUpvoteComment = async (commentId) => {
-    sound.playStep(600);
-    const res = await api.upvoteComment(commentId);
-    if (res.success && res.data) {
-      setComments((prev) =>
-        prev.map((c) => (c.id === commentId ? { ...c, upvotes: res.data.upvotes } : c))
-      );
-    }
-  };
-
-  const handlePostPublicNote = async (e) => {
-    e.preventDefault();
-    if (!newNoteContent.trim()) return;
-    setIsPostingNote(true);
-    const res = await api.addPublicNote(question.id, {
-      userId: currentUser?.id || 'usr_guest',
-      username: currentUser?.username || 'Guest Coder',
-      avatar: currentUser?.avatar || '⚡',
-      title: newNoteTitle.trim() || 'Key Insight',
-      content: newNoteContent.trim()
-    });
-    setIsPostingNote(false);
-    if (res.success && res.data) {
-      setPublicNotes((prev) => {
-        const filtered = prev.filter((n) => n.id !== res.data.id);
-        return [res.data, ...filtered];
-      });
-      setNewNoteTitle('');
-      setNewNoteContent('');
-      setShowAddPublicNote(false);
-      sound.playStep(740);
-    }
-  };
-
-  const handleUpvotePublicNote = async (noteId) => {
-    sound.playStep(600);
-    const res = await api.upvotePublicNote(noteId);
-    if (res.success && res.data) {
-      setPublicNotes((prev) =>
-        prev.map((n) => (n.id === noteId ? { ...n, upvotes: res.data.upvotes } : n))
-      );
-    }
-  };
-
-  const handleSavePrivateNotes = async () => {
-    if (currentUser?.id) {
-      await api.savePrivateNote(currentUser.id, question.id, privateNotes);
-    } else {
-      await api.saveNotes(question.id, privateNotes);
-    }
-    sound.playStep(680);
-    setPrivateNotesSaved(true);
-    setTimeout(() => setPrivateNotesSaved(false), 2000);
-  };
-
-  const triggerCompletionCelebration = useCallback(() => {
-    sound?.playSuccess?.();
-    confetti({
-      particleCount: 70,
-      spread: 60,
-      origin: { y: 0.6 }
-    });
-  }, []);
-
-  const handleNextStep = useCallback(() => {
-    setCurrentStep((curr) => {
-      if (curr < maxSteps - 1) {
-        const next = curr + 1;
-        sound.playStep(520 + next * 30);
-        if (next === maxSteps - 1) {
-          triggerCompletionCelebration();
-        }
-        return next;
-      }
-      return curr;
-    });
-  }, [maxSteps, triggerCompletionCelebration]);
-
-  const handlePrevStep = useCallback(() => {
-    setCurrentStep((curr) => {
-      if (curr > 0) {
-        sound.playPrev();
-        return curr - 1;
-      }
-      return curr;
-    });
-  }, []);
-
-  const handleReset = useCallback(() => {
-    setCurrentStep(0);
-    setIsPlaying(false);
-    sound.playReset();
-  }, []);
-
-  const togglePlay = useCallback(() => {
-    setCurrentStep((curr) => {
-      if (curr >= maxSteps - 1) {
-        return 0;
-      }
-      return curr;
-    });
-    setIsPlaying((prev) => !prev);
-  }, [maxSteps]);
-
-  // Unified Keyboard Shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      const tag = document.activeElement?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
-
-      if (e.code === 'Space') {
-        e.preventDefault();
-        togglePlay();
-      } else if ((e.altKey && e.code === 'ArrowRight') || e.key === ']') {
-        if (nextQuestion && onNavigateQuestion) {
-          e.preventDefault();
-          onNavigateQuestion(nextQuestion);
-        }
-      } else if ((e.altKey && e.code === 'ArrowLeft') || e.key === '[') {
-        if (prevQuestion && onNavigateQuestion) {
-          e.preventDefault();
-          onNavigateQuestion(prevQuestion);
-        }
-      } else if (e.code === 'ArrowRight') {
-        e.preventDefault();
-        handleNextStep();
-      } else if (e.code === 'ArrowLeft') {
-        e.preventDefault();
-        handlePrevStep();
-      } else if (e.key === 'r' || e.key === 'R') {
-        e.preventDefault();
-        handleReset();
-      } else if (e.key === '1') {
-        e.preventDefault();
-        handleSelectTier('intuitive');
-      } else if (e.key === '2') {
-        e.preventDefault();
-        handleSelectTier('better');
-      } else if (e.key === '3') {
-        e.preventDefault();
-        handleSelectTier('optimal');
-      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setShowJumper((j) => !j);
-      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        handleSavePrivateNotes();
-      } else if (e.key === '?') {
-        e.preventDefault();
-        setShowShortcutsModal(true);
-      } else if (e.key === 'Escape') {
-        setShowJumper(false);
-        setShowShortcutsModal(false);
-        setShowUploader(false);
-        setShowReportModal(false);
-        setShowEnhanceModal(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [
-    togglePlay,
-    handleNextStep,
-    handlePrevStep,
-    handleReset,
-    handleSelectTier,
-    prevQuestion,
-    nextQuestion,
-    onNavigateQuestion
-  ]);
-
-  // Compute active line for real-time code sync
-  const activeCodeLine = currentStepData?.codeLines || currentStepData?.codeLine || currentStepData?.highlightLines || currentStepData?.line || null;
-
-  const handleReviewConfidence = async (confidence) => {
-    await api.recordReview(currentUser?.id, question.id, confidence);
-    sound?.playSuccess?.();
-    setReviewSaved(true);
-    setTimeout(() => setReviewSaved(false), 2500);
+  const handleDownloadStudySheet = () => {
+    window.open(`/api/export/${encodeURIComponent(question.id)}`, '_blank');
   };
 
   const handleDirectFileDrop = (e) => {
@@ -522,270 +325,41 @@ export default function VisualizerStudio({
     sound?.playSuccess?.();
   };
 
-  // Playback timer
-  useEffect(() => {
-    if (isPlaying) {
-      const intervalMs = 2000 / speed;
-      timerRef.current = setInterval(() => {
-        setCurrentStep((prev) => {
-          if (prev < maxSteps - 1) {
-            sound.playStep(520 + (prev + 1) * 30);
-            return prev + 1;
-          } else {
-            if (loop) {
-              sound.playStep(450);
-              return 0;
-            } else {
-              setIsPlaying(false);
-              triggerCompletionCelebration();
-              return prev;
-            }
-          }
-        });
-      }, intervalMs);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isPlaying, speed, loop, maxSteps, triggerCompletionCelebration]);
-
-  const handleDownloadStudySheet = () => {
-    window.open(`/api/export/${encodeURIComponent(question.id)}`, '_blank');
-  };
-
-
-  const diffDotClass =
-    question.difficulty === 'Easy' ? 'dot-easy' :
-    question.difficulty === 'Medium' ? 'dot-medium' :
-    question.difficulty === 'Hard' ? 'dot-hard' : 'dot-easy';
+  const activeCodeLine =
+    currentStepData?.codeLines ||
+    currentStepData?.codeLine ||
+    currentStepData?.highlightLines ||
+    currentStepData?.line ||
+    currentStepData?.activeLine ||
+    null;
 
   return (
     <div className="max-w-[1360px] mx-auto px-4 sm:px-6 py-6 space-y-6">
-      {/* ── 1. Problem Header (Clean, Spacious Level 1 Hierarchy) ── */}
-      <header className="space-y-3">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 min-w-0">
-            <button
-              onClick={onBack}
-              className="p-2 rounded-md bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-colors shrink-0 cursor-pointer"
-              title="Back to problem library (Esc)"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </button>
+      {/* ── 1. Decomposed Problem Header ── */}
+      <StudioHeader
+        question={question}
+        onBack={onBack}
+        onStatusChange={onStatusChange}
+        currentApproachObj={currentApproachObj}
+        hasIdeaMap={hasIdeaMap}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        onDownloadStudySheet={handleDownloadStudySheet}
+        onOpenJumper={() => setShowJumper(true)}
+        onOpenEnhancer={() => setShowEnhanceModal(true)}
+        onOpenReport={() => setShowReportModal(true)}
+        onToggleUploader={() => setShowUploader(!showUploader)}
+        showUploader={showUploader}
+        onToggleFullscreen={() => setIsFullscreen((prev) => !prev)}
+        isFullscreen={isFullscreen}
+        prevQuestion={prevQuestion}
+        nextQuestion={nextQuestion}
+        currentIndex={currentIndex}
+        totalQuestions={questions.length}
+        onNavigateQuestion={onNavigateQuestion}
+      />
 
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                {/* Step & Substep Indicator */}
-                {question.step_no && (
-                  <span className="text-xs font-mono text-[var(--chalk-faint)]">
-                    Step {question.step_no}: {question.step_name} {question.substep_name ? `· ${question.substep_name}` : ''}
-                  </span>
-                )}
-                <span className="text-[var(--line-strong)] text-xs">·</span>
-                {/* Problem ID */}
-                <span className="text-xs font-mono text-[var(--chalk-dim)] font-medium">
-                  {question.display_id || (question.leetcode_id ? `#${question.leetcode_id}` : 'DSA')}
-                </span>
-                <span className="text-[var(--line-strong)] text-xs">·</span>
-                {/* Difficulty Dot + Label */}
-                <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-                  question.difficulty === 'Hard' ? 'text-rose-400' :
-                  question.difficulty === 'Medium' ? 'text-amber-400' : 'text-emerald-400'
-                }`}>
-                  <span className={`w-2 h-2 rounded-full ${diffDotClass}`} />
-                  {question.difficulty}
-                </span>
-              </div>
-
-              <h1 className="text-xl sm:text-2xl font-bold font-sans text-[var(--chalk)] tracking-tight truncate">
-                {question.title}
-              </h1>
-            </div>
-          </div>
-
-          {/* Right Action Tools Toolbar */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Dynamic Complexity Badges */}
-            <div className="hidden xl:flex items-center gap-2.5 text-xs font-mono text-[var(--chalk-dim)] px-3 py-1.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)]">
-              <span className="flex items-center gap-1.5" title="Time Complexity">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                <span>{formatComplexity(currentApproachObj?.time_complexity || question.time_complexity)}</span>
-              </span>
-              <span className="text-[var(--line-strong)]">·</span>
-              <span className="flex items-center gap-1.5" title="Space Complexity">
-                <Cpu className="w-3.5 h-3.5 text-cyan-400" />
-                <span>{formatComplexity(currentApproachObj?.space_complexity || question.space_complexity)}</span>
-              </span>
-            </div>
-
-            {/* Status Dropdown */}
-            <select
-              value={question.status || 'to_learn'}
-              onChange={(e) => onStatusChange(question.id, e.target.value)}
-              className="h-8 px-2.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-sans font-medium text-[var(--chalk)] cursor-pointer focus:outline-none focus:border-indigo-500"
-            >
-              <option value="to_learn">To learn</option>
-              <option value="in_progress">In progress</option>
-              <option value="mastered">Mastered</option>
-            </select>
-
-            {/* Idea Map Toggle Button */}
-            {hasIdeaMap && (
-              <button
-                onClick={() => setViewMode((prev) => (prev === 'idea_map' ? 'split' : 'idea_map'))}
-                className={`btn-secondary h-8 px-2.5 text-xs flex items-center gap-1.5 transition-all ${
-                  viewMode === 'idea_map'
-                    ? 'bg-purple-600/25 border-purple-500/50 text-purple-300'
-                    : 'text-purple-300 hover:text-purple-200'
-                }`}
-                title="Toggle Idea Map & Mental Model"
-              >
-                <Compass className="w-3.5 h-3.5 text-purple-400" />
-                <span className="hidden sm:inline">Idea Map</span>
-              </button>
-            )}
-
-            {/* Export Study Sheet */}
-            <button
-              onClick={handleDownloadStudySheet}
-              className="btn-secondary h-8 px-2.5 text-xs"
-              title="Download Markdown Study Sheet"
-            >
-              <Download className="w-3.5 h-3.5 text-[var(--chalk-dim)]" />
-              <span className="hidden sm:inline">Export</span>
-            </button>
-
-            {/* LeetCode link */}
-            {question.leetcode_url && (
-              <a
-                href={question.leetcode_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary h-8 px-2.5 text-xs"
-                title="Open LeetCode problem in new tab"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-[var(--chalk-dim)]" />
-                <span className="hidden sm:inline">LeetCode</span>
-              </a>
-            )}
-
-            {/* Upload Button */}
-            <button
-              onClick={() => setShowUploader(!showUploader)}
-              className={`btn-secondary h-8 px-2.5 text-xs ${
-                showUploader ? 'border-indigo-500/50 bg-indigo-500/10 text-indigo-400 font-semibold' : ''
-              }`}
-              title="Upload custom .jsx visualizer component"
-            >
-              <UploadCloud className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="hidden sm:inline">Upload Viz</span>
-            </button>
-
-            {/* Quick Problem Jumper */}
-            <div className="relative">
-              <button
-                onClick={() => setShowJumper(!showJumper)}
-                className="btn-secondary h-8 px-2.5 text-xs"
-                title="Jump to problem (Ctrl+K)"
-              >
-                <Layers className="w-3.5 h-3.5 text-[var(--chalk-dim)]" />
-                <span className="hidden sm:inline">Jump</span>
-                <kbd className="hidden lg:inline-flex ml-1">K</kbd>
-              </button>
-
-              {showJumper && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowJumper(false)} />
-                  <div className="absolute top-full mt-2 right-0 w-80 bg-[var(--board-raised)] border border-[var(--line-strong)] rounded-lg shadow-xl z-50 overflow-hidden fade-in">
-                    <div className="p-3 border-b border-[var(--line)] flex items-center gap-2">
-                      <Search className="w-3.5 h-3.5 text-[var(--chalk-dim)] shrink-0" />
-                      <input
-                        type="text"
-                        value={jumperSearch}
-                        onChange={(e) => setJumperSearch(e.target.value)}
-                        placeholder="Q-001, title, category…"
-                        className="bg-transparent text-[12px] text-[var(--chalk)] placeholder-[var(--chalk-faint)] focus:outline-none w-full font-mono"
-                        autoFocus
-                      />
-                      {jumperSearch && (
-                        <button onClick={() => setJumperSearch('')} className="text-[var(--chalk-faint)] hover:text-[var(--chalk)] shrink-0">
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                    <div className="overflow-y-auto max-h-64 divide-y divide-[var(--line)] font-mono text-[11px]">
-                      {filteredJumperQuestions.length === 0 ? (
-                        <div className="p-4 text-center text-[var(--chalk-faint)]">No matches</div>
-                      ) : filteredJumperQuestions.map((q) => (
-                        <div
-                          key={q.id}
-                          onClick={() => { if (onNavigateQuestion) onNavigateQuestion(q); setShowJumper(false); }}
-                          className={`px-3 py-2 flex items-center justify-between gap-2 cursor-pointer transition ${
-                            q.id === question.id ? 'bg-indigo-500/15 text-indigo-400 font-semibold' : 'hover:bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-indigo-400 shrink-0">#{q.display_id || q.leetcode_id}</span>
-                            <span className="truncate">{q.title}</span>
-                          </div>
-                          <span className={`text-[10px] shrink-0 ${
-                            q.difficulty === 'Easy' ? 'text-emerald-400' :
-                            q.difficulty === 'Medium' ? 'text-amber-400' : 'text-rose-400'
-                          }`}>{q.difficulty}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-
-            {/* Prev / Next Problem Switcher */}
-            <div className="flex items-center gap-1 pl-1">
-              {(() => {
-                const prevLabel = prevQuestion
-                  ? prevQuestion.display_id || (prevQuestion.leetcode_id ? `#${prevQuestion.leetcode_id}` : '')
-                  : '';
-                return (
-                  <button
-                    onClick={() => prevQuestion && onNavigateQuestion && onNavigateQuestion(prevQuestion)}
-                    disabled={!prevQuestion}
-                    className="btn-secondary h-8 px-2 text-xs disabled:opacity-30 disabled:pointer-events-none"
-                    title={prevQuestion ? `Previous: ${prevLabel} ${prevQuestion.title}` : 'First problem'}
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                  </button>
-                );
-              })()}
-
-              <span className="text-xs font-mono text-[var(--chalk-faint)] px-1.5">
-                {currentIndex >= 0 ? currentIndex + 1 : '?'} / {questions.length}
-              </span>
-
-              {(() => {
-                const nextLabel = nextQuestion
-                  ? nextQuestion.display_id || (nextQuestion.leetcode_id ? `#${nextQuestion.leetcode_id}` : '')
-                  : '';
-                return (
-                  <button
-                    onClick={() => nextQuestion && onNavigateQuestion && onNavigateQuestion(nextQuestion)}
-                    disabled={!nextQuestion}
-                    className="btn-secondary h-8 px-2 text-xs disabled:opacity-30 disabled:pointer-events-none"
-                    title={nextQuestion ? `Next: ${nextLabel} ${nextQuestion.title}` : 'Last problem'}
-                  >
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                );
-              })()}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* ── 2. THE HERO WORKSPACE: Interactive Algorithm Canvas & Synchronized Code ── */}
+      {/* ── 2. The Hero Algorithm Workspace ── */}
       <section className="workspace-stage">
         {/* Workspace Titlebar: Execution State, Approach Switcher, View Mode */}
         <div className="workspace-titlebar flex-wrap gap-2">
@@ -801,7 +375,7 @@ export default function VisualizerStudio({
             </span>
           </div>
 
-          {/* Center: Clean Approach Selector Tabs */}
+          {/* Approach Selector Tabs */}
           <div className="segmented-control">
             {[
               { id: 'intuitive', label: 'Brute Force' },
@@ -814,6 +388,7 @@ export default function VisualizerStudio({
               return (
                 <button
                   key={tier.id}
+                  type="button"
                   onClick={() => handleSelectTier(tier.id)}
                   className={`segmented-item flex items-center gap-1.5 ${isActive ? 'active' : ''} ${
                     tier.isBeta
@@ -836,432 +411,355 @@ export default function VisualizerStudio({
             })}
           </div>
 
-          {/* Right: View Mode Toggle (Split, Canvas, Idea Map, Code) */}
-          <div className="segmented-control">
-            {[
-              ['split', 'Split View'],
-              ['visualizer_only', 'Canvas'],
-              ...(hasIdeaMap ? [['idea_map', '🗺️ Idea Map']] : []),
-              ['code_only', 'Code']
-            ].map(([mode, label]) => (
-              <button
-                key={mode}
-                onClick={() => setViewMode(mode)}
-                className={`segmented-item ${viewMode === mode ? 'active' : ''}`}
-              >
-                {label}
-              </button>
-            ))}
+          {/* View Mode Toggle & Fullscreen Button */}
+          <div className="flex items-center gap-2">
+            <div className="segmented-control">
+              {[
+                ['split', 'Split View'],
+                ['visualizer_only', 'Canvas'],
+                ...(hasIdeaMap ? [['idea_map', '🗺️ Idea Map']] : []),
+                ['code_only', 'Code']
+              ].map(([mode, label]) => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setViewMode(mode)}
+                  className={`segmented-item ${viewMode === mode ? 'active' : ''}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsFullscreen(true)}
+              className="btn-secondary h-8 px-2.5 text-xs flex items-center gap-1.5 cursor-pointer text-amber-300 hover:text-amber-200"
+              title="Expand to Fullscreen Theater Mode (Hotkeys: F / Esc)"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Fullscreen</span>
+            </button>
           </div>
         </div>
 
-        {/* Main Stage Grid or Beta Mode Component */}
+        {/* Stage Grid or Beta Mode Component */}
         {activeTier === 'beta' ? (
           <div className="p-4 bg-[var(--bg-base)]">
             <BetaCodeVisualizer question={question} solutions={solutions} />
           </div>
         ) : (
           <>
-            {/* Main Stage Grid (Canvas Viewport + Synchronized Code) */}
             <div
               className="stage"
               style={{
-                gridTemplateColumns:
-                  viewMode === 'split' ? '1.15fr 0.95fr' : '1fr'
+                gridTemplateColumns: viewMode === 'split' ? '1.15fr 0.95fr' : '1fr'
               }}
             >
-          {/* Canvas Column */}
-          {viewMode !== 'code_only' && (
-            <div className="canvas-col">
-              {viewMode === 'idea_map' ? (
-                <IdeaMapView
-                  ideaMap={ideaMap}
-                  question={question}
-                  onLaunchVisualizer={() => setViewMode('split')}
-                />
-              ) : (
-                <>
-              {Component ? (
-                <VisualizerErrorBoundary
-                  onReset={() => setCurrentStep(0)}
-                  onSwitchToCode={() => setViewMode('code_only')}
-                >
-                  <React.Suspense fallback={
-                    <div className="w-full h-56 flex flex-col items-center justify-center gap-3 bg-[var(--board-raised-2)] rounded-xl border border-[var(--line)]">
-                      <div className="w-7 h-7 rounded-full border-2 border-[var(--indigo)] border-t-transparent animate-spin" />
-                      <span className="text-xs font-mono text-[var(--chalk-dim)]">Loading Interactive Visualizer...</span>
-                    </div>
-                  }>
-                    <Component
-                      currentStep={currentStep}
-                      onStepChange={setCurrentStep}
-                      customInput={customInput}
-                      customTarget={customTarget}
-                      approachTier={activeTier}
+              {/* Canvas Column */}
+              {viewMode !== 'code_only' && (
+                <div className="canvas-col">
+                  {viewMode === 'idea_map' ? (
+                    <IdeaMapView
+                      ideaMap={ideaMap}
+                      question={question}
+                      onLaunchVisualizer={() => setViewMode('split')}
                     />
-                  </React.Suspense>
-                </VisualizerErrorBoundary>
-              ) : (
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setIsBarDragging(true);
-                  }}
-                  onDragLeave={(e) => {
-                    e.preventDefault();
-                    setIsBarDragging(false);
-                  }}
-                  onDrop={handleDirectFileDrop}
-                  onClick={() => barFileInputRef.current?.click()}
-                  className={`flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer border border-dashed rounded-lg transition-colors ${
-                    isBarDragging
-                      ? 'border-indigo-500 bg-indigo-500/10'
-                      : 'border-[var(--line-strong)] hover:border-indigo-500/60'
-                  }`}
-                >
-                  <input
-                    type="file"
-                    ref={barFileInputRef}
-                    onChange={handleBarFileInput}
-                    accept=".jsx,.tsx,.js,.ts"
-                    className="hidden"
-                  />
-                  <UploadCloud className="w-8 h-8 text-[var(--chalk-dim)]" />
-                  <p className="text-[13px] font-sans font-medium text-[var(--chalk)]">
-                    {isBarDragging ? 'Drop your .jsx file now' : 'No visualizer for this question yet'}
-                  </p>
-                  <p className="text-[12px] text-[var(--chalk-dim)] max-w-sm font-sans">
-                    Drag &amp; drop your React visualizer <code className="text-indigo-400 font-mono">.jsx</code> file here, or click to browse.
-                  </p>
-                  <div className="pt-2 flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDirectCopyPrompt();
-                      }}
-                      className="btn-primary"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>{copiedDirect ? 'Copied Prompt' : 'Copy AI Prompt'}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowUploader(true);
-                      }}
-                      className="btn-secondary"
-                    >
-                      <UploadCloud className="w-3.5 h-3.5" />
-                      <span>Upload Code</span>
-                    </button>
-                  </div>
+                  ) : (
+                    <>
+                      {Component ? (
+                        <VisualizerErrorBoundary
+                          onReset={() => setCurrentStep(0)}
+                          onSwitchToCode={() => setViewMode('code_only')}
+                        >
+                          <React.Suspense
+                            fallback={
+                              <div className="w-full h-56 flex flex-col items-center justify-center gap-3 bg-[var(--board-raised-2)] rounded-xl border border-[var(--line)]">
+                                <div className="w-7 h-7 rounded-full border-2 border-[var(--indigo)] border-t-transparent animate-spin" />
+                                <span className="text-xs font-mono text-[var(--chalk-dim)]">Loading Visualizer...</span>
+                              </div>
+                            }
+                          >
+                            <Component
+                              currentStep={currentStep}
+                              onStepChange={setCurrentStep}
+                              customInput={customInput}
+                              customTarget={customTarget}
+                              approachTier={activeTier}
+                            />
+                          </React.Suspense>
+                        </VisualizerErrorBoundary>
+                      ) : (
+                        <div
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            setIsBarDragging(true);
+                          }}
+                          onDragLeave={(e) => {
+                            e.preventDefault();
+                            setIsBarDragging(false);
+                          }}
+                          onDrop={handleDirectFileDrop}
+                          onClick={() => barFileInputRef.current?.click()}
+                          className={`flex flex-col items-center justify-center py-16 text-center space-y-3 cursor-pointer border border-dashed rounded-lg transition-colors ${
+                            isBarDragging
+                              ? 'border-indigo-500 bg-indigo-500/10'
+                              : 'border-[var(--line-strong)] hover:border-indigo-500/60'
+                          }`}
+                        >
+                          <input
+                            type="file"
+                            ref={barFileInputRef}
+                            onChange={handleBarFileInput}
+                            accept=".jsx,.tsx,.js,.ts"
+                            className="hidden"
+                          />
+                          <UploadCloud className="w-8 h-8 text-[var(--chalk-dim)]" />
+                          <p className="text-[13px] font-sans font-medium text-[var(--chalk)]">
+                            {isBarDragging ? 'Drop your .jsx file now' : 'No visualizer for this question yet'}
+                          </p>
+                          <p className="text-[12px] text-[var(--chalk-dim)] max-w-sm font-sans">
+                            Drag &amp; drop your React visualizer <code className="text-indigo-400 font-mono">.jsx</code> file here, or click to browse.
+                          </p>
+                          <div className="pt-2 flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDirectCopyPrompt();
+                              }}
+                              className="btn-primary"
+                            >
+                              <Sparkles className="w-3.5 h-3.5" />
+                              <span>{copiedDirect ? 'Copied Prompt' : 'Copy AI Prompt'}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowUploader(true);
+                              }}
+                              className="btn-secondary"
+                            >
+                              <UploadCloud className="w-3.5 h-3.5" />
+                              <span>Upload Code</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
 
-              {/* Educational Explanation & Step Invariant Panel */}
-              {currentStepData && (
-                <div className="mt-4 p-4 rounded-lg bg-[var(--board-raised-2)] border border-[var(--line)] transition-all">
-                  <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-400 text-[11px] font-mono font-semibold">
-                        Invariant
-                      </span>
-                      <span className="text-xs font-sans font-semibold text-[var(--chalk)]">
-                        {currentStepData.title}
-                      </span>
-                    </div>
-
-                    {currentStepData.action && (
-                      <span className="text-[11px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
-                        {currentStepData.action}
-                      </span>
-                    )}
-                  </div>
-
-
-                  {currentStepData.intuition && (
-                    <div className="p-3 rounded-xl bg-[var(--indigo-dim)]/40 border border-[var(--indigo)]/20 text-xs text-[var(--chalk)] mb-3 flex items-start gap-2.5">
-                      <Sparkles className="w-4 h-4 text-[var(--indigo)] shrink-0 mt-0.5" />
-                      <div>
-                        <strong className="text-[var(--indigo)] block mb-0.5 font-semibold">Algorithmic Invariant & Intuition</strong>
-                        <span>{currentStepData.intuition}</span>
+              {/* Code Column */}
+              {viewMode !== 'visualizer_only' && (
+                <div className="code-col">
+                  {!Component && viewMode === 'code_only' && (
+                    <>
+                      <div className="p-3 bg-[var(--board-raised-2)] border-b border-[var(--line)] flex items-center justify-between gap-3 text-[11.5px] font-mono flex-wrap">
+                        <span className="text-[var(--chalk-dim)] flex items-center gap-1.5">
+                          <Code2 className="w-3.5 h-3.5 text-[var(--amber)]" />
+                          Code Execution View · No visualizer uploaded yet.
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={handleDirectCopyPrompt}
+                            className="chalk-btn chalk-btn-amber py-1"
+                          >
+                            <Sparkles className="w-3 h-3" />
+                            <span>{copiedDirect ? 'Copied!' : 'Copy AI Prompt'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setShowUploader(true)}
+                            className="chalk-btn py-1"
+                          >
+                            <UploadCloud className="w-3 h-3" />
+                            <span>Upload .jsx</span>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  )}
 
-                  {currentStepData.variables && Object.keys(currentStepData.variables).length > 0 && (
-                    <div className="flex items-center gap-2 flex-wrap pt-2.5 border-t border-[var(--line)]">
-                      <span className="text-[11px] font-sans text-[var(--chalk-faint)] font-medium">Memory &amp; State:</span>
-                      {Object.entries(currentStepData.variables).map(([k, v]) => (
-                        <span
-                          key={k}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[var(--board-raised)] border border-[var(--line)] font-mono text-[11px]"
-                        >
-                          <span className="text-[var(--chalk-dim)]">{k}:</span>
-                          <strong className="text-[var(--indigo)] font-semibold">{String(v)}</strong>
-                        </span>
-                      ))}
-                    </div>
+                      <div
+                        onDragOver={(e) => { e.preventDefault(); setIsCodeColDragging(true); }}
+                        onDragEnter={(e) => { e.preventDefault(); setIsCodeColDragging(true); }}
+                        onDragLeave={(e) => { e.preventDefault(); setIsCodeColDragging(false); }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setIsCodeColDragging(false);
+                          handleDirectFileDrop(e);
+                        }}
+                        onClick={() => barFileInputRef.current?.click()}
+                        className={`flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200 ${
+                          isCodeColDragging
+                            ? 'bg-[var(--amber-dim)] border-[var(--amber)]'
+                            : 'border-[var(--line-strong)] hover:border-[var(--amber)] hover:bg-[rgba(232,163,61,0.04)]'
+                        }`}
+                        style={{
+                          minHeight: '160px',
+                          borderWidth: '1px',
+                          borderStyle: 'dashed',
+                          borderRadius: '3px',
+                          margin: '16px',
+                        }}
+                      >
+                        <input
+                          type="file"
+                          ref={barFileInputRef}
+                          onChange={handleBarFileInput}
+                          accept=".jsx,.tsx,.js,.ts"
+                          className="hidden"
+                        />
+                        <UploadCloud
+                          className={`w-7 h-7 transition-colors duration-200 ${
+                            isCodeColDragging ? 'text-[var(--amber)]' : 'text-[var(--chalk-faint)]'
+                          }`}
+                        />
+                        <div className="text-center px-4">
+                          <p className="text-[12.5px] font-medium text-[var(--chalk-dim)] mb-0.5">
+                            {isCodeColDragging ? 'Drop .jsx to upload' : 'Drop visualizer here'}
+                          </p>
+                          <p className="text-[11px] text-[var(--chalk-faint)]">
+                            or use{' '}
+                            <span
+                              className="text-[var(--amber)] cursor-pointer hover:underline"
+                              onClick={(e) => { e.stopPropagation(); setShowUploader(true); }}
+                            >
+                              Upload .jsx
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    </>
                   )}
+                  <CodeViewer
+                    solutions={solutions}
+                    initialLanguage="cpp"
+                    activeLine={activeCodeLine}
+                    leetcodeUrl={question.leetcode_url}
+                  />
                 </div>
               )}
-                </>
-              )}
             </div>
-          )}
 
-          {/* Code Column */}
-          {viewMode !== 'visualizer_only' && (
-            <div className="code-col">
-              {!Component && viewMode === 'code_only' && (
-                <>
-                  {/* ── Header bar with action buttons ── */}
-                  <div className="p-3 bg-[var(--board-raised-2)] border-b border-[var(--line)] flex items-center justify-between gap-3 text-[11.5px] font-mono flex-wrap">
-                    <span className="text-[var(--chalk-dim)] flex items-center gap-1.5">
-                      <Code2 className="w-3.5 h-3.5 text-[var(--amber)]" />
-                      Code Execution View · No visualizer uploaded yet.
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={handleDirectCopyPrompt}
-                        className="chalk-btn chalk-btn-amber py-1"
-                      >
-                        <Sparkles className="w-3 h-3" />
-                        <span>{copiedDirect ? 'Copied!' : 'Copy AI Prompt'}</span>
-                      </button>
-                      <button
-                        onClick={() => setShowUploader(true)}
-                        className="chalk-btn py-1"
-                      >
-                        <UploadCloud className="w-3 h-3" />
-                        <span>Upload .jsx</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* ── Drag-and-drop zone in code column ── */}
+            {/* ── Step Progress Bar & Transport HUD ── */}
+            {viewMode !== 'idea_map' && (
+              <>
+                <div className="step-progress-track" style={{ margin: '0' }}>
                   <div
-                    onDragOver={(e) => { e.preventDefault(); setIsCodeColDragging(true); }}
-                    onDragEnter={(e) => { e.preventDefault(); setIsCodeColDragging(true); }}
-                    onDragLeave={(e) => { e.preventDefault(); setIsCodeColDragging(false); }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      setIsCodeColDragging(false);
-                      handleDirectFileDrop(e);
-                    }}
-                    onClick={() => barFileInputRef.current?.click()}
-                    className={`flex flex-col items-center justify-center gap-3 cursor-pointer transition-all duration-200 ${
-                      isCodeColDragging
-                        ? 'bg-[var(--amber-dim)] border-[var(--amber)]'
-                        : 'border-[var(--line-strong)] hover:border-[var(--amber)] hover:bg-[rgba(232,163,61,0.04)]'
-                    }`}
-                    style={{
-                      minHeight: '160px',
-                      borderWidth: '1px',
-                      borderStyle: 'dashed',
-                      borderRadius: '3px',
-                      margin: '16px',
-                    }}
-                  >
-                    <input
-                      type="file"
-                      ref={barFileInputRef}
-                      onChange={handleBarFileInput}
-                      accept=".jsx,.tsx,.js,.ts"
-                      className="hidden"
-                    />
-                    <UploadCloud
-                      className={`w-7 h-7 transition-colors duration-200 ${
-                        isCodeColDragging ? 'text-[var(--amber)]' : 'text-[var(--chalk-faint)]'
-                      }`}
-                    />
-                    <div className="text-center px-4">
-                      <p className="text-[12.5px] font-medium text-[var(--chalk-dim)] mb-0.5">
-                        {isCodeColDragging ? 'Drop .jsx to upload' : 'Drop visualizer here'}
-                      </p>
-                      <p className="text-[11px] text-[var(--chalk-faint)]">
-                        or use{' '}
-                        <span
-                          className="text-[var(--amber)] cursor-pointer hover:underline"
-                          onClick={(e) => { e.stopPropagation(); setShowUploader(true); }}
-                        >
-                          Upload .jsx
-                        </span>
-                        {' '}above
-                      </p>
-                    </div>
-                  </div>
-                </>
-              )}
-              <CodeViewer
-                solutions={solutions}
-                initialLanguage="cpp"
-                activeLine={activeCodeLine}
-                leetcodeUrl={question.leetcode_url}
-              />
-            </div>
-          )}
-        </div>
+                    className="step-progress-fill"
+                    style={{ width: `${maxSteps > 1 ? (currentStep / (maxSteps - 1)) * 100 : 100}%` }}
+                  />
+                </div>
 
-        {/* ── Step progress bar & Transport HUD (hidden in idea_map mode) ── */}
-        {viewMode !== 'idea_map' && (
-          <>
-            <div className="step-progress-track" style={{ margin: '0' }}>
-              <div
-                className="step-progress-fill"
-                style={{ width: `${maxSteps > 1 ? (currentStep / (maxSteps - 1)) * 100 : 100}%` }}
-              />
-            </div>
-
-            {/* ── Docked Transport HUD (VS Code Debugger Control Bar) ── */}
-            <div className="transport-hud px-4 py-2.5 border-t border-[var(--line)] bg-[var(--board-raised)] flex items-center justify-between gap-3 flex-wrap">
-          {/* Scrubber Ticks */}
-          <div className="flex items-center gap-1.5" id="ticks">
-            {Array.from({ length: maxSteps }).map((_, idx) => {
-              const isCurrent = idx === currentStep;
-              const isDone = idx < currentStep;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => {
+                <StudioTransportHud
+                  currentStep={currentStep}
+                  maxSteps={maxSteps}
+                  isPlaying={isPlaying}
+                  speed={speed}
+                  loop={loop}
+                  onStepSelect={(idx) => {
                     setCurrentStep(idx);
-                    sound.playStep(500 + idx * 30);
+                    sound?.playStep?.(500 + idx * 30);
                     if (idx === maxSteps - 1) triggerCompletionCelebration();
                   }}
-                  className={`h-1.5 rounded-full transition-all duration-150 cursor-pointer ${
-                    isCurrent
-                      ? 'w-6 bg-indigo-500'
-                      : isDone
-                      ? 'w-3 bg-indigo-500/40 hover:bg-indigo-500/60'
-                      : 'w-3 bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)]'
-                  }`}
-                  title={`Step ${idx + 1} of ${maxSteps}`}
+                  onPrevStep={handlePrevStep}
+                  onNextStep={handleNextStep}
+                  onTogglePlay={togglePlay}
+                  onReset={handleReset}
+                  onToggleLoop={() => setLoop(!loop)}
+                  onSelectSpeed={(s) => setSpeed(s)}
+                  onOpenShortcuts={() => setShowShortcutsModal(true)}
                 />
-              );
-            })}
-          </div>
-
-          {/* Center Transport Controls HUD */}
-          <div className="flex items-center gap-2">
-            {/* Restart (R) */}
-            <button
-              onClick={handleReset}
-              className="p-1.5 rounded-md text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent hover:border-[var(--line)] transition-all cursor-pointer"
-              title="Restart execution (R)"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Previous Step (←) */}
-            <button
-              className="p-1.5 rounded-md text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent hover:border-[var(--line)] transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
-              id="prevBtn"
-              onClick={handlePrevStep}
-              disabled={currentStep === 0}
-              title="Previous step (←)"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            {/* Play / Pause (Space) */}
-            <button
-              onClick={togglePlay}
-              className={`h-8 px-3 rounded-md flex items-center gap-1.5 text-xs font-mono font-semibold transition-all cursor-pointer ${
-                isPlaying
-                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30'
-                  : 'btn-primary'
-              }`}
-              title="Play / Pause (Space)"
-            >
-              {isPlaying ? (
-                <>
-                  <Pause className="w-3.5 h-3.5 fill-current" />
-                  <span>Pause</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                  <span>Play</span>
-                </>
-              )}
-            </button>
-
-            {/* Next Step (→) */}
-            <button
-              className="p-1.5 rounded-md text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)] border border-transparent hover:border-[var(--line)] transition-all cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
-              id="nextBtn"
-              onClick={handleNextStep}
-              disabled={currentStep === maxSteps - 1}
-              title="Next step (→)"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-
-            <span className="text-[var(--line-strong)] mx-0.5 text-xs">·</span>
-
-            {/* Loop Toggle */}
-            <button
-              onClick={() => setLoop(!loop)}
-              className={`p-1.5 rounded-md transition-all cursor-pointer ${
-                loop
-                  ? 'text-cyan-600 dark:text-cyan-300 bg-cyan-500/15 border border-cyan-500/30'
-                  : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)] hover:bg-[var(--board-hover)]'
-              }`}
-              title={loop ? 'Looping enabled' : 'Looping disabled'}
-            >
-              <Repeat className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Speed Selector Segmented Control */}
-            <div className="flex items-center bg-[var(--board-raised-2)] border border-[var(--line)] rounded-md p-0.5 text-[11px] font-mono">
-              {[0.5, 1, 1.5, 2].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSpeed(s)}
-                  className={`px-1.5 py-0.5 rounded transition-all cursor-pointer ${
-                    speed === s
-                      ? 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold'
-                      : 'text-[var(--chalk-dim)] hover:text-[var(--chalk)]'
-                  }`}
-                >
-                  {s}x
-                </button>
-              ))}
-            </div>
-
-            {/* Step Counter Badge */}
-            <span className="text-xs font-mono text-[var(--chalk-dim)] px-2 py-0.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)]">
-              {currentStep + 1} / {maxSteps}
-            </span>
-
-            {/* Keyboard Shortcuts Trigger */}
-            <button
-              type="button"
-              onClick={() => setShowShortcutsModal(true)}
-              className="hidden md:flex items-center gap-1.5 px-2 py-1 rounded-md bg-[var(--board-raised-2)] hover:bg-[var(--board-hover)] border border-[var(--line)] text-xs font-mono text-[var(--chalk-dim)] hover:text-[var(--chalk)] transition-all cursor-pointer"
-              title="View keyboard shortcuts (?)"
-            >
-              <Keyboard className="w-3 h-3 text-indigo-500 dark:text-indigo-400" />
-              <span>Keys</span>
-              <kbd className="text-[9px]">?</kbd>
-            </button>
-          </div>
-
-          {/* Step Back / Step Forward Shortcut Navigation */}
-          <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[var(--chalk-faint)]">
-            <span>Keys: <kbd>Space</kbd> <kbd>←</kbd> <kbd>→</kbd> <kbd>R</kbd></span>
-          </div>
-        </div>
-          </>
-        )}
+              </>
+            )}
           </>
         )}
       </section>
 
+      {/* ── 3. Decomposed Discussion & Study Hub ── */}
+      <StudioDiscussionHub
+        question={question}
+        currentUser={currentUser}
+        comments={comments}
+        setComments={setComments}
+        publicNotes={publicNotes}
+        setPublicNotes={setPublicNotes}
+        privateNotes={privateNotes}
+        setPrivateNotes={setPrivateNotes}
+        onSavePrivateNotes={handleSavePrivateNotes}
+        privateNotesSaved={privateNotesSaved}
+        onDownloadStudySheet={handleDownloadStudySheet}
+      />
 
-      {/* ── Uploader Modal Overlay ── */}
+      {/* ── Quick Problem Jumper Modal Overlay ── */}
+      {showJumper && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-xs">
+          <div className="fixed inset-0" onClick={() => setShowJumper(false)} />
+          <div className="relative w-full max-w-md bg-[var(--board-raised)] border border-[var(--line-strong)] rounded-xl shadow-2xl z-10 overflow-hidden fade-in">
+            <div className="p-3 border-b border-[var(--line)] flex items-center gap-2">
+              <Search className="w-4 h-4 text-[var(--chalk-dim)] shrink-0" />
+              <input
+                type="text"
+                value={jumperSearch}
+                onChange={(e) => setJumperSearch(e.target.value)}
+                placeholder="Search problems by name, ID, category..."
+                className="bg-transparent text-xs text-[var(--chalk)] placeholder-[var(--chalk-faint)] focus:outline-none w-full font-mono"
+                autoFocus
+              />
+              {jumperSearch && (
+                <button
+                  type="button"
+                  onClick={() => setJumperSearch('')}
+                  className="text-[var(--chalk-faint)] hover:text-[var(--chalk)]"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="overflow-y-auto max-h-72 divide-y divide-[var(--line)] font-mono text-[11px]">
+              {filteredJumperQuestions.length === 0 ? (
+                <div className="p-6 text-center text-xs text-[var(--chalk-faint)]">No matching problems found</div>
+              ) : (
+                filteredJumperQuestions.map((q) => (
+                  <div
+                    key={q.id}
+                    onClick={() => {
+                      if (onNavigateQuestion) onNavigateQuestion(q);
+                      setShowJumper(false);
+                    }}
+                    className={`px-3.5 py-2.5 flex items-center justify-between gap-2 cursor-pointer transition ${
+                      q.id === question.id
+                        ? 'bg-indigo-500/15 text-indigo-400 font-semibold'
+                        : 'hover:bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-indigo-400 shrink-0">#{q.display_id || q.leetcode_id || 'DSA'}</span>
+                      <span className="truncate">{q.title}</span>
+                    </div>
+                    <span
+                      className={`text-[10px] shrink-0 ${
+                        q.difficulty === 'Easy'
+                          ? 'text-emerald-400'
+                          : q.difficulty === 'Medium'
+                          ? 'text-amber-400'
+                          : 'text-rose-400'
+                      }`}
+                    >
+                      {q.difficulty}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modals ── */}
       {showUploader && (
         <VisualizerUploader
           question={question}
@@ -1276,237 +774,6 @@ export default function VisualizerStudio({
         />
       )}
 
-      {/* ── Zone 3: Knowledge Hub (GitHub Discussions & Notes) ── */}
-      <div className="rounded-lg border border-[var(--line)] bg-[var(--board-raised)] overflow-hidden">
-        {/* Tab bar */}
-        <div className="flex items-center gap-6 border-b border-[var(--line)] px-4 bg-[var(--board-raised-2)]">
-          {[
-            ['comments', 'Discussion', comments.length],
-            ['public_notes', 'Community Notes', publicNotes.length],
-            ['private_notes', 'Private Scratchpad', null]
-          ].map(([id, label, count]) => (
-            <button
-              key={id}
-              onClick={() => setHubTab(id)}
-              className={`tab-btn ${hubTab === id ? 'active' : ''}`}
-            >
-              <span>{label}</span>
-              {count !== null && (
-                <span className="text-[10.5px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--board-raised)] border border-[var(--line)] text-[var(--chalk-dim)] ml-1">
-                  {count}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {hubTab === 'comments' && (
-          <div className="p-4 space-y-4">
-            <form onSubmit={handlePostComment} className="space-y-2">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--chalk-dim)]">
-                <span className="w-5 h-5 rounded-md bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xs">
-                  {currentUser?.avatar || '⚡'}
-                </span>
-                <span>
-                  Comment as <strong className="text-[var(--chalk)] font-medium">@{currentUser?.username || 'Guest'}</strong>
-                </span>
-                <span className="text-cyan-600 dark:text-cyan-400 ml-auto">+10 XP</span>
-              </div>
-              <textarea
-                rows={2}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Ask a question, discuss edge cases, or share an invariant..."
-                className="hub-textarea rounded-md text-xs"
-                style={{ resize: 'vertical' }}
-              />
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={isPostingComment || !newComment.trim()}
-                  className="btn-primary h-7.5 px-3 text-xs disabled:opacity-40"
-                >
-                  <Send className="w-3 h-3" />
-                  <span>{isPostingComment ? 'Posting…' : 'Comment'}</span>
-                </button>
-              </div>
-            </form>
-
-            <div className="space-y-2.5">
-              {comments.length === 0 ? (
-                <div className="py-10 text-center space-y-1">
-                  <MessageSquare className="w-6 h-6 text-[var(--chalk-faint)] mx-auto opacity-50" />
-                  <p className="text-xs text-[var(--chalk-faint)]">No discussions yet — start the conversation.</p>
-                </div>
-              ) : (
-                comments.map((c) => (
-                  <div key={c.id} className="p-3 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)] space-y-2 hover:border-[var(--line-strong)] transition-all">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-md bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs">
-                          {c.avatar || '⚡'}
-                        </span>
-                        <span className="text-xs font-semibold text-[var(--chalk)] hover:underline cursor-pointer">
-                          @{c.username}
-                        </span>
-                        <span className="text-[10px] font-mono text-[var(--chalk-faint)]">
-                          {c.created_at ? new Date(c.created_at).toLocaleDateString() : 'recently'}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => handleUpvoteComment(c.id)}
-                        className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono text-[var(--chalk-dim)] hover:text-indigo-400 hover:bg-indigo-500/10 border border-[var(--line)] transition-all cursor-pointer"
-                        title="Upvote comment"
-                      >
-                        <ThumbsUp className="w-3 h-3" />
-                        <span className="font-semibold">{c.upvotes || 0}</span>
-                      </button>
-                    </div>
-                    <p className="text-xs text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-7">
-                      {c.content}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
-
-        {hubTab === 'public_notes' && (
-          <div className="p-4 space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs text-[var(--chalk-faint)] font-sans">
-                Community intuitions, invariant breakdowns, and interview tricks
-              </span>
-              <button
-                onClick={() => setShowAddPublicNote(!showAddPublicNote)}
-                className="btn-secondary h-7 px-2.5 text-xs"
-              >
-                <Plus className="w-3 h-3" />
-                <span>{showAddPublicNote ? 'Cancel' : 'Share Note'}</span>
-              </button>
-            </div>
-
-            {/* Form to add public note */}
-            {showAddPublicNote && (
-              <form onSubmit={handlePostPublicNote} className="p-3.5 rounded-md bg-[var(--board-raised-2)] border border-[var(--line-strong)] space-y-2.5 fade-in">
-                <input
-                  type="text"
-                  value={newNoteTitle}
-                  onChange={(e) => setNewNoteTitle(e.target.value)}
-                  placeholder="Note Title: e.g. Invariant: Sliding window boundary condition"
-                  className="hub-input rounded-md"
-                  required
-                />
-                <textarea
-                  rows={3}
-                  value={newNoteContent}
-                  onChange={(e) => setNewNoteContent(e.target.value)}
-                  placeholder="Write the core algorithmic insight, invariant, or trick to remember..."
-                  className="hub-textarea rounded-md text-xs"
-                  required
-                />
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddPublicNote(false)}
-                    className="btn-secondary h-7 px-2.5 text-xs"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isPostingNote || !newNoteContent.trim()}
-                    className="btn-primary h-7 px-3 text-xs disabled:opacity-40"
-                  >
-                    {isPostingNote ? 'Publishing...' : 'Publish to Community'}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            <div className="space-y-2.5">
-              {publicNotes.length === 0 ? (
-                <div className="py-10 text-center space-y-1">
-                  <BookOpen className="w-6 h-6 text-[var(--chalk-faint)] mx-auto opacity-50" />
-                  <p className="text-xs text-[var(--chalk-faint)]">No community notes yet — share the first insight.</p>
-                </div>
-              ) : (
-                publicNotes.map((note) => (
-                  <div key={note.id} className="p-3 rounded-md bg-[var(--board-raised-2)] border border-[var(--line)] space-y-2 hover:border-[var(--line-strong)] transition-all">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-md bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs">
-                          {note.avatar || '⚡'}
-                        </span>
-                        <div>
-                          <h4 className="text-xs font-semibold text-[var(--chalk)]">{note.title || 'Algorithmic Insight'}</h4>
-                          <span className="text-[10px] font-mono text-[var(--chalk-faint)]">by @{note.username}</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleUpvotePublicNote(note.id)}
-                        className="flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono text-[var(--chalk-dim)] hover:text-cyan-400 hover:bg-cyan-500/10 border border-[var(--line)] transition-all cursor-pointer"
-                        title="Mark as helpful"
-                      >
-                        <ThumbsUp className="w-3 h-3" />
-                        <span className="font-semibold">{note.upvotes || 0}</span>
-                      </button>
-                    </div>
-                    <p className="text-xs text-[var(--chalk-dim)] font-sans leading-relaxed whitespace-pre-wrap pl-7">
-                      {note.content}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
-
-        {hubTab === 'private_notes' && (
-          <div className="p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-[var(--chalk-faint)]">
-                Private to @{currentUser?.username || 'you'} · stored locally
-              </span>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleDownloadStudySheet}
-                  className="chalk-btn"
-                  title="Download Markdown Study Sheet for revision"
-                >
-                  <Download className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Export Study Sheet (.md)</span>
-                </button>
-
-                <button
-                  onClick={handleSavePrivateNotes}
-                  className="chalk-btn chalk-btn-amber"
-                >
-                  {privateNotesSaved ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Save className="w-3.5 h-3.5" />}
-                  <span>{privateNotesSaved ? 'Saved to SQLite' : 'Save Private Notes'}</span>
-                </button>
-              </div>
-            </div>
-
-            <textarea
-              rows={4}
-              value={privateNotes}
-              onChange={(e) => setPrivateNotes(e.target.value)}
-              placeholder="Write your private notes, loop invariants, base cases, memory nuances, or college exam tips..."
-              className="hub-textarea font-mono"
-            />
-
-            <div className="flex items-center justify-between text-[11px] font-mono text-[var(--chalk-faint)]">
-              <span className="flex items-center gap-1"><Lock className="w-3 h-3" /> Stored locally in SQLite, never sent anywhere</span>
-              <span className="text-[var(--amber)] opacity-75">Ctrl+S to save</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Report Solution Modal */}
       <ReportSolutionModal
         isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
@@ -1516,7 +783,6 @@ export default function VisualizerStudio({
         currentUser={currentUser}
       />
 
-      {/* AI Question Enhancer & Specification Editor Modal */}
       <AiQuestionEnhancerModal
         isOpen={showEnhanceModal}
         onClose={() => setShowEnhanceModal(false)}
@@ -1527,20 +793,135 @@ export default function VisualizerStudio({
         }}
       />
 
-      {/* Keyboard Shortcuts Modal */}
       <KeyboardShortcutsModal
         isOpen={showShortcutsModal}
         onClose={() => setShowShortcutsModal(false)}
       />
+
+      {/* ── 3. Fullscreen Theater Mode Overlay ── */}
+      {isFullscreen && (
+        <div className="fixed inset-0 z-50 bg-[var(--bg-base)] flex flex-col overflow-hidden animate-fadeIn">
+          {/* Top Fullscreen Control Bar */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 bg-[var(--board-raised)] border-b border-[var(--line)] shrink-0 shadow-md">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setIsFullscreen(false)}
+                className="btn-secondary h-8 px-3 text-xs flex items-center gap-1.5 cursor-pointer text-amber-300 hover:text-white font-medium"
+                title="Exit Fullscreen (Esc or F)"
+              >
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span>Exit Fullscreen</span>
+              </button>
+              <div className="h-4 w-[1px] bg-[var(--line)] hidden sm:block" />
+              <h3 className="text-sm font-semibold text-[var(--chalk)] truncate max-w-md hidden sm:block">
+                {question.title}
+              </h3>
+              <span className="text-xs font-mono text-[var(--chalk-dim)] hidden md:inline">
+                · Step {currentStep + 1} of {maxSteps}
+              </span>
+            </div>
+
+            {/* Approach Selector & Zoom Controls */}
+            <div className="flex items-center gap-3">
+              <div className="segmented-control scale-90">
+                {[
+                  { id: 'intuitive', label: 'Brute' },
+                  { id: 'better', label: 'Better' },
+                  { id: 'optimal', label: 'Optimal' }
+                ].map((tier) => (
+                  <button
+                    key={tier.id}
+                    type="button"
+                    onClick={() => handleSelectTier(tier.id)}
+                    className={`segmented-item ${activeTier === tier.id ? 'active' : ''}`}
+                  >
+                    {tier.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 bg-[var(--board)] border border-[var(--line)] rounded-md px-1.5 py-1">
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel((z) => Math.max(0.5, Math.round((z - 0.1) * 10) / 10))}
+                  className="p-1 hover:text-[var(--chalk)] text-[var(--chalk-dim)] transition-colors cursor-pointer"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <span className="text-[11px] font-mono font-semibold px-1 text-[var(--chalk)] min-w-[42px] text-center select-none">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setZoomLevel((z) => Math.min(1.8, Math.round((z + 0.1) * 10) / 10))}
+                  className="p-1 hover:text-[var(--chalk)] text-[var(--chalk-dim)] transition-colors cursor-pointer"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                {zoomLevel !== 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setZoomLevel(1)}
+                    className="text-[10px] font-mono text-indigo-400 hover:underline px-1 cursor-pointer"
+                    title="Reset Zoom to 100%"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Center Canvas Area (Scrollable / Pannable with Scaling) */}
+          <div className="flex-1 w-full overflow-auto p-4 sm:p-8 flex items-center justify-center bg-[var(--bg-base)]">
+            <div
+              style={{
+                transform: `scale(${zoomLevel})`,
+                transformOrigin: 'top center',
+                transition: 'transform 0.15s ease'
+              }}
+              className="w-full max-w-6xl min-w-[650px] flex items-center justify-center"
+            >
+              {Component && (
+                <Component
+                  currentStep={currentStep}
+                  onStepChange={setCurrentStep}
+                  customInput={customInput}
+                  customTarget={customTarget}
+                  activeTier={activeTier}
+                  approachTier={activeTier}
+                  tier={activeTier}
+                  currentStepData={currentStepData}
+                  question={question}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Floating Bottom Transport HUD */}
+          <div className="p-3 bg-[var(--board)] border-t border-[var(--line)] flex justify-center shrink-0 shadow-lg">
+            <StudioTransportHud
+              isPlaying={isPlaying}
+              currentStep={currentStep}
+              maxSteps={maxSteps}
+              speed={speed}
+              loop={loop}
+              onTogglePlay={togglePlay}
+              onPrevStep={handlePrevStep}
+              onNextStep={handleNextStep}
+              onReset={handleReset}
+              onStepChange={setCurrentStep}
+              onSpeedChange={setSpeed}
+              onToggleLoop={() => setLoop(!loop)}
+              onOpenShortcuts={() => setShowShortcutsModal(true)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
-}
-
-function toCamelCase(str) {
-  if (!str) return 'Visualizer';
-  return str
-    .replace(/[^a-zA-Z0-9\s]/g, '')
-    .split(/\s+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join('');
 }

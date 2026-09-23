@@ -73,60 +73,153 @@ export default function App() {
       if (!rawInput) return null;
       const cleanId = decodeURIComponent(rawInput).trim();
       const normalizedCleanId = cleanId.toLowerCase().replace(/[-_]/g, ' ').trim();
-      return list.find((q) => {
+      const match = list.find((q) => {
         if (!q) return false;
         if (q.id === cleanId || q.slug === cleanId) return true;
+        if (q.component_key === cleanId || q.componentKey === cleanId) return true;
+        if (q.component_key && q.component_key.toLowerCase() === cleanId.toLowerCase()) return true;
+        if (q.componentKey && q.componentKey.toLowerCase() === cleanId.toLowerCase()) return true;
         if (q.title && q.title.toLowerCase() === cleanId.toLowerCase()) return true;
         const normalizedTitle = (q.title || '').toLowerCase().replace(/[-_]/g, ' ').trim();
         const normalizedSlug = (q.slug || q.id || '').toLowerCase().replace(/[-_]/g, ' ').trim();
         return normalizedTitle === normalizedCleanId || normalizedSlug === normalizedCleanId;
-      }) || null;
+      });
+
+      if (match) return match;
+
+      // Fallback: If cleanId looks like a visualizer component key, construct a virtual question entry
+      if (/^[A-Z][a-zA-Z0-9]+Visualizer$/.test(cleanId) || /^[A-Z][a-zA-Z0-9]+$/.test(cleanId)) {
+        const compKey = cleanId.endsWith('Visualizer') ? cleanId : `${cleanId}Visualizer`;
+        return {
+          id: cleanId,
+          title: cleanId.replace(/Visualizer$/, '').replace(/([A-Z])/g, ' $1').trim(),
+          component_key: compKey,
+          componentKey: compKey,
+          difficulty: 'Medium',
+          category: 'DSA Visualizer',
+          status: 'todo'
+        };
+      }
+      return null;
     };
 
-    if (cleanHash.startsWith('admin/') || pathname.startsWith('/admin/')) {
-      const rawId = cleanHash.startsWith('admin/')
-        ? cleanHash.replace('admin/', '')
-        : pathname.replace('/admin/', '');
+    // 1. Hash-based routing takes precedence if a hash is present
+    if (cleanHash) {
+      if (cleanHash.startsWith('article/')) {
+        const rawId = cleanHash.replace('article/', '');
+        const matched = findMatchingQuestion(rawId);
+        if (matched) {
+          setActiveQuestion(matched);
+          setActiveView('article');
+          document.title = `${matched.title} — Editorial & Code | AlgoVision`;
+          if (pathname.startsWith('/admin')) {
+            window.history.replaceState(null, '', `/#article/${matched.id}`);
+          }
+        }
+        return;
+      }
+      if (
+        cleanHash.startsWith('studio/') ||
+        cleanHash.startsWith('problem/') ||
+        cleanHash.startsWith('visualize/')
+      ) {
+        const rawId = cleanHash.replace(/^(?:studio|problem|visualize)\//, '');
+        const matched = findMatchingQuestion(rawId);
+        if (matched) {
+          setActiveQuestion(matched);
+          setActiveView('studio');
+          document.title = `${matched.title} — Step-by-Step Visualizer | AlgoVision`;
+          if (pathname.startsWith('/admin')) {
+            window.history.replaceState(null, '', `/#studio/${matched.id}`);
+          }
+        }
+        return;
+      }
+      if (cleanHash.startsWith('admin/')) {
+        const rawId = cleanHash.replace('admin/', '');
+        const matched = findMatchingQuestion(rawId);
+        setActiveView('admin');
+        if (matched) {
+          setActiveQuestion(matched);
+          document.title = `Admin: ${matched.title} | AlgoVision`;
+        } else {
+          document.title = 'Admin Panel | AlgoVision';
+        }
+        return;
+      }
+      if (cleanHash === 'admin') {
+        setActiveView('admin');
+        setActiveQuestion(null);
+        document.title = 'Admin Panel | AlgoVision';
+        return;
+      }
+      if (cleanHash === 'sandbox') {
+        setActiveView('sandbox');
+        setActiveQuestion(null);
+        document.title = 'Visualizer Sandbox | AlgoVision';
+        return;
+      }
+      if (cleanHash.startsWith('theory/')) {
+        const stepStr = cleanHash.replace('theory/', '');
+        const stepNo = parseInt(stepStr, 10) || 1;
+        setActiveTheoryStep(stepNo);
+        setActiveView('theory');
+        setActiveQuestion(null);
+        document.title = `Step ${stepNo} Theory & Blueprint | AlgoVision`;
+        return;
+      }
+    }
+
+    // 2. Fallback to pathname routing when no hash is present
+    if (pathname.startsWith('/admin/')) {
+      const rawId = pathname.replace('/admin/', '');
       const matched = findMatchingQuestion(rawId);
       setActiveView('admin');
       if (matched) {
         setActiveQuestion(matched);
+        document.title = `Admin: ${matched.title} | AlgoVision`;
+      } else {
+        document.title = 'Admin Panel | AlgoVision';
       }
-    } else if (cleanHash === 'admin' || pathname === '/admin') {
+    } else if (pathname === '/admin') {
       setActiveView('admin');
       setActiveQuestion(null);
-    } else if (cleanHash === 'sandbox' || pathname === '/sandbox') {
+      document.title = 'Admin Panel | AlgoVision';
+    } else if (pathname === '/sandbox') {
       setActiveView('sandbox');
       setActiveQuestion(null);
-    } else if (cleanHash.startsWith('article/') || pathname.startsWith('/article/')) {
-      const rawId = cleanHash.startsWith('article/')
-        ? cleanHash.replace('article/', '')
-        : pathname.replace('/article/', '');
+      document.title = 'Visualizer Sandbox | AlgoVision';
+    } else if (pathname.startsWith('/article/')) {
+      const rawId = pathname.replace('/article/', '');
       const matched = findMatchingQuestion(rawId);
       if (matched) {
         setActiveQuestion(matched);
         setActiveView('article');
+        document.title = `${matched.title} — Editorial & Code | AlgoVision`;
       }
-    } else if (cleanHash.startsWith('studio/') || pathname.startsWith('/studio/')) {
-      const rawId = cleanHash.startsWith('studio/')
-        ? cleanHash.replace('studio/', '')
-        : pathname.replace('/studio/', '');
+    } else if (
+      pathname.startsWith('/studio/') ||
+      pathname.startsWith('/problem/') ||
+      pathname.startsWith('/visualize/')
+    ) {
+      const rawId = pathname.replace(/^\/(?:studio|problem|visualize)\//, '');
       const matched = findMatchingQuestion(rawId);
       if (matched) {
         setActiveQuestion(matched);
         setActiveView('studio');
+        document.title = `${matched.title} — Step-by-Step Visualizer | AlgoVision`;
       }
-    } else if (cleanHash.startsWith('theory/') || pathname.startsWith('/theory/')) {
-      const stepStr = cleanHash.startsWith('theory/')
-        ? cleanHash.replace('theory/', '')
-        : pathname.replace('/theory/', '');
+    } else if (pathname.startsWith('/theory/')) {
+      const stepStr = pathname.replace('/theory/', '');
       const stepNo = parseInt(stepStr, 10) || 1;
       setActiveTheoryStep(stepNo);
       setActiveView('theory');
       setActiveQuestion(null);
+      document.title = `Step ${stepNo} Theory & Blueprint | AlgoVision`;
     } else {
       setActiveView('library');
       setActiveQuestion(null);
+      document.title = 'AlgoVision — Interactive DSA Curriculum';
     }
   };
 
@@ -180,14 +273,22 @@ export default function App() {
   const handleOpenStudio = (question) => {
     setActiveQuestion(question);
     setActiveView('studio');
-    window.location.hash = `#studio/${question.id}`;
+    if (window.location.pathname.startsWith('/admin')) {
+      window.history.pushState(null, '', `/#studio/${question.id}`);
+    } else {
+      window.location.hash = `#studio/${question.id}`;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenArticle = (question) => {
     setActiveQuestion(question);
     setActiveView('article');
-    window.location.hash = `#article/${question.id}`;
+    if (window.location.pathname.startsWith('/admin')) {
+      window.history.pushState(null, '', `/#article/${question.id}`);
+    } else {
+      window.location.hash = `#article/${question.id}`;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -232,7 +333,11 @@ export default function App() {
   const handleBackToLibrary = () => {
     setActiveView('library');
     setActiveQuestion(null);
-    window.location.hash = '';
+    if (window.location.pathname.startsWith('/admin')) {
+      window.history.pushState(null, '', '/');
+    } else {
+      window.location.hash = '';
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

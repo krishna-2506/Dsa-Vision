@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'stack';
 
 export const meta = {
   title: 'Remove K Digits',
@@ -9,11 +9,38 @@ export const meta = {
   description: 'Finds the smallest possible number after removing k digits using a monotonic increasing stack, greedily eliminating larger preceding digits whenever a smaller digit appears.'
 };
 
+export const ideaMap = [
+  {
+    id: 'greedy-significance',
+    title: 'Positional Significance of Digits',
+    description: 'The most significant digits on the left determine numerical magnitude. Minimizing left digits is strictly preferred over minimizing right digits.'
+  },
+  {
+    id: 'monotonic-stack',
+    title: 'Monotonic Increasing Order',
+    description: 'We want digits in non-decreasing order from left to right. Whenever the current digit is smaller than the top of the stack, pop the larger preceding digit.'
+  },
+  {
+    id: 'budget-decrement',
+    title: 'Removal Budget (k)',
+    description: 'Each pop consumes 1 unit of k. Once k reaches 0, no further removals are permitted and remaining digits are appended directly.'
+  },
+  {
+    id: 'leading-zero-stripping',
+    title: 'Leading Zero Handling',
+    description: 'Do not push leading zeroes into an empty stack. If zeroes appear at the beginning of the resulting number, they are stripped.'
+  },
+  {
+    id: 'suffix-truncation',
+    title: 'Monotonic Suffix Truncation',
+    description: 'If the scan finishes but k > 0 remains (digits were strictly increasing), pop the last k digits from the end of the stack.'
+  }
+];
+
 export const solutions = {
   cpp: `// C++: Remove K Digits using Monotonic Stack
 // Time Complexity: O(N) | Space Complexity: O(N)
 #include <string>
-#include <vector>
 using namespace std;
 
 string removeKdigits(string num, int k) {
@@ -29,6 +56,7 @@ string removeKdigits(string num, int k) {
         }
     }
 
+    // If k removals still remain, truncate from the right
     while (!st.empty() && k > 0) {
         st.pop_back();
         k--;
@@ -36,53 +64,46 @@ string removeKdigits(string num, int k) {
 
     return st.empty() ? "0" : st;
 }`,
-  java: `// Java: Remove K Digits using Monotonic Stack
-import java.util.Stack;
-
+  java: `// Java: Remove K Digits using StringBuilder Stack
 class Solution {
     public String removeKdigits(String num, int k) {
-        Stack<Character> st = new Stack<>();
+        StringBuilder st = new StringBuilder();
 
         for (char c : num.toCharArray()) {
-            while (!st.isEmpty() && k > 0 && st.peek() > c) {
-                st.pop();
+            while (st.length() > 0 && k > 0 && st.charAt(st.length() - 1) > c) {
+                st.deleteCharAt(st.length() - 1);
                 k--;
             }
-            if (!st.isEmpty() || c != '0') {
-                st.push(c);
+            if (st.length() > 0 || c != '0') {
+                st.append(c);
             }
         }
 
-        while (!st.isEmpty() && k > 0) {
-            st.pop();
+        while (st.length() > 0 && k > 0) {
+            st.deleteCharAt(st.length() - 1);
             k--;
         }
 
-        if (st.isEmpty()) return "0";
-
-        StringBuilder sb = new StringBuilder();
-        while (!st.isEmpty()) {
-            sb.append(st.pop());
-        }
-        return sb.reverse().toString();
+        return st.length() == 0 ? "0" : st.toString();
     }
 }`,
-  python: `# Python 3: Remove K Digits
-def remove_k_digits(num: str, k: int) -> str:
+  python: `# Python 3: Remove K Digits using List Stack
+def removeKdigits(num: str, k: int) -> str:
     st = []
 
     for digit in num:
         while st and k > 0 and st[-1] > digit:
             st.pop()
             k -= 1
-        st.append(digit)
+        if st or digit != '0':
+            st.append(digit)
 
+    # Pop remaining k digits if still non-zero
     if k > 0:
         st = st[:-k]
 
-    res = "".join(st).lstrip("0")
-    return res if res else "0"`,
-  javascript: `// JavaScript: Remove K Digits
+    return "".join(st) if st else "0"`,
+  javascript: `// JavaScript: Remove K Digits using Array Stack
 function removeKdigits(num, k) {
     const st = [];
 
@@ -91,150 +112,182 @@ function removeKdigits(num, k) {
             st.pop();
             k--;
         }
-        st.push(c);
+        if (st.length > 0 || c !== '0') {
+            st.push(c);
+        }
     }
 
-    while (k > 0 && st.length > 0) {
+    while (st.length > 0 && k > 0) {
         st.pop();
         k--;
     }
 
-    const res = st.join('').replace(/^0+/, '');
-    return res === '' ? '0' : res;
+    return st.length === 0 ? "0" : st.join('');
 }`
 };
 
 export const steps = [
   {
-    title: '1. Initialize: num = "1432219", k = 3',
-    phase: 'INIT',
-    codeLine: 10,
-    kRemaining: 3,
-    char: '1',
-    idx: 0,
-    stack: ['1'],
-    num: '1432219',
-    explain: 'Greedy rule: Lower digits at higher place values (left side) yield the smallest overall number.'
+    stepIndex: 1,
+    title: 'Initialize Monotonic Stack and Digits Array',
+    explanation: 'Given num = "1432219" and k = 3. Initialize an empty stack and removal quota k = 3. We seek the numerically smallest sequence.',
+    activeLine: 7,
+    activeIdeaId: 'greedy-significance',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [],
+    highlightIndices: [0],
+    pointers: { i: 0 },
+    variables: { incoming: '1', k: 3, stack: '[]' },
+    customCard: {
+      title: 'Initial State',
+      rows: [
+        { label: 'Input Digits', value: '"1432219"' },
+        { label: 'Allowed Removals (k)', value: '3' },
+        { label: 'Action', value: 'Push 1 onto stack' }
+      ]
+    }
   },
   {
-    title: '2. Scan "4": 4 > 1 &rarr; Push 4 to stack',
-    phase: 'PUSH',
-    codeLine: 17,
-    kRemaining: 3,
-    char: '4',
-    idx: 1,
-    stack: ['1', '4'],
-    num: '1432219',
-    explain: '4 is larger than 1. Push 4. Stack = ["1", "4"].'
+    stepIndex: 2,
+    title: 'Push Digit 1, then Push Digit 4',
+    explanation: 'Push "1". Next digit is "4". Since 4 > 1, the monotonic increasing condition holds. Push "4". Stack is ["1", "4"] with k = 3.',
+    activeLine: 15,
+    activeIdeaId: 'monotonic-stack',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [1, 4],
+    highlightIndices: [0, 1],
+    pointers: { i: 1 },
+    variables: { incoming: '4', k: 3, stack: '["1", "4"]' },
+    customCard: {
+      title: 'Increasing Run',
+      rows: [
+        { label: 'Stack Top', value: '4' },
+        { label: 'Incoming Digit', value: '3' },
+        { label: 'Comparison', value: 'Top (4) > Incoming (3) -> Violation!' }
+      ]
+    }
   },
   {
-    title: '3. Scan "3": 4 > 3 and k=3 > 0 &rarr; Pop "4"! (k becomes 2)',
-    phase: 'POP_GREATER',
-    codeLine: 13,
-    kRemaining: 2,
-    char: '3',
-    idx: 2,
-    stack: ['1', '3'],
-    num: '1432219',
-    explain: 'Having 3 at the second position is smaller than having 4. Pop 4, push 3! k drops to 2.'
+    stepIndex: 3,
+    title: 'Incoming 3 < Top 4: Pop 4 (1st Removal, k becomes 2)',
+    explanation: 'Incoming digit is "3", but stack top is "4" > "3". Pop "4" to ensure smaller digit at higher magnitude. k decreases from 3 to 2. Push "3". Stack is ["1", "3"].',
+    activeLine: 11,
+    activeIdeaId: 'budget-decrement',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [1, 3],
+    highlightIndices: [1, 2],
+    pointers: { i: 2 },
+    variables: { popped: '4', k: 2, stack: '["1", "3"]' },
+    customCard: {
+      title: 'First Removal (k = 2)',
+      rows: [
+        { label: 'Popped Digit', value: '"4"', accent: true },
+        { label: 'Reason', value: 'Preceding "4" is larger than next "3"' },
+        { label: 'New Stack State', value: '["1", "3"]' },
+        { label: 'Remaining Budget', value: 'k = 2' }
+      ]
+    }
   },
   {
-    title: '4. Scan "2": 3 > 2 and k=2 > 0 &rarr; Pop "3"! (k becomes 1)',
-    phase: 'POP_GREATER',
-    codeLine: 13,
-    kRemaining: 1,
-    char: '2',
-    idx: 3,
-    stack: ['1', '2'],
-    num: '1432219',
-    explain: 'Pop 3 in favor of 2. Stack = ["1", "2"]. k drops to 1.'
+    stepIndex: 4,
+    title: 'Incoming 2 < Top 3: Pop 3 (2nd Removal, k becomes 1)',
+    explanation: 'Incoming digit is "2", and stack top is "3" > "2". Pop "3". k decreases from 2 to 1. Push "2". Stack is ["1", "2"].',
+    activeLine: 11,
+    activeIdeaId: 'budget-decrement',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [1, 2],
+    highlightIndices: [2, 3],
+    pointers: { i: 3 },
+    variables: { popped: '3', k: 1, stack: '["1", "2"]' },
+    customCard: {
+      title: 'Second Removal (k = 1)',
+      rows: [
+        { label: 'Popped Digit', value: '"3"', accent: true },
+        { label: 'New Stack State', value: '["1", "2"]' },
+        { label: 'Remaining Budget', value: 'k = 1' }
+      ]
+    }
   },
   {
-    title: '5. Scan "2", then "1": 2 > 1 and k=1 > 0 &rarr; Pop "2"! (k becomes 0)',
-    phase: 'POP_GREATER',
-    codeLine: 13,
-    kRemaining: 0,
-    char: '1',
-    idx: 5,
-    stack: ['1', '2', '1'],
-    num: '1432219',
-    explain: 'Second 2 is popped when 1 is scanned. All k=3 deletions used up!'
+    stepIndex: 5,
+    title: 'Incoming 2 == Top 2: Push 2 without Pop',
+    explanation: 'Next digit is "2". Stack top is "2". Since 2 is not strictly greater than 2, condition does not trigger. Push "2". Stack is ["1", "2", "2"] with k = 1.',
+    activeLine: 15,
+    activeIdeaId: 'monotonic-stack',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [1, 2, 2],
+    highlightIndices: [4],
+    pointers: { i: 4 },
+    variables: { incoming: '2', k: 1, stack: '["1", "2", "2"]' },
+    customCard: {
+      title: 'Equal Value Handling',
+      rows: [
+        { label: 'Comparison', value: 'Top (2) is not > Incoming (2)' },
+        { label: 'Stack State', value: '["1", "2", "2"]' },
+        { label: 'Remaining Budget', value: 'k = 1' }
+      ]
+    }
   },
   {
-    title: '6. Scan "9": k=0 &rarr; Push 9. Final Answer = "1219"!',
-    phase: 'COMPLETE',
-    codeLine: 26,
-    kRemaining: 0,
-    char: '9',
-    idx: 6,
-    stack: ['1', '2', '1', '9'],
-    num: '1432219',
-    explain: 'Final digits in stack form "1219". This is the lexicographically smallest number possible.'
+    stepIndex: 6,
+    title: 'Incoming 1 < Top 2: Pop 2 (3rd Removal, k becomes 0)',
+    explanation: 'Next digit is "1". Stack top is "2" > "1" and k = 1 > 0. Pop "2"! k becomes 0. All removal budget is exhausted. Push "1". Stack is ["1", "2", "1"].',
+    activeLine: 11,
+    activeIdeaId: 'budget-decrement',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [1, 2, 1],
+    highlightIndices: [4, 5],
+    pointers: { i: 5 },
+    variables: { popped: '2', k: 0, stack: '["1", "2", "1"]' },
+    customCard: {
+      title: 'Budget Exhausted (k = 0)',
+      rows: [
+        { label: 'Popped Digit', value: '"2"', accent: true },
+        { label: 'Total Removals Made', value: '3 (k is now 0)' },
+        { label: 'Stack State', value: '["1", "2", "1"]' },
+        { label: 'Rule Forward', value: 'Append all remaining digits' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Process Remaining Digit 9 (k = 0, Direct Append)',
+    explanation: 'Next digit is "9". Since k = 0, no removals are permitted regardless of magnitude. Push "9" directly. Stack becomes ["1", "2", "1", "9"].',
+    activeLine: 15,
+    activeIdeaId: 'budget-decrement',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [1, 2, 1, 9],
+    highlightIndices: [6],
+    pointers: { i: 6 },
+    variables: { incoming: '9', k: 0, stack: '["1", "2", "1", "9"]' },
+    customCard: {
+      title: 'Direct Append',
+      rows: [
+        { label: 'Incoming Digit', value: '"9"' },
+        { label: 'Removal Quota', value: '0 (locked)' },
+        { label: 'Resulting Stack', value: '["1", "2", "1", "9"]' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Scan Complete: Result is "1219"',
+    explanation: 'All digits scanned. Removed 3 digits ("4", "3", "2") to achieve the minimal possible numerical value "1219". Leading zero check passes. Time complexity is O(N).',
+    activeLine: 26,
+    activeIdeaId: 'leading-zero-stripping',
+    track: [1, 4, 3, 2, 2, 1, 9],
+    auxiliaryTrack: [1, 2, 1, 9],
+    highlightIndices: [],
+    pointers: {},
+    variables: { result: '"1219"', removalsMade: 3, original: '"1432219"' },
+    customCard: {
+      title: 'Final Minimal Number',
+      rows: [
+        { label: 'Smallest Value', value: '"1219"', accent: true },
+        { label: 'Removed Digits', value: '["4", "3", "2"]' },
+        { label: 'Time Complexity', value: 'O(N) Single Pass' },
+        { label: 'Space Complexity', value: 'O(N) Monotonic Stack' }
+      ]
+    }
   }
 ];
-
-export default function RemoveKDigitsVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300">
-          Removals Left (k): <strong className="text-base text-amber-200">{step.kRemaining}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Active Digit: <strong>&apos;{step.char}&apos; (idx {step.idx})</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Input Digits Stream</span>
-          <span className="text-emerald-400 font-bold">Monotonic Greedy</span>
-        </div>
-
-        {/* Input Digits */}
-        <div className="flex items-center justify-center gap-2 w-full pt-2">
-          {step.num.split('').map((d, i) => {
-            const isCurr = i === step.idx;
-            const isPassed = i < step.idx;
-
-            return (
-              <div
-                key={i}
-                className={`w-10 h-12 rounded-xl border-2 flex flex-col items-center justify-center font-mono font-bold text-lg transition-all ${
-                  isCurr
-                    ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200 scale-105 shadow-md shadow-cyan-500/20'
-                    : isPassed
-                    ? 'bg-[#181a26] border-[#292d3f] text-[#636a8e]'
-                    : 'bg-[#141622] border-[#252839] text-[var(--chalk)]'
-                }`}
-              >
-                {d}
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Stack View */}
-        <div className="w-full max-w-md flex flex-col items-center gap-2 pt-3">
-          <span className="text-xs font-mono text-[var(--chalk-dim)]">Resulting Digit Stack:</span>
-          <div className="w-full h-16 rounded-xl border-2 border-dashed border-[#2d3144] flex items-center justify-center gap-2 p-2 bg-[#0f1016]">
-            {step.stack.map((d, i) => (
-              <div
-                key={i}
-                className="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-400 text-emerald-200 font-mono font-black text-lg flex items-center justify-center"
-              >
-                {d}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          Whenever current digit is smaller than stack top, deleting the stack top makes the number significantly smaller!
-        </div>
-      </div>
-    </div>
-  );
-}

@@ -1,68 +1,72 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Remove Nth Node from End of Linked List',
   category: 'Linked List & Two Pointers',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
-  description: 'Deletes the N-th node from the end of a singly linked list in a single pass using fast and slow pointers separated by a distance of N nodes.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Deletes the N-th node from the back of a singly linked list in a single pass using a dummy head sentinel and a two-pointer sliding window separated by N nodes.'
 };
+
+export const ideaMap = [
+  {
+    id: 'dummy-sentinel',
+    title: 'Dummy Head Sentinel Node',
+    description: 'A dummy node placed before head prevents edge cases where the node to delete is the original head (N = total length).'
+  },
+  {
+    id: 'n-gap-creation',
+    title: 'Fixed N-Step Pointer Gap',
+    description: 'Advancing fast by N steps establishes a fixed window of width N between fast and slow.'
+  },
+  {
+    id: 'synchronized-traversal',
+    title: 'Synchronized End Alignment',
+    description: 'Moving fast and slow in tandem until fast reaches the tail node (fast.next == null) guarantees slow halts at the node immediately before the target.'
+  },
+  {
+    id: 'bypass-unlink',
+    title: 'O(1) In-Place Link Bypass',
+    description: 'Bypasses the target node cleanly via slow.next = slow.next.next without traversing any extra links.'
+  },
+  {
+    id: 'single-pass-invariant',
+    title: 'Strict Single Pass O(N)',
+    description: 'Locates and unlinks the N-th node from the end in exactly one traversal of length N.'
+  }
+];
 
 export const solutions = {
-  cpp: `// C++ Remove Nth Node From End of Linked List
+  cpp: `// C++: Two-Pointer N-Gap Removal with Dummy Node
 // Time Complexity: O(N) | Space Complexity: O(1)
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x, ListNode *n = nullptr) : val(x), next(n) {}
-};
-
 class Solution {
 public:
     ListNode* removeNthFromEnd(ListNode* head, int n) {
-        ListNode* dummy = new ListNode(0, head);
-        ListNode* fast = dummy;
-        ListNode* slow = dummy;
+        ListNode dummy(0, head);
+        ListNode* fast = &dummy;
+        ListNode* slow = &dummy;
 
-        // Move fast pointer n steps ahead
+        // 1. Advance fast n steps ahead
         for (int i = 0; i < n; i++) {
             fast = fast->next;
         }
 
-        // Move both until fast reaches the last node
+        // 2. Advance both until fast is at tail
         while (fast->next != nullptr) {
             fast = fast->next;
             slow = slow->next;
         }
 
-        // Delete the nth node from end
-        ListNode* nodeToDelete = slow->next;
+        // 3. Unlink target node
+        ListNode* target = slow->next;
         slow->next = slow->next->next;
-        delete nodeToDelete;
+        delete target;
 
-        return dummy->next;
+        return dummy.next;
     }
 };`,
-  python: `# Python 3 Remove Nth Node From End of Linked List
-class Solution:
-    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
-        dummy = ListNode(0, head)
-        fast = slow = dummy
-
-        # Advance fast n steps
-        for _ in range(n):
-            fast = fast.next
-
-        # Advance both until fast is at tail
-        while fast.next:
-            fast = fast.next
-            slow = slow.next
-
-        # Unlink target node
-        slow.next = slow.next.next
-        return dummy.next`,
-  java: `// Java Remove Nth Node From End of Linked List
+  java: `// Java: Two-Pointer N-Gap Removal with Dummy Node
 class Solution {
     public ListNode removeNthFromEnd(ListNode head, int n) {
         ListNode dummy = new ListNode(0, head);
@@ -82,9 +86,24 @@ class Solution {
         return dummy.next;
     }
 }`,
-  javascript: `// JavaScript Remove Nth Node From End of Linked List
-var removeNthFromEnd = function(head, n) {
-    const dummy = new ListNode(0, head);
+  python: `# Python 3: Two-Pointer N-Gap Removal with Dummy Node
+class Solution:
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        dummy = ListNode(0, head)
+        fast = slow = dummy
+
+        for _ in range(n):
+            fast = fast.next
+
+        while fast.next:
+            fast = fast.next
+            slow = slow.next
+
+        slow.next = slow.next.next
+        return dummy.next`,
+  javascript: `// JavaScript: Two-Pointer N-Gap Removal with Dummy Node
+function removeNthFromEnd(head, n) {
+    const dummy = { val: 0, next: head };
     let fast = dummy;
     let slow = dummy;
 
@@ -99,136 +118,172 @@ var removeNthFromEnd = function(head, n) {
 
     slow.next = slow.next.next;
     return dummy.next;
-};`
+}`
 };
 
 export const steps = [
   {
-    title: '1. Linked List: [1, 2, 3, 4, 5], N = 2 (Remove 2nd node from end)',
-    phase: 'INITIAL',
-    codeLine: 13,
-    nodes: [1, 2, 3, 4, 5],
-    n: 2,
-    slowPos: -1, // dummy
-    fastPos: -1, // dummy
-    deletedIdx: -1,
-    variables: { n: 2, slow: 'dummy', fast: 'dummy' },
-    explain: 'Using a dummy node pointing to head prevents edge case failures when deleting the head node itself.',
-    intuition: 'Maintain a gap of N nodes between fast and slow.'
+    stepIndex: 1,
+    title: 'Initialize Dummy Sentinel Node and Pointers',
+    explanation: 'List: [1 -> 2 -> 3 -> 4 -> 5], N = 2. Attach dummy node (val 0) before head. slow and fast both start at dummy.',
+    activeLine: 6,
+    activeIdeaId: 'dummy-sentinel',
+    nodes: [0, 1, 2, 3, 4, 5],
+    pointers: { slow: 0, fast: 0, head: 1 },
+    highlightIndices: [0],
+    variables: { N: 2, slow: 'Dummy(0)', fast: 'Dummy(0)', gap: 0 },
+    customCard: {
+      title: 'Setup & Invariant',
+      rows: [
+        { label: 'Target', value: '2nd node from end (Node 4)' },
+        { label: 'Dummy Sentinel', value: 'index 0 (prevents head deletion bugs)' },
+        { label: 'Goal Window', value: 'Advance fast N=2 steps ahead of slow' },
+        { label: 'Current Gap', value: '0 steps' }
+      ]
+    }
   },
   {
-    title: '2. Advance fast pointer N = 2 steps forward -> fast is at Node 2',
-    phase: 'GAP_CREATION',
-    codeLine: 18,
-    nodes: [1, 2, 3, 4, 5],
-    n: 2,
-    slowPos: -1,
-    fastPos: 1, // index 1 is Node 2
-    deletedIdx: -1,
-    variables: { gap: 2, slow: 'dummy', fast: 'Node(2)' },
-    explain: 'Fast pointer moved 2 steps ahead. Now the gap between slow and fast is exactly 2 nodes.',
-    intuition: 'When fast reaches end, slow will be immediately before target node.'
+    stepIndex: 2,
+    title: 'Create Window: fast advances 1 step (to Node 1)',
+    explanation: 'First step of N-gap initialization: fast advances from dummy to Node 1 (idx 1). Current gap = 1.',
+    activeLine: 9,
+    activeIdeaId: 'n-gap-creation',
+    nodes: [0, 1, 2, 3, 4, 5],
+    pointers: { slow: 0, fast: 1, head: 1 },
+    highlightIndices: [0, 1],
+    variables: { N: 2, slow: 'Dummy(0)', fast: 'Node(1)', gap: 1 },
+    customCard: {
+      title: 'Gap Expansion (1 of 2)',
+      rows: [
+        { label: 'fast Position', value: 'Node 1 (index 1)' },
+        { label: 'slow Position', value: 'Dummy 0 (index 0)' },
+        { label: 'Window Size', value: '1 step' },
+        { label: 'Remaining Gap Steps', value: '1 step' }
+      ]
+    }
   },
   {
-    title: '3. Move both slow and fast until fast reaches last node (Node 5)',
-    phase: 'SLIDING_POINTERS',
-    codeLine: 24,
-    nodes: [1, 2, 3, 4, 5],
-    n: 2,
-    slowPos: 2, // index 2 is Node 3
-    fastPos: 4, // index 4 is Node 5
-    deletedIdx: -1,
-    variables: { slow: 'Node(3)', fast: 'Node(5) [TAIL]', target: 'slow->next = Node(4)' },
-    explain: 'Both pointers advanced 3 steps simultaneously. Fast has reached the last node (Node 5). Slow is at Node 3, right before the target!',
-    intuition: 'slow.next is the 2nd node from end.'
+    stepIndex: 3,
+    title: 'Create Window: fast advances to Node 2 (Gap N = 2 Achieved)',
+    explanation: 'fast advances to Node 2 (idx 2). Gap between fast and slow is now exactly N = 2 nodes.',
+    activeLine: 9,
+    activeIdeaId: 'n-gap-creation',
+    nodes: [0, 1, 2, 3, 4, 5],
+    pointers: { slow: 0, fast: 2, head: 1 },
+    highlightIndices: [0, 2],
+    variables: { N: 2, slow: 'Dummy(0)', fast: 'Node(2)', gap: 2 },
+    customCard: {
+      title: 'N-Gap Established',
+      rows: [
+        { label: 'fast Position', value: 'Node 2 (index 2)' },
+        { label: 'slow Position', value: 'Dummy 0 (index 0)' },
+        { label: 'Window Width', value: 'N = 2 nodes', accent: true },
+        { label: 'Next Phase', value: 'Advance both pointers simultaneously' }
+      ]
+    }
   },
   {
-    title: '4. Bypass target node: slow.next = slow.next.next (delete Node 4)',
-    phase: 'DELETING',
-    codeLine: 30,
-    nodes: [1, 2, 3, 4, 5],
-    n: 2,
-    slowPos: 2,
-    fastPos: 4,
-    deletedIdx: 3, // Node 4
-    variables: { slow: 'Node(3)', deletedNode: 'Node(4)', newNext: 'Node(5)' },
-    explain: 'Update Node 3\'s next pointer to point directly to Node 5, skipping Node 4.',
-    intuition: 'Node unlinked.'
+    stepIndex: 4,
+    title: 'Simultaneous Advance 1: fast -> Node 3, slow -> Node 1',
+    explanation: 'fast.next is not null. Both pointers advance by 1 step. slow is at Node 1, fast is at Node 3.',
+    activeLine: 14,
+    activeIdeaId: 'synchronized-traversal',
+    nodes: [0, 1, 2, 3, 4, 5],
+    pointers: { slow: 1, fast: 3, head: 1 },
+    highlightIndices: [1, 3],
+    visitedIndices: [0, 2],
+    variables: { slow: 'Node(1)', fast: 'Node(3)', gap: 2 },
+    customCard: {
+      title: 'Sliding Window (Step 1)',
+      rows: [
+        { label: 'slow Position', value: 'Node 1 (index 1)' },
+        { label: 'fast Position', value: 'Node 3 (index 3)' },
+        { label: 'fast.next', value: 'Node 4 != null (Continue)' },
+        { label: 'Window Maintained', value: 'Distance = 2' }
+      ]
+    }
   },
   {
-    title: '5. Completed: Resulting List is [1, 2, 3, 5]',
-    phase: 'COMPLETED',
-    codeLine: 33,
+    stepIndex: 5,
+    title: 'Simultaneous Advance 2: fast -> Node 4, slow -> Node 2',
+    explanation: 'Both pointers advance by 1 step. slow is at Node 2, fast is at Node 4.',
+    activeLine: 14,
+    activeIdeaId: 'synchronized-traversal',
+    nodes: [0, 1, 2, 3, 4, 5],
+    pointers: { slow: 2, fast: 4, head: 1 },
+    highlightIndices: [2, 4],
+    visitedIndices: [0, 1, 3],
+    variables: { slow: 'Node(2)', fast: 'Node(4)', gap: 2 },
+    customCard: {
+      title: 'Sliding Window (Step 2)',
+      rows: [
+        { label: 'slow Position', value: 'Node 2 (index 2)' },
+        { label: 'fast Position', value: 'Node 4 (index 4)' },
+        { label: 'fast.next', value: 'Node 5 != null (Continue)' },
+        { label: 'Window Maintained', value: 'Distance = 2' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Simultaneous Advance 3: fast -> Node 5 (Tail Reached)',
+    explanation: 'Both pointers advance: fast is at Node 5 (the last node!), slow is at Node 3. Since fast.next is null, loop terminates.',
+    activeLine: 15,
+    activeIdeaId: 'synchronized-traversal',
+    nodes: [0, 1, 2, 3, 4, 5],
+    pointers: { slow: 3, fast: 5, head: 1 },
+    highlightIndices: [3, 5],
+    visitedIndices: [0, 1, 2, 4],
+    variables: { slow: 'Node(3)', fast: 'Node(5)', 'fast.next': 'null' },
+    customCard: {
+      title: 'Tail Alignment Reached',
+      rows: [
+        { label: 'fast Position', value: 'Node 5 (tail node, index 5)' },
+        { label: 'slow Position', value: 'Node 3 (predecessor of target)' },
+        { label: 'Target to Delete', value: 'slow.next = Node 4 (index 4)', accent: true },
+        { label: 'Observation', value: 'Node 4 is exactly 2nd from end!' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Unlink Target Node: slow.next = slow.next.next',
+    explanation: 'Reassign slow.next to slow.next.next (Node 5), bypassing Node 4. Node 4 is orphaned and deallocated.',
+    activeLine: 19,
+    activeIdeaId: 'bypass-unlink',
+    nodes: [0, 1, 2, 3, 4, 5],
+    pointers: { slow: 3, target: 4, head: 1 },
+    highlightIndices: [3, 5],
+    modifiedIndices: [3],
+    deletedIndices: [4],
+    variables: { 'slow.next': 'Node(5)', removed: 'Node(4)' },
+    customCard: {
+      title: 'Target Unlinked',
+      rows: [
+        { label: 'Bypass Action', value: 'Node 3.next = Node 5', accent: true },
+        { label: 'Target Node', value: 'Node 4 unlinked and deleted' },
+        { label: 'Remaining Chain', value: 'dummy -> 1 -> 2 -> 3 -> 5 -> null' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Return dummy.next: [1 -> 2 -> 3 -> 5]',
+    explanation: 'Discard dummy node and return dummy.next, pointing to head (Node 1). The 2nd node from end has been removed.',
+    activeLine: 23,
+    activeIdeaId: 'dummy-sentinel',
     nodes: [1, 2, 3, 5],
-    n: 2,
-    slowPos: -1,
-    fastPos: -1,
-    deletedIdx: -1,
-    variables: { result: '[1, 2, 3, 5]', timeComplexity: 'O(N)', spaceComplexity: 'O(1)' },
-    explain: 'The 2nd node from the end (Node 4) was successfully removed in a single pass!',
-    intuition: 'Single pass two-pointer deletion complete.'
+    pointers: { head: 0 },
+    highlightIndices: [0],
+    variables: { resultHead: 'Node(1)', listLength: 4 },
+    customCard: {
+      title: 'Operation Complete',
+      rows: [
+        { label: 'Final List', value: '1 -> 2 -> 3 -> 5 -> null', accent: true },
+        { label: 'Removed Element', value: 'Node 4 (2nd from end)' },
+        { label: 'Time Complexity', value: 'O(N) - exactly 1 traversal pass' },
+        { label: 'Space Complexity', value: 'O(1) - two pointer references' }
+      ]
+    }
   }
 ];
-
-export default function RemoveNthNodeFromTheBackOfTheLlVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          N = {step.n}th from end
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Slow: {step.slowPos === -1 ? 'dummy' : `Node(${step.nodes[step.slowPos]})`}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Fast: {step.fastPos === -1 ? 'dummy' : `Node(${step.nodes[step.fastPos]})`}
-        </span>
-      </div>
-
-      {/* Nodes list */}
-      <div className="w-full flex items-center justify-center gap-2 py-4 overflow-x-auto">
-        {step.nodes.map((val, idx) => {
-          const isSlow = idx === step.slowPos;
-          const isFast = idx === step.fastPos;
-          const isDeleted = idx === step.deletedIdx;
-
-          let ringClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
-          if (isDeleted) {
-            ringClass = 'border-rose-500/50 bg-rose-500/10 text-rose-300 line-through opacity-50';
-          } else if (isSlow) {
-            ringClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30';
-          } else if (isFast) {
-            ringClass = 'border-indigo-500 bg-indigo-500/20 text-indigo-300 ring-2 ring-indigo-500/30';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="flex flex-col items-center gap-1 min-w-[48px]">
-                <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${ringClass}`}>
-                  {val}
-                </div>
-                <div className="flex gap-1 text-[8px] font-mono">
-                  {isSlow && <span className="text-amber-400">slow</span>}
-                  {isFast && <span className="text-indigo-400">fast</span>}
-                  {isDeleted && <span className="text-rose-400">del</span>}
-                </div>
-              </div>
-              {idx < step.nodes.length - 1 && (
-                <span className="text-[var(--chalk-faint)] font-mono text-sm">→</span>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* Single pass notice */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[var(--chalk-dim)]">Window Gap: <strong className="text-indigo-300">N = {step.n} nodes</strong></span>
-        <span className="text-emerald-400 font-semibold">Single Pass O(N)</span>
-      </div>
-    </div>
-  );
-}

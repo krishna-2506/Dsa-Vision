@@ -1,215 +1,302 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Introduction to Binary Search Trees (BST)',
   category: 'Binary Search Trees',
   difficulty: 'Easy',
-  timeComplexity: 'O(H) operations, O(N) traversal',
+  timeComplexity: 'O(H) search, O(N) traversal',
   spaceComplexity: 'O(H) recursion stack',
-  description: 'Explores foundational properties of Binary Search Trees (BST): Left Subtree < Root < Right Subtree, why Inorder traversal yields sorted output, and logarithmic search properties.'
+  description: 'Explores foundational properties of Binary Search Trees (BST): Left Subtree < Root < Right Subtree, logarithmic search pruning, and why Inorder traversal yields a strictly ascending sorted stream.'
 };
+
+export const ideaMap = [
+  {
+    id: 'bst-invariant',
+    title: 'Core BST Ordering Invariant',
+    description: 'For any node X, all values in X.left are strictly less than X.val, and all values in X.right are strictly greater than X.val.'
+  },
+  {
+    id: 'logarithmic-pruning',
+    title: 'Binary Search Pruning O(H)',
+    description: 'A single comparison against the current node eliminates half of the remaining subtrees, achieving O(log N) average search time.'
+  },
+  {
+    id: 'inorder-sorted-property',
+    title: 'Inorder Unrolling Property',
+    description: 'Visiting nodes in Left-Root-Right order recursively produces elements in strictly ascending numerical sequence.'
+  },
+  {
+    id: 'height-complexity',
+    title: 'Height Dependency O(H)',
+    description: 'Operations depend on tree height H. Balanced trees achieve H = O(log N), while degenerate trees degrade to linear chains O(N).'
+  },
+  {
+    id: 'no-duplicates-convention',
+    title: 'Strict Distinct Key Invariant',
+    description: 'Standard BST definitions enforce strictly distinct keys. Duplicates are either prohibited or mapped to frequency counters.'
+  }
+];
 
 export const solutions = {
-  cpp: `// C++ BST Definition and Inorder Validation
-// Time: O(N) | Space: O(H)
-#include <vector>
-#include <climits>
-using namespace std;
-
-struct TreeNode {
-    int val;
-    TreeNode *left, *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-};
-
+  cpp: `// C++: BST Search & Inorder Traversal
+// Time: O(H) Search | Space: O(H) Stack
 class Solution {
-    bool validate(TreeNode* node, long long minVal, long long maxVal) {
-        if (!node) return true;
-        if (node->val <= minVal || node->val >= maxVal) return false;
-        return validate(node->left, minVal, node->val) &&
-               validate(node->right, node->val, maxVal);
-    }
 public:
-    bool isValidBST(TreeNode* root) {
-        return validate(root, LLONG_MIN, LLONG_MAX);
+    TreeNode* searchBST(TreeNode* root, int val) {
+        while (root != nullptr && root->val != val) {
+            if (val < root->val) {
+                root = root->left;  // Prune right subtree
+            } else {
+                root = root->right; // Prune left subtree
+            }
+        }
+        return root;
+    }
+
+    void inorder(TreeNode* root, vector<int>& res) {
+        if (!root) return;
+        inorder(root->left, res);
+        res.push_back(root->val);
+        inorder(root->right, res);
     }
 };`,
-  python: `# Python 3 BST Validation & Inorder Traversal
-# Time: O(N) | Space: O(H)
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-class Solution:
-    def isValidBST(self, root: TreeNode) -> bool:
-        def validate(node, low=-float('inf'), high=float('inf')):
-            if not node:
-                return True
-            if not (low < node.val < high):
-                return False
-            return validate(node.left, low, node.val) and validate(node.right, node.val, high)
-
-        return validate(root)`,
-  java: `// Java BST Inorder Validation
-// Time: O(N) | Space: O(H)
-class TreeNode {
-    int val;
-    TreeNode left, right;
-    TreeNode(int x) { val = x; }
-}
-
+  java: `// Java: BST Search & Inorder Traversal
 class Solution {
-    private boolean validate(TreeNode node, long min, long max) {
-        if (node == null) return true;
-        if (node.val <= min || node.val >= max) return false;
-        return validate(node.left, min, node.val) && validate(node.right, node.val, max);
+    public TreeNode searchBST(TreeNode root, int val) {
+        while (root != null && root.val != val) {
+            root = (val < root.val) ? root.left : root.right;
+        }
+        return root;
     }
 
-    public boolean isValidBST(TreeNode root) {
-        return validate(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    public void inorder(TreeNode root, List<Integer> res) {
+        if (root == null) return;
+        inorder(root.left, res);
+        res.add(root.val);
+        inorder(root.right, res);
     }
 }`,
-  javascript: `// JavaScript BST Inorder Validation
-// Time: O(N) | Space: O(H)
-var isValidBST = function(root) {
-    function validate(node, minVal, maxVal) {
-        if (!node) return true;
-        if (node.val <= minVal || node.val >= maxVal) return false;
-        return validate(node.left, minVal, node.val) &&
-               validate(node.right, node.val, maxVal);
+  python: `# Python 3: BST Search & Inorder Traversal
+class Solution:
+    def searchBST(self, root: Optional[TreeNode], val: int) -> Optional[TreeNode]:
+        curr = root
+        while curr and curr.val != val:
+            curr = curr.left if val < curr.val else curr.right
+        return curr
+
+    def inorder(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+        def dfs(node):
+            if not node:
+                return
+            dfs(node.left)
+            res.append(node.val)
+            dfs(node.right)
+        dfs(root)
+        return res`,
+  javascript: `// JavaScript: BST Search & Inorder Traversal
+function searchBST(root, val) {
+    let curr = root;
+    while (curr !== null && curr.val !== val) {
+        curr = val < curr.val ? curr.left : curr.right;
     }
-    return validate(root, -Infinity, Infinity);
-};`
+    return curr;
+}
+
+function inorder(root, res = []) {
+    if (!root) return res;
+    inorder(root.left, res);
+    res.push(root.val);
+    inorder(root.right, res);
+    return res;
+}`
+};
+
+const baseTree = {
+  val: 8,
+  left: {
+    val: 3,
+    left: { val: 1 },
+    right: { val: 6, left: { val: 4 }, right: { val: 7 } }
+  },
+  right: {
+    val: 10,
+    right: { val: 14, left: { val: 13 } }
+  }
 };
 
 export const steps = [
   {
-    title: '1. The Core BST Property',
-    phase: 'CONCEPT',
-    codeLine: 16,
-    nodes: [
-      { id: 1, val: 8, x: 200, y: 30, role: 'Root' },
-      { id: 2, val: 3, x: 100, y: 100, role: 'Left (< 8)' },
-      { id: 3, val: 10, x: 300, y: 100, role: 'Right (> 8)' },
-      { id: 4, val: 1, x: 50, y: 170, role: '< 3' },
-      { id: 5, val: 6, x: 150, y: 170, role: '> 3 & < 8' },
-      { id: 6, val: 14, x: 350, y: 170, role: '> 10' }
-    ],
-    inorder: [],
-    variables: { rule: 'LeftSubtree < Node < RightSubtree', height: 3 },
-    explain: 'For every node in a BST, all elements in its left subtree are strictly smaller, and all in the right subtree are strictly greater.',
-    intuition: 'This ordering invariant enables binary search in tree structures, achieving O(log N) lookups.'
+    stepIndex: 1,
+    title: 'The Binary Search Tree Ordering Invariant',
+    explanation: 'BST property: for every node, left subtree < node < right subtree. Root = 8. Left subtree contains {1, 3, 4, 6, 7}; right subtree contains {10, 13, 14}.',
+    activeLine: 6,
+    activeIdeaId: 'bst-invariant',
+    tree: baseTree,
+    activeVal: 8,
+    nodeLabels: { 8: 'Root', 3: '< 8', 10: '> 8' },
+    traversal: [],
+    variables: { root: 8, height: 4, property: 'Left < Node < Right' },
+    customCard: {
+      title: 'Structural Invariant',
+      rows: [
+        { label: 'Root Value', value: '8' },
+        { label: 'Left Subtree Range', value: 'All values < 8' },
+        { label: 'Right Subtree Range', value: 'All values > 8' },
+        { label: 'Total Nodes', value: '8 nodes' }
+      ]
+    }
   },
   {
-    title: '2. Inorder Traversal (Left -> Root -> Right)',
-    phase: 'INORDER',
-    codeLine: 24,
-    nodes: [
-      { id: 1, val: 8, x: 200, y: 30, role: 'Visited 4th' },
-      { id: 2, val: 3, x: 100, y: 100, role: 'Visited 2nd' },
-      { id: 3, val: 10, x: 300, y: 100, role: 'Visited 5th' },
-      { id: 4, val: 1, x: 50, y: 170, role: 'Visited 1st' },
-      { id: 5, val: 6, x: 150, y: 170, role: 'Visited 3rd' },
-      { id: 6, val: 14, x: 350, y: 170, role: 'Visited 6th' }
-    ],
-    inorder: [1, 3, 6, 8, 10, 14],
-    variables: { order: '[1, 3, 6, 8, 10, 14]', sorted: 'Always Strictly Ascending' },
-    explain: 'Performing Inorder Traversal (L -> Root -> R) visits elements in strictly ascending order: [1, 3, 6, 8, 10, 14].',
-    intuition: 'Inorder traversal unrolls a 2D binary search tree into a 1D sorted list.'
+    stepIndex: 2,
+    title: 'Search Query: Key = 6 (Start at Root 8)',
+    explanation: 'Begin search for Key = 6 at root (8). Since 6 < 8, the target cannot exist in the right subtree. Prune entire right subtree and branch left to Node 3.',
+    activeLine: 9,
+    activeIdeaId: 'logarithmic-pruning',
+    tree: baseTree,
+    activeVal: 8,
+    nodeLabels: { 8: '6 < 8 (Go Left)', 3: 'Next' },
+    traversal: [],
+    variables: { searchKey: 6, current: 8, comparison: '6 < 8', action: 'Branch Left' },
+    customCard: {
+      title: 'Comparison 1: Root Node',
+      rows: [
+        { label: 'Current Node', value: '8' },
+        { label: 'Key Comparison', value: '6 < 8 (Go Left)', accent: true },
+        { label: 'Subtree Pruned', value: 'Entire right subtree {10, 13, 14} eliminated' },
+        { label: 'Remaining Nodes', value: '5 of 8 nodes' }
+      ]
+    }
   },
   {
-    title: '3. Logarithmic Lookups & Invariants',
-    phase: 'COMPLETED',
-    codeLine: 26,
-    nodes: [
-      { id: 1, val: 8, x: 200, y: 30, role: 'Root' },
-      { id: 2, val: 3, x: 100, y: 100, role: '< 8' },
-      { id: 3, val: 10, x: 300, y: 100, role: '> 8' },
-      { id: 4, val: 1, x: 50, y: 170, role: '< 3' },
-      { id: 5, val: 6, x: 150, y: 170, role: '> 3' },
-      { id: 6, val: 14, x: 350, y: 170, role: '> 10' }
-    ],
-    inorder: [1, 3, 6, 8, 10, 14],
-    variables: { 'Search 6': '8 -> left (3) -> right (6) Found!', comparisons: 3 },
-    explain: 'To search for 6: compare with 8 (go left), compare with 3 (go right), found 6! Only 3 comparisons instead of checking all 6 nodes.',
-    intuition: 'Each comparison eliminates half the remaining subtree.'
+    stepIndex: 3,
+    title: 'At Node 3: Compare 6 > 3 (Branch Right)',
+    explanation: 'Current node is 3. Compare: 6 > 3. Target cannot exist in left subtree of 3. Prune {1} and branch right to Node 6.',
+    activeLine: 11,
+    activeIdeaId: 'logarithmic-pruning',
+    tree: baseTree,
+    activeVal: 3,
+    visitedVals: [8],
+    nodeLabels: { 8: 'Visited', 3: '6 > 3 (Go Right)', 6: 'Next' },
+    traversal: [],
+    variables: { searchKey: 6, current: 3, comparison: '6 > 3', action: 'Branch Right' },
+    customCard: {
+      title: 'Comparison 2: Left Child',
+      rows: [
+        { label: 'Current Node', value: '3' },
+        { label: 'Key Comparison', value: '6 > 3 (Go Right)', accent: true },
+        { label: 'Subtree Pruned', value: 'Left subtree {1} eliminated' },
+        { label: 'Remaining Candidates', value: '{6, 4, 7}' }
+      ]
+    }
+  },
+  {
+    stepIndex: 4,
+    title: 'At Node 6: Key == Node.val (Target Found!)',
+    explanation: 'Current node is 6. 6 == 6! Target located in only 3 comparisons instead of inspecting all 8 nodes.',
+    activeLine: 14,
+    activeIdeaId: 'logarithmic-pruning',
+    tree: baseTree,
+    activeVal: 6,
+    targetVal: 6,
+    visitedVals: [8, 3],
+    nodeLabels: { 8: 'Visited', 3: 'Visited', 6: 'FOUND!' },
+    traversal: [],
+    variables: { searchKey: 6, current: 6, status: 'MATCH FOUND', comparisons: 3 },
+    customCard: {
+      title: 'Target Located',
+      rows: [
+        { label: 'Match Found', value: 'Node 6 matches search key 6', accent: true },
+        { label: 'Comparisons Needed', value: '3 comparisons (Height bound O(H))' },
+        { label: 'Linear Search Cost', value: 'Up to 8 comparisons avoided' },
+        { label: 'Path Traversed', value: '8 -> 3 -> 6' }
+      ]
+    }
+  },
+  {
+    stepIndex: 5,
+    title: 'Inorder Traversal: Leftmost Minimum First',
+    explanation: 'Inorder traversal visits Left -> Root -> Right. Deepest left node is Node 1. Output stream begins: [1].',
+    activeLine: 18,
+    activeIdeaId: 'inorder-sorted-property',
+    tree: baseTree,
+    activeVal: 1,
+    targetVal: 1,
+    nodeLabels: { 1: '1st (Min)' },
+    traversal: [1],
+    traversalLabel: 'Inorder Traversal Stream (Sorted)',
+    variables: { visited: 1, current: 1, inorderStream: '[1]' },
+    customCard: {
+      title: 'Inorder Step 1',
+      rows: [
+        { label: 'Traversal Order', value: 'Left -> Root -> Right' },
+        { label: 'Deepest Left Node', value: 'Node 1 (Global Minimum)', accent: true },
+        { label: 'Stream Output', value: '[1]' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Inorder Traversal Unrolls: [1, 3, 4, 6, 7]',
+    explanation: 'After 1: visit parent 3, then 3.right (6 subtree). In 6 subtree: left 4 -> root 6 -> right 7. Stream: [1, 3, 4, 6, 7].',
+    activeLine: 19,
+    activeIdeaId: 'inorder-sorted-property',
+    tree: baseTree,
+    activeVal: 7,
+    visitedVals: [1, 3, 4, 6],
+    highlightedVals: [7],
+    traversal: [1, 3, 4, 6, 7],
+    traversalLabel: 'Inorder Traversal Stream (Sorted)',
+    variables: { leftSubtree: 'Done', streamCount: 5 },
+    customCard: {
+      title: 'Left Subtree Fully Streamed',
+      rows: [
+        { label: 'Visited Chain', value: '1 -> 3 -> 4 -> 6 -> 7', accent: true },
+        { label: 'Observation', value: 'Every successive element is strictly larger' },
+        { label: 'Next Node in Order', value: 'Root 8' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Visit Root 8 and Traverse Right Subtree',
+    explanation: 'Visit root 8, then traverse right subtree: 10 -> 13 -> 14. All 8 nodes streamed in perfect ascending order.',
+    activeLine: 20,
+    activeIdeaId: 'inorder-sorted-property',
+    tree: baseTree,
+    activeVal: 14,
+    visitedVals: [1, 3, 4, 6, 7, 8, 10, 13],
+    highlightedVals: [14],
+    traversal: [1, 3, 4, 6, 7, 8, 10, 13, 14],
+    traversalLabel: 'Inorder Traversal Stream (Sorted)',
+    variables: { completedNodes: 8, isSorted: 'TRUE' },
+    customCard: {
+      title: 'Right Subtree Streamed',
+      rows: [
+        { label: 'Right Subtree Sequence', value: '10 -> 13 -> 14' },
+        { label: 'Complete Stream', value: '[1, 3, 4, 6, 7, 8, 10, 13, 14]', accent: true },
+        { label: 'Sorted Guarantee', value: 'Strictly increasing' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Summary: The Power of BSTs',
+    explanation: 'BST combines fast O(log N) lookup, insertion, and deletion with effortless sorted in-order unrolling in O(N) time.',
+    activeLine: 24,
+    activeIdeaId: 'height-complexity',
+    tree: baseTree,
+    activeVal: 8,
+    traversal: [1, 3, 4, 6, 7, 8, 10, 13, 14],
+    variables: { searchCost: 'O(log N)', traversalCost: 'O(N)', space: 'O(H)' },
+    customCard: {
+      title: 'BST Operational Complexity',
+      rows: [
+        { label: 'Search Complexity', value: 'O(H) = O(log N) balanced', accent: true },
+        { label: 'Insert / Delete', value: 'O(H) = O(log N)' },
+        { label: 'Inorder Traversal', value: 'O(N) yields sorted list' },
+        { label: 'Auxiliary Memory', value: 'O(H) recursion stack' }
+      ]
+    }
   }
 ];
-
-export default function IntroductionToBstVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Property: Left &lt; Root &lt; Right
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Search: O(H) = O(log N)
-        </span>
-      </div>
-
-      {/* BST SVG Canvas */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
-          Binary Search Tree Topology
-        </span>
-
-        <svg width="400" height="220" className="overflow-visible">
-          {/* Edges */}
-          <line x1="200" y1="40" x2="100" y2="100" stroke="#3b4261" strokeWidth="2" />
-          <line x1="200" y1="40" x2="300" y2="100" stroke="#3b4261" strokeWidth="2" />
-          <line x1="100" y1="100" x2="50" y2="170" stroke="#3b4261" strokeWidth="2" />
-          <line x1="100" y1="100" x2="150" y2="170" stroke="#3b4261" strokeWidth="2" />
-          <line x1="300" y1="100" x2="350" y2="170" stroke="#3b4261" strokeWidth="2" />
-
-          {/* Nodes */}
-          {step.nodes.map(node => (
-            <g key={node.id} transform={`translate(${node.x}, ${node.y})`}>
-              <circle
-                r="18"
-                className="fill-[#161824] stroke-emerald-500/60 transition-all duration-300"
-                strokeWidth="2"
-              />
-              <text
-                textAnchor="middle"
-                dy="5"
-                className="text-xs font-mono font-bold fill-amber-300"
-              >
-                {node.val}
-              </text>
-              <text
-                textAnchor="middle"
-                dy="30"
-                className="text-[9px] font-mono fill-[#8a8ea3]"
-              >
-                {node.role}
-              </text>
-            </g>
-          ))}
-        </svg>
-
-        {/* Inorder Stream */}
-        {step.inorder.length > 0 && (
-          <div className="w-full border-t border-[var(--line)] pt-4 flex flex-col items-center gap-2">
-            <span className="text-[11px] font-mono text-emerald-400 font-semibold">
-              Inorder Traversal Sequence (Always Sorted):
-            </span>
-            <div className="flex items-center gap-2 font-mono text-xs text-emerald-300 font-bold">
-              [{step.inorder.join(' &rarr; ')}]
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

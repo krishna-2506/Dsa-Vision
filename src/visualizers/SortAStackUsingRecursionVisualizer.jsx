@@ -1,13 +1,41 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Sort a Stack using Recursion',
-  category: 'Recursion',
+  category: 'Recursion & Stack',
   difficulty: 'Medium',
   timeComplexity: 'O(N^2)',
-  spaceComplexity: 'O(N) recursion stack',
-  description: 'Sorts a stack in ascending order (smallest at bottom, largest at top) purely via recursion using sorted-insert unwinding, with zero auxiliary data structures or loops.'
+  spaceComplexity: 'O(N) Call Stack',
+  description: 'Sorts a stack purely via recursion using sortedInsert unwinding, with zero auxiliary data structures or loop iterations.'
 };
+
+export const ideaMap = [
+  {
+    id: 'recursive-decomposition',
+    title: 'Divide and Conquer Unwinding',
+    description: 'Pop the top element, recursively sort the remaining stack of size N-1, then insert the popped element back into its correct sorted position.'
+  },
+  {
+    id: 'base-case-empty',
+    title: 'Base Case of Empty Stack',
+    description: 'A stack with 0 or 1 element is trivially sorted, serving as the recursion base case.'
+  },
+  {
+    id: 'sorted-insert-function',
+    title: 'Sorted Insert Subroutine',
+    description: 'To insert element x: if stack is empty or x >= top, push x. Otherwise, pop top, recurse with x, then push top back.'
+  },
+  {
+    id: 'call-stack-as-memory',
+    title: 'Call Stack Preservation',
+    description: 'The implicit function execution call stack acts as temporary memory, preserving popped elements until their insertion slot is reached.'
+  },
+  {
+    id: 'quadratic-analysis',
+    title: 'O(N^2) Time Complexity',
+    description: 'Sorting N elements requires inserting into stacks of size 0, 1, ..., N-1. Total operations: 1 + 2 + ... + N = O(N^2).'
+  }
+];
 
 export const solutions = {
   cpp: `// C++ Sort a Stack using Recursion
@@ -17,7 +45,6 @@ using namespace std;
 
 class Solution {
     void sortedInsert(stack<int>& st, int element) {
-        // Base case: stack is empty or element >= current top
         if (st.empty() || element >= st.top()) {
             st.push(element);
             return;
@@ -36,30 +63,11 @@ public:
         int top = st.top();
         st.pop();
 
-        sortStack(st); // Recurse on remaining stack
-
-        sortedInsert(st, top); // Insert element into sorted position
+        sortStack(st);
+        sortedInsert(st, top);
     }
 };`,
-  python: `# Python 3 Sort a Stack using Recursion
-class Solution:
-    def sortStack(self, st: list[int]) -> None:
-        def sorted_insert(element):
-            if not st or element >= st[-1]:
-                st.append(element)
-                return
-
-            top = st.pop()
-            sorted_insert(element)
-            st.append(top)
-
-        if not st:
-            return
-
-        top = st.pop()
-        self.sortStack(st)
-        sorted_insert(top)`,
-  java: `// Java Sort a Stack using Recursion
+  java: `// Java: Sort a Stack using Recursion
 import java.util.Stack;
 
 class Solution {
@@ -82,138 +90,206 @@ class Solution {
         sortedInsert(st, top);
     }
 }`,
-  javascript: `// JavaScript Sort a Stack using Recursion
-var sortStack = function(st) {
-    const sortedInsert = (element) => {
-        if (st.length === 0 || element >= st[st.length - 1]) {
-            st.push(element);
-            return;
-        }
+  python: `# Python 3: Sort a Stack using Recursion
+class Solution:
+    def sortedInsert(self, st: list[int], element: int) -> None:
+        if not st or element >= st[-1]:
+            st.append(element)
+            return
 
-        const top = st.pop();
-        sortedInsert(element);
-        st.push(top);
-    };
+        top = st.pop()
+        self.sortedInsert(st, element)
+        st.append(top)
 
+    def sortStack(self, st: list[int]) -> None:
+        if not st:
+            return
+
+        top = st.pop()
+        self.sortStack(st)
+        self.sortedInsert(st, top)`,
+  javascript: `// JavaScript: Sort a Stack using Recursion
+function sortedInsert(st, element) {
+    if (st.length === 0 || element >= st[st.length - 1]) {
+        st.push(element);
+        return;
+    }
+
+    const top = st.pop();
+    sortedInsert(st, element);
+    st.push(top);
+}
+
+function sortStack(st) {
     if (st.length === 0) return;
 
     const top = st.pop();
     sortStack(st);
-    sortedInsert(top);
-};`
+    sortedInsert(st, top);
+}`
 };
 
 export const steps = [
   {
-    title: '1. Initial State: Unsorted Stack [Bottom: 3, 1, 4, Top: 2]',
-    phase: 'INITIAL',
-    codeLine: 24,
-    stack: [3, 1, 4, 2],
-    insertingVal: null,
-    variables: { originalStack: '[Bottom: 3, 1, 4, Top: 2]', goal: 'Sorted [Bottom: 1, 2, 3, Top: 4]' },
-    explain: 'We want to sort the stack in ascending order so smaller elements rest at the bottom. We pop all elements until the stack is empty, then insert each into its correct sorted position.',
-    intuition: 'Recursive insertion sort adapted for stack constraints.'
+    stepIndex: 1,
+    title: 'Initial Unsorted Stack State',
+    explanation: 'Initial stack from bottom to top: [3, 1, 4, 2]. We will sort this stack recursively so smallest is at bottom and largest at top.',
+    activeLine: 18,
+    activeIdeaId: 'recursive-decomposition',
+    track: [3, 1, 4, 2],
+    auxiliaryTrack: [],
+    highlightIndices: [3],
+    pointers: { top: 3 },
+    variables: { bottom: 3, top: 2, stackSize: 4 },
+    customCard: {
+      title: 'Initial Stack',
+      rows: [
+        { label: 'Stack (bottom to top)', value: '[3, 1, 4, 2]' },
+        { label: 'Current Top', value: '2' },
+        { label: 'Target State', value: '[1, 2, 3, 4] sorted' }
+      ]
+    }
   },
   {
-    title: '2. Unwind Stack: Pop elements into Call Stack',
-    phase: 'UNWIND',
-    codeLine: 27,
-    stack: [],
-    insertingVal: null,
-    variables: { poppedOrder: '2, 4, 1, 3', stack: '[] (Empty - ready for sortedInsert)' },
-    explain: 'All elements popped and held in recursive execution frames: 3 at base, then 1, 4, and 2.',
-    intuition: 'Base case reached. Now we begin sorted insertions from bottom up.'
+    stepIndex: 2,
+    title: 'Pop Phase: Empty Stack Recursively',
+    explanation: 'Call sortStack recursively, popping elements into call stack frames: pop 2 (depth 1), pop 4 (depth 2), pop 1 (depth 3), pop 3 (depth 4). Base case reached at empty stack.',
+    activeLine: 23,
+    activeIdeaId: 'call-stack-as-memory',
+    track: [],
+    auxiliaryTrack: [3, 1, 4, 2],
+    highlightIndices: [],
+    pointers: {},
+    variables: { stack: '[] (empty)', callStack: '[top=2, top=4, top=1, top=3]' },
+    customCard: {
+      title: 'Call Stack Preservation',
+      rows: [
+        { label: 'Frame 1 (base)', value: 'Held element: 3' },
+        { label: 'Frame 2', value: 'Held element: 1' },
+        { label: 'Frame 3', value: 'Held element: 4' },
+        { label: 'Frame 4', value: 'Held element: 2' }
+      ]
+    }
   },
   {
-    title: '3. sortedInsert(3) & sortedInsert(1): Stack becomes [1, 3]',
-    phase: 'SORTED_INSERT',
-    codeLine: 12,
-    stack: [1, 3],
-    insertingVal: 1,
-    variables: { insert: 1, action: '1 < 3 -> pop 3, push 1, push 3 back', currentStack: '[Bottom: 1, Top: 3]' },
-    explain: 'To insert 1, 3 is popped temporarily. 1 is placed at the bottom, and 3 is restored.',
-    intuition: 'Maintains sorted order.'
+    stepIndex: 3,
+    title: 'Unwind Depth 4: Insert 3 into Empty Stack',
+    explanation: 'sortedInsert([], 3): Stack is empty, push 3. Stack becomes [3].',
+    activeLine: 6,
+    activeIdeaId: 'sorted-insert-function',
+    track: [3],
+    auxiliaryTrack: [1, 4, 2],
+    highlightIndices: [0],
+    pointers: { top: 0 },
+    variables: { inserted: 3, stack: '[3]' },
+    customCard: {
+      title: 'Unwinding Frame 1',
+      rows: [
+        { label: 'Element', value: '3' },
+        { label: 'Condition', value: 'Stack empty -> direct push' },
+        { label: 'Stack State', value: '[3]' }
+      ]
+    }
   },
   {
-    title: '4. sortedInsert(4): Stack becomes [1, 3, 4]',
-    phase: 'SORTED_INSERT',
-    codeLine: 12,
-    stack: [1, 3, 4],
-    insertingVal: 4,
-    variables: { insert: 4, action: '4 >= 3 (top) -> push 4 directly', currentStack: '[Bottom: 1, 3, Top: 4]' },
-    explain: '4 is greater than current top (3). Push 4 directly.',
-    intuition: 'No popping needed when element is >= top.'
+    stepIndex: 4,
+    title: 'Unwind Depth 3: Insert 1 into [3]',
+    explanation: 'sortedInsert([3], 1): 1 < 3. Pop 3, recursively insert 1 into [], then push 3 back. Stack becomes [1, 3].',
+    activeLine: 12,
+    activeIdeaId: 'sorted-insert-function',
+    track: [1, 3],
+    auxiliaryTrack: [4, 2],
+    highlightIndices: [0, 1],
+    pointers: { top: 1 },
+    variables: { inserted: 1, poppedAndReturned: 3, stack: '[1, 3]' },
+    customCard: {
+      title: 'Unwinding Frame 2',
+      rows: [
+        { label: 'Element to Insert', value: '1' },
+        { label: 'Comparison', value: '1 < 3 -> Pop 3, push 1, restore 3' },
+        { label: 'New Stack State', value: '[1, 3] (sorted)' }
+      ]
+    }
   },
   {
-    title: '5. sortedInsert(2): Stack becomes [1, 2, 3, 4]',
-    phase: 'SORTED_INSERT',
-    codeLine: 12,
-    stack: [1, 2, 3, 4],
-    insertingVal: 2,
-    variables: { insert: 2, action: 'Pop 4, pop 3, push 2, restore 3, restore 4' },
-    explain: '2 is smaller than 4 and 3. Temporary pops place 2 right above 1, then 3 and 4 are restored.',
-    intuition: 'Final element placed in sorted order.'
+    stepIndex: 5,
+    title: 'Unwind Depth 2: Insert 4 into [1, 3]',
+    explanation: 'sortedInsert([1, 3], 4): 4 >= stack top (3). Push 4 directly. Stack becomes [1, 3, 4].',
+    activeLine: 6,
+    activeIdeaId: 'sorted-insert-function',
+    track: [1, 3, 4],
+    auxiliaryTrack: [2],
+    highlightIndices: [2],
+    pointers: { top: 2 },
+    variables: { inserted: 4, stack: '[1, 3, 4]' },
+    customCard: {
+      title: 'Unwinding Frame 3',
+      rows: [
+        { label: 'Element to Insert', value: '4' },
+        { label: 'Comparison', value: '4 >= 3 -> Direct push' },
+        { label: 'New Stack State', value: '[1, 3, 4] (sorted)' }
+      ]
+    }
   },
   {
-    title: '6. Stack Fully Sorted: [Bottom: 1, 2, 3, Top: 4]',
-    phase: 'RESULT',
-    codeLine: 31,
-    stack: [1, 2, 3, 4],
-    insertingVal: null,
-    variables: { finalSorted: '[1, 2, 3, 4]', time: 'O(N^2)', space: 'O(N) stack' },
-    explain: 'Stack is fully sorted in ascending order from bottom to top using pure recursion.',
-    intuition: 'Sorted-insert recursion completes with zero extra arrays or buffers.'
+    stepIndex: 6,
+    title: 'Unwind Depth 1: Insert 2 into [1, 3, 4] (Part 1)',
+    explanation: 'sortedInsert([1, 3, 4], 2): 2 < 4 -> pop 4. Next, 2 < 3 -> pop 3. Call stack holds [4, 3].',
+    activeLine: 12,
+    activeIdeaId: 'sorted-insert-function',
+    track: [1],
+    auxiliaryTrack: [3, 4],
+    highlightIndices: [0],
+    pointers: { top: 0 },
+    variables: { element: 2, popped: '[4, 3]', remaining: '[1]' },
+    customCard: {
+      title: 'Searching Insertion Slot for 2',
+      rows: [
+        { label: 'Target to Place', value: '2' },
+        { label: 'Popped Greater Elements', value: '4, then 3' },
+        { label: 'Remaining Stack Top', value: '1 <= 2 (Insertion point reached!)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Insert 2 into [1] and Unwind Restoring 3 and 4',
+    explanation: '2 >= top(1) -> push 2. Stack is [1, 2]. As recursion unwinds, push back 3, then push back 4. Stack becomes [1, 2, 3, 4].',
+    activeLine: 13,
+    activeIdeaId: 'call-stack-as-memory',
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [],
+    highlightIndices: [1],
+    pointers: { top: 3 },
+    variables: { inserted: 2, restored: '[3, 4]', finalStack: '[1, 2, 3, 4]' },
+    customCard: {
+      title: 'Unwinding and Restoring Greater Elements',
+      rows: [
+        { label: 'Step 1', value: 'Push 2 above 1 -> [1, 2]' },
+        { label: 'Step 2', value: 'Push restored 3 -> [1, 2, 3]' },
+        { label: 'Step 3', value: 'Push restored 4 -> [1, 2, 3, 4]' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Stack Successfully Sorted via Pure Recursion',
+    explanation: 'All recursive calls completed. Stack is sorted in ascending order [1, 2, 3, 4] (smallest at bottom, largest at top). Time complexity O(N^2), space O(N) call stack.',
+    activeLine: 25,
+    activeIdeaId: 'quadratic-analysis',
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [],
+    highlightIndices: [0, 1, 2, 3],
+    pointers: { bottom: 0, top: 3 },
+    variables: { sortedStack: '[1, 2, 3, 4]', status: 'Sorted' },
+    customCard: {
+      title: 'Final Sorted Stack',
+      rows: [
+        { label: 'Bottom Element', value: '1 (minimum)' },
+        { label: 'Top Element', value: '4 (maximum)' },
+        { label: 'Time Complexity', value: 'O(N^2)' },
+        { label: 'Space Complexity', value: 'O(N) Recursion Tree' }
+      ]
+    }
   }
 ];
-
-export default function SortAStackUsingRecursionVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          Operation: Recursive Stack Sort
-        </span>
-        {step.insertingVal !== null && (
-          <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-xs font-semibold">
-            sortedInsert({step.insertingVal})
-          </span>
-        )}
-      </div>
-
-      {/* Visual Stack Tower */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-3 font-mono">
-        <span className="text-xs text-amber-400 font-bold">Stack State:</span>
-        <div className="w-44 h-56 border-b-4 border-l-2 border-r-2 border-amber-400/50 rounded-b-xl flex flex-col-reverse items-center p-3 gap-2 bg-[#0e1017]">
-          {step.stack.length === 0 ? (
-            <span className="text-xs text-[#5b6076] my-auto">Stack is Empty</span>
-          ) : (
-            step.stack.map((val, idx) => {
-              const isTop = idx === step.stack.length - 1;
-              return (
-                <div
-                  key={idx}
-                  className={`w-full py-2.5 rounded-xl border text-center font-bold text-sm transition-all ${
-                    isTop ? 'border-amber-400 bg-amber-500/25 text-amber-200 shadow-md shadow-amber-500/20' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk)]'
-                  }`}
-                >
-                  {val} {isTop && <span className="text-[10px] text-amber-300 font-normal">&larr; TOP</span>}
-                </div>
-              );
-            })
-          )}
-        </div>
-        <span className="text-[10px] text-[var(--chalk-dim)]">BOTTOM OF STACK (MINIMUM)</span>
-      </div>
-
-      {/* Result Card */}
-      {step.phase === 'RESULT' && (
-        <div className="w-full p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center gap-2 text-emerald-300 font-mono text-base font-bold">
-          <span>🎉 Stack Sorted: [Bottom: 1, 2, 3, Top: 4] in O(N&sup2;) Time</span>
-        </div>
-      )}
-    </div>
-  );
-}

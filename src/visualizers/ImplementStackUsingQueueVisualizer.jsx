@@ -9,6 +9,8 @@ export const meta = {
   description: 'Implements a LIFO stack using a single standard FIFO queue by cycling the previous elements to the back whenever a new element is enqueued.'
 };
 
+export const rendererType = 'queue';
+
 export const solutions = {
   cpp: `// C++: Implement Stack using a Single Queue
 // push: O(N) | pop: O(1) | top: O(1)
@@ -204,69 +206,3 @@ export const steps = [
   }
 ];
 
-export default function ImplementStackUsingQueueVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Stack Op: <strong className="text-purple-400">{step.action}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          LIFO Top (q.front()): <strong>{step.queue[0] ?? 'Empty'}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300">
-          Queue Size: <strong>{step.queue.length}</strong>
-        </div>
-      </div>
-
-      {/* Queue Visualization */}
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Internal Queue Buffer</span>
-          <span className="text-purple-400 font-bold">Single-Queue Trick</span>
-        </div>
-
-        <div className="flex items-center justify-center gap-3 w-full py-4 min-h-[90px] overflow-x-auto">
-          {step.queue.length === 0 ? (
-            <span className="text-xs font-mono text-[#4e5370]">Queue is currently empty</span>
-          ) : (
-            step.queue.map((val, idx) => {
-              const isFront = idx === 0;
-              const isRotating = step.rotating === val;
-              return (
-                <div key={idx} className="flex items-center gap-2">
-                  <div
-                    className={`w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center font-mono font-bold text-lg transition-all duration-300 relative ${
-                      isFront
-                        ? 'bg-purple-500/20 border-purple-400 text-purple-200 shadow-lg shadow-purple-500/20 scale-105'
-                        : isRotating
-                        ? 'bg-amber-500/20 border-amber-400 text-amber-200 animate-pulse'
-                        : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-                    }`}
-                  >
-                    {isFront && (
-                      <span className="absolute -top-3 px-1.5 py-0.5 rounded text-[8px] bg-purple-500 text-[var(--chalk)] font-black uppercase">
-                        TOP (Front)
-                      </span>
-                    )}
-                    <span>{val}</span>
-                    <span className="text-[9px] text-[#5e6482] mt-0.5">q[{idx}]</span>
-                  </div>
-                  {idx < step.queue.length - 1 && (
-                    <span className="text-xs font-mono text-[#3e445f]">&rarr;</span>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          Invariant: Queue front always points to the Stack top. Pop and Top are always O(1).
-        </div>
-      </div>
-    </div>
-  );
-}

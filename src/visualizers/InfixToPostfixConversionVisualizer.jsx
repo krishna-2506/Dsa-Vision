@@ -9,6 +9,8 @@ export const meta = {
   description: 'Converts human-readable infix arithmetic expressions into Reverse Polish Notation (Postfix) using Dijkstra’s Shunting-yard algorithm with an operator stack and operator precedence rules.'
 };
 
+export const rendererType = 'stack';
+
 export const solutions = {
   cpp: `// C++: Infix to Postfix Conversion using Operator Stack
 // Time Complexity: O(N) | Space Complexity: O(N)
@@ -239,66 +241,3 @@ export const steps = [
   }
 ];
 
-export default function InfixToPostfixConversionVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-  const expression = 'a + b * c - d';
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Step Header */}
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Infix Token: <strong className="text-amber-400 text-sm">{step.char}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Phase: <strong>{step.phase}</strong>
-        </div>
-      </div>
-
-      {/* Main Workspace */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-        {/* Operator Stack */}
-        <div className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
-          <span className="text-xs font-mono text-[var(--chalk-dim)]">Operator Stack (Precedence)</span>
-
-          <div className="w-40 h-44 rounded-xl border-2 border-dashed border-[#2d3144] flex flex-col-reverse items-center p-2.5 gap-2 bg-[#0f1016]">
-            {step.stack.length === 0 ? (
-              <span className="text-xs font-mono text-[#4e5370] m-auto">Empty Stack</span>
-            ) : (
-              step.stack.map((op, idx) => {
-                const isTop = idx === step.stack.length - 1;
-                return (
-                  <div
-                    key={idx}
-                    className={`w-full py-1.5 px-3 rounded-lg border font-mono text-base font-bold flex items-center justify-between ${
-                      isTop ? 'bg-amber-500/20 border-amber-400 text-amber-200' : 'bg-[#181a26] border-[#292d3f] text-[#a9b0d1]'
-                    }`}
-                  >
-                    <span>{op}</span>
-                    {isTop && <span className="text-[9px] px-1 rounded bg-amber-500 text-black font-bold">TOP</span>}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
-        {/* Output Stream */}
-        <div className="flex flex-col items-center justify-between gap-3 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
-          <span className="text-xs font-mono text-[var(--chalk-dim)]">Postfix Output Stream</span>
-
-          <div className="w-full flex-1 flex flex-col items-center justify-center p-4 rounded-xl bg-[#0f1016] border border-[#232637]">
-            <span className="text-xs font-mono text-[#5b617d] mb-1">Generated RPN:</span>
-            <span className="text-2xl font-mono font-black text-emerald-400 tracking-widest bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20">
-              {step.output || '...'}
-            </span>
-          </div>
-
-          <div className="w-full text-center text-[11px] font-mono text-[#787e9d] bg-[var(--board-raised-2)] py-1.5 px-3 rounded-lg border border-[var(--line)]">
-            Infix: {expression}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

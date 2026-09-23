@@ -4,23 +4,9 @@ import { VisualizerLayout } from '../components/primitives';
 /**
  * GenericRenderer
  * 
- * Fallback renderer for theory, patterns, intro topics, and any visualizer
- * that doesn't fit the specialized archetypes.
- * 
- * Renders step data as structured text cards with optional key-value tables.
- * 
- * Expects step data shape:
- * {
- *   phase: string,
- *   metrics?: [{ label: string, value: any }],
- *   formula?: string,
- *   action: string,
- *   explain: string,
- *   intuition?: string,
- *   cards?: [{ title: string, content: string, accent?: string }],
- *   codeSnippet?: string,
- *   variables?: { [key]: any }
- * }
+ * Resilient fallback renderer for theory, bit manipulation, math, patterns,
+ * and general algorithms. Supports both legacy card/snippet shapes and modern
+ * title/explanation/customCard formats.
  */
 export default function GenericRenderer({ currentStep = 0, steps = [] }) {
   if (!steps || steps.length === 0) return null;
@@ -28,20 +14,34 @@ export default function GenericRenderer({ currentStep = 0, steps = [] }) {
   const stepIdx = Math.min(Math.max(0, currentStep), steps.length - 1);
   const step = steps[stepIdx];
 
+  const phase = step.phase || step.title || (step.stepIndex ? `Step ${step.stepIndex}` : `Step ${stepIdx + 1}`);
+  const explain = step.explain || step.explanation || '';
+  const action = step.action || (step.title && step.phase ? step.title : '');
+
+  // Extract or auto-construct cards
+  let cards = Array.isArray(step.cards) ? [...step.cards] : [];
+  if (cards.length === 0 && step.customCard && step.customCard.rows) {
+    cards = step.customCard.rows.map(r => ({
+      title: r.label,
+      content: String(r.value),
+      accent: r.accent ? 'text-emerald-400' : 'text-[var(--accent-bright)]'
+    }));
+  }
+
   return (
     <VisualizerLayout
-      phase={step.phase}
+      phase={phase}
       metrics={step.metrics || []}
       formula={step.formula}
-      action={step.action}
-      explain={step.explain}
+      action={action}
+      explain={explain}
       intuition={step.intuition}
     >
       <div className="w-full space-y-4">
         {/* Content Cards */}
-        {step.cards && step.cards.length > 0 && (
+        {cards.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {step.cards.map((card, idx) => (
+            {cards.map((card, idx) => (
               <div
                 key={idx}
                 className="bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 shadow-sm"
@@ -75,13 +75,13 @@ export default function GenericRenderer({ currentStep = 0, steps = [] }) {
         {step.variables && Object.keys(step.variables).length > 0 && (
           <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 shadow-sm font-mono text-xs">
             <div className="text-[var(--chalk-dim)] text-[10px] uppercase tracking-wider font-semibold mb-2">
-              State
+              State Variables
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
               {Object.entries(step.variables).map(([key, value]) => (
                 <div key={key} className="p-2 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
                   <span className="text-[var(--accent-bright)] font-bold text-[10px] block">{key}</span>
-                  <span className="text-[var(--chalk)] text-[11px]">
+                  <span className="text-[var(--chalk)] text-[11px] font-mono truncate block" title={String(value)}>
                     {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                   </span>
                 </div>

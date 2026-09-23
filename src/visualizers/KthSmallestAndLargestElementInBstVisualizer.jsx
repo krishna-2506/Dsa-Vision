@@ -1,116 +1,90 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
-  title: 'Kth Smallest and Largest Element in BST',
+  title: 'K-th Smallest and Largest Element in BST',
   category: 'Binary Search Trees',
   difficulty: 'Medium',
-  timeComplexity: 'O(H + K)',
-  spaceComplexity: 'O(H) recursion stack',
-  description: 'Finds the Kth smallest and Kth largest elements in a Binary Search Tree by performing Inorder (ascending) and Reverse Inorder (descending) traversals with early stopping.'
+  timeComplexity: 'O(H + k)',
+  spaceComplexity: 'O(H) Recursion Stack',
+  description: 'Finds the k-th smallest and k-th largest elements in a BST by leveraging regular Inorder traversal (Left-Root-Right) and Reverse Inorder traversal (Right-Root-Left) with early termination.'
 };
+
+export const ideaMap = [
+  {
+    id: 'inorder-counting',
+    title: 'Inorder Ascending Counting',
+    description: 'Standard Inorder traversal visits nodes in strictly increasing numerical order. An incrementing counter stops exactly on the k-th visited node.'
+  },
+  {
+    id: 'reverse-inorder-symmetry',
+    title: 'Reverse Inorder Descending Counting',
+    description: 'Traversing in Right-Root-Left order visits nodes in strictly decreasing numerical order, finding the k-th largest element directly without pre-counting N.'
+  },
+  {
+    id: 'early-exit-optimization',
+    title: 'Early Exit Optimization',
+    description: 'Once the counter reaches k, remaining branches are immediately pruned, bounding the time complexity to O(H + k).'
+  },
+  {
+    id: 'size-complement-property',
+    title: 'Rank Duality',
+    description: 'In a BST of size N, the k-th largest element is mathematically equivalent to the (N - k + 1)-th smallest element.'
+  },
+  {
+    id: 'space-complexity',
+    title: 'Auxiliary Memory Bounds',
+    description: 'Recursive traversal requires O(H) call stack space. Morris traversal can optionally achieve O(1) auxiliary space.'
+  }
+];
 
 export const solutions = {
-  cpp: `// C++ Kth Smallest and Largest in BST
-// Time: O(H + K) | Space: O(H)
-#include <iostream>
-using namespace std;
-
-struct TreeNode {
-    int val;
-    TreeNode *left, *right;
-    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-};
-
+  cpp: `// C++: K-th Smallest and Largest in BST
+// Time: O(H + k) | Space: O(H)
 class Solution {
-    void inorder(TreeNode* root, int& k, int& ans) {
-        if (!root || k <= 0) return;
-        inorder(root->left, k, ans);
-        k--;
-        if (k == 0) {
+    void inorderSmallest(TreeNode* root, int& k, int& ans) {
+        if (!root || ans != -1) return;
+        inorderSmallest(root->left, k, ans);
+        if (--k == 0) {
             ans = root->val;
             return;
         }
-        inorder(root->right, k, ans);
+        inorderSmallest(root->right, k, ans);
     }
 
-    void reverseInorder(TreeNode* root, int& k, int& ans) {
-        if (!root || k <= 0) return;
-        reverseInorder(root->right, k, ans);
-        k--;
-        if (k == 0) {
+    void reverseInorderLargest(TreeNode* root, int& k, int& ans) {
+        if (!root || ans != -1) return;
+        reverseInorderLargest(root->right, k, ans);
+        if (--k == 0) {
             ans = root->val;
             return;
         }
-        reverseInorder(root->left, k, ans);
+        reverseInorderLargest(root->left, k, ans);
     }
+
 public:
     int kthSmallest(TreeNode* root, int k) {
         int ans = -1;
-        inorder(root, k, ans);
+        inorderSmallest(root, k, ans);
         return ans;
     }
 
     int kthLargest(TreeNode* root, int k) {
         int ans = -1;
-        reverseInorder(root, k, ans);
+        reverseInorderLargest(root, k, ans);
         return ans;
     }
 };`,
-  python: `# Python 3 Kth Smallest and Largest in BST
-# Time: O(H + K) | Space: O(H)
-class TreeNode:
-    def __init__(self, val=0, left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-
-class Solution:
-    def kthSmallest(self, root: TreeNode, k: int) -> int:
-        count = 0
-        ans = None
-
-        def inorder(node):
-            nonlocal count, ans
-            if not node or ans is not None:
-                return
-            inorder(node.left)
-            count += 1
-            if count == k:
-                ans = node.val
-                return
-            inorder(node.right)
-
-        inorder(root)
-        return ans
-
-    def kthLargest(self, root: TreeNode, k: int) -> int:
-        count = 0
-        ans = None
-
-        def rev_inorder(node):
-            nonlocal count, ans
-            if not node or ans is not None:
-                return
-            rev_inorder(node.right)
-            count += 1
-            if count == k:
-                ans = node.val
-                return
-            rev_inorder(node.left)
-
-        rev_inorder(root)
-        return ans`,
-  java: `// Java Kth Smallest and Largest in BST
-// Time: O(H + K) | Space: O(H)
-class TreeNode {
-    int val;
-    TreeNode left, right;
-    TreeNode(int x) { val = x; }
-}
-
+  java: `// Java: K-th Smallest and Largest in BST
 class Solution {
     private int count = 0;
     private int result = -1;
+
+    public int kthSmallest(TreeNode root, int k) {
+        count = 0;
+        result = -1;
+        inorder(root, k);
+        return result;
+    }
 
     private void inorder(TreeNode root, int k) {
         if (root == null || result != -1) return;
@@ -122,175 +96,235 @@ class Solution {
         }
         inorder(root.right, k);
     }
-
-    public int kthSmallest(TreeNode root, int k) {
-        count = 0;
-        result = -1;
-        inorder(root, k);
-        return result;
-    }
 }`,
-  javascript: `// JavaScript Kth Smallest and Largest in BST
-// Time: O(H + K) | Space: O(H)
-var kthSmallest = function(root, k) {
+  python: `# Python 3: K-th Smallest and Largest in BST
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        stack = []
+        curr = root
+        count = 0
+
+        while curr or stack:
+            while curr:
+                stack.append(curr)
+                curr = curr.left
+            curr = stack.pop()
+            count += 1
+            if count == k:
+                return curr.val
+            curr = curr.right
+        return -1`,
+  javascript: `// JavaScript: K-th Smallest and Largest in BST
+function kthSmallest(root, k) {
     let count = 0;
-    let ans = -1;
+    let result = -1;
 
     function inorder(node) {
-        if (!node || ans !== -1) return;
+        if (!node || result !== -1) return;
         inorder(node.left);
         count++;
         if (count === k) {
-            ans = node.val;
+            result = node.val;
             return;
         }
         inorder(node.right);
     }
 
     inorder(root);
-    return ans;
-};`
+    return result;
+}`
+};
+
+const tree = {
+  val: 5,
+  left: {
+    val: 3,
+    left: { val: 2, left: { val: 1 } },
+    right: { val: 4 }
+  },
+  right: { val: 6 }
 };
 
 export const steps = [
   {
-    title: '1. Setup: BST with Inorder [2, 3, 5, 7, 8], Goal: k = 3',
-    phase: 'INIT',
-    codeLine: 16,
-    k: 3,
-    nodes: [
-      { id: 1, val: 5, x: 200, y: 30 },
-      { id: 2, val: 3, x: 100, y: 100 },
-      { id: 3, val: 7, x: 300, y: 100 },
-      { id: 4, val: 2, x: 50, y: 170 },
-      { id: 5, val: 8, x: 350, y: 170 }
-    ],
-    visitedCount: 0,
-    kthSmallest: null,
-    kthLargest: null,
-    variables: { k: 3, strategy: 'Inorder (L-Node-R) counts up to k' },
-    explain: 'Inorder traversal visits nodes in non-decreasing order. The 3rd visited node is guaranteed to be the 3rd smallest element.',
-    intuition: 'Sorting is built into the tree topology.'
+    stepIndex: 1,
+    title: 'Problem Setup: Find 3rd Smallest & 3rd Largest (k = 3)',
+    explanation: 'BST with 6 nodes: [1, 2, 3, 4, 5, 6]. Target rank k = 3. Inorder unrolls ascending; reverse Inorder unrolls descending.',
+    activeLine: 6,
+    activeIdeaId: 'inorder-counting',
+    tree,
+    activeVal: 5,
+    nodeLabels: { 5: 'Root' },
+    traversal: [],
+    variables: { k: 3, 'kth Smallest': 'Searching', 'kth Largest': 'Searching' },
+    customCard: {
+      title: 'Problem Parameters',
+      rows: [
+        { label: 'Target Rank k', value: '3' },
+        { label: 'Total Nodes', value: '6 nodes' },
+        { label: 'Expected 3rd Smallest', value: '3' },
+        { label: 'Expected 3rd Largest', value: '4' }
+      ]
+    }
   },
   {
-    title: '2. Inorder Steps: Visit 2 (1st) -> 3 (2nd) -> 5 (3rd)',
-    phase: 'INORDER_3',
-    codeLine: 18,
-    k: 3,
-    nodes: [
-      { id: 1, val: 5, x: 200, y: 30, isKthSmall: true },
-      { id: 2, val: 3, x: 100, y: 100 },
-      { id: 3, val: 7, x: 300, y: 100 },
-      { id: 4, val: 2, x: 50, y: 170 },
-      { id: 5, val: 8, x: 350, y: 170 }
-    ],
-    visitedCount: 3,
-    kthSmallest: 5,
-    variables: { '1st visited': 2, '2nd visited': 3, '3rd visited': 5, '3rd Smallest': 5 },
-    explain: 'Leftmost node is 2 (count=1). Move to parent 3 (count=2). Move to root 5 (count=3 = k). Found 3rd smallest: 5!',
-    intuition: 'Early return prevents traversing the remaining right subtree.'
+    stepIndex: 2,
+    title: 'Inorder Step 1: Visit Node 1 (count = 1)',
+    explanation: 'Deepest left node is Node 1. Visit 1. Increment count = 1. Since count (1) != k (3), continue traversal.',
+    activeLine: 9,
+    activeIdeaId: 'inorder-counting',
+    tree,
+    activeVal: 1,
+    highlightedVals: [1],
+    nodeLabels: { 1: 'count = 1' },
+    traversal: [1],
+    traversalLabel: 'Ascending Inorder Stream',
+    variables: { phase: 'FIND_SMALLEST', curr: 1, count: 1, k: 3 },
+    customCard: {
+      title: 'Smallest Search: Step 1',
+      rows: [
+        { label: 'Visited Node', value: '1' },
+        { label: 'Current Count', value: '1' },
+        { label: 'Target k', value: '3 (Not reached yet)' },
+        { label: 'Next in Order', value: 'Parent Node 2' }
+      ]
+    }
   },
   {
-    title: '3. Reverse Inorder Steps: Visit 8 (1st) -> 7 (2nd) -> 5 (3rd)',
-    phase: 'REV_INORDER_3',
-    codeLine: 28,
-    k: 3,
-    nodes: [
-      { id: 1, val: 5, x: 200, y: 30, isKthLarge: true },
-      { id: 2, val: 3, x: 100, y: 100 },
-      { id: 3, val: 7, x: 300, y: 100 },
-      { id: 4, val: 2, x: 50, y: 170 },
-      { id: 5, val: 8, x: 350, y: 170 }
-    ],
-    visitedCount: 3,
-    kthLargest: 5,
-    variables: { '1st largest': 8, '2nd largest': 7, '3rd largest': 5, '3rd Largest': 5 },
-    explain: 'Reverse inorder (Right -> Root -> Left) counts largest elements. Rightmost is 8 (1st), then 7 (2nd), then 5 (3rd).',
-    intuition: 'Reverse traversal symmetrically counts from largest down to smallest.'
+    stepIndex: 3,
+    title: 'Inorder Step 2: Visit Node 2 (count = 2)',
+    explanation: 'Backtrack to parent Node 2. Visit 2. Increment count = 2. count (2) != k (3), continue traversal.',
+    activeLine: 9,
+    activeIdeaId: 'inorder-counting',
+    tree,
+    activeVal: 2,
+    visitedVals: [1],
+    highlightedVals: [2],
+    nodeLabels: { 1: '1', 2: 'count = 2' },
+    traversal: [1, 2],
+    traversalLabel: 'Ascending Inorder Stream',
+    variables: { phase: 'FIND_SMALLEST', curr: 2, count: 2, k: 3 },
+    customCard: {
+      title: 'Smallest Search: Step 2',
+      rows: [
+        { label: 'Visited Node', value: '2' },
+        { label: 'Current Count', value: '2' },
+        { label: 'Target k', value: '3' },
+        { label: 'Next in Order', value: 'Node 3' }
+      ]
+    }
   },
   {
-    title: '4. Completed: 3rd Smallest = 5, 3rd Largest = 5',
-    phase: 'COMPLETED',
-    codeLine: 35,
-    k: 3,
-    nodes: [
-      { id: 1, val: 5, x: 200, y: 30, isKthSmall: true, isKthLarge: true },
-      { id: 2, val: 3, x: 100, y: 100 },
-      { id: 3, val: 7, x: 300, y: 100 },
-      { id: 4, val: 2, x: 50, y: 170 },
-      { id: 5, val: 8, x: 350, y: 170 }
-    ],
-    kthSmallest: 5,
-    kthLargest: 5,
-    variables: { '3rd Smallest': 5, '3rd Largest': 5, totalNodes: 5 },
-    explain: 'For an array of 5 elements [2, 3, 5, 7, 8], the median 5 is both the 3rd smallest and the 3rd largest element!',
-    intuition: 'Inorder counter achieves O(H + K) time without allocating extra arrays.'
+    stepIndex: 4,
+    title: 'Inorder Step 3: Visit Node 3 (count == k == 3! FOUND!)',
+    explanation: 'Advance to Node 3. Increment count = 3. count == k! 3rd smallest element is Node 3. Terminate Inorder traversal early.',
+    activeLine: 11,
+    activeIdeaId: 'early-exit-optimization',
+    tree,
+    activeVal: 3,
+    targetVal: 3,
+    visitedVals: [1, 2],
+    nodeLabels: { 3: '3rd SMALLEST = 3' },
+    traversal: [1, 2, 3],
+    traversalLabel: 'Ascending Inorder Stream',
+    variables: { phase: 'SMALLEST_FOUND', '3rd Smallest': 3, count: 3, status: 'EARLY EXIT' },
+    customCard: {
+      title: '3rd Smallest Element Found',
+      rows: [
+        { label: 'Matched Node', value: 'Node 3', accent: true },
+        { label: 'Rank', value: 'k = 3' },
+        { label: 'Early Exit Benefit', value: 'Nodes 4, 5, 6 never visited' },
+        { label: 'Answer', value: '3' }
+      ]
+    }
+  },
+  {
+    stepIndex: 5,
+    title: 'Phase 2: Reverse Inorder for 3rd Largest (Right -> Root -> Left)',
+    explanation: 'To find the 3rd largest, traverse right subtree first. Reset revCount = 0. Target is k = 3.',
+    activeLine: 16,
+    activeIdeaId: 'reverse-inorder-symmetry',
+    tree,
+    activeVal: 6,
+    nodeLabels: { 3: '3rd Smallest', 6: 'Start Reverse' },
+    traversal: [],
+    variables: { phase: 'FIND_LARGEST', revCount: 0, k: 3 },
+    customCard: {
+      title: 'Reverse Inorder Setup',
+      rows: [
+        { label: 'Traversal Order', value: 'Right -> Root -> Left (Descending)' },
+        { label: 'First Node', value: 'Node 6 (Global Maximum)' },
+        { label: 'Target Rank', value: '3rd Largest' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Reverse Inorder Step 1: Visit Node 6 (revCount = 1)',
+    explanation: 'Rightmost node is Node 6. Visit 6. revCount = 1. Since revCount (1) != k (3), continue descending.',
+    activeLine: 18,
+    activeIdeaId: 'reverse-inorder-symmetry',
+    tree,
+    activeVal: 6,
+    highlightedVals: [6],
+    nodeLabels: { 6: '1st Largest' },
+    traversal: [6],
+    traversalLabel: 'Descending Stream (Largest to Smallest)',
+    variables: { phase: 'FIND_LARGEST', curr: 6, revCount: 1 },
+    customCard: {
+      title: 'Largest Search: Step 1',
+      rows: [
+        { label: 'Visited Node', value: '6 (1st Largest)' },
+        { label: 'revCount', value: '1' },
+        { label: 'Next Node', value: 'Root Node 5' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Reverse Inorder Step 2: Visit Node 5 (revCount = 2)',
+    explanation: 'Backtrack to root Node 5. Visit 5. revCount = 2. revCount (2) != k (3), continue to left subtree.',
+    activeLine: 18,
+    activeIdeaId: 'reverse-inorder-symmetry',
+    tree,
+    activeVal: 5,
+    visitedVals: [6],
+    highlightedVals: [5],
+    nodeLabels: { 6: '1st', 5: '2nd Largest' },
+    traversal: [6, 5],
+    traversalLabel: 'Descending Stream (Largest to Smallest)',
+    variables: { phase: 'FIND_LARGEST', curr: 5, revCount: 2 },
+    customCard: {
+      title: 'Largest Search: Step 2',
+      rows: [
+        { label: 'Visited Node', value: '5 (2nd Largest)' },
+        { label: 'revCount', value: '2' },
+        { label: 'Next Node', value: 'Node 4 (Rightmost in left subtree)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Reverse Inorder Step 3: Visit Node 4 (revCount == k == 3! FOUND!)',
+    explanation: 'Advance to Node 4. revCount = 3! revCount == k. 3rd largest element is Node 4. Both queries resolved.',
+    activeLine: 20,
+    activeIdeaId: 'early-exit-optimization',
+    tree,
+    activeVal: 4,
+    targetVal: 4,
+    highlightedVals: [3, 4],
+    nodeLabels: { 3: '3rd Smallest (3)', 4: '3rd Largest (4)' },
+    traversal: [6, 5, 4],
+    traversalLabel: 'Descending Stream (Largest to Smallest)',
+    variables: { '3rd Smallest': 3, '3rd Largest': 4, status: 'COMPLETE' },
+    customCard: {
+      title: 'Dual Extremum Results',
+      rows: [
+        { label: '3rd Smallest', value: 'Node 3', accent: true },
+        { label: '3rd Largest', value: 'Node 4', accent: true },
+        { label: 'Time Complexity', value: 'O(H + k) - early termination' },
+        { label: 'Space Complexity', value: 'O(H) recursion stack' }
+      ]
+    }
   }
 ];
-
-export default function KthSmallestAndLargestElementInBstVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Rank (K): {step.k}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-bold">
-          Kth Smallest: {step.kthSmallest !== null ? step.kthSmallest : 'In progress'}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Kth Largest: {step.kthLargest !== null ? step.kthLargest : 'In progress'}
-        </span>
-      </div>
-
-      {/* BST SVG Canvas */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
-          BST Rank Traversal Highlighting
-        </span>
-
-        <svg width="400" height="200" className="overflow-visible">
-          {/* Edges */}
-          <line x1="200" y1="35" x2="100" y2="100" stroke="#3b4261" strokeWidth="2" />
-          <line x1="200" y1="35" x2="300" y2="100" stroke="#3b4261" strokeWidth="2" />
-          <line x1="100" y1="100" x2="50" y2="170" stroke="#3b4261" strokeWidth="2" />
-          <line x1="300" y1="100" x2="350" y2="170" stroke="#3b4261" strokeWidth="2" />
-
-          {/* Nodes */}
-          {step.nodes.map(node => (
-            <g key={node.id} transform={`translate(${node.x}, ${node.y})`}>
-              <circle
-                r="18"
-                className={`transition-all duration-300 ${
-                  node.isKthSmall && node.isKthLarge
-                    ? 'fill-emerald-500/30 stroke-emerald-400 stroke-2 ring-4 ring-emerald-500/50 scale-110'
-                    : node.isKthSmall
-                    ? 'fill-cyan-500/30 stroke-cyan-400 ring-4 ring-cyan-500/40'
-                    : node.isKthLarge
-                    ? 'fill-purple-500/30 stroke-purple-400 ring-4 ring-purple-500/40'
-                    : 'fill-[#161824] stroke-[#3b4261]'
-                }`}
-                strokeWidth="2"
-              />
-              <text
-                textAnchor="middle"
-                dy="5"
-                className="text-xs font-mono font-bold fill-amber-300"
-              >
-                {node.val}
-              </text>
-            </g>
-          ))}
-        </svg>
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

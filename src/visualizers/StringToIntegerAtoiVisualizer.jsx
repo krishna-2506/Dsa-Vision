@@ -9,6 +9,8 @@ export const meta = {
   description: 'Converts a string to a 32-bit signed integer following the atoi specification: ignores leading whitespace, parses optional sign, converts digits, and clamps within [INT_MIN, INT_MAX].'
 };
 
+export const rendererType = 'array-scan';
+
 export const solutions = {
   cpp: `// C++ String to Integer (atoi)
 // Time: O(N) | Space: O(1)
@@ -167,57 +169,3 @@ export const steps = [
   }
 ];
 
-export default function StringToIntegerAtoiVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Sign: {step.sign === -1 ? 'Negative (-)' : 'Positive (+)'}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Parsed Value: {step.currentVal}
-        </span>
-      </div>
-
-      {/* String Stream */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
-          Character Stream &amp; Parser Head
-        </span>
-
-        <div className="flex flex-wrap items-center justify-center gap-1.5 py-2 font-mono">
-          {step.s.split('').map((ch, idx) => {
-            const isPointer = idx === step.pointerI;
-            const isParsed = idx < step.pointerI && idx >= 3;
-
-            return (
-              <div
-                key={idx}
-                className={`w-9 h-14 rounded-lg border flex flex-col items-center justify-center transition-all duration-300 ${
-                  isPointer
-                    ? 'border-cyan-400 bg-cyan-500/25 text-cyan-300 ring-2 ring-cyan-500/50 scale-105'
-                    : isParsed
-                    ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300'
-                    : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]'
-                }`}
-              >
-                <span className="text-[8px] text-[var(--chalk-dim)]">[{idx}]</span>
-                <span className="text-sm font-bold text-amber-300 mt-0.5">
-                  {ch === ' ' ? '␣' : ch}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

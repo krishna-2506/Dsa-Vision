@@ -1,23 +1,45 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Find Intersection Point of Y Linked Lists',
   category: 'Linked List & Two Pointers',
   difficulty: 'Medium',
   timeComplexity: 'O(N + M)',
-  spaceComplexity: 'O(1)',
-  description: 'Finds the node at which two singly linked lists intersect using dual pointers that switch heads to equalize path lengths.'
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Finds the merge node of two intersecting singly linked lists using dual pointers that switch list heads upon reaching the end, equalizing total path lengths to meet at the intersection.'
 };
+
+export const ideaMap = [
+  {
+    id: 'length-neutralization',
+    title: 'Path Length Neutralization',
+    description: 'Pointer A traverses path A + path B, while pointer B traverses path B + path A. Since a + b = b + a, both travel identical distances and synchronize at the intersection node.'
+  },
+  {
+    id: 'head-redirection',
+    title: 'Null-to-Head Redirection',
+    description: 'When pointer A hits null, redirect it to headB. When pointer B hits null, redirect it to headA.'
+  },
+  {
+    id: 'simultaneous-convergence',
+    title: 'Simultaneous Convergence',
+    description: 'After redirection, the offset in individual list lengths is completely neutralized, causing both pointers to step onto the intersection node on the exact same iteration.'
+  },
+  {
+    id: 'no-intersection-safety',
+    title: 'Disjoint List Termination',
+    description: 'If the two lists do not intersect, both pointers reach null simultaneously in the second pass and terminate cleanly without infinite loops.'
+  },
+  {
+    id: 'constant-space-invariant',
+    title: 'O(1) Auxiliary Space Invariant',
+    description: 'Avoids allocating an O(N) hash set of node addresses, relying entirely on two reference pointers.'
+  }
+];
 
 export const solutions = {
-  cpp: `// C++ Intersection of Two Linked Lists
+  cpp: `// C++: Two-Pointer Path Equalization for Y-Intersection
 // Time Complexity: O(N + M) | Space Complexity: O(1)
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(nullptr) {}
-};
-
 class Solution {
 public:
     ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
@@ -26,29 +48,16 @@ public:
         ListNode *pA = headA;
         ListNode *pB = headB;
 
-        // Traverse both lists; redirect each to the other head upon reaching end
+        // Traverse both lists; redirect each pointer upon reaching null
         while (pA != pB) {
             pA = (pA == nullptr) ? headB : pA->next;
             pB = (pB == nullptr) ? headA : pB->next;
         }
 
-        return pA; // Returns intersection node or nullptr
+        return pA; // Either points to intersection node or nullptr
     }
 };`,
-  python: `# Python 3 Intersection of Two Linked Lists
-class Solution:
-    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
-        if not headA or not headB:
-            return None
-
-        pA, pB = headA, headB
-
-        while pA != pB:
-            pA = headB if pA is None else pA.next
-            pB = headA if pB is None else pB.next
-
-        return pA`,
-  java: `// Java Intersection of Two Linked Lists
+  java: `// Java: Two-Pointer Path Equalization for Y-Intersection
 public class Solution {
     public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
         if (headA == null || headB == null) return null;
@@ -64,170 +73,221 @@ public class Solution {
         return pA;
     }
 }`,
-  javascript: `// JavaScript Intersection of Two Linked Lists
-var getIntersectionNode = function(headA, headB) {
+  python: `# Python 3: Two-Pointer Path Equalization for Y-Intersection
+class Solution:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        if not headA or not headB:
+            return None
+
+        pA, pB = headA, headB
+
+        while pA != pB:
+            pA = headB if pA is None else pA.next
+            pB = headA if pB is None else pB.next
+
+        return pA`,
+  javascript: `// JavaScript: Two-Pointer Path Equalization for Y-Intersection
+function getIntersectionNode(headA, headB) {
     if (!headA || !headB) return null;
 
     let pA = headA;
     let pB = headB;
 
     while (pA !== pB) {
-        pA = (pA === null) ? headB : pA.next;
-        pB = (pB === null) ? headA : pB.next;
+        pA = pA === null ? headB : pA.next;
+        pB = pB === null ? headA : pB.next;
     }
 
     return pA;
-};`
+}`
 };
 
 export const steps = [
   {
-    title: '1. Lists: A = [4, 1, 8, 4, 5], B = [5, 6, 1, 8, 4, 5], Merge at Node(8)',
-    phase: 'INITIAL',
-    codeLine: 16,
-    listA: [4, 1, 8, 4, 5],
-    listB: [5, 6, 1, 8, 4, 5],
-    pAPos: 0, // Node 4
-    pBPos: 0, // Node 5
-    intersectionFound: false,
-    variables: { pA: 'Node(4)', pB: 'Node(5)', diff: 'len(B) - len(A) = 6 - 5 = 1' },
-    explain: 'List B is 1 node longer than List A. Switching heads upon reaching null offsets the difference (a + c + b = b + c + a).',
-    intuition: 'Equalized total travel distance.'
+    stepIndex: 1,
+    title: 'Initialize Pointers pA at HeadA and pB at HeadB',
+    explanation: 'List A: [4 -> 1 -> 8 -> 4 -> 5]. List B: [5 -> 6 -> 1 -> 8 -> 4 -> 5]. Intersection node has value 8.',
+    activeLine: 6,
+    activeIdeaId: 'length-neutralization',
+    nodes: [4, 1, 8, 4, 5],
+    auxiliaryNodes: [5, 6, 1, 8, 4, 5],
+    auxiliaryLabel: 'List B (headB)',
+    pointers: { pA: 0, headA: 0 },
+    auxiliaryPointers: { pB: 0, headB: 0 },
+    highlightIndices: [0],
+    auxiliaryHighlightIndices: [0],
+    variables: { 'pA.val': 4, 'pB.val': 5, match: 'false' },
+    customCard: {
+      title: 'Problem Setup',
+      rows: [
+        { label: 'List A Length', value: '5 nodes' },
+        { label: 'List B Length', value: '6 nodes' },
+        { label: 'Intersection Node', value: 'Node with val=8' },
+        { label: 'Key Strategy', value: 'Switch heads when reaching null to equalize path lengths' }
+      ]
+    }
   },
   {
-    title: '2. Traverse: pA advances through List A, pB advances through List B',
-    phase: 'ADVANCING',
-    codeLine: 20,
-    listA: [4, 1, 8, 4, 5],
-    listB: [5, 6, 1, 8, 4, 5],
-    pAPos: 3, // Node 4 in common
-    pBPos: 3, // Node 8 in B
-    intersectionFound: false,
-    variables: { pA: 'Node(4)', pB: 'Node(8)' },
-    explain: 'Both pointers advance 1 step at a time.',
-    intuition: 'Moving towards end.'
+    stepIndex: 2,
+    title: 'Step 1: Traverse Both Lists Forward',
+    explanation: 'Advance both pointers: pA reaches Node 1 (idx 1 of A), pB reaches Node 6 (idx 1 of B). pA != pB.',
+    activeLine: 12,
+    activeIdeaId: 'length-neutralization',
+    nodes: [4, 1, 8, 4, 5],
+    auxiliaryNodes: [5, 6, 1, 8, 4, 5],
+    auxiliaryLabel: 'List B',
+    pointers: { pA: 1 },
+    auxiliaryPointers: { pB: 1 },
+    highlightIndices: [1],
+    auxiliaryHighlightIndices: [1],
+    visitedIndices: [0],
+    variables: { 'pA.val': 1, 'pB.val': 6, match: 'false' },
+    customCard: {
+      title: 'Traversal Step 1',
+      rows: [
+        { label: 'pA Position', value: 'List A[1] = 1' },
+        { label: 'pB Position', value: 'List B[1] = 6' },
+        { label: 'Equality Check', value: 'pA != pB (Continue)' },
+        { label: 'Distance Covered', value: '1 step' }
+      ]
+    }
   },
   {
-    title: '3. pA reaches end of List A -> Switch pA to Head of List B (Node 5)',
-    phase: 'HEAD_SWITCH',
-    codeLine: 20,
-    listA: [4, 1, 8, 4, 5],
-    listB: [5, 6, 1, 8, 4, 5],
-    pAPos: 0, // on List B!
-    pBPos: 5, // on List B
-    intersectionFound: false,
-    variables: { pA: 'Switched to List B head (5)', pB: 'Node(5) in B' },
-    explain: 'pA hits null first (shorter list) and jumps to start of List B.',
-    intuition: 'Path length equalization triggered.'
+    stepIndex: 3,
+    title: 'Step 2: Advance to Index 2',
+    explanation: 'pA reaches Node 8 (idx 2 of A), pB reaches Node 1 (idx 2 of B). Even though pA is at the intersection value, pB is still behind due to path disparity.',
+    activeLine: 12,
+    activeIdeaId: 'length-neutralization',
+    nodes: [4, 1, 8, 4, 5],
+    auxiliaryNodes: [5, 6, 1, 8, 4, 5],
+    auxiliaryLabel: 'List B',
+    pointers: { pA: 2 },
+    auxiliaryPointers: { pB: 2 },
+    highlightIndices: [2],
+    auxiliaryHighlightIndices: [2],
+    visitedIndices: [0, 1],
+    variables: { 'pA.val': 8, 'pB.val': 1, match: 'false' },
+    customCard: {
+      title: 'Traversal Step 2',
+      rows: [
+        { label: 'pA Position', value: 'List A[2] = 8 (intersection node)' },
+        { label: 'pB Position', value: 'List B[2] = 1' },
+        { label: 'Equality Check', value: 'Different nodes in memory' },
+        { label: 'Status', value: 'pA reaches end first' }
+      ]
+    }
   },
   {
-    title: '4. pB reaches end of List B -> Switch pB to Head of List A (Node 4)',
-    phase: 'HEAD_SWITCH',
-    codeLine: 21,
-    listA: [4, 1, 8, 4, 5],
-    listB: [5, 6, 1, 8, 4, 5],
-    pAPos: 1, // Node 6 in B
-    pBPos: 0, // Node 4 in A
-    intersectionFound: false,
-    variables: { pA: 'Node(6) in B', pB: 'Switched to List A head (4)' },
-    explain: 'pB hits null and jumps to start of List A. Now both pointers are equidistant from intersection node 8!',
-    intuition: 'Pointers are now synchronized.'
+    stepIndex: 4,
+    title: 'pA Reaches End of List A',
+    explanation: 'pA has traversed the remaining nodes and reaches null at the end of List A. pB is currently at Node 5 (last node of List B).',
+    activeLine: 13,
+    activeIdeaId: 'head-redirection',
+    nodes: [4, 1, 8, 4, 5],
+    auxiliaryNodes: [5, 6, 1, 8, 4, 5],
+    auxiliaryLabel: 'List B',
+    pointers: {},
+    auxiliaryPointers: { pB: 5 },
+    auxiliaryHighlightIndices: [5],
+    visitedIndices: [0, 1, 2, 3, 4],
+    variables: { pA: 'null (end of A)', 'pB.val': 5 },
+    customCard: {
+      title: 'List A Traversal Exhausted',
+      rows: [
+        { label: 'pA Status', value: 'null (reached tail of A)' },
+        { label: 'Next Action for pA', value: 'Redirect pA to headB (Node 5)', accent: true },
+        { label: 'pB Status', value: 'At index 5 of List B' }
+      ]
+    }
   },
   {
-    title: '5. Both pointers reach Node(8) simultaneously -> Intersection Found!',
-    phase: 'COMPLETED',
-    codeLine: 24,
-    listA: [4, 1, 8, 4, 5],
-    listB: [5, 6, 1, 8, 4, 5],
-    pAPos: 2, // Node 8
-    pBPos: 2, // Node 8
-    intersectionFound: true,
-    variables: { intersectionNode: 'Node(8)', timeComplexity: 'O(N + M)', spaceComplexity: 'O(1)' },
-    explain: 'pA == pB at Node(8). Both traversed equal distance (5 + 6 = 11 nodes). Node(8) is the intersection!',
-    intuition: 'Collision guarantees intersection.'
+    stepIndex: 5,
+    title: 'Redirect pA to Head of List B',
+    explanation: 'pA redirects to headB (Node 5). Meanwhile, pB hits null at the end of List B and will redirect to headA on the next step.',
+    activeLine: 14,
+    activeIdeaId: 'head-redirection',
+    nodes: [4, 1, 8, 4, 5],
+    auxiliaryNodes: [5, 6, 1, 8, 4, 5],
+    auxiliaryLabel: 'List B (pA now traversing)',
+    pointers: {},
+    auxiliaryPointers: { pA: 0 },
+    auxiliaryHighlightIndices: [0],
+    variables: { pA: 'headB (Node 5)', pB: 'null (end of B)' },
+    customCard: {
+      title: 'First Redirection Active',
+      rows: [
+        { label: 'pA Redirected', value: 'headB (Node 5)', accent: true },
+        { label: 'pB at End', value: 'null (will redirect to headA)' },
+        { label: 'Alignment Effect', value: 'Offsets path difference (lenB - lenA = 1)' }
+      ]
+    }
+  },
+  {
+    stepIndex: 6,
+    title: 'Redirect pB to Head of List A: Lengths Balanced',
+    explanation: 'pB redirects to headA (Node 4). pA advances to Node 6 in List B. Both pointers are now exactly equidistant from the intersection node!',
+    activeLine: 14,
+    activeIdeaId: 'simultaneous-convergence',
+    nodes: [4, 1, 8, 4, 5],
+    auxiliaryNodes: [5, 6, 1, 8, 4, 5],
+    auxiliaryLabel: 'List B',
+    pointers: { pB: 0 },
+    auxiliaryPointers: { pA: 1 },
+    highlightIndices: [0],
+    auxiliaryHighlightIndices: [1],
+    variables: { 'pA.val': 6, 'pB.val': 4, distanceToMerge: '2 steps for both' },
+    customCard: {
+      title: 'Equal Distance Achieved',
+      rows: [
+        { label: 'pA Path So Far', value: 'len(A) + 1' },
+        { label: 'pB Path So Far', value: 'len(B)' },
+        { label: 'Remaining to Merge', value: '2 steps for both pointers', accent: true },
+        { label: 'Result', value: 'Pointers will collide at Node 8' }
+      ]
+    }
+  },
+  {
+    stepIndex: 7,
+    title: 'Advance Both Pointers Toward Intersection',
+    explanation: 'pA moves to Node 1 in List B. pB moves to Node 1 in List A. Exactly 1 step away from intersection.',
+    activeLine: 12,
+    activeIdeaId: 'simultaneous-convergence',
+    nodes: [4, 1, 8, 4, 5],
+    auxiliaryNodes: [5, 6, 1, 8, 4, 5],
+    auxiliaryLabel: 'List B',
+    pointers: { pB: 1 },
+    auxiliaryPointers: { pA: 2 },
+    highlightIndices: [1],
+    auxiliaryHighlightIndices: [2],
+    variables: { 'pA.val': 1, 'pB.val': 1, distanceToMerge: '1 step' },
+    customCard: {
+      title: 'Convergence in Progress',
+      rows: [
+        { label: 'pA Position', value: 'List B, index 2 (val=1)' },
+        { label: 'pB Position', value: 'List A, index 1 (val=1)' },
+        { label: 'Next Step', value: 'Both step onto Node 8 simultaneously' }
+      ]
+    }
+  },
+  {
+    stepIndex: 8,
+    title: 'Pointers Collide: pA == pB at Node 8 (Intersection Found!)',
+    explanation: 'Both pA and pB point to the exact same Node 8 in memory. pA == pB condition triggers loop exit. Return Node 8.',
+    activeLine: 17,
+    activeIdeaId: 'simultaneous-convergence',
+    nodes: [4, 1, 8, 4, 5],
+    pointers: { intersection: 2, head: 0 },
+    highlightIndices: [2],
+    modifiedIndices: [2],
+    variables: { intersectionNode: 'Node(8)', memoryMatch: 'pA === pB (True)' },
+    customCard: {
+      title: 'Intersection Found',
+      rows: [
+        { label: 'Merge Node', value: 'Node 8 (index 2 of A, index 3 of B)', accent: true },
+        { label: 'Total Distance Traveled', value: 'pA: 8 steps, pB: 8 steps' },
+        { label: 'Time Complexity', value: 'O(N + M) - at most 2 passes' },
+        { label: 'Space Complexity', value: 'O(1) - auxiliary pointers only' }
+      ]
+    }
   }
 ];
-
-export default function FindTheIntersectionPointOfYLlVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Pointer A: {step.intersectionFound ? 'Node(8)' : `Step ${currentStep}`}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-semibold">
-          Pointer B: {step.intersectionFound ? 'Node(8)' : `Step ${currentStep}`}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Intersection = {step.intersectionFound ? 'Node(8)' : 'Searching'}
-        </span>
-      </div>
-
-      {/* Y-List visualization */}
-      <div className="w-full flex flex-col items-center gap-3 py-2">
-        {/* List A */}
-        <div className="flex items-center gap-2">
-          <span className="w-14 font-mono text-xs text-amber-400 font-bold">List A:</span>
-          <div className="flex items-center gap-1.5">
-            {step.listA.map((val, idx) => {
-              const isCommon = idx >= 2;
-              const isIntersection = step.intersectionFound && idx === 2;
-
-              let ringClass = isCommon
-                ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300 font-bold'
-                : 'border-amber-500/40 bg-amber-500/10 text-amber-300';
-              if (isIntersection) {
-                ringClass = 'border-pink-500 bg-pink-500/25 text-pink-300 ring-2 ring-pink-500/50 shadow-lg';
-              }
-
-              return (
-                <React.Fragment key={idx}>
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-mono text-xs transition-all ${ringClass}`}>
-                    {val}
-                  </div>
-                  {idx < step.listA.length - 1 && <span className="text-[var(--chalk-faint)] text-xs">→</span>}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* List B */}
-        <div className="flex items-center gap-2">
-          <span className="w-14 font-mono text-xs text-indigo-400 font-bold">List B:</span>
-          <div className="flex items-center gap-1.5">
-            {step.listB.map((val, idx) => {
-              const isCommon = idx >= 3;
-              const isIntersection = step.intersectionFound && idx === 3;
-
-              let ringClass = isCommon
-                ? 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300 font-bold'
-                : 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300';
-              if (isIntersection) {
-                ringClass = 'border-pink-500 bg-pink-500/25 text-pink-300 ring-2 ring-pink-500/50 shadow-lg';
-              }
-
-              return (
-                <React.Fragment key={idx}>
-                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-mono text-xs transition-all ${ringClass}`}>
-                    {val}
-                  </div>
-                  {idx < step.listB.length - 1 && <span className="text-[var(--chalk-faint)] text-xs">→</span>}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Info notice */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex items-center justify-between text-xs font-mono">
-        <span className="text-[var(--chalk-dim)]">Common tail: <strong className="text-emerald-400">[8, 4, 5]</strong></span>
-        <span className="text-emerald-400 font-semibold">Dual Pointer Head-Swap</span>
-      </div>
-    </div>
-  );
-}
