@@ -1,222 +1,222 @@
-import React, { useState } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+// DATA-ONLY — rendered by LinkedListRenderer via rendererType
 
 export const meta = {
   display_id: 'Q-087',
-  title: "Deleting Node In Linked List",
-  category: "4. Linked List",
-  difficulty: "Medium",
-  timeComplexity: "O(N)",
-  spaceComplexity: "O(1)",
-  description: "Given a singly linked list and an integer x. Delete the x-th node from the singly linked list (1-based indexing)."
+  title: 'Deletion of the Head of a Linked List',
+  category: 'Linked List & Pointer Operations',
+  difficulty: 'Easy',
+  timeComplexity: 'O(1) Constant Time',
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Deletes the first node of a singly linked list in strictly O(1) time by caching the head pointer, advancing the head pointer to the second node, and freeing the original head node memory.'
 };
 
-// Original sequence of values in the Linked List
-const SAMPLE_DATA = [1, 5, 2, 9];
+export const rendererType = 'linked-list';
+
+export const ideaMap = {
+  title: 'Constant-Time Head Deletion Strategy',
+  nodes: [
+    { id: 'root', label: 'O(1) Head Deletion Invariant', children: ['null-guard', 'cache-target', 'advance-head', 'free-memory', 'complexity'] },
+    { id: 'null-guard', label: '1. Empty List Guard', detail: 'If head is nullptr, list is empty; return nullptr immediately to prevent null dereference.' },
+    { id: 'cache-target', label: '2. Cache Head Pointer', detail: 'Store temp = head so the memory of the original first node can be safely freed.' },
+    { id: 'advance-head', label: '3. Advance Head Pointer', detail: 'Assign head = head->next, designating the second node as the new entrance of the list.' },
+    { id: 'free-memory', label: '4. Memory Deallocation', detail: 'Execute delete temp (C++) or allow garbage collector reclamation to avoid memory leaks.' },
+    { id: 'complexity', label: '5. Constant Resource Bounds', detail: 'Executes in strictly O(1) constant time without traversing any subsequent nodes.' }
+  ]
+};
+
+export const solutions = {
+  cpp: `// C++ Optimal O(1) Deletion of Head Node
+// Time Complexity: O(1) | Space Complexity: O(1)
+/**
+ * Definition for singly-linked list.
+ * struct Node {
+ *     int data;
+ *     Node* next;
+ *     Node(int x) : data(x), next(nullptr) {}
+ * };
+ */
+class Solution {
+public:
+    Node* deleteHead(Node* head) {
+        if (head == nullptr) return nullptr; // Empty list guard
+
+        Node* temp = head;       // 1. Cache current head
+        head = head->next;       // 2. Advance head to next node
+        delete temp;             // 3. Free old head memory
+
+        return head;             // 4. Return new head
+    }
+};`,
+  python: `# Python 3 Optimal O(1) Deletion of Head Node
+# Time Complexity: O(1) | Space Complexity: O(1)
+class Solution:
+    def deleteHead(self, head: Optional[Node]) -> Optional[Node]:
+        if not head:
+            return None
+
+        # Advancing head automatically frees old head in Python
+        head = head.next
+        return head`,
+  java: `// Java Optimal O(1) Deletion of Head Node
+// Time Complexity: O(1) | Space Complexity: O(1)
+class Solution {
+    public Node deleteHead(Node head) {
+        if (head == null) return null;
+
+        // Reassign head to next node; GC collects disconnected head
+        head = head.next;
+        return head;
+    }
+}`,
+  javascript: `// JavaScript Optimal O(1) Deletion of Head Node
+// Time Complexity: O(1) | Space Complexity: O(1)
+var deleteHead = function(head) {
+    if (head === null) return null;
+
+    head = head.next;
+    return head;
+};`
+};
 
 export const steps = [
   {
-    title: "1. Initial Head Check (x = 3)",
-    codeLine: 3,
-    code: "if(x==1) return head->next;",
-    explanation: "We want to delete the 3rd node (x = 3). We first check if the target is the head itself (x = 1). If it were, we would simply return `head->next`. Since x is 3, this condition is bypassed.",
-    pointers: [],
-    highlightIndices: [],
-    hudText: "Target x = 3. Check x==1 is False.",
-    linkedList: [
-      { val: 1, label: 'head', active: false },
-      { val: 5, label: '', active: false },
-      { val: 2, label: 'target (x=3)', active: false, isTarget: true },
-      { val: 9, label: '', active: false }
-    ]
-  },
-  {
-    title: "2. Initialize Pointer & Counter",
-    codeLine: 6,
-    code: "int cnt = 1; Node* curr = head;",
-    explanation: "To reach the node strictly BEFORE our target, we initialize a counter `cnt` to 1, and point `curr` to the head of the list. We will traverse until `cnt` reaches `x - 1`.",
-    pointers: [{ index: 0, label: 'curr', color: 'indigo' }],
-    highlightIndices: [0],
-    hudText: "cnt = 1, curr points to Node(1)",
-    linkedList: [
-      { val: 1, label: 'head / curr', active: true },
-      { val: 5, label: '', active: false },
-      { val: 2, label: 'target', active: false, isTarget: true },
-      { val: 9, label: '', active: false }
-    ]
-  },
-  {
-    title: "3. Evaluate Traversal Condition",
-    codeLine: 8,
-    code: "while(cnt < x-1) // 1 < 2",
-    explanation: "We need to stop at node `x - 1` (which is node 2). Currently `cnt` is 1 and `x - 1` is 2. Since 1 < 2 is True, we enter the while loop to move forward.",
-    pointers: [{ index: 0, label: 'curr', color: 'indigo' }],
-    highlightIndices: [0],
-    hudText: "1 < 2 is True. Entering loop.",
-    linkedList: [
-      { val: 1, label: 'head / curr', active: true },
-      { val: 5, label: '', active: false },
-      { val: 2, label: 'target', active: false, isTarget: true },
-      { val: 9, label: '', active: false }
-    ]
-  },
-  {
-    title: "4. Advance Pointer & Counter",
-    codeLine: 9,
-    code: "cnt++; curr = curr->next;",
-    explanation: "Inside the loop, we advance `curr` to the next node and increment `cnt`. Now `curr` points to the 2nd node (val 5) and `cnt` becomes 2.",
-    pointers: [{ index: 1, label: 'curr', color: 'indigo' }],
-    highlightIndices: [1],
-    hudText: "cnt = 2, curr moved to Node(5)",
-    linkedList: [
-      { val: 1, label: 'head', active: false },
-      { val: 5, label: 'curr', active: true },
-      { val: 2, label: 'target', active: false, isTarget: true },
-      { val: 9, label: '', active: false }
-    ]
-  },
-  {
-    title: "5. Exit Traversal Loop",
-    codeLine: 8,
-    code: "while(cnt < x-1) // 2 < 2",
-    explanation: "We check the condition again. Now `cnt` is 2 and `x - 1` is 2. Since 2 < 2 is False, the loop terminates. `curr` is now perfectly positioned exactly one node before the one we want to delete.",
-    pointers: [{ index: 1, label: 'curr', color: 'indigo' }],
-    highlightIndices: [1],
-    hudText: "2 < 2 is False. Loop ends.",
-    linkedList: [
-      { val: 1, label: 'head', active: false },
-      { val: 5, label: 'curr', active: true },
-      { val: 2, label: 'curr->next (target)', active: false, isTarget: true },
-      { val: 9, label: 'curr->next->next', active: false }
-    ]
-  },
-  {
-    title: "6. Bypass Target Node",
+    title: '1. Initial List State: [1] -> [5] -> [2] -> [9] -> NULL',
+    phase: 'INITIALIZATION',
     codeLine: 12,
-    code: "curr->next = curr->next->next;",
-    explanation: "Crucial step: We update the `next` pointer of `curr` (Node 5) to skip over the target node and point directly to `curr->next->next` (Node 9). The target node (Node 2) is now unlinked from the list.",
-    pointers: [{ index: 1, label: 'curr', color: 'indigo' }],
-    highlightIndices: [1, 3],
-    hudText: "Node(5) linked directly to Node(9)",
-    linkedList: [
-      { val: 1, label: 'head', active: false },
-      { val: 5, label: 'curr', active: true },
-      { val: 9, label: 'new curr->next', active: true }
+    nodes: [
+      { id: 1, val: 1, pointers: ['head'], isHighlighted: true },
+      { id: 2, val: 5, pointers: [] },
+      { id: 3, val: 2, pointers: [] },
+      { id: 4, val: 9, pointers: ['tail'] }
     ],
-    droppedNode: { val: 2, label: 'Unlinked / Garbage' }
+    metrics: [
+      { label: 'List Length', value: '4 nodes' },
+      { label: 'Target to Delete', value: 'Node(1) (Head)' },
+      { label: 'head Pointer', value: 'Node(1)' },
+      { label: 'Status', value: 'Ready to Delete' }
+    ],
+    customCard: {
+      title: 'Initial List State',
+      rows: [
+        { label: 'Current Head', value: 'Node 1 (val: 1)' },
+        { label: 'Immediate Successor', value: 'Node 5 (val: 5)' },
+        { label: 'Deletion Goal', value: 'Remove Node 1 and promote Node 5 to head' }
+      ]
+    },
+    formula: 'if (head == nullptr) return nullptr;',
+    action: 'Verify list is non-empty. head points to Node 1.',
+    explain: 'Deleting the head node requires updating only the head pointer, taking strictly O(1) time.',
+    intuition: 'Unlike arrays where deleting index 0 requires O(N) shifting of all remaining elements, linked lists drop the head in O(1).'
   },
   {
-    title: "7. Return Modified List",
-    codeLine: 13,
-    code: "return head;",
-    explanation: "The deletion is structurally complete in memory. We return the original `head` pointer, which now leads to the successfully modified linked list [1 -> 5 -> 9].",
-    pointers: [],
-    highlightIndices: [0, 1, 3],
-    hudText: "Execution finished. Return head.",
-    linkedList: [
-      { val: 1, label: 'head', active: false },
-      { val: 5, label: '', active: false },
-      { val: 9, label: '', active: false }
-    ]
+    title: '2. Cache Current Head: Node* temp = head (Node 1)',
+    phase: 'POINTER_CACHE',
+    codeLine: 14,
+    nodes: [
+      { id: 1, val: 1, pointers: ['head', 'temp'], isHighlighted: true },
+      { id: 2, val: 5, pointers: [] },
+      { id: 3, val: 2, pointers: [] },
+      { id: 4, val: 9, pointers: ['tail'] }
+    ],
+    metrics: [
+      { label: 'temp Pointer', value: 'Node(1)' },
+      { label: 'head Pointer', value: 'Node(1)' },
+      { label: 'Memory Guard', value: 'Deallocation Anchor Set' }
+    ],
+    customCard: {
+      title: 'Memory Preservation Step',
+      rows: [
+        { label: 'Cache Assignment', value: 'Node* temp = head' },
+        { label: 'Purpose', value: 'Retains address of Node 1 for clean heap deallocation' },
+        { label: 'Prevented Risk', value: 'Prevents memory leak in C++' }
+      ]
+    },
+    formula: 'Node* temp = head; // temp points to Node(1)',
+    action: 'Assign temp = head. Both temp and head now reference Node 1.',
+    explain: 'Caching the head node pointer allows us to safely deallocate it after the list is disconnected.',
+    intuition: 'Always store what you intend to delete before advancing your list entrance.'
+  },
+  {
+    title: '3. Advance Head Pointer: head = head->next (Node 5)',
+    phase: 'HEAD_ADVANCE',
+    codeLine: 15,
+    nodes: [
+      { id: 1, val: 1, pointers: ['temp (isolated)'], isDeleted: true },
+      { id: 2, val: 5, pointers: ['head (new)'], isHighlighted: true, isModified: true },
+      { id: 3, val: 2, pointers: [] },
+      { id: 4, val: 9, pointers: ['tail'] }
+    ],
+    metrics: [
+      { label: 'New Head', value: 'Node(5)' },
+      { label: 'temp Status', value: 'Isolated (Detached)' },
+      { label: 'Active Length', value: '3 nodes' }
+    ],
+    customCard: {
+      title: 'Entrance Reassignment',
+      rows: [
+        { label: 'Operation', value: 'head = head->next' },
+        { label: 'New Head Node', value: 'Node 5' },
+        { label: 'Active Chain', value: '[5] -> [2] -> [9] -> NULL' }
+      ]
+    },
+    formula: 'head = head->next; // head points to Node(5)',
+    action: 'Advance head to head->next (Node 5). Node 1 is decoupled from the active list.',
+    explain: 'Node 5 is now the entry point of the list. Node 1 is isolated and referenced only by temp.',
+    intuition: 'The active list has effectively shrunk to 3 elements.'
+  },
+  {
+    title: '4. Deallocate Isolated Node: delete temp',
+    phase: 'MEMORY_FREE',
+    codeLine: 16,
+    nodes: [
+      { id: 2, val: 5, pointers: ['head'], isHighlighted: true },
+      { id: 3, val: 2, pointers: [] },
+      { id: 4, val: 9, pointers: ['tail'] }
+    ],
+    metrics: [
+      { label: 'Freed Memory', value: 'Node(1) Released' },
+      { label: 'Active Head', value: 'Node(5)' },
+      { label: 'Memory Leaks', value: '0 bytes' }
+    ],
+    customCard: {
+      title: 'Heap Deallocation',
+      rows: [
+        { label: 'Deallocate', value: 'delete temp' },
+        { label: 'Heap Release', value: 'Memory occupied by Node 1 returned to OS' },
+        { label: 'Dangling Pointers', value: 'temp destroyed; no memory dangling' }
+      ]
+    },
+    formula: 'delete temp; // Memory cleanly freed',
+    action: 'Free memory of Node 1. The detached node is permanently removed.',
+    explain: 'Node 1 is cleared from heap memory. In garbage-collected languages (Java, Python, JS), this occurs automatically.',
+    intuition: 'Clean resource management ensures zero memory footprint bloat.'
+  },
+  {
+    title: '5. Deletion Complete: Return New Head (Node 5)',
+    phase: 'COMPLETED',
+    codeLine: 18,
+    nodes: [
+      { id: 2, val: 5, pointers: ['head'], isHighlighted: true },
+      { id: 3, val: 2, pointers: [] },
+      { id: 4, val: 9, pointers: ['tail'], isHighlighted: true }
+    ],
+    metrics: [
+      { label: 'Final Length', value: '3 nodes' },
+      { label: 'Head Value', value: '5' },
+      { label: 'Time Complexity', value: 'O(1) Constant' },
+      { label: 'Space Complexity', value: 'O(1) Auxiliary' }
+    ],
+    customCard: {
+      title: 'Final Summary',
+      rows: [
+        { label: 'Final List', value: '[5] -> [2] -> [9] -> NULL' },
+        { label: 'Operations Done', value: '1 pointer shift + 1 memory free' },
+        { label: 'Complexity Guarantee', value: 'O(1) time and space guaranteed' }
+      ]
+    },
+    formula: 'return head; // [5 -> 2 -> 9 -> NULL]',
+    action: 'Return updated head pointer. Head deletion complete.',
+    explain: 'The linked list now starts at Node 5 with length 3.',
+    intuition: 'O(1) head deletion is a fundamental advantage of the linked list data structure.'
   }
 ];
-
-export default function DeletingNodeInLinkedListVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[340px]">
-        {/* Source Array View */}
-        <div className="mb-2 text-xs font-mono text-[var(--chalk-faint)] uppercase tracking-widest">Original Data Sequence</div>
-        <ArrayView items={SAMPLE_DATA} pointers={stepData.pointers || []} matchIndices={stepData.highlightIndices || []} />
-        
-        {/* Custom Linked List Rendering Area */}
-        <div className="mt-8 flex flex-col items-center w-full relative">
-          <div className="mb-6 text-xs font-mono text-[var(--chalk-faint)] uppercase tracking-widest">Linked List Memory State</div>
-          
-          <div className="flex items-center justify-center w-full overflow-visible min-h-[100px]">
-            {stepData.linkedList && stepData.linkedList.map((node, i) => (
-              <React.Fragment key={i}>
-                <div className="relative flex flex-col items-center mx-1">
-                  {node.label && (
-                    <span className={`absolute -top-7 text-[10px] font-mono font-bold whitespace-nowrap transition-colors duration-300 ${node.label.includes('head') ? 'text-emerald-400' : node.isTarget ? 'text-rose-400' : 'text-indigo-300'}`}>
-                      {node.label}
-                    </span>
-                  )}
-                  <div className={`w-12 h-12 flex items-center justify-center rounded-lg border-2 transition-all duration-200 ${
-                    node.active ? 'border-indigo-500 bg-indigo-500/20 z-10' : 
-                    node.isTarget ? 'border-rose-500 bg-rose-500/10' : 
-                    'border-white/20 bg-white/5'
-                  } font-mono text-[var(--chalk)] text-lg`}>
-                    {node.val}
-                  </div>
-                </div>
-                
-                {/* Connecting Arrows */}
-                {i < stepData.linkedList.length - 1 && (
-                  <div className="mx-2 flex items-center z-0">
-                    <svg className={`w-8 h-8 transition-all duration-500 ${node.active && i === stepData.linkedList.length - 2 && stepIndex === 5 ? 'text-emerald-400' : 'text-[var(--chalk-faint)]'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-
-          {/* Dropped / Unlinked Node Visualization */}
-          {stepData.droppedNode && (
-            <div className="absolute top-[110px] left-1/2 transform -translate-x-1/2 flex flex-col items-center transition-all duration-700 opacity-60 translate-y-4">
-              <div className="w-12 h-12 flex items-center justify-center rounded-lg border-2 border-rose-500/50 bg-rose-500/5 border-dashed font-mono text-rose-200/50 text-lg">
-                {stepData.droppedNode.val}
-              </div>
-              <span className="mt-2 text-[10px] font-mono font-bold text-rose-500/70 whitespace-nowrap">
-                {stepData.droppedNode.label}
-              </span>
-            </div>
-          )}
-        </div>
-
-        <div className="mt-12 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs w-full max-w-2xl">
-          <span className="whitespace-nowrap text-[var(--chalk-dim)]">Code:</span> 
-          <code className="text-emerald-400 px-2 py-1 bg-emerald-400/10 rounded flex-1 truncate">{stepData.code}</code>
-          <div className="w-px h-4 bg-white/10 mx-1"></div>
-          <span className="whitespace-nowrap text-[var(--chalk-dim)]">Status:</span> 
-          <strong className="text-indigo-400 whitespace-nowrap truncate max-w-[200px]">{stepData.hudText || 'Processing...'}</strong>
-        </div>
-      </div>
-
-      {/* 4. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-[var(--chalk-dim)] leading-relaxed font-sans shadow-inner min-h-[85px]">
-        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
-        {stepData.explanation}
-      </div>
-    </div>
-  );
-}

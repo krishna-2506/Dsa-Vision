@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Flatten Binary Tree to Linked List',
@@ -6,11 +6,37 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1) in-place with Morris Traversal',
-  description: 'Flattens a binary tree in-place into a right-skewed linked list matching preorder traversal order using Morris-style predecessor splicing without extra space.'
+  description: 'Flattens a binary tree in-place into a right-skewed linked list matching its preorder traversal order. Uses Morris-style in-order predecessor rewiring to achieve strictly O(1) auxiliary memory (LeetCode 114).'
+};
+
+export const ideaMap = {
+  title: 'In-Place Tree Flattening Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Identify Left Subtree',
+      detail: 'If curr.left is null, advance curr = curr.right. If curr.left exists, we must splice it into the right spine.'
+    },
+    {
+      id: 'step2',
+      label: 'Find In-Order Predecessor',
+      detail: 'Find the rightmost node prev in curr.left subtree: while (prev.right != null) prev = prev.right.'
+    },
+    {
+      id: 'step3',
+      label: 'Predecessor Rewiring',
+      detail: 'Connect prev.right = curr.right, then move entire left subtree to curr.right, setting curr.left = null.'
+    },
+    {
+      id: 'step4',
+      label: 'Advance Along Right Spine',
+      detail: 'Advance curr = curr.right until all left subtrees have been unraveled into a continuous right-skewed list.'
+    }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++: Flatten Binary Tree to Linked List in O(1) space
+  cpp: `// C++: Flatten Binary Tree to Linked List in O(1) Space (LeetCode 114)
 // Time Complexity: O(N) | Space Complexity: O(1)
 struct TreeNode {
     int val;
@@ -40,7 +66,8 @@ public:
         }
     }
 };`,
-  java: `// Java: Flatten Binary Tree to Linked List in O(1) space
+  java: `// Java: Flatten Binary Tree to Linked List in O(1) Space (LeetCode 114)
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public void flatten(TreeNode root) {
         TreeNode curr = root;
@@ -60,134 +87,215 @@ class Solution {
         }
     }
 }`,
-  python: `# Python 3: Flatten Binary Tree to Linked List
-def flatten(root):
-    curr = root
+  python: `# Python: Flatten Binary Tree to Linked List in O(1) Space (LeetCode 114)
+# Time Complexity: O(N) | Space Complexity: O(1)
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
-    while curr:
-        if curr.left:
-            prev = curr.left
-            while prev.right:
-                prev = prev.right
+class Solution:
+    def flatten(self, root: TreeNode | None) -> None:
+        curr = root
 
-            prev.right = curr.right
-            curr.right = curr.left
-            curr.left = None
+        while curr:
+            if curr.left:
+                prev = curr.left
+                while prev.right:
+                    prev = prev.right
 
-        curr = curr.right`,
-  javascript: `// JavaScript: Flatten Binary Tree to Linked List
+                prev.right = curr.right
+                curr.right = curr.left
+                curr.left = None
+
+            curr = curr.right`,
+  javascript: `// JavaScript: Flatten Binary Tree to Linked List in O(1) Space (LeetCode 114)
+// Time Complexity: O(N) | Space Complexity: O(1)
 function flatten(root) {
-    let curr = root;
+  let curr = root;
 
-    while (curr !== null) {
-        if (curr.left !== null) {
-            let prev = curr.left;
-            while (prev.right !== null) {
-                prev = prev.right;
-            }
+  while (curr !== null) {
+    if (curr.left !== null) {
+      let prev = curr.left;
+      while (prev.right !== null) {
+        prev = prev.right;
+      }
 
-            prev.right = curr.right;
-            curr.right = curr.left;
-            curr.left = null;
-        }
-        curr = curr.right;
+      prev.right = curr.right;
+      curr.right = curr.left;
+      curr.left = null;
     }
+    curr = curr.right;
+  }
 }`
+};
+
+const treeInitial = {
+  val: 1,
+  left: {
+    val: 2,
+    left: { val: 3, left: null, right: null },
+    right: { val: 4, left: null, right: null }
+  },
+  right: {
+    val: 5,
+    left: null,
+    right: { val: 6, left: null, right: null }
+  }
+};
+
+const treeStep1 = {
+  val: 1,
+  left: null,
+  right: {
+    val: 2,
+    left: { val: 3, left: null, right: null },
+    right: {
+      val: 4,
+      left: null,
+      right: {
+        val: 5,
+        left: null,
+        right: { val: 6, left: null, right: null }
+      }
+    }
+  }
+};
+
+const treeFinal = {
+  val: 1,
+  left: null,
+  right: {
+    val: 2,
+    left: null,
+    right: {
+      val: 3,
+      left: null,
+      right: {
+        val: 4,
+        left: null,
+        right: {
+          val: 5,
+          left: null,
+          right: { val: 6, left: null, right: null }
+        }
+      }
+    }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Initial Tree: Root 1 with Left (2, 3, 4) & Right (5, 6)',
-    phase: 'INIT',
-    codeLine: 12,
-    curr: 1,
-    action: 'Start at root 1',
-    flattened: [1],
-    explain: 'Goal: Flatten into 1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 6 where all left pointers are null.'
+    phase: 'INITIAL',
+    title: '1. Initial Binary Tree: Inspect Root 1 (curr = 1)',
+    tree: treeInitial,
+    activeVal: 1,
+    visitedVals: [1],
+    nodeLabels: { 1: 'curr: 1', 4: 'predecessor: 4', 5: 'target right: 5' },
+    customCard: {
+      title: 'Predecessor Search at Root',
+      rows: [
+        { label: 'Current Node', value: 'Node 1', accent: true },
+        { label: 'Left Subtree Root', value: 'Node 2' },
+        { label: 'Rightmost Predecessor', value: 'Node 4 (in curr.left)', accent: true },
+        { label: 'Rewiring Plan', value: 'Connect 4.right = 5; move 1.left to 1.right' }
+      ]
+    },
+    variables: {
+      curr: 1,
+      prev: 4,
+      originalRight: 5,
+      leftTransferred: false
+    },
+    metrics: [
+      { label: 'Current', value: '1' },
+      { label: 'Predecessor', value: '4' },
+      { label: 'Space', value: 'O(1) in-place', highlight: true }
+    ],
+    explain: 'At curr = 1, a left subtree exists. Traverse down 1.left to find rightmost node 4. Connect 4.right to 1.right (Node 5).'
   },
   {
-    title: '2. At curr = 1: Find rightmost of 1.left (Node 4)',
-    phase: 'FIND_PRED',
-    codeLine: 18,
-    curr: 1,
-    action: 'prev = Node 4; Link 4.right = 1.right (5)',
-    flattened: [1],
-    explain: 'Rightmost node in left subtree of 1 is Node 4. Attach original right branch (5 &rarr; 6) to 4.right.'
+    phase: 'SPLICING_ROOT',
+    title: '2. Rewire Root: 4.right = 5, 1.right = 2, 1.left = null',
+    tree: treeStep1,
+    activeVal: 2,
+    visitedVals: [1, 2],
+    nodeLabels: { 1: 'left: null', 2: 'curr: 2', 3: 'predecessor: 3', 4: 'attached to 5' },
+    customCard: {
+      title: 'First Splicing Stage Complete',
+      rows: [
+        { label: 'Splice Operation', value: 'Transferred {2,3,4} into right spine', accent: true },
+        { label: 'Bridge Link', value: '4.right points to Node 5' },
+        { label: 'Next Pointer', value: 'Advance curr = curr.right (Node 2)' },
+        { label: 'Left Subtree of 2', value: 'Node 3 needs unravelling' }
+      ]
+    },
+    variables: {
+      curr: 2,
+      prev: 3,
+      originalRight: 4,
+      leftTransferred: true
+    },
+    metrics: [
+      { label: 'Current', value: '2' },
+      { label: 'Predecessor', value: '3' },
+      { label: 'Spine Status', value: '1 -> 2', highlight: true }
+    ],
+    explain: 'Left child 2 is moved to 1.right, with 1.left set to null. Predecessor 4 now flows into 5. Advance curr to Node 2.'
   },
   {
-    title: '3. Splice: 1.right = 1.left (2); 1.left = null',
-    phase: 'SPLICE',
-    codeLine: 24,
-    curr: 1,
-    action: 'curr.right = curr.left; curr.left = null',
-    flattened: [1, 2],
-    explain: 'Move left subtree to right. Left child of 1 is set to null.'
+    phase: 'SPLICING_NODE_2',
+    title: '3. Rewire Node 2: 3.right = 4, 2.right = 3, 2.left = null',
+    tree: treeFinal,
+    activeVal: 3,
+    visitedVals: [1, 2, 3],
+    nodeLabels: { 1: 'right: 2', 2: 'right: 3', 3: 'right: 4', 4: 'right: 5', 5: 'right: 6', 6: 'tail' },
+    customCard: {
+      title: 'Second Splicing Stage Complete',
+      rows: [
+        { label: 'Splice Operation', value: '3.right = 4; 2.right = 3; 2.left = null', accent: true },
+        { label: 'Unravelled Sequence', value: '1 -> 2 -> 3 -> 4 -> 5 -> 6' },
+        { label: 'Left Pointers', value: 'All left pointers set to null' }
+      ]
+    },
+    variables: {
+      curr: 3,
+      flattenedPrefix: '[1, 2, 3]',
+      allLeftNull: true
+    },
+    metrics: [
+      { label: 'Current', value: '3' },
+      { label: 'Spine Status', value: '1 -> 2 -> 3 -> 4', highlight: true }
+    ],
+    explain: 'At Node 2, rightmost node of 2.left is 3. Connect 3.right to 4. Move 3 to 2.right and set 2.left = null.'
   },
   {
-    title: '4. Advance curr to 2: Rightmost of 2.left is Node 3',
-    phase: 'ADVANCE',
-    codeLine: 18,
-    curr: 2,
-    action: 'prev = Node 3; Link 3.right = 2.right (4)',
-    flattened: [1, 2, 3],
-    explain: 'Attach 4 to 3.right. Set 2.right = 3 and 2.left = null.'
-  },
-  {
-    title: '5. Complete: All nodes aligned into Right-Skewed Linked List!',
     phase: 'COMPLETE',
-    codeLine: 27,
-    curr: null,
-    action: '1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 6',
-    flattened: [1, 2, 3, 4, 5, 6],
-    explain: 'Entire tree transformed in-place into linear linked list using 0 extra space!'
+    title: '4. Fully Flattened Right-Skewed Linked List: 1 -> 2 -> 3 -> 4 -> 5 -> 6',
+    tree: treeFinal,
+    activeVal: null,
+    visitedVals: [1, 2, 3, 4, 5, 6],
+    nodeLabels: { 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6' },
+    customCard: {
+      title: 'Flattened Linked List Summary',
+      rows: [
+        { label: 'Resulting Linked List', value: '1 -> 2 -> 3 -> 4 -> 5 -> 6', accent: true },
+        { label: 'Preorder Verification', value: 'Matches Preorder Traversal exactly', accent: true },
+        { label: 'Time Complexity', value: 'O(N) amortized linear scan' },
+        { label: 'Space Complexity', value: 'O(1) auxiliary space (no stack/recursion)' }
+      ]
+    },
+    variables: {
+      status: 'Complete',
+      order: '[1, 2, 3, 4, 5, 6]',
+      auxiliarySpace: 'O(1)'
+    },
+    metrics: [
+      { label: 'List Length', value: '6' },
+      { label: 'Preorder Match', value: 'YES' },
+      { label: 'Space', value: 'O(1)', highlight: true }
+    ],
+    explain: 'All nodes have been shifted to right pointers with all left pointers nullified. The flattened linked list precisely mirrors the preorder traversal in strictly O(1) auxiliary space.'
   }
 ];
-
-export default function FlattenBinaryTreeToLinkedListVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Operation: <strong className="text-cyan-400">{step.action}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-          Space Complexity: <strong>O(1) In-Place</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Flattened Right-Pointer Chain</span>
-          <span className="text-emerald-400 font-bold">Preorder Linked List</span>
-        </div>
-
-        {/* Chain visualization */}
-        <div className="flex items-center justify-center gap-2 flex-wrap w-full py-4">
-          {step.flattened.map((val, idx) => (
-            <div key={idx} className="flex items-center gap-2">
-              <div
-                className={`w-12 h-12 rounded-xl border-2 flex flex-col items-center justify-center font-mono font-bold text-sm shadow-md transition-all ${
-                  step.curr === val
-                    ? 'bg-amber-500/25 border-amber-400 text-amber-200'
-                    : 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                }`}
-              >
-                <span>{val}</span>
-                <span className="text-[8px] text-[#555a79] font-normal">L:null</span>
-              </div>
-              {idx < step.flattened.length - 1 && (
-                <span className="text-xs font-mono text-[#434966] font-bold">&rarr;</span>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          Morris wiring: Connect predecessor&apos;s right pointer to original right subtree &rarr; move left to right.
-        </div>
-      </div>
-    </div>
-  );
-}

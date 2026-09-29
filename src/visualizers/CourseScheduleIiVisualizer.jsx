@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'queue';
 
 export const meta = {
   title: 'Course Schedule II',
@@ -9,41 +9,72 @@ export const meta = {
   description: 'Finds a valid ordering of courses to finish all of them given prerequisite pairs. Returns the exact topological ordering array, or an empty array if a cycle exists (LeetCode 210).'
 };
 
+export const ideaMap = {
+  title: 'Topological Sort Course Sequence Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Adjacency & In-Degree Setup',
+      detail: 'Record incoming edges (prereq -> course) and maintain an in-degree counter array for all courses.'
+    },
+    {
+      id: 'step2',
+      label: 'Queue Independent Courses',
+      detail: 'Identify all courses with zero incoming prerequisites and insert them into the initial FIFO processing queue.'
+    },
+    {
+      id: 'step3',
+      label: 'Sequential Order Collection',
+      detail: 'Dequeue course u, append u to the topological result array, and relax downstream dependent courses.'
+    },
+    {
+      id: 'step4',
+      label: 'Acyclicity Validation',
+      detail: 'If the collected sequence length equals numCourses, return the schedule; otherwise return empty array [].'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Course Schedule II (LeetCode 210)
+// Time Complexity: O(V + E) | Space Complexity: O(V + E)
 #include <vector>
 #include <queue>
 using namespace std;
 
-vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
-    vector<vector<int>> adj(numCourses);
-    vector<int> indegree(numCourses, 0);
-    
-    for (auto& p : prerequisites) {
-        adj[p[1]].push_back(p[0]);
-        indegree[p[0]]++;
-    }
-    
-    queue<int> q;
-    for (int i = 0; i < numCourses; i++) {
-        if (indegree[i] == 0) q.push(i);
-    }
-    
-    vector<int> order;
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
-        order.push_back(u);
+class Solution {
+public:
+    vector<int> findOrder(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<vector<int>> adj(numCourses);
+        vector<int> indegree(numCourses, 0);
         
-        for (int v : adj[u]) {
-            indegree[v]--;
-            if (indegree[v] == 0) q.push(v);
+        for (const auto& p : prerequisites) {
+            adj[p[1]].push_back(p[0]);
+            indegree[p[0]]++;
         }
+        
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) q.push(i);
+        }
+        
+        vector<int> order;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            order.push_back(u);
+            
+            for (int v : adj[u]) {
+                indegree[v]--;
+                if (indegree[v] == 0) q.push(v);
+            }
+        }
+        if (order.size() == numCourses) return order;
+        return {};
     }
-    if (order.size() == numCourses) return order;
-    return {};
-}`,
-  java: `// Java: Course Schedule II
+};`,
+  java: `// Java: Course Schedule II (LeetCode 210)
+// Time Complexity: O(V + E) | Space Complexity: O(V + E)
 import java.util.*;
 
 class Solution {
@@ -51,149 +82,216 @@ class Solution {
         List<List<Integer>> adj = new ArrayList<>();
         for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());
         int[] indegree = new int[numCourses];
+        
         for (int[] p : prerequisites) {
             adj.get(p[1]).add(p[0]);
             indegree[p[0]]++;
         }
+        
         Queue<Integer> q = new LinkedList<>();
         for (int i = 0; i < numCourses; i++) {
-            if (indegree[i] == 0) q.add(i);
+            if (indegree[i] == 0) q.offer(i);
         }
+        
         int[] order = new int[numCourses];
         int idx = 0;
+        
         while (!q.isEmpty()) {
             int u = q.poll();
             order[idx++] = u;
             for (int v : adj.get(u)) {
                 indegree[v]--;
-                if (indegree[v] == 0) q.add(v);
+                if (indegree[v] == 0) q.offer(v);
             }
         }
         return idx == numCourses ? order : new int[0];
     }
 }`,
-  python: `# Python: Course Schedule II
+  python: `# Python: Course Schedule II (LeetCode 210)
+# Time Complexity: O(V + E) | Space Complexity: O(V + E)
 from collections import deque
 
-def findOrder(numCourses: int, prerequisites: list[list[int]]) -> list[int]:
-    adj = [[] for _ in range(numCourses)]
-    indegree = [0] * numCourses
-    for dest, src in prerequisites:
-        adj[src].append(dest)
-        indegree[dest] += 1
+class Solution:
+    def findOrder(self, numCourses: int, prerequisites: list[list[int]]) -> list[int]:
+        adj = [[] for _ in range(numCourses)]
+        indegree = [0] * numCourses
         
-    q = deque([i for i in range(numCourses) if indegree[i] == 0])
-    order = []
-    while q:
-        u = q.popleft()
-        order.append(u)
-        for v in adj[u]:
-            indegree[v] -= 1
-            if indegree[v] == 0:
-                q.append(v)
-    return order if len(order) == numCourses else []
-`,
-  javascript: `// JavaScript: Course Schedule II
+        for crs, prereq in prerequisites:
+            adj[prereq].append(crs)
+            indegree[crs] += 1
+            
+        q = deque([i for i in range(numCourses) if indegree[i] == 0])
+        order = []
+        
+        while q:
+            u = q.popleft()
+            order.append(u)
+            for v in adj[u]:
+                indegree[v] -= 1
+                if indegree[v] == 0:
+                    q.append(v)
+                    
+        return order if len(order) == numCourses else []`,
+  javascript: `// JavaScript: Course Schedule II (LeetCode 210)
+// Time Complexity: O(V + E) | Space Complexity: O(V + E)
 function findOrder(numCourses, prerequisites) {
-  // Kahn's BFS collecting course array
-  return [];
+  const adj = Array.from({ length: numCourses }, () => []);
+  const indegree = new Array(numCourses).fill(0);
+  
+  for (const [course, prereq] of prerequisites) {
+    adj[prereq].push(course);
+    indegree[course]++;
+  }
+  
+  const q = [];
+  for (let i = 0; i < numCourses; i++) {
+    if (indegree[i] === 0) q.push(i);
+  }
+  
+  const order = [];
+  while (q.length > 0) {
+    const u = q.shift();
+    order.push(u);
+    for (const v of adj[u]) {
+      indegree[v]--;
+      if (indegree[v] === 0) q.push(v);
+    }
+  }
+  return order.length === numCourses ? order : [];
 }`
 };
 
 export const steps = [
   {
-    title: '1. Initialize Courses with In-Degrees',
-    phase: 'INIT',
-    codeLine: 12,
-    order: [],
+    phase: 'INITIALIZE',
+    title: '1. Build Graph & Enqueue Ready Course 0',
+    mode: 'queue',
     queue: [0],
-    indegree: [0, 1, 1, 2],
-    explanation: 'Course 0 has 0 prerequisites. Push 0 into queue.'
+    inputTrack: {
+      items: [0, 1, 1, 2],
+      label: 'Course In-Degrees (Course 0..3)'
+    },
+    scanIndex: 0,
+    activeIndices: [0],
+    customCard: {
+      title: 'Topological Scheduler Setup',
+      rows: [
+        { label: 'Courses to Order', value: '4 Courses [0, 1, 2, 3]', accent: true },
+        { label: 'Prerequisites', value: '0->1, 0->2, 1->3, 2->3' },
+        { label: 'Initial Queue', value: '[ Course 0 ]' },
+        { label: 'Extracted Order', value: '[]' }
+      ]
+    },
+    variables: {
+      order: '[]',
+      queue: '[0]',
+      scheduledCount: '0 / 4'
+    },
+    metrics: {
+      scheduled: '0 / 4',
+      queueSize: 1,
+      currentCourse: 0
+    },
+    explain: 'Course 0 has in-degree 0 (no prerequisites). Push 0 into queue. The topological order list is currently empty.',
+    intuition: 'Any node with zero indegree can safely lead the sequence since nothing precedes it.'
   },
   {
-    title: '2. Take Course 0: order = [0]',
-    phase: 'TAKE_0',
-    codeLine: 21,
-    order: [0],
+    phase: 'PROCESS_0',
+    title: '2. Dequeue Course 0: Append to Order & Unlock 1, 2',
+    mode: 'queue',
     queue: [1, 2],
-    indegree: [0, 0, 0, 2],
-    explanation: 'Pop Course 0. Decrement indegree of Course 1 and 2 to 0. Enqueue both.'
+    inputTrack: {
+      items: [0, 0, 0, 2],
+      label: 'Course In-Degrees (Course 0..3)'
+    },
+    scanIndex: 0,
+    activeIndices: [1, 2],
+    customCard: {
+      title: 'Course 0 Enrolled & Graduated',
+      rows: [
+        { label: 'Appended Order', value: '[0]', accent: true },
+        { label: 'Unlocked Course 1', value: 'In-degree -> 0 (Enqueued)' },
+        { label: 'Unlocked Course 2', value: 'In-degree -> 0 (Enqueued)' },
+        { label: 'Queue', value: '[ Course 1, Course 2 ]' }
+      ]
+    },
+    variables: {
+      order: '[0]',
+      queue: '[1, 2]',
+      scheduledCount: '1 / 4'
+    },
+    metrics: {
+      scheduled: '1 / 4',
+      queueSize: 2,
+      currentCourse: 0
+    },
+    explain: 'Dequeue Course 0 and append it to order: [0]. In-degrees of dependent courses 1 and 2 drop to 0; enqueue [1, 2].',
+    intuition: 'Downstream courses have their dependency barriers cleared one by one.'
   },
   {
-    title: '3. Take Courses 1 & 2: order = [0, 1, 2]',
-    phase: 'TAKE_1_2',
-    codeLine: 21,
-    order: [0, 1, 2],
+    phase: 'PROCESS_1_2',
+    title: '3. Dequeue Courses 1 & 2: Unlock Course 3',
+    mode: 'queue',
     queue: [3],
-    indegree: [0, 0, 0, 0],
-    explanation: 'Pop Course 1 and Course 2. Prereq count for Course 3 drops from 2 to 0! Enqueue Course 3.'
+    inputTrack: {
+      items: [0, 0, 0, 0],
+      label: 'Course In-Degrees (Course 0..3)'
+    },
+    scanIndex: 3,
+    activeIndices: [3],
+    customCard: {
+      title: 'Intermediate Courses Scheduled',
+      rows: [
+        { label: 'Appended Order', value: '[0, 1, 2]', accent: true },
+        { label: 'Course 3 Dependencies', value: 'Both 1 and 2 resolved' },
+        { label: 'Course 3 In-Degree', value: 'Drops to 0 (Enqueued!)' },
+        { label: 'Queue', value: '[ Course 3 ]' }
+      ]
+    },
+    variables: {
+      order: '[0, 1, 2]',
+      queue: '[3]',
+      scheduledCount: '3 / 4'
+    },
+    metrics: {
+      scheduled: '3 / 4',
+      queueSize: 1,
+      currentCourse: 2
+    },
+    explain: 'Courses 1 and 2 are scheduled and appended to order: [0, 1, 2]. Course 3 has both prerequisites met (in-degree drops to 0) and is enqueued.',
+    intuition: 'Multiple valid orderings may exist at branching steps; Kahn\'s algorithm systematically yields one.'
   },
   {
-    title: '4. Take Course 3: Final Schedule = [0, 1, 2, 3]',
     phase: 'COMPLETE',
-    codeLine: 29,
-    order: [0, 1, 2, 3],
+    title: '4. Finalize Schedule: Valid Sequence [0, 1, 2, 3]',
+    mode: 'queue',
     queue: [],
-    indegree: [0, 0, 0, 0],
-    explanation: 'Course 3 taken. Valid graduation study pathway found: [0, 1, 2, 3]!'
+    inputTrack: {
+      items: [0, 0, 0, 0],
+      label: 'Topological Sort Complete'
+    },
+    scanIndex: 3,
+    activeIndices: [0, 1, 2, 3],
+    customCard: {
+      title: 'Topological Order Generated',
+      rows: [
+        { label: 'Final Schedule', value: '[0, 1, 2, 3]', accent: true },
+        { label: 'Courses Ordered', value: '4 / 4 courses' },
+        { label: 'Cyclic Deadlock', value: 'None (Acyclic DAG)' },
+        { label: 'Status', value: 'Success' }
+      ]
+    },
+    variables: {
+      order: '[0, 1, 2, 3]',
+      queue: '[] (Empty)',
+      scheduledCount: '4 / 4'
+    },
+    metrics: {
+      scheduled: '4 / 4',
+      queueSize: 0,
+      currentCourse: 3
+    },
+    explain: 'Course 3 appended to order. Total scheduled courses = 4 equals numCourses. Valid topological sequence: [0, 1, 2, 3].',
+    intuition: 'Every course in the returned sequence appears strictly after all its prerequisite dependencies.'
   }
 ];
-
-export default function CourseScheduleIiVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Courses Scheduled: <strong className="text-purple-200">{step.order.length} / 4</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Next in Queue: <strong className="text-cyan-200">{step.queue.length > 0 ? `Course ${step.queue[0]}` : 'Empty'}</strong>
-        </div>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
-          <span>Generated Course Curriculum Order</span>
-          <span className="text-emerald-400 font-bold">Topological Sequence</span>
-        </div>
-
-        {/* Course order progression */}
-        <div className="flex items-center gap-2 flex-wrap min-h-[50px] p-3 rounded-xl bg-[#0f1017] border border-[#1f2233]">
-          {step.order.length === 0 ? (
-            <span className="text-[#475569] font-mono text-xs italic">Awaiting first course...</span>
-          ) : (
-            step.order.map((c, i) => (
-              <div key={i} className="flex items-center gap-1.5 font-mono text-xs">
-                <span className="px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 font-bold">
-                  Course {c}
-                </span>
-                {i < step.order.length - 1 && <span className="text-[#525777]">&rarr;</span>}
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="grid grid-cols-4 gap-2 pt-2 text-center text-xs font-mono">
-          {[0, 1, 2, 3].map(c => (
-            <div
-              key={c}
-              className={`p-2 rounded-xl border ${
-                step.order.includes(c)
-                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[#475569]'
-              }`}
-            >
-              C{c}: {step.order.includes(c) ? 'COMPLETED' : `rem: ${step.indegree[c]}`}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.explanation}
-      </div>
-    </div>
-  );
-}

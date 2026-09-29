@@ -1,43 +1,71 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: "Sort a Linked List of 0's, 1's and 2's",
-  category: 'Linked List & Pointer Relinking',
+  category: 'Linked List',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1)',
-  description: "Sorts a linked list containing only 0, 1, and 2 by segregating nodes into three dummy lists and stitching them together in a single pass."
+  description: "Sorts a linked list containing only values 0, 1, and 2 in optimal O(N) time and O(1) space by partitioning nodes into three dummy-headed sub-lists and stitching the chains together in-place."
+};
+
+export const ideaMap = {
+  title: 'Three-Pointer Partitioning Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Three Dummy Anchors',
+      detail: 'Instantiate zeroHead, oneHead, and twoHead dummy nodes with running tails.'
+    },
+    {
+      id: 'step2',
+      label: 'Single-Pass Distribution',
+      detail: 'Iterate curr through the list and link each node to its matching category tail.'
+    },
+    {
+      id: 'step3',
+      label: 'Stitch Category Chains',
+      detail: 'Connect zero tail to one head (or two head if ones absent), and one tail to two head.'
+    },
+    {
+      id: 'step4',
+      label: 'Terminate Tail',
+      detail: 'Set two tail.next = null to prevent cycles; return zeroHead.next.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Sort Linked List of 0s, 1s, and 2s
-// Time Complexity: O(N) | Space Complexity: O(1)
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode(int x) : val(x), next(nullptr) {}
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) : data(val), next(nullptr) {}
 };
 
 class Solution {
 public:
-    ListNode* segregate(ListNode *head) {
+    Node* segregate(Node* head) {
         if (!head || !head->next) return head;
 
-        ListNode* zeroHead = new ListNode(-1);
-        ListNode* oneHead = new ListNode(-1);
-        ListNode* twoHead = new ListNode(-1);
+        Node* zeroHead = new Node(-1);
+        Node* oneHead = new Node(-1);
+        Node* twoHead = new Node(-1);
 
-        ListNode* zero = zeroHead;
-        ListNode* one = oneHead;
-        ListNode* two = twoHead;
-        ListNode* curr = head;
+        Node* zero = zeroHead;
+        Node* one = oneHead;
+        Node* two = twoHead;
+        Node* curr = head;
 
-        // Segregate nodes into 0, 1, and 2 sub-lists
-        while (curr) {
-            if (curr->val == 0) {
+        // Distribute nodes into 0, 1, and 2 chains
+        while (curr != nullptr) {
+            if (curr->data == 0) {
                 zero->next = curr;
                 zero = zero->next;
-            } else if (curr->val == 1) {
+            } else if (curr->data == 1) {
                 one->next = curr;
                 one = one->next;
             } else {
@@ -47,12 +75,12 @@ public:
             curr = curr->next;
         }
 
-        // Stitch the three chains together
-        zero->next = (oneHead->next) ? (oneHead->next) : (twoHead->next);
+        // Stitch the chains together
+        zero->next = (oneHead->next != nullptr) ? oneHead->next : twoHead->next;
         one->next = twoHead->next;
         two->next = nullptr;
 
-        ListNode* newHead = zeroHead->next;
+        Node* newHead = zeroHead->next;
         delete zeroHead;
         delete oneHead;
         delete twoHead;
@@ -61,23 +89,28 @@ public:
     }
 };`,
   python: `# Python 3 Sort Linked List of 0s, 1s, and 2s
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
 class Solution:
-    def segregate(self, head: Optional[ListNode]) -> Optional[ListNode]:
+    def segregate(self, head: Node) -> Node:
         if not head or not head.next:
             return head
 
-        zero_head = ListNode(-1)
-        one_head = ListNode(-1)
-        two_head = ListNode(-1)
+        zero_head = Node(-1)
+        one_head = Node(-1)
+        two_head = Node(-1)
 
         zero, one, two = zero_head, one_head, two_head
         curr = head
 
         while curr:
-            if curr.val == 0:
+            if curr.data == 0:
                 zero.next = curr
                 zero = zero.next
-            elif curr.val == 1:
+            elif curr.data == 1:
                 one.next = curr
                 one = one.next
             else:
@@ -91,22 +124,28 @@ class Solution:
 
         return zero_head.next`,
   java: `// Java Sort Linked List of 0s, 1s, and 2s
-class Solution {
-    public static ListNode segregate(ListNode head) {
+class Node {
+    int data;
+    Node next;
+    Node(int d) { data = d; next = null; }
+}
+
+public class Solution {
+    public static Node segregate(Node head) {
         if (head == null || head.next == null) return head;
 
-        ListNode zeroHead = new ListNode(-1);
-        ListNode oneHead = new ListNode(-1);
-        ListNode twoHead = new ListNode(-1);
+        Node zeroHead = new Node(-1);
+        Node oneHead = new Node(-1);
+        Node twoHead = new Node(-1);
 
-        ListNode zero = zeroHead, one = oneHead, two = twoHead;
-        ListNode curr = head;
+        Node zero = zeroHead, one = oneHead, two = twoHead;
+        Node curr = head;
 
         while (curr != null) {
-            if (curr.val == 0) {
+            if (curr.data == 0) {
                 zero.next = curr;
                 zero = zero.next;
-            } else if (curr.val == 1) {
+            } else if (curr.data == 1) {
                 one.next = curr;
                 one = one.next;
             } else {
@@ -124,168 +163,194 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Sort Linked List of 0s, 1s, and 2s
-var segregate = function(head) {
-    if (!head || !head.next) return head;
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
 
-    const zeroHead = new ListNode(-1);
-    const oneHead = new ListNode(-1);
-    const twoHead = new ListNode(-1);
+function segregate(head) {
+  if (!head || !head.next) return head;
 
-    let zero = zeroHead, one = oneHead, two = twoHead;
-    let curr = head;
+  const zeroHead = new Node(-1);
+  const oneHead = new Node(-1);
+  const twoHead = new Node(-1);
 
-    while (curr) {
-        if (curr.val === 0) {
-            zero.next = curr;
-            zero = zero.next;
-        } else if (curr.val === 1) {
-            one.next = curr;
-            one = one.next;
-        } else {
-            two.next = curr;
-            two = two.next;
-        }
-        curr = curr.next;
+  let zero = zeroHead, one = oneHead, two = twoHead;
+  let curr = head;
+
+  while (curr) {
+    if (curr.data === 0) {
+      zero.next = curr;
+      zero = zero.next;
+    } else if (curr.data === 1) {
+      one.next = curr;
+      one = one.next;
+    } else {
+      two.next = curr;
+      two = two.next;
     }
+    curr = curr.next;
+  }
 
-    zero.next = oneHead.next ? oneHead.next : twoHead.next;
-    one.next = twoHead.next;
-    two.next = null;
+  zero.next = oneHead.next ? oneHead.next : twoHead.next;
+  one.next = twoHead.next;
+  two.next = null;
 
-    return zeroHead.next;
-};`
+  return zeroHead.next;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Linked List: [1, 0, 2, 1, 0, 2, 1], Initialize 3 Dummy Nodes',
-    phase: 'INITIAL',
-    codeLine: 15,
-    nodes: [1, 0, 2, 1, 0, 2, 1],
-    currIdx: -1,
-    zeros: [],
-    ones: [],
-    twos: [],
-    stitched: null,
-    variables: { zeros: '[]', ones: '[]', twos: '[]' },
-    explain: 'Create three dummy heads (zeroHead, oneHead, twoHead) to collect nodes of values 0, 1, and 2 without altering data.',
-    intuition: 'Single pass pointer redistribution in O(1) space.'
+    title: 'Initial Unsorted Linked List',
+    phase: 'SETUP',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head', 'curr'] },
+      { id: 1, val: 2, pointers: [] },
+      { id: 2, val: 0, pointers: [] },
+      { id: 3, val: 1, pointers: [] },
+      { id: 4, val: 0, pointers: [] },
+      { id: 5, val: 2, pointers: [] }
+    ],
+    pointers: { head: 0, curr: 0 },
+    variables: { zeroList: 'empty', oneList: 'empty', twoList: 'empty' },
+    metrics: [
+      { label: 'Length', value: '6' },
+      { label: 'Values', value: '{0, 1, 2}' },
+      { label: 'Strategy', value: '3 Dummy Chains' }
+    ],
+    explain: 'Input list: 1 -> 2 -> 0 -> 1 -> 0 -> 2. We initialize three dummy node anchors: zeroHead, oneHead, and twoHead.',
+    action: 'Initialize zero, one, two tracking pointers.',
+    intuition: 'Instead of counting and rewriting values, we rewire the actual node pointers to preserve reference stability in O(1) space.',
+    formula: 'zeroHead(-1), oneHead(-1), twoHead(-1)'
   },
   {
-    title: '2. Distribute first 3 nodes: val 1 -> oneList, val 0 -> zeroList, val 2 -> twoList',
-    phase: 'DISTRIBUTING',
-    codeLine: 24,
-    nodes: [1, 0, 2, 1, 0, 2, 1],
-    currIdx: 2,
-    zeros: [0],
-    ones: [1],
-    twos: [2],
-    stitched: null,
-    variables: { zeroList: '[0]', oneList: '[1]', twoList: '[2]' },
-    explain: 'Node 1 appended to oneList, Node 0 to zeroList, and Node 2 to twoList.',
-    intuition: 'Chaining nodes based on value.'
+    title: 'Distribute Node 0 (val = 1) & Node 1 (val = 2)',
+    phase: 'DISTRIBUTE',
+    nodes: [
+      { id: 0, val: 1, pointers: ['oneTail'], isHighlighted: true },
+      { id: 1, val: 2, pointers: ['twoTail'], isHighlighted: true },
+      { id: 2, val: 0, pointers: ['curr'] },
+      { id: 3, val: 1, pointers: [] },
+      { id: 4, val: 0, pointers: [] },
+      { id: 5, val: 2, pointers: [] }
+    ],
+    pointers: { oneTail: 0, twoTail: 1, curr: 2 },
+    highlightIndices: [0, 1],
+    variables: { 'one.next': 'node[1]', 'two.next': 'node[2]', currVal: 0 },
+    metrics: [
+      { label: 'One Chain', value: '[1]' },
+      { label: 'Two Chain', value: '[2]' },
+      { label: 'curr.val', value: '0' }
+    ],
+    explain: 'Node 0 (val 1) attaches to oneHead. Node 1 (val 2) attaches to twoHead. curr advances to node 2 (val 0).',
+    action: 'one.next = curr1; two.next = curr2;',
+    intuition: 'Each node is categorized in O(1) time based on its value.',
+    formula: 'curr.data == 0 ? zero.next = curr : ...'
   },
   {
-    title: '3. Complete Distribution: zeros: [0, 0], ones: [1, 1, 1], twos: [2, 2]',
-    phase: 'DISTRIBUTED',
-    codeLine: 35,
-    nodes: [1, 0, 2, 1, 0, 2, 1],
-    currIdx: 6,
-    zeros: [0, 0],
-    ones: [1, 1, 1],
-    twos: [2, 2],
-    stitched: null,
-    variables: { zeroCount: 2, oneCount: 3, twoCount: 2 },
-    explain: 'All 7 nodes distributed: two 0s, three 1s, and two 2s.',
-    intuition: 'Each bucket holds its contiguous group.'
+    title: 'Distribute Zero Nodes (val = 0)',
+    phase: 'DISTRIBUTE',
+    nodes: [
+      { id: 2, val: 0, pointers: ['zeroHead'] },
+      { id: 4, val: 0, pointers: ['zeroTail'], isHighlighted: true },
+      { id: 0, val: 1, pointers: ['oneTail'] },
+      { id: 1, val: 2, pointers: ['twoTail'] },
+      { id: 3, val: 1, pointers: [] },
+      { id: 5, val: 2, pointers: ['curr'] }
+    ],
+    pointers: { zeroTail: 1, curr: 5 },
+    highlightIndices: [0, 1],
+    variables: { zeroCount: 2, oneCount: 1, twoCount: 1 },
+    metrics: [
+      { label: 'Zero Chain', value: '0 -> 0' },
+      { label: 'One Chain', value: '1' },
+      { label: 'Two Chain', value: '2' }
+    ],
+    explain: 'Nodes with value 0 are appended to the zero-chain: zeroHead -> 0 -> 0. Pointers advance without losing rest of list.',
+    action: 'zero.next = curr; zero = zero.next;',
+    intuition: 'All zeroes are collected in contiguous sequence.',
+    formula: 'zero chain = [0 -> 0]'
   },
   {
-    title: '4. Stitch Chains: zero.next -> oneHead, one.next -> twoHead, two.next = null',
-    phase: 'STITCHING',
-    codeLine: 38,
-    nodes: [1, 0, 2, 1, 0, 2, 1],
-    currIdx: 6,
-    zeros: [0, 0],
-    ones: [1, 1, 1],
-    twos: [2, 2],
-    stitched: [0, 0, 1, 1, 1, 2, 2],
-    variables: { newHead: 'zeroHead.next', structure: '0 -> 0 -> 1 -> 1 -> 1 -> 2 -> 2' },
-    explain: 'Connect end of zeros to start of ones; connect end of ones to start of twos. Terminate twos tail with null.',
-    intuition: 'Seamless stitch in O(1) time.'
+    title: 'Partitioning Complete: 3 Sub-chains Isolated',
+    phase: 'PARTITIONED',
+    nodes: [
+      { id: 2, val: 0, pointers: ['zeroHead'] },
+      { id: 4, val: 0, pointers: ['zeroTail'] },
+      { id: 0, val: 1, pointers: ['oneHead'] },
+      { id: 3, val: 1, pointers: ['oneTail'] },
+      { id: 1, val: 2, pointers: ['twoHead'] },
+      { id: 5, val: 2, pointers: ['twoTail'] }
+    ],
+    pointers: { zeroHead: 0, oneHead: 2, twoHead: 4 },
+    variables: { 'zeros': '0 -> 0', 'ones': '1 -> 1', 'twos': '2 -> 2' },
+    metrics: [
+      { label: 'Zeroes', value: '2 nodes' },
+      { label: 'Ones', value: '2 nodes' },
+      { label: 'Twos', value: '2 nodes' }
+    ],
+    explain: 'All 6 nodes are cleanly partitioned into three independent sub-chains: [0 -> 0], [1 -> 1], and [2 -> 2].',
+    action: 'Prepare stitching: zero.next = oneHead.next; one.next = twoHead.next; two.next = null;',
+    intuition: 'Stitching connects the three segments into a unified sorted linked list in O(1) time.',
+    formula: 'zeroTail -> oneHead -> twoHead'
   },
   {
-    title: '5. Completed: Sorted Linked List = [0, 0, 1, 1, 1, 2, 2]',
+    title: 'Stitch Chains Together: In-Place Relinking',
+    phase: 'STITCH',
+    nodes: [
+      { id: 2, val: 0, pointers: ['newHead'] },
+      { id: 4, val: 0, pointers: [] },
+      { id: 0, val: 1, pointers: [] },
+      { id: 3, val: 1, pointers: [] },
+      { id: 1, val: 2, pointers: [] },
+      { id: 5, val: 2, pointers: ['tail'], isModified: true }
+    ],
+    pointers: { newHead: 0, tail: 5 },
+    highlightIndices: [1, 3, 5],
+    variables: { 'zero.next': 'oneHead.next', 'one.next': 'twoHead.next', 'two.next': 'null' },
+    metrics: [
+      { label: 'Stitched', value: 'Complete' },
+      { label: 'Tail Terminator', value: 'null' },
+      { label: 'Cycles Prevented', value: 'true' }
+    ],
+    explain: 'Wire zeroTail.next = oneHead.next (0 -> 1), oneTail.next = twoHead.next (1 -> 2), and twoTail.next = null. Delete dummy anchors.',
+    action: 'zero.next = oneHead.next; one.next = twoHead.next; two.next = null;',
+    intuition: 'Setting twoTail.next = null prevents cyclic reference loops.',
+    formula: 'two.next = null'
+  },
+  {
+    title: 'Sorted Linked List Complete: 0s -> 1s -> 2s',
     phase: 'COMPLETED',
-    codeLine: 45,
-    nodes: [0, 0, 1, 1, 1, 2, 2],
-    currIdx: -1,
-    zeros: [],
-    ones: [],
-    twos: [],
-    stitched: [0, 0, 1, 1, 1, 2, 2],
-    variables: { result: '[0, 0, 1, 1, 1, 2, 2]', timeComplexity: 'O(N)', spaceComplexity: 'O(1)' },
-    explain: 'List fully sorted in single pass by relinking pointers.',
-    intuition: 'In-place sorting complete.'
+    nodes: [
+      { id: 2, val: 0, pointers: ['head'], isHighlighted: true },
+      { id: 4, val: 0, pointers: [] },
+      { id: 0, val: 1, pointers: [] },
+      { id: 3, val: 1, pointers: [] },
+      { id: 1, val: 2, pointers: [] },
+      { id: 5, val: 2, pointers: ['tail'], isHighlighted: true }
+    ],
+    pointers: { head: 0, tail: 5 },
+    variables: { result: '0 -> 0 -> 1 -> 1 -> 2 -> 2', totalNodes: 6 },
+    metrics: [
+      { label: 'Sorted Order', value: '0s -> 1s -> 2s' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Segregation Execution Summary',
+      rows: [
+        { label: 'Input List', value: '1 -> 2 -> 0 -> 1 -> 0 -> 2' },
+        { label: 'Sorted Result', value: '0 -> 0 -> 1 -> 1 -> 2 -> 2', accent: true },
+        { label: 'Pass Count', value: 'Single Pass O(N)' },
+        { label: 'Auxiliary Memory', value: 'O(1) - 3 dummy pointer heads only' }
+      ]
+    },
+    explain: 'The linked list is sorted in optimal linear time without array conversion or value overwriting.',
+    action: 'Return newHead (Node with val 0).',
+    intuition: 'Pointer manipulation provides true in-place stability for linked list elements.',
+    formula: 'Result: 0 -> 0 -> 1 -> 1 -> 2 -> 2'
   }
 ];
-
-export default function SortALinkedListOf0s1sAnd2sVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Zeros: {step.zeros.length}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-semibold">
-          Ones: {step.ones.length}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-pink-500/15 border border-pink-500/30 text-pink-300 font-semibold">
-          Twos: {step.twos.length}
-        </span>
-      </div>
-
-      {/* Nodes visualizer */}
-      <div className="w-full flex items-center justify-center gap-2 py-4 overflow-x-auto">
-        {step.nodes.map((val, idx) => {
-          const isCurrent = idx === step.currIdx;
-
-          let colorClass = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
-          if (isCurrent) {
-            colorClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/30';
-          } else if (val === 0) {
-            colorClass = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300';
-          } else if (val === 1) {
-            colorClass = 'border-indigo-500/40 bg-indigo-500/10 text-indigo-300';
-          } else if (val === 2) {
-            colorClass = 'border-pink-500/40 bg-pink-500/10 text-pink-300';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="flex flex-col items-center gap-1 min-w-[44px]">
-                <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center font-mono font-bold text-sm transition-all ${colorClass}`}>
-                  {val}
-                </div>
-                <span className="text-[9px] font-mono text-[#5b6076]">[{idx}]</span>
-              </div>
-              {idx < step.nodes.length - 1 && (
-                <span className="text-[var(--chalk-faint)] font-mono text-xs">→</span>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* Sublists display */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-xl p-3 flex flex-col gap-2 text-xs font-mono">
-        <div className="flex items-center justify-between text-[var(--chalk-dim)]">
-          <span>Chains: <strong className="text-emerald-300">0s</strong> → <strong className="text-indigo-300">1s</strong> → <strong className="text-pink-300">2s</strong></span>
-          <span className="text-amber-400 font-semibold">{step.stitched ? '✓ Stitched Together' : 'Relinking...'}</span>
-        </div>
-      </div>
-    </div>
-  );
-}

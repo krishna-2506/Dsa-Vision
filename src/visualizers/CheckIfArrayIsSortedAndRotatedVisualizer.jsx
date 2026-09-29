@@ -1,227 +1,358 @@
-import React, { useState } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
-// 0. Multi-language production solution code with detailed educational comments
+export const meta = {
+  leetcode_id: 1752,
+  title: 'Check if Array is Sorted and Rotated',
+  category: 'Arrays & Two Pointers',
+  difficulty: 'Easy',
+  timeComplexity: 'O(N)',
+  spaceComplexity: 'O(1) Auxiliary',
+  leetcodeUrl: 'https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/',
+  description: 'Determines whether an array was originally sorted in non-decreasing order and then rotated some number of positions by verifying that at most one descending drop exists cyclically.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Cyclic Drop Count Strategy',
+  nodes: [
+    { id: 'root', label: 'Rotated Monotonic Invariant', children: ['cyclic-inspection', 'drop-definition', 'single-pivot-rule', 'wrap-around-check', 'complexity'] },
+    { id: 'cyclic-inspection', label: '1. Cyclic Pairwise Scan', detail: 'Inspect all pairs nums[i] and nums[(i + 1) % N] across the full circle.' },
+    { id: 'drop-definition', label: '2. Drop Detection (nums[i] > nums[i+1])', detail: 'A "drop" occurs wherever an element strictly exceeds the immediately subsequent element.' },
+    { id: 'single-pivot-rule', label: '3. At Most One Pivot', detail: 'A sorted array rotated by K positions contains at most 1 drop (the wrap boundary from max back to min).' },
+    { id: 'wrap-around-check', label: '4. Wrap-Around Guard', detail: 'Comparing the last element with the first element (nums[N-1] > nums[0]) accounts for the rotation seam.' },
+    { id: 'complexity', label: '5. Linear Single Pass', detail: 'O(N) runtime visiting each adjacent pair exactly once with strictly O(1) registers.' }
+  ]
+};
+
 export const solutions = {
-  cpp: `// C++ Optimal Solution: Count Drop Points
-// Time Complexity: O(N) where N is array size.
-// Space Complexity: O(1) as we use only variables.
+  cpp: `// C++ Optimal Single-Pass Cyclic Check
+// Time Complexity: O(N) | Space Complexity: O(1)
+#include <vector>
+using namespace std;
 
 class Solution {
 public:
     bool check(vector<int>& nums) {
-        int cnt = 0; // Tracks the number of times current element is greater than next
+        int count = 0;
         int n = nums.size();
-        
-        // Step 1: Iterate through the array to find "drops" in order
-        for (int i = 0; i < n - 1; i++) {
-            if (nums[i] > nums[i + 1]) {
-                cnt++; // A drop is found (e.g., [..., 5, 1, ...])
+
+        for (int i = 0; i < n; i++) {
+            // Check adjacent pair including cyclic wrap-around
+            if (nums[i] > nums[(i + 1) % n]) {
+                count++;
             }
         }
-        
-        // Step 2: If no drops, the array is perfectly sorted
-        if (cnt == 0) {
-            return true;
-        }
-        // Step 3: If exactly 1 drop, it might be rotated.
-        // We must also check if the first element is >= the last element to ensure 
-        // it wraps around correctly (e.g., [3,4,5,1,2] -> 3 >= 2 is valid).
-        else if (cnt == 1 && nums[0] >= nums[n - 1]) {
-            return true;
-        }
-        
-        // Step 4: If more than 1 drop, or the wrap-around check fails, return false
-        return false;
+
+        // Valid if at most 1 drop occurs
+        return count <= 1;
     }
 };`,
-  python: `# Python 3 Optimal Solution: Modular Arithmetic Check
+  python: `# Python 3 Optimal Cyclic Drop Count
 # Time Complexity: O(N) | Space Complexity: O(1)
-
 class Solution:
-    def check(self, nums: List[int]) -> bool:
-        # Instead of treating the wrap-around separately, 
-        # we can check every adjacent pair including the last and first elements.
+    def check(self, nums: list[int]) -> bool:
         count = 0
         n = len(nums)
-        
+
         for i in range(n):
-            # nums[(i + 1) % n] handles the wrap-around natively.
-            # If nums[i] > next element, we found a violation.
             if nums[i] > nums[(i + 1) % n]:
                 count += 1
-                
-        # A valid sorted & rotated array will have at most 1 violation (the pivot).
-        return count <= 1`,
-  java: `// Java Optimal Solution: Count Drop Points
-// Time Complexity: O(N) | Space Complexity: O(1)
 
+        return count <= 1`,
+  java: `// Java Optimal Cyclic Drop Count
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public boolean check(int[] nums) {
-        int cnt = 0;
+        int count = 0;
         int n = nums.length;
-        
-        // Traverse the array checking for descending adjacent pairs
-        for (int i = 0; i < n - 1; i++) {
-            if (nums[i] > nums[i + 1]) {
-                cnt++;
+
+        for (int i = 0; i < n; i++) {
+            if (nums[i] > nums[(i + 1) % n]) {
+                count++;
             }
         }
-        
-        // If it's already sorted without rotation, 0 drops exist.
-        if (cnt == 0) {
-            return true;
-        } 
-        // If there's 1 drop, it is valid ONLY IF the last element connects 
-        // correctly to the first element (first >= last).
-        else if (cnt == 1 && nums[0] >= nums[n - 1]) {
-            return true;
-        }
-        
-        // Otherwise, it's either unsorted or rotated improperly.
-        return false;
+
+        return count <= 1;
     }
 }`,
-  javascript: `// JavaScript Optimal Solution: Modular Arithmetic Check
+  javascript: `// JavaScript Optimal Cyclic Drop Count
 // Time Complexity: O(N) | Space Complexity: O(1)
-
-/**
- * @param {number[]} nums
- * @return {boolean}
- */
 var check = function(nums) {
     let count = 0;
     const n = nums.length;
-    
-    // Check all adjacent elements, treating the array as circular.
+
     for (let i = 0; i < n; i++) {
-        // Use modulo to safely wrap around from the last index to the first
         if (nums[i] > nums[(i + 1) % n]) {
             count++;
         }
     }
-    
-    // If it was rotated from a sorted array, there is at most 1 drop.
+
     return count <= 1;
 };`
 };
 
-export const meta = {
-  display_id: 'Q-003',
-  title: "Check If Array Is Sorted And Rotated",
-  category: "1. Arrays",
-  difficulty: "Easy",
-  timeComplexity: "O(N)",
-  spaceComplexity: "O(1)",
-  description: "Given an array nums, return true if the array was originally sorted in non-decreasing order, then rotated some number of positions (including zero)."
-};
-
-// Realistic sample array for this problem: Sorted and rotated by 3 positions
-const SAMPLE_DATA = [3, 4, 5, 1, 2];
-
 export const steps = [
   {
-    title: "1. Initialize State",
-    codeLine: 5,
-    code: "int cnt = 0;\nint n = nums.size();",
-    explanation: "We begin by initializing our counter `cnt` to 0. This variable will track how many times an element is strictly greater than the element immediately following it (a 'drop'). We will iterate through the array from left to right.",
-    pointers: [{ index: 0, label: 'i', color: 'indigo' }, { index: 1, label: 'i+1', color: 'indigo' }],
-    highlightIndices: [],
-    hudText: "Initialized: cnt = 0"
+    title: '1. Setup Cyclic Traversal on [3, 4, 5, 1, 2]',
+    phase: 'INITIALIZATION',
+    codeLine: 11,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 2, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'i=0', color: 'accent' }
+    ],
+    metrics: [
+      { label: 'Array Length', value: '5' },
+      { label: 'Drop Count', value: '0' },
+      { label: 'Threshold', value: 'count <= 1' },
+      { label: 'Active Pair', value: 'nums[0] vs nums[1]' }
+    ],
+    customCard: {
+      title: 'Cyclic Scan Strategy',
+      rows: [
+        { label: 'Concept', value: 'A sorted & rotated array can drop at most once (at the rotation pivot)' },
+        { label: 'Formula', value: 'Check nums[i] > nums[(i + 1) % N] for all i in [0..N-1]' },
+        { label: 'Initial Drops', value: 'count = 0' }
+      ]
+    },
+    formula: 'count = 0; N = 5;',
+    action: 'Initialize drop counter count = 0. Begin pairwise comparison across the array.',
+    explain: 'If the array was originally sorted, rotating it cuts it into at most two sorted segments with one drop.',
+    intuition: 'If count is 0, the array was never rotated (already sorted). If count is 1, it is rotated. If count > 1, it is invalid.'
   },
   {
-    title: "2. Compare Element 0 and 1",
-    codeLine: 8,
-    code: "if (nums[i] > nums[i + 1])",
-    explanation: "Looking at index 0 and 1: Is 3 > 4? No. The sequence is still non-decreasing. Our drop count `cnt` remains 0.",
-    pointers: [{ index: 0, label: 'i', color: 'indigo' }, { index: 1, label: 'i+1', color: 'indigo' }],
-    highlightIndices: [0, 1],
-    hudText: "3 <= 4. cnt = 0"
+    title: '2. Compare nums[0]=3 vs nums[1]=4: 3 <= 4 (Valid)',
+    phase: 'SCANNING',
+    codeLine: 15,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'current' },
+        { val: 4, status: 'current' },
+        { val: 5, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 2, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'i', color: 'accent' },
+      { index: 1, label: 'i+1', color: 'amber' }
+    ],
+    activeIndices: [0, 1],
+    metrics: [
+      { label: 'Pair Inspected', value: '3 vs 4' },
+      { label: 'Comparison', value: '3 <= 4' },
+      { label: 'Drop Detected?', value: 'No' },
+      { label: 'Drop Count', value: '0' }
+    ],
+    customCard: {
+      title: 'Adjacent Evaluation',
+      rows: [
+        { label: 'Condition', value: 'nums[0] > nums[1] is False (3 <= 4)' },
+        { label: 'Action', value: 'Order is non-decreasing; continue scan' },
+        { label: 'Drop Count', value: 'count remains 0' }
+      ]
+    },
+    formula: 'nums[0] <= nums[1]; count = 0',
+    action: 'Compare nums[0] (3) with nums[1] (4). No order violation.',
+    explain: 'Elements at indices 0 and 1 follow sorted order.',
+    intuition: 'Monotonic progression holds so far.'
   },
   {
-    title: "3. Compare Element 1 and 2",
-    codeLine: 8,
-    code: "if (nums[i] > nums[i + 1])",
-    explanation: "Moving forward, we compare index 1 and 2. Is 4 > 5? No. The sequence continues to grow. `cnt` remains 0.",
-    pointers: [{ index: 1, label: 'i', color: 'indigo' }, { index: 2, label: 'i+1', color: 'indigo' }],
-    highlightIndices: [1, 2],
-    hudText: "4 <= 5. cnt = 0"
+    title: '3. Compare nums[1]=4 vs nums[2]=5: 4 <= 5 (Valid)',
+    phase: 'SCANNING',
+    codeLine: 15,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'default' },
+        { val: 4, status: 'current' },
+        { val: 5, status: 'current' },
+        { val: 1, status: 'default' },
+        { val: 2, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 1, label: 'i', color: 'accent' },
+      { index: 2, label: 'i+1', color: 'amber' }
+    ],
+    activeIndices: [1, 2],
+    metrics: [
+      { label: 'Pair Inspected', value: '4 vs 5' },
+      { label: 'Comparison', value: '4 <= 5' },
+      { label: 'Drop Detected?', value: 'No' },
+      { label: 'Drop Count', value: '0' }
+    ],
+    customCard: {
+      title: 'Adjacent Evaluation',
+      rows: [
+        { label: 'Condition', value: 'nums[1] > nums[2] is False (4 <= 5)' },
+        { label: 'Action', value: 'Order is non-decreasing; continue scan' },
+        { label: 'Drop Count', value: 'count remains 0' }
+      ]
+    },
+    formula: 'nums[1] <= nums[2]; count = 0',
+    action: 'Compare nums[1] (4) with nums[2] (5). No order violation.',
+    explain: 'Subarray [3, 4, 5] is monotonically non-decreasing.',
+    intuition: 'Prefix remains purely sorted.'
   },
   {
-    title: "4. The Drop / Rotation Pivot",
-    codeLine: 9,
-    code: "cnt++;",
-    explanation: "Now we compare index 2 and 3. Is 5 > 1? YES! We found a 'drop' where the sequence breaks its non-decreasing order. This is the pivot point of the rotation. We increment `cnt` to 1.",
-    pointers: [{ index: 2, label: 'i', color: 'rose' }, { index: 3, label: 'i+1', color: 'rose' }],
-    highlightIndices: [2, 3],
-    hudText: "5 > 1! Drop detected. cnt = 1"
+    title: '4. Compare nums[2]=5 vs nums[3]=1: 5 > 1 (ROTATION PIVOT!)',
+    phase: 'DROP_DETECTED',
+    codeLine: 16,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'match' },
+        { val: 1, status: 'current' },
+        { val: 2, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 2, label: 'pivot peak', color: 'amber' },
+      { index: 3, label: 'pivot trough', color: 'accent' }
+    ],
+    activeIndices: [2, 3],
+    metrics: [
+      { label: 'Pair Inspected', value: '5 vs 1' },
+      { label: 'Comparison', value: '5 > 1 (VIOLATION)' },
+      { label: 'Drop Detected?', value: 'YES' },
+      { label: 'Drop Count', value: '1 (count++)' }
+    ],
+    customCard: {
+      title: 'Pivot Point Identified',
+      rows: [
+        { label: 'Condition', value: 'nums[2] > nums[3] is True (5 > 1)' },
+        { label: 'Significance', value: 'This is the rotation boundary between max (5) and min (1)' },
+        { label: 'Drop Count', value: 'count incremented to 1 (allowed: <= 1)' }
+      ]
+    },
+    formula: 'nums[2] > nums[3]; count++; // count becomes 1',
+    action: '5 > 1. A drop is detected! Increment count from 0 to 1.',
+    explain: 'This drop corresponds to the original array cut where the maximum element wraps to the minimum.',
+    intuition: 'Exactly 1 drop is expected and permitted in a rotated sorted array.'
   },
   {
-    title: "5. Compare Element 3 and 4",
-    codeLine: 8,
-    code: "if (nums[i] > nums[i + 1])",
-    explanation: "Continuing the traversal, we compare index 3 and 4. Is 1 > 2? No. The sequence is non-decreasing again. The loop finishes because we've reached the end of adjacent pairs.",
-    pointers: [{ index: 3, label: 'i', color: 'indigo' }, { index: 4, label: 'i+1', color: 'indigo' }],
-    highlightIndices: [3, 4],
-    hudText: "1 <= 2. cnt = 1"
+    title: '5. Compare nums[3]=1 vs nums[4]=2: 1 <= 2 (Valid)',
+    phase: 'SCANNING',
+    codeLine: 15,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'dimmed' },
+        { val: 1, status: 'current' },
+        { val: 2, status: 'current' }
+      ]
+    },
+    pointers: [
+      { index: 3, label: 'i', color: 'accent' },
+      { index: 4, label: 'i+1', color: 'amber' }
+    ],
+    activeIndices: [3, 4],
+    metrics: [
+      { label: 'Pair Inspected', value: '1 vs 2' },
+      { label: 'Comparison', value: '1 <= 2' },
+      { label: 'Drop Count', value: '1' }
+    ],
+    customCard: {
+      title: 'Adjacent Evaluation',
+      rows: [
+        { label: 'Condition', value: 'nums[3] > nums[4] is False (1 <= 2)' },
+        { label: 'Action', value: 'Second sorted segment continues' },
+        { label: 'Drop Count', value: 'count remains 1' }
+      ]
+    },
+    formula: 'nums[3] <= nums[4]; count remains 1',
+    action: 'Compare nums[3] (1) with nums[4] (2). 1 <= 2. Valid.',
+    explain: 'Second half [1, 2] is internally sorted.',
+    intuition: 'Only the cyclic wrap-around comparison remains.'
   },
   {
-    title: "6. Evaluate Total Drops & Wrap-Around",
-    codeLine: 13,
-    code: "else if (cnt == 1 && nums[0] >= nums[n - 1])\n    return true;",
-    explanation: "The loop is over. `cnt` is exactly 1, meaning we have one rotation point. However, to guarantee the array is genuinely a rotated version of a sorted array, the last element must 'wrap around' seamlessly to the first element. We check if nums[0] >= nums[last] (3 >= 2). Since it is true, the array is valid!",
-    pointers: [{ index: 0, label: 'first', color: 'emerald' }, { index: 4, label: 'last', color: 'emerald' }],
-    highlightIndices: [0, 4],
-    hudText: "cnt == 1 AND 3 >= 2. Array is valid! Return True."
+    title: '6. Cyclic Wrap-Around: nums[4]=2 vs nums[0]=3: 2 <= 3 (Valid)',
+    phase: 'WRAP_AROUND',
+    codeLine: 15,
+    track: {
+      label: 'nums (cyclic check)',
+      items: [
+        { val: 3, status: 'current' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 2, status: 'current' }
+      ]
+    },
+    pointers: [
+      { index: 4, label: 'nums[N-1]', color: 'amber' },
+      { index: 0, label: 'nums[0]', color: 'accent' }
+    ],
+    activeIndices: [0, 4],
+    metrics: [
+      { label: 'Wrap Pair', value: 'nums[4] vs nums[0]' },
+      { label: 'Comparison', value: '2 <= 3' },
+      { label: 'Total Drops', value: '1' },
+      { label: 'Threshold', value: 'count <= 1 -> TRUE' }
+    ],
+    customCard: {
+      title: 'Cyclic Boundary Check',
+      rows: [
+        { label: 'Cyclic Index', value: '(4 + 1) % 5 = 0' },
+        { label: 'Condition', value: 'nums[4] > nums[0] is False (2 <= 3)' },
+        { label: 'Verification', value: 'Last element seamlessly wraps to first without extra drop' }
+      ]
+    },
+    formula: 'nums[4] <= nums[(4 + 1) % 5]; count = 1 <= 1',
+    action: 'Compare last element nums[4] (2) with first element nums[0] (3). 2 <= 3. Valid!',
+    explain: 'Because 2 <= 3, the wrap-around does not create a second drop. Total drops remain exactly 1.',
+    intuition: 'If nums[4] had been greater than nums[0], a second drop would have invalidated the rotation.'
+  },
+  {
+    title: '7. Final Decision: Return True (Valid Rotated Sorted Array)',
+    phase: 'COMPLETED',
+    codeLine: 20,
+    track: {
+      label: 'nums (valid)',
+      items: [
+        { val: 3, status: 'match' },
+        { val: 4, status: 'match' },
+        { val: 5, status: 'match' },
+        { val: 1, status: 'match' },
+        { val: 2, status: 'match' }
+      ]
+    },
+    pointers: [
+      { index: 2, label: 'rotation point', color: 'amber' }
+    ],
+    activeIndices: [0, 1, 2, 3, 4],
+    metrics: [
+      { label: 'Result', value: 'true' },
+      { label: 'Total Drops', value: '1' },
+      { label: 'Original Array', value: '[1, 2, 3, 4, 5]' },
+      { label: 'Rotation Steps', value: 'Rotated by 2 positions' }
+    ],
+    customCard: {
+      title: 'Verification Summary',
+      rows: [
+        { label: 'Condition Met', value: 'count <= 1 (1 <= 1 is True)' },
+        { label: 'Time Complexity', value: 'O(N) single-pass cyclic traversal' },
+        { label: 'Space Complexity', value: 'O(1) auxiliary registers' }
+      ]
+    },
+    formula: 'return count <= 1; // true',
+    action: 'Array is guaranteed to be a valid rotated sorted array. Return true.',
+    explain: 'Array [3, 4, 5, 1, 2] is a cyclic shift of sorted array [1, 2, 3, 4, 5] by 2 positions.',
+    intuition: 'Checking (i + 1) % N turns a multi-case conditional into a single elegant 4-line loop.'
   }
 ];
-
-export default function CheckIfArrayIsSortedAndRotatedVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
-        <ArrayView 
-          items={SAMPLE_DATA} 
-          pointers={stepData.pointers || []} 
-          matchIndices={stepData.highlightIndices || []} 
-        />
-        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-          <span>Status: <strong className={stepIndex === 3 ? "text-rose-400" : stepIndex === 5 ? "text-emerald-400" : "text-indigo-400"}>{stepData.hudText || 'Processing...'}</strong></span>
-        </div>
-      </div>
-
-      {/* 3. Explanation Footer */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-[var(--chalk-dim)] leading-relaxed font-sans">
-        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
-        {stepData.explanation}
-      </div>
-    </div>
-  );
-}

@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'queue';
 
 export const meta = {
   title: 'Cycle Detection in Undirected Graph (BFS)',
@@ -9,8 +9,35 @@ export const meta = {
   description: 'BFS-based cycle detection in an undirected graph storing {node, parent} in queue. If a neighbor is already visited and not the parent, a cycle is detected.'
 };
 
+export const ideaMap = {
+  title: 'Undirected Graph BFS Wave Collision Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Queue Seeding with (Node, Parent)',
+      detail: 'Push the start node with parent = -1 into the BFS queue and mark it visited.'
+    },
+    {
+      id: 'step2',
+      label: 'Concentric Wave Expansion',
+      detail: 'Dequeue (node, parent) and inspect all adjacent neighbors.'
+    },
+    {
+      id: 'step3',
+      label: 'Parent Filtering',
+      detail: 'If an adjacent neighbor is visited and equals parent, skip it as it is simply the reverse of the edge just crossed.'
+    },
+    {
+      id: 'step4',
+      label: 'Wavefront Collision Detection',
+      detail: 'If a neighbor is visited and NOT the parent, two independent BFS search fronts met, proving a cycle.'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Cycle Detection in Undirected Graph (BFS)
+// Time Complexity: O(V + 2E) | Space Complexity: O(V)
 #include <vector>
 #include <queue>
 using namespace std;
@@ -30,14 +57,25 @@ bool checkForCycleBFS(int src, vector<vector<int>>& adj, vector<int>& vis) {
                 vis[adjacentNode] = 1;
                 q.push({adjacentNode, node});
             } else if (parent != adjacentNode) {
-                // Someone visited this adjacent node before from another branch!
+                // Someone visited this adjacent node from another branch!
                 return true;
             }
         }
     }
     return false;
+}
+
+bool isCycle(int V, vector<vector<int>>& adj) {
+    vector<int> vis(V + 1, 0);
+    for (int i = 1; i <= V; i++) {
+        if (!vis[i]) {
+            if (checkForCycleBFS(i, adj, vis)) return true;
+        }
+    }
+    return false;
 }`,
   java: `// Java: Undirected Graph Cycle Detection using BFS
+// Time Complexity: O(V + 2E) | Space Complexity: O(V)
 import java.util.*;
 
 class NodeParent {
@@ -55,17 +93,21 @@ class Solution {
         }
         return false;
     }
+    
     private boolean bfs(int src, ArrayList<ArrayList<Integer>> adj, boolean[] vis) {
         Queue<NodeParent> q = new LinkedList<>();
         vis[src] = true;
-        q.add(new NodeParent(src, -1));
+        q.offer(new NodeParent(src, -1));
+        
         while (!q.isEmpty()) {
-            NodeParent cur = q.poll();
-            for (int adjNode : adj.get(cur.node)) {
-                if (!vis[adjNode]) {
-                    vis[adjNode] = true;
-                    q.add(new NodeParent(adjNode, cur.node));
-                } else if (cur.parent != adjNode) {
+            NodeParent curr = q.poll();
+            int node = curr.node, parent = curr.parent;
+            
+            for (int neighbor : adj.get(node)) {
+                if (!vis[neighbor]) {
+                    vis[neighbor] = true;
+                    q.offer(new NodeParent(neighbor, node));
+                } else if (parent != neighbor) {
                     return true;
                 }
             }
@@ -73,35 +115,58 @@ class Solution {
         return false;
     }
 }`,
-  python: `# Python: BFS Cycle Detection
+  python: `# Python: Undirected Graph BFS Cycle Detection
+# Time Complexity: O(V + 2E) | Space Complexity: O(V)
 from collections import deque
 
-def isCycleBFS(src, V, adj, vis):
-    vis[src] = True
-    q = deque([(src, -1)])
-    while q:
-        node, parent = q.popleft()
-        for neighbor in adj[node]:
-            if not vis[neighbor]:
-                vis[neighbor] = True
-                q.append((neighbor, node))
-            elif parent != neighbor:
+def isCycle(V: int, adj: list[list[int]]) -> bool:
+    vis = [False] * (V + 1)
+    
+    def bfs(src: int) -> bool:
+        vis[src] = True
+        q = deque([(src, -1)])
+        
+        while q:
+            node, parent = q.popleft()
+            for neighbor in adj[node]:
+                if not vis[neighbor]:
+                    vis[neighbor] = True
+                    q.append((neighbor, node))
+                elif parent != neighbor:
+                    return True
+        return False
+        
+    for i in range(1, V + 1):
+        if not vis[i]:
+            if bfs(i):
                 return True
-    return False
-`,
+    return False`,
   javascript: `// JavaScript: Undirected Graph BFS Cycle Detection
-function isCycleBFS(src, adj, vis) {
-  vis[src] = true;
-  const q = [[src, -1]];
-  while (q.length) {
-    const [node, parent] = q.shift();
-    for (const next of adj[node]) {
-      if (!vis[next]) {
-        vis[next] = true;
-        q.push([next, node]);
-      } else if (parent !== next) {
-        return true;
+// Time Complexity: O(V + 2E) | Space Complexity: O(V)
+function isCycle(V, adj) {
+  const vis = new Array(V + 1).fill(false);
+  
+  function bfs(src) {
+    vis[src] = true;
+    const q = [[src, -1]];
+    
+    while (q.length > 0) {
+      const [node, parent] = q.shift();
+      for (const neighbor of adj[node]) {
+        if (!vis[neighbor]) {
+          vis[neighbor] = true;
+          q.push([neighbor, node]);
+        } else if (parent !== neighbor) {
+          return true;
+        }
       }
+    }
+    return false;
+  }
+  
+  for (let i = 1; i <= V; i++) {
+    if (!vis[i]) {
+      if (bfs(i)) return true;
     }
   }
   return false;
@@ -110,104 +175,139 @@ function isCycleBFS(src, adj, vis) {
 
 export const steps = [
   {
-    title: '1. Initialize BFS: Queue [{1, -1}]',
     phase: 'INIT_BFS',
-    codeLine: 8,
-    queue: [{ node: 1, parent: -1 }],
-    vis: [0, 1, 0, 0, 0],
-    activeNode: 1,
-    detected: false,
-    text: 'Enqueue source node 1 with parent -1. vis[1] = 1.'
+    title: '1. Initialize BFS: Queue [Node 1 (p: -1)]',
+    mode: 'queue',
+    queue: ['Node 1 (p: -1)'],
+    inputTrack: {
+      items: [0, 1, 0, 0, 0],
+      label: 'Visited Status (vis[0..4])'
+    },
+    scanIndex: 1,
+    activeIndices: [1],
+    customCard: {
+      title: 'BFS Queue Seeding',
+      rows: [
+        { label: 'Source Node', value: 'Node 1', accent: true },
+        { label: 'Parent Link', value: '-1 (Root of BFS frontier)' },
+        { label: 'Visited State', value: 'vis[1] = 1' },
+        { label: 'Queue Buffer', value: '[ (node: 1, parent: -1) ]' }
+      ]
+    },
+    variables: {
+      activeNode: 1,
+      parent: -1,
+      queue: '[(1, -1)]',
+      cycleDetected: false
+    },
+    metrics: {
+      queueSize: 1,
+      nodesVisited: '1 / 4',
+      cycleFound: 'No'
+    },
+    explain: 'Enqueue source node 1 with parent -1. vis[1] = 1.',
+    intuition: 'Each element in the BFS queue maintains its predecessor to distinguish back-edges from parent edges.'
   },
   {
-    title: '2. Dequeue (1, -1), Enqueue (2, 1) and (3, 1)',
     phase: 'EXPAND_1',
-    codeLine: 18,
-    queue: [{ node: 2, parent: 1 }, { node: 3, parent: 1 }],
-    vis: [0, 1, 1, 1, 0],
-    activeNode: 1,
-    detected: false,
-    text: 'Both neighbors 2 and 3 unvisited. Enqueued with parent = 1.'
+    title: '2. Dequeue (1, -1): Enqueue (2, 1) and (3, 1)',
+    mode: 'queue',
+    queue: ['Node 2 (p: 1)', 'Node 3 (p: 1)'],
+    inputTrack: {
+      items: [0, 1, 1, 1, 0],
+      label: 'Visited Status (vis[0..4])'
+    },
+    scanIndex: 2,
+    activeIndices: [2, 3],
+    customCard: {
+      title: 'BFS First Wave Expansion',
+      rows: [
+        { label: 'Dequeued Node', value: 'Node 1 (p: -1)', accent: true },
+        { label: 'Discovered Neighbor 2', value: 'Unvisited -> enqueued (2, 1)' },
+        { label: 'Discovered Neighbor 3', value: 'Unvisited -> enqueued (3, 1)' },
+        { label: 'Queue State', value: '[ (2, 1), (3, 1) ]' }
+      ]
+    },
+    variables: {
+      activeNode: 1,
+      parent: -1,
+      queue: '[(2, 1), (3, 1)]',
+      cycleDetected: false
+    },
+    metrics: {
+      queueSize: 2,
+      nodesVisited: '3 / 4',
+      cycleFound: 'No'
+    },
+    explain: 'Both neighbors 2 and 3 are unvisited. Both are marked visited and enqueued with parent = 1.',
+    intuition: 'BFS expands outward in concentric rings of equal distance from the source.'
   },
   {
-    title: '3. Dequeue (2, 1), Enqueue (4, 2)',
     phase: 'EXPAND_2',
-    codeLine: 18,
-    queue: [{ node: 3, parent: 1 }, { node: 4, parent: 2 }],
-    vis: [0, 1, 1, 1, 1],
-    activeNode: 2,
-    detected: false,
-    text: 'At node 2: neighbor 1 is parent. Neighbor 4 is unvisited, enqueued with parent = 2.'
+    title: '3. Dequeue (2, 1): Enqueue (4, 2)',
+    mode: 'queue',
+    queue: ['Node 3 (p: 1)', 'Node 4 (p: 2)'],
+    inputTrack: {
+      items: [0, 1, 1, 1, 1],
+      label: 'Visited Status (vis[0..4])'
+    },
+    scanIndex: 4,
+    activeIndices: [4],
+    customCard: {
+      title: 'Frontier Extension',
+      rows: [
+        { label: 'Dequeued Node', value: 'Node 2 (p: 1)', accent: true },
+        { label: 'Neighbor 1 Check', value: 'Visited and equals parent 1 (Skipped)' },
+        { label: 'Neighbor 4 Check', value: 'Unvisited -> enqueued (4, 2)' },
+        { label: 'Remaining Queue', value: '[ (3, 1), (4, 2) ]' }
+      ]
+    },
+    variables: {
+      activeNode: 2,
+      parent: 1,
+      queue: '[(3, 1), (4, 2)]',
+      cycleDetected: false
+    },
+    metrics: {
+      queueSize: 2,
+      nodesVisited: '4 / 4',
+      cycleFound: 'No'
+    },
+    explain: 'At node 2: neighbor 1 is parent (ignored). Neighbor 4 is unvisited, enqueued with parent = 2.',
+    intuition: 'Node 4 is now marked visited through path 1 -> 2 -> 4.'
   },
   {
-    title: '4. Dequeue (3, 1), Inspect Neighbor 4: Collision!',
     phase: 'CYCLE_COLLISION',
-    codeLine: 20,
-    queue: [{ node: 4, parent: 2 }],
-    vis: [0, 1, 1, 1, 1],
-    activeNode: 3,
-    detected: true,
-    text: 'At node 3: neighbor 4 is ALREADY visited (vis[4]==1) and is NOT parent 1! Cycle detected via BFS wave collision!'
+    title: '4. Dequeue (3, 1), Inspect Neighbor 4: BFS Collision!',
+    mode: 'queue',
+    queue: ['Node 4 (p: 2)'],
+    inputTrack: {
+      items: [0, 1, 1, 1, 1],
+      label: 'Visited Status (vis[0..4])'
+    },
+    scanIndex: 3,
+    activeIndices: [3, 4],
+    customCard: {
+      title: 'Cycle Detected via BFS Collision',
+      rows: [
+        { label: 'Inspected Neighbor', value: 'Node 4', accent: true },
+        { label: 'Collision Check', value: 'vis[4] == 1 AND neighbor 4 != parent 1' },
+        { label: 'Interpretation', value: 'Another BFS branch (from node 2) reached 4 first!' },
+        { label: 'Verdict', value: 'Cycle detected (isCycle = true)' }
+      ]
+    },
+    variables: {
+      activeNode: 3,
+      parent: 1,
+      queue: '[(4, 2)]',
+      cycleDetected: true
+    },
+    metrics: {
+      queueSize: 1,
+      nodesVisited: '4 / 4',
+      cycleFound: 'TRUE'
+    },
+    explain: 'At node 3: neighbor 4 is ALREADY visited (vis[4]==1) and is NOT parent 1! Two BFS waves collided at node 4, proving a cycle exists!',
+    intuition: 'When two different paths from the same ancestor meet at a common vertex, a cycle is geometrically established.'
   }
 ];
-
-export default function CycleDetectionInUndirectedGraphBfsVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Popped Node: <strong className="text-cyan-200">Node {step.activeNode}</strong>
-        </div>
-        <div className={`px-3.5 py-1.5 rounded-xl border font-bold ${
-          step.detected
-            ? 'bg-red-500/20 border-red-500/50 text-red-300'
-            : 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-        }`}>
-          Cycle Status: {step.detected ? 'CYCLE CONFIRMED' : 'SEARCHING'}
-        </div>
-      </div>
-
-      {/* Queue State Card */}
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
-          <span>BFS Queue State &bull; &lcub; node, parent &rcub;</span>
-          <span className="text-cyan-400 font-bold">FIFO Ordering</span>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap min-h-[50px] p-2 rounded-xl bg-[#0d0e15] border border-[#1f2334]">
-          {step.queue.map((item, idx) => (
-            <div
-              key={idx}
-              className="px-3 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-500/40 text-cyan-200 font-mono text-xs flex items-center gap-1.5 font-bold shadow-md"
-            >
-              <span>Node: {item.node}</span>
-              <span className="text-[#64748b]">|</span>
-              <span className="text-purple-300">p: {item.parent}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-4 gap-2 pt-2 text-center text-xs font-mono">
-          {[1, 2, 3, 4].map(n => (
-            <div
-              key={n}
-              className={`p-2 rounded-xl border ${
-                step.vis[n] === 1
-                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
-                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[#475569]'
-              }`}
-            >
-              Node {n}: {step.vis[n] === 1 ? 'VISITED' : 'UNVISITED'}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.text}
-      </div>
-    </div>
-  );
-}

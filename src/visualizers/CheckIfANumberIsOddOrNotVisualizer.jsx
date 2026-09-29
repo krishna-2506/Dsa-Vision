@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Check if a Number is Odd or Not',
@@ -6,19 +6,44 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(1)',
   spaceComplexity: 'O(1)',
-  description: 'Determines whether a number is odd or even in O(1) time by checking the least significant bit (LSB) using bitwise AND: (n & 1) != 0.'
+  description: 'Determines whether an integer N is odd or even in strictly O(1) CPU time by testing its least significant bit (LSB) with bitwise AND: (N & 1) != 0.'
+};
+
+export const ideaMap = {
+  title: 'Odd / Even Bitwise Intuition',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Binary Representation',
+      detail: 'Any integer N = sum of powers of 2. All powers 2^k (k >= 1) are strictly even.'
+    },
+    {
+      id: 'step2',
+      label: 'LSB Determines Parity',
+      detail: 'Only 2^0 = 1 contributes oddness. If bit 0 is 1, N is odd; if 0, N is even.'
+    },
+    {
+      id: 'step3',
+      label: 'Bitwise Masking',
+      detail: 'Computing N & 1 isolates bit 0 in a single ALU clock cycle.'
+    },
+    {
+      id: 'step4',
+      label: 'Parity Decision',
+      detail: '(N & 1) == 1 => ODD, (N & 1) == 0 => EVEN.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Bitwise Check for Odd / Even
-// Time Complexity: O(1) | Space Complexity: O(1)
 #include <iostream>
 using namespace std;
 
 class Solution {
 public:
     bool isOdd(int n) {
-        // If the 0th bit (LSB) is 1, the number is odd.
+        // If LSB (bit 0) is 1, n is odd; otherwise even
         return (n & 1) != 0;
     }
 };`,
@@ -28,139 +53,104 @@ class Solution:
         # LSB is 1 for odd numbers, 0 for even numbers
         return (n & 1) != 0`,
   java: `// Java Bitwise Check for Odd / Even
-class Solution {
+public class Solution {
     public boolean isOdd(int n) {
+        // LSB is 1 for odd numbers, 0 for even numbers
         return (n & 1) != 0;
     }
 }`,
   javascript: `// JavaScript Bitwise Check for Odd / Even
-var isOdd = function(n) {
-    return (n & 1) !== 0;
-};`
+function isOdd(n) {
+  // LSB is 1 for odd numbers, 0 for even numbers
+  return (n & 1) !== 0;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Input Number: N = 13 in Binary',
-    phase: 'INITIAL',
-    codeLine: 10,
-    n: 13,
-    binaryN: '00001101',
-    mask: '00000001',
-    resultBit: null,
-    isOdd: null,
-    variables: { n: 13, 'binary 13': '00001101_2', operation: 'n & 1' },
-    explain: 'Every integer in binary is the sum of powers of 2 (2^0, 2^1, 2^2, ...). All powers of 2 except 2^0 (1) are even. Therefore, parity depends entirely on the 0th bit (LSB).',
-    intuition: 'If LSB is 1, the number is odd; if 0, even.'
+    title: 'Input Number in Binary Register',
+    phase: 'SETUP',
+    track: ['0', '0', '0', '0', '1', '1', '0', '1'],
+    pointers: { N: 7 },
+    variables: { decimal: 13, binary: '00001101_2', LSB: '1' },
+    metrics: [
+      { label: 'Decimal N', value: '13' },
+      { label: 'Bit 0 (LSB)', value: '1' },
+      { label: 'ALU Cost', value: '1 Cycle' }
+    ],
+    explain: 'Consider N = 13. In 8-bit binary, 13 = 8 + 4 + 1 = 00001101. Notice bit 0 (the rightmost bit) has value 1.',
+    action: 'Decompose N into binary representation: [0, 0, 0, 0, 1, 1, 0, 1].',
+    intuition: 'Every bit position 2^1 (2), 2^2 (4), 2^3 (8)... is an even multiple of 2. Therefore, only bit 0 (2^0 = 1) can make a number odd.',
+    formula: 'N = b_k*2^k + ... + b_1*2 + b_0*1'
   },
   {
-    title: '2. Apply Bitwise Mask: 13 & 1 (Bitwise AND)',
-    phase: 'AND_OPERATION',
-    codeLine: 12,
-    n: 13,
-    binaryN: '00001101',
-    mask: '00000001',
-    resultBit: '00000001',
-    isOdd: true,
-    variables: { '13 in binary': '00001101', '1 in binary': '00000001', 'result (13 & 1)': '00000001 (1)' },
-    explain: 'Bitwise AND with 1 masks out all higher order bits, evaluating only the least significant bit (1 & 1 = 1).',
-    intuition: 'Zero CPU arithmetic division needed; single clock cycle operation.'
+    title: 'Align Bitmask (1)',
+    phase: 'MASK_ALIGN',
+    track: ['0', '0', '0', '0', '1', '1', '0', '1'],
+    auxiliaryTrack: ['0', '0', '0', '0', '0', '0', '0', '1'],
+    auxiliaryLabel: 'Mask (1 = 00000001)',
+    pointers: { bit0: 7 },
+    variables: { mask: '00000001', operation: 'AND' },
+    metrics: [
+      { label: 'Mask', value: '0x01' },
+      { label: 'Target Bit', value: 'Position 0' },
+      { label: 'Higher Bits', value: 'Masked' }
+    ],
+    explain: 'We align the bitmask 1 (binary 00000001). Bitwise AND with this mask zeros out all higher bits 1 through 7, isolating bit 0.',
+    action: 'Prepare bitwise AND: (13 & 1).',
+    intuition: 'Bitwise operations execute directly in hardware, eliminating expensive modulo division instructions.',
+    formula: 'mask = 00000001_2'
   },
   {
-    title: '3. Parity Decision: (13 & 1) = 1 => 13 is ODD',
-    phase: 'RESULT',
-    codeLine: 12,
-    n: 13,
-    binaryN: '00001101',
-    mask: '00000001',
-    resultBit: '00000001',
-    isOdd: true,
-    variables: { outcome: 'ODD', timeComplexity: 'O(1)', spaceComplexity: 'O(1)' },
-    explain: 'Because the result is non-zero, N=13 is confirmed ODD.',
-    intuition: 'Bitwise AND is significantly faster than modulo arithmetic (n % 2).'
+    title: 'Compute Bitwise AND: 13 & 1',
+    phase: 'BITWISE_AND',
+    track: ['0', '0', '0', '0', '1', '1', '0', '1'],
+    auxiliaryTrack: ['0', '0', '0', '0', '0', '0', '0', '1'],
+    auxiliaryLabel: 'Result Track (13 & 1 = 1)',
+    pointers: { LSB: 7 },
+    variables: { '1 & 1': 1, 'Higher Bits': 'All 0' },
+    metrics: [
+      { label: 'Result', value: '1' },
+      { label: 'Condition', value: '(13 & 1) != 0' },
+      { label: 'Status', value: 'ODD' }
+    ],
+    customCard: {
+      title: 'Bitwise Arithmetic Trace',
+      rows: [
+        { label: 'Number N (13)', value: '0 0 0 0 1 1 0 1' },
+        { label: 'Bitmask (1)', value: '0 0 0 0 0 0 0 1' },
+        { label: 'Bitwise AND (&)', value: '0 0 0 0 0 0 0 1  (= 1)', accent: true },
+        { label: 'Conclusion', value: 'Result is non-zero (1), confirming 13 is ODD' }
+      ]
+    },
+    explain: 'At index 7 (bit 0): 1 & 1 = 1. All other bit positions result in 0. The output is 00000001 = 1.',
+    action: 'Check if (N & 1) != 0.',
+    intuition: 'Because (13 & 1) equals 1 != 0, 13 is an odd number.',
+    formula: '(13 & 1) == 1 != 0 => ODD'
+  },
+  {
+    title: 'Verification & Even Counterexample',
+    phase: 'COMPLETED',
+    track: ['0', '0', '0', '0', '1', '1', '0', '0'],
+    pointers: { evenLSB: 7 },
+    variables: { decimal: 12, binary: '00001100', '12 & 1': 0 },
+    metrics: [
+      { label: 'Number', value: '12 (Even)' },
+      { label: '12 & 1', value: '0' },
+      { label: 'Time Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Parity Decision Rule',
+      rows: [
+        { label: 'Odd Integer Condition', value: '(N & 1) == 1  => true', accent: true },
+        { label: 'Even Integer Condition', value: '(N & 1) == 0  => false' },
+        { label: 'Time Complexity', value: 'O(1) - single instruction' },
+        { label: 'Space Complexity', value: 'O(1) - zero auxiliary registers' }
+      ]
+    },
+    explain: 'For any even number such as 12 (00001100), bit 0 is 0, so 12 & 1 = 0. Bitwise AND guarantees optimal O(1) parity testing.',
+    action: 'Return (N & 1) != 0.',
+    intuition: 'The bitwise approach avoids the arithmetic division penalty of N % 2 on architectures without hardware dividers.',
+    formula: 'Result: 13 is ODD'
   }
 ];
-
-export default function CheckIfANumberIsOddOrNotVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          N = {step.n}
-        </span>
-        {step.isOdd !== null && (
-          <span className="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-semibold">
-            Result: {step.isOdd ? 'ODD NUMBER' : 'EVEN NUMBER'}
-          </span>
-        )}
-      </div>
-
-      {/* Bit Register Table */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-4 font-mono">
-        {/* Row 1: N */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-[var(--chalk-dim)] w-24">N ({step.n}):</span>
-          <div className="flex items-center gap-1.5">
-            {step.binaryN.split('').map((bit, idx) => (
-              <div
-                key={idx}
-                className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                  idx === 7 ? 'border-amber-400 bg-amber-500/20 text-amber-200 scale-105' : 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]'
-                }`}
-              >
-                {bit}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Row 2: Mask 1 */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-[var(--chalk-dim)] w-24">&amp; Mask (1):</span>
-          <div className="flex items-center gap-1.5">
-            {step.mask.split('').map((bit, idx) => (
-              <div
-                key={idx}
-                className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                  idx === 7 ? 'border-cyan-400 bg-cyan-500/20 text-cyan-200 scale-105' : 'border-[var(--line)] bg-[var(--board-raised)] text-[#5b6076]'
-                }`}
-              >
-                {bit}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="w-full h-px bg-[#272b3c] my-1" />
-
-        {/* Row 3: Result */}
-        {step.resultBit && (
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-emerald-400 w-24 font-bold">Result:</span>
-            <div className="flex items-center gap-1.5">
-              {step.resultBit.split('').map((bit, idx) => (
-                <div
-                  key={idx}
-                  className={`w-9 h-10 rounded-lg border flex items-center justify-center font-bold text-sm ${
-                    idx === 7 ? 'border-emerald-400 bg-emerald-500/30 text-emerald-200 scale-110 shadow-lg shadow-emerald-500/30' : 'border-[var(--line)] bg-[var(--board-raised)] text-[#5b6076]'
-                  }`}
-                >
-                  {bit}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Decision Summary */}
-      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-around font-mono text-xs text-[var(--chalk-dim)]">
-        <div>LSB Bit 0 = <strong className="text-amber-300">1</strong> (Odd)</div>
-        <div>CPU Cost: <strong className="text-emerald-400">1 Clock Cycle (O(1))</strong></div>
-      </div>
-    </div>
-  );
-}

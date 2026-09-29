@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Flattening of a Linked List',
@@ -7,6 +7,32 @@ export const meta = {
   timeComplexity: 'O(N * M)',
   spaceComplexity: 'O(1) auxiliary',
   description: 'Flattens a multi-level 2D linked list where each node has a next pointer and a bottom sorted list pointer into a single flattened sorted linked list by recursively merging lists from right to left.'
+};
+
+export const ideaMap = {
+  title: 'Recursive Right-to-Left Merge Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Base Case Check',
+      detail: 'If root is null or root.next is null, return root directly.'
+    },
+    {
+      id: 'step2',
+      label: 'Recurse Rightward',
+      detail: 'Recursively flatten the right sub-list: root.next = flatten(root.next).'
+    },
+    {
+      id: 'step3',
+      label: 'Merge Sorted Columns',
+      detail: 'Merge root column and root.next column using bottom pointers in sorted order.'
+    },
+    {
+      id: 'step4',
+      label: 'Return Merged Root',
+      detail: 'Return the head of the combined bottom-linked chain.'
+    }
+  ]
 };
 
 export const solutions = {
@@ -40,28 +66,32 @@ class Solution {
 
 public:
     Node* flatten(Node* root) {
-        if (!root || !root->next) return root;
+        if (!root || !root->next) {
+            return root;
+        }
 
-        // Recurse for the list on the right
+        // Recurse for the list on right
         root->next = flatten(root->next);
 
-        // Merge this root with the already flattened right list
+        // Merge current list with right flattened list
         root = merge(root, root->next);
 
         return root;
     }
 };`,
-  python: `# Python 3 Recursive Flattening of Multi-Level Linked List
+  python: `# Python 3 Recursive Flattening with Sorted List Merge
 class Node:
-    def __init__(self, d):
-        self.data = d
+    def __init__(self, data):
+        self.data = data
         self.next = None
         self.bottom = None
 
 class Solution:
-    def merge(self, a, b):
-        if not a: return b
-        if not b: return a
+    def merge(self, a: Node, b: Node) -> Node:
+        if not a:
+            return b
+        if not b:
+            return a
 
         if a.data < b.data:
             result = a
@@ -69,30 +99,27 @@ class Solution:
         else:
             result = b
             result.bottom = self.merge(a, b.bottom)
+
         result.next = None
         return result
 
-    def flatten(self, root):
+    def flatten(self, root: Node) -> Node:
         if not root or not root.next:
             return root
 
         root.next = self.flatten(root.next)
         root = self.merge(root, root.next)
         return root`,
-  java: `// Java Recursive Flattening of Linked List
+  java: `// Java Recursive Flattening with Sorted List Merge
 class Node {
     int data;
     Node next;
     Node bottom;
-    Node(int d) {
-        data = d;
-        next = null;
-        bottom = null;
-    }
+    Node(int d) { data = d; next = null; bottom = null; }
 }
 
-class Solution {
-    private Node merge(Node a, Node b) {
+public class Solution {
+    private static Node merge(Node a, Node b) {
         if (a == null) return b;
         if (b == null) return a;
 
@@ -108,156 +135,159 @@ class Solution {
         return result;
     }
 
-    public Node flatten(Node root) {
-        if (root == null || root.next == null) return root;
+    public static Node flatten(Node root) {
+        if (root == null || root.next == null) {
+            return root;
+        }
 
         root.next = flatten(root.next);
         root = merge(root, root.next);
         return root;
     }
 }`,
-  javascript: `// JavaScript Recursive Flattening of Linked List
-var flatten = function(root) {
-    const merge = (a, b) => {
-        if (!a) return b;
-        if (!b) return a;
+  javascript: `// JavaScript Recursive Flattening with Sorted List Merge
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+    this.bottom = null;
+  }
+}
 
-        let result = null;
-        if (a.data < b.data) {
-            result = a;
-            result.bottom = merge(a.bottom, b);
-        } else {
-            result = b;
-            result.bottom = merge(a, b.bottom);
-        }
-        result.next = null;
-        return result;
-    };
+function merge(a, b) {
+  if (!a) return b;
+  if (!b) return a;
 
-    if (!root || !root.next) return root;
+  let result;
+  if (a.data < b.data) {
+    result = a;
+    result.bottom = merge(a.bottom, b);
+  } else {
+    result = b;
+    result.bottom = merge(a, b.bottom);
+  }
+  result.next = null;
+  return result;
+}
 
-    root.next = flatten(root.next);
-    root = merge(root, root.next);
-    return root;
-};`
+function flatten(root) {
+  if (!root || !root.next) return root;
+
+  root.next = flatten(root.next);
+  root = merge(root, root.next);
+  return root;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Problem Setup: 2D Multi-Level Linked List',
-    phase: 'INITIAL',
-    codeLine: 31,
-    mode: '2D_VIEW',
-    columns: [
-      { top: 5, bottom: [7, 8] },
-      { top: 10, bottom: [20] },
-      { top: 19, bottom: [22] }
+    title: 'Initial 2D Multi-Level Linked List',
+    phase: 'SETUP',
+    nodes: [
+      { id: 0, val: 5, pointers: ['head', 'bottom:7,8'] },
+      { id: 1, val: 10, pointers: ['bottom:20'] },
+      { id: 2, val: 19, pointers: ['bottom:22'] },
+      { id: 3, val: 28, pointers: ['tail', 'bottom:35'] }
     ],
-    mergedSoFar: null,
-    variables: { column1: '[5, 7, 8]', column2: '[10, 20]', column3: '[19, 22]' },
-    explain: 'Each node has a horizontal next pointer and a vertical sorted bottom pointer. We must merge all nodes into one vertically sorted chain.',
-    intuition: 'Right-to-left recursion: merge the two rightmost columns, then merge the result with the next column to the left.'
+    pointers: { head: 0, tail: 3 },
+    variables: { columns: 4, structure: '2D (next + bottom pointers)' },
+    metrics: [
+      { label: 'Heads', value: '5, 10, 19, 28' },
+      { label: 'Algorithm', value: 'Right-to-Left Merge' },
+      { label: 'Complexity', value: 'O(N * M)' }
+    ],
+    explain: 'Input is a 2D linked list with horizontal "next" heads [5, 10, 19, 28], each heading a vertically sorted "bottom" sub-list. We flatten by merging from right to left.',
+    action: 'Recurse to the rightmost pair (19 and 28).',
+    intuition: 'Merging right-to-left ensures that by the time we merge with head 5, the entire right section is already a single sorted chain.',
+    formula: 'root.next = flatten(root.next); root = merge(root, root.next)'
   },
   {
-    title: '2. Recurse to Right: Merge Column 2 [10, 20] & Column 3 [19, 22]',
-    phase: 'MERGE_RIGHT',
-    codeLine: 34,
-    mode: 'MERGED_INTERMEDIATE',
-    columns: [
-      { top: 5, bottom: [7, 8] },
-      { top: 10, bottom: [19, 20, 22] }
+    title: 'Merge Rightmost Columns: [19, 22] and [28, 35]',
+    phase: 'MERGE_COLUMNS',
+    nodes: [
+      { id: 0, val: 5, pointers: ['head'] },
+      { id: 1, val: 10, pointers: [] }
     ],
-    mergedSoFar: [10, 19, 20, 22],
-    variables: { mergedRightColumns: '[10, 19, 20, 22]', remainingLeft: '[5, 7, 8]' },
-    explain: 'Merging [10, 20] and [19, 22] by bottom pointers produces sorted chain: 10 -> 19 -> 20 -> 22.',
-    intuition: 'Subproblem of 2 rightmost chains resolved.'
+    auxiliaryNodes: [
+      { id: 2, val: 19, pointers: ['rightMerged'] },
+      { id: 4, val: 22, pointers: [] },
+      { id: 3, val: 28, pointers: [] },
+      { id: 5, val: 35, pointers: [] }
+    ],
+    auxiliaryLabel: 'Merged Right Chain: 19 -> 22 -> 28 -> 35',
+    pointers: { head: 0 },
+    variables: { mergedSublist: '19 -> 22 -> 28 -> 35', pendingColumns: '5, 10' },
+    metrics: [
+      { label: 'Merged Columns', value: '19 & 28' },
+      { label: 'Sub-chain Size', value: '4 nodes' },
+      { label: 'Next Merge Target', value: 'Column 10' }
+    ],
+    explain: 'Columns 19 and 28 merge via two-pointer comparison into a sorted vertical bottom chain: 19 -> 22 -> 28 -> 35.',
+    action: 'merge(column 19, column 28).',
+    intuition: 'Standard merge logic combines two sorted vertical chains into one sorted chain in linear time.',
+    formula: 'merge(19, 28) => [19, 22, 28, 35]'
   },
   {
-    title: '3. Final Merge: Column 1 [5, 7, 8] with [10, 19, 20, 22]',
+    title: 'Merge Column 10 with Right Chain',
+    phase: 'MERGE_COLUMNS',
+    nodes: [
+      { id: 0, val: 5, pointers: ['head'] }
+    ],
+    auxiliaryNodes: [
+      { id: 1, val: 10, pointers: ['midMerged'] },
+      { id: 2, val: 19, pointers: [] },
+      { id: 6, val: 20, pointers: [] },
+      { id: 4, val: 22, pointers: [] },
+      { id: 3, val: 28, pointers: [] },
+      { id: 5, val: 35, pointers: [] }
+    ],
+    auxiliaryLabel: 'Merged Chain: 10 -> 19 -> 20 -> 22 -> 28 -> 35',
+    pointers: { head: 0 },
+    variables: { mergedSublist: '10 -> 19 -> 20 -> 22 -> 28 -> 35', pendingColumns: '5' },
+    metrics: [
+      { label: 'Merged Chain', value: '6 nodes' },
+      { label: 'Smallest Value', value: '10' },
+      { label: 'Final Merge', value: 'Column 5' }
+    ],
+    explain: 'Column 10 (10 -> 20) merges with the right chain, interleaving 20 between 19 and 22: 10 -> 19 -> 20 -> 22 -> 28 -> 35.',
+    action: 'merge(column 10, rightChain).',
+    intuition: 'Each recursive return rolls the sorted chain leftward.',
+    formula: 'merge(10, rightChain)'
+  },
+  {
+    title: 'Final Merge: Column 5 Integrated',
     phase: 'FINAL_MERGE',
-    codeLine: 37,
-    mode: 'MERGING',
-    columns: [],
-    mergedSoFar: [5, 7, 8, 10, 19, 20, 22],
-    variables: { compareHeads: '5 < 10 -> pick 5, 7 < 10 -> pick 7, 8 < 10 -> pick 8, append rest' },
-    explain: 'Compare top of Chain 1 (5, 7, 8) with merged right chain (10, 19, 20, 22). 5, 7, 8 are all smaller than 10.',
-    intuition: 'Linear merge across bottom pointers.'
-  },
-  {
-    title: '4. Fully Flattened Sorted List: [5 -> 7 -> 8 -> 10 -> 19 -> 20 -> 22]',
-    phase: 'RESULT',
-    codeLine: 39,
-    mode: 'FLATTENED',
-    columns: [],
-    mergedSoFar: [5, 7, 8, 10, 19, 20, 22],
-    variables: { finalChain: '[5, 7, 8, 10, 19, 20, 22]', time: 'O(Total Nodes)', space: 'O(1) aux' },
-    explain: 'All 7 nodes flattened into a single sorted vertical chain using bottom pointers.',
-    intuition: 'Right-to-left recursive merge solves multi-level lists in optimal time without any extra node allocations.'
+    nodes: [
+      { id: 0, val: 5, pointers: ['head'], isHighlighted: true },
+      { id: 7, val: 7, pointers: [] },
+      { id: 8, val: 8, pointers: [] },
+      { id: 1, val: 10, pointers: [] },
+      { id: 2, val: 19, pointers: [] },
+      { id: 6, val: 20, pointers: [] },
+      { id: 4, val: 22, pointers: [] },
+      { id: 3, val: 28, pointers: [] },
+      { id: 5, val: 35, pointers: ['tail'] }
+    ],
+    pointers: { head: 0, tail: 8 },
+    highlightIndices: [0, 1, 2, 3],
+    variables: { totalNodes: 9, structure: '1D Flattened Sorted Chain' },
+    metrics: [
+      { label: 'Final Size', value: '9 nodes' },
+      { label: 'Head Val', value: '5' },
+      { label: 'Tail Val', value: '35' }
+    ],
+    customCard: {
+      title: 'Flattening Execution Summary',
+      rows: [
+        { label: '2D Multi-Level Input', value: '4 columns with vertical sorted branches' },
+        { label: '1D Flattened Chain', value: '5 -> 7 -> 8 -> 10 -> 19 -> 20 -> 22 -> 28 -> 35', accent: true },
+        { label: 'Recurrence', value: 'T(N) = T(N - 1) + O(Total Nodes Merged)' },
+        { label: 'Space Complexity', value: 'O(1) auxiliary (in-place pointer updates)' }
+      ]
+    },
+    explain: 'Column 5 (5 -> 7 -> 8) merges with the accumulated list. All next pointers are cleared to null; bottom pointers form the single sorted list.',
+    action: 'return root.',
+    intuition: 'The 2D tree-like structure is flattened into a clean, 1D sorted linked list.',
+    formula: 'Result: 5 -> 7 -> 8 -> 10 -> 19 -> 20 -> 22 -> 28 -> 35'
   }
 ];
-
-export default function FlatteningOfLlVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          2D Flattening via Bottom Pointers
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-semibold">
-          Right-to-Left Merge
-        </span>
-      </div>
-
-      {/* Visual 2D / Flattened Matrix */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-4">
-        {step.mode === '2D_VIEW' || step.mode === 'MERGED_INTERMEDIATE' ? (
-          <div className="flex items-start justify-center gap-6 overflow-x-auto py-2">
-            {step.columns.map((col, cIdx) => (
-              <div key={cIdx} className="flex flex-col items-center gap-2">
-                {/* Top Node */}
-                <div className="w-13 h-13 rounded-xl border border-blue-400 bg-blue-500/20 text-blue-200 flex items-center justify-center font-mono font-bold text-base shadow-md shadow-blue-500/20">
-                  {col.top}
-                </div>
-
-                {/* Bottom Nodes */}
-                {col.bottom.map((bVal, bIdx) => (
-                  <React.Fragment key={bIdx}>
-                    <span className="text-xs font-mono text-[var(--chalk-dim)]">&darr;</span>
-                    <div className="w-13 h-13 rounded-xl border border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)] flex items-center justify-center font-mono font-bold text-base">
-                      {bVal}
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
-            ))}
-          </div>
-        ) : (
-          /* Flattened Vertical Chain */
-          <div className="flex flex-wrap items-center justify-center gap-2 py-2">
-            {step.mergedSoFar.map((val, idx) => (
-              <React.Fragment key={idx}>
-                <div className="w-12 h-12 rounded-xl border border-emerald-400/50 bg-emerald-500/20 text-emerald-200 flex items-center justify-center font-mono font-bold text-base shadow-md shadow-emerald-500/20">
-                  {val}
-                </div>
-                {idx < step.mergedSoFar.length - 1 && (
-                  <span className="text-emerald-400 font-bold">&rarr;</span>
-                )}
-              </React.Fragment>
-            ))}
-            <span className="text-xs font-mono text-[var(--chalk-dim)] ml-2">&rarr; NULL</span>
-          </div>
-        )}
-      </div>
-
-      {/* Result Card */}
-      {step.mode === 'FLATTENED' && (
-        <div className="w-full p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center gap-2 text-emerald-300 font-mono text-base font-bold">
-          <span>🎉 Fully Flattened Sorted Chain: 5 &rarr; 7 &rarr; 8 &rarr; 10 &rarr; 19 &rarr; 20 &rarr; 22</span>
-        </div>
-      )}
-    </div>
-  );
-}

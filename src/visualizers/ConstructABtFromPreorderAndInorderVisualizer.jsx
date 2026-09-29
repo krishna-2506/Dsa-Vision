@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Construct BT from Preorder & Inorder',
@@ -6,11 +6,37 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(N) hash map & recursion stack',
-  description: 'Reconstructs the unique binary tree given its preorder and inorder traversal sequences using a hash map for fast root lookup in the inorder array.'
+  description: 'Reconstructs a unique binary tree given its preorder traversal (where root is always the first element) and inorder traversal. A hash map enables O(1) root lookup in the inorder array to partition left and right subtrees.'
+};
+
+export const ideaMap = {
+  title: 'Preorder & Inorder Tree Reconstruction Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Root Identification (Preorder)',
+      detail: 'The first element of the current preorder segment preorder[preStart] is guaranteed to be the root of the subtree.'
+    },
+    {
+      id: 'step2',
+      label: 'O(1) Inorder Root Lookup',
+      detail: 'Locate the root in inorder using a precomputed hash map at inRoot = inMap[root.val].'
+    },
+    {
+      id: 'step3',
+      label: 'Subtree Size Partitioning',
+      detail: 'Calculate left subtree size numsLeft = inRoot - inStart. Inorder splits into left [inStart, inRoot - 1] and right [inRoot + 1, inEnd].'
+    },
+    {
+      id: 'step4',
+      label: 'Recursive Preorder Slicing',
+      detail: 'Preorder splits into left [preStart + 1, preStart + numsLeft] and right [preStart + numsLeft + 1, preEnd].'
+    }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++: Construct Binary Tree from Preorder and Inorder
+  cpp: `// C++: Construct Binary Tree from Preorder and Inorder (LeetCode 105)
 // Time Complexity: O(N) | Space Complexity: O(N)
 #include <vector>
 #include <unordered_map>
@@ -51,14 +77,22 @@ public:
                      inorder, 0, inorder.size() - 1, inMap);
     }
 };`,
-  java: `// Java: Construct Binary Tree from Preorder and Inorder
+  java: `// Java: Construct Binary Tree from Preorder and Inorder (LeetCode 105)
+// Time Complexity: O(N) | Space Complexity: O(N)
 import java.util.HashMap;
 import java.util.Map;
 
 class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        Map<Integer, Integer> inMap = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            inMap.put(inorder[i], i);
+        }
+        return build(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1, inMap);
+    }
+
     private TreeNode build(int[] preorder, int preStart, int preEnd,
-                           int[] inorder, int inStart, int inEnd,
-                           Map<Integer, Integer> inMap) {
+                           int[] inorder, int inStart, int inEnd, Map<Integer, Integer> inMap) {
         if (preStart > preEnd || inStart > inEnd) return null;
 
         TreeNode root = new TreeNode(preorder[preStart]);
@@ -72,24 +106,16 @@ class Solution {
 
         return root;
     }
-
-    public TreeNode buildTree(int[] preorder, int[] inorder) {
-        Map<Integer, Integer> inMap = new HashMap<>();
-        for (int i = 0; i < inorder.length; i++) {
-            inMap.put(inorder[i], i);
-        }
-        return build(preorder, 0, preorder.length - 1,
-                     inorder, 0, inorder.length - 1, inMap);
-    }
 }`,
-  python: `# Python 3: Construct Binary Tree from Preorder and Inorder
+  python: `# Python: Construct Binary Tree from Preorder and Inorder (LeetCode 105)
+# Time Complexity: O(N) | Space Complexity: O(N)
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
         self.left = left
         self.right = right
 
-def build_tree(preorder: list[int], inorder: list[int]):
+def buildTree(preorder: list[int], inorder: list[int]) -> TreeNode | None:
     in_map = {val: i for i, val in enumerate(inorder)}
 
     def build(pre_start, pre_end, in_start, in_end):
@@ -101,167 +127,178 @@ def build_tree(preorder: list[int], inorder: list[int]):
         in_root = in_map[root_val]
         nums_left = in_root - in_start
 
-        root.left = build(pre_start + 1, pre_start + nums_left,
-                          in_start, in_root - 1)
-        root.right = build(pre_start + nums_left + 1, pre_end,
-                           in_root + 1, in_end)
+        root.left = build(pre_start + 1, pre_start + nums_left, in_start, in_root - 1)
+        root.right = build(pre_start + nums_left + 1, pre_end, in_root + 1, in_end)
 
         return root
 
     return build(0, len(preorder) - 1, 0, len(inorder) - 1)`,
-  javascript: `// JavaScript: Construct Binary Tree from Preorder and Inorder
+  javascript: `// JavaScript: Construct Binary Tree from Preorder and Inorder (LeetCode 105)
+// Time Complexity: O(N) | Space Complexity: O(N)
 function buildTree(preorder, inorder) {
-    const inMap = new Map();
-    for (let i = 0; i < inorder.length; i++) {
-        inMap.set(inorder[i], i);
-    }
+  const inMap = new Map();
+  inorder.forEach((val, i) => inMap.set(val, i));
 
-    function build(preStart, preEnd, inStart, inEnd) {
-        if (preStart > preEnd || inStart > inEnd) return null;
+  function build(preStart, preEnd, inStart, inEnd) {
+    if (preStart > preEnd || inStart > inEnd) return null;
 
-        const rootVal = preorder[preStart];
-        const root = { val: rootVal, left: null, right: null };
-        const inRoot = inMap.get(rootVal);
-        const numsLeft = inRoot - inStart;
+    const rootVal = preorder[preStart];
+    const root = { val: rootVal, left: null, right: null };
+    const inRoot = inMap.get(rootVal);
+    const numsLeft = inRoot - inStart;
 
-        root.left = build(preStart + 1, preStart + numsLeft, inStart, inRoot - 1);
-        root.right = build(preStart + numsLeft + 1, preEnd, inRoot + 1, inEnd);
+    root.left = build(preStart + 1, preStart + numsLeft, inStart, inRoot - 1);
+    root.right = build(preStart + numsLeft + 1, preEnd, inRoot + 1, inEnd);
 
-        return root;
-    }
+    return root;
+  }
 
-    return build(0, preorder.length - 1, 0, inorder.length - 1);
+  return build(0, preorder.length - 1, 0, inorder.length - 1);
 }`
+};
+
+const treeRootOnly = {
+  val: 3,
+  left: null,
+  right: null
+};
+
+const treeRootLeft = {
+  val: 3,
+  left: { val: 9, left: null, right: null },
+  right: null
+};
+
+const treeRootBoth = {
+  val: 3,
+  left: { val: 9, left: null, right: null },
+  right: { val: 20, left: null, right: null }
+};
+
+const treeFinal = {
+  val: 3,
+  left: { val: 9, left: null, right: null },
+  right: {
+    val: 20,
+    left: { val: 15, left: null, right: null },
+    right: { val: 7, left: null, right: null }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Root from Preorder: preorder[0] = 3',
     phase: 'ROOT_DISCOVERY',
-    codeLine: 20,
-    rootVal: 3,
-    inRootIdx: 1,
-    leftSub: [9],
-    rightSub: [15, 20, 7],
-    explain: 'First element of preorder is the tree root (3). In inorder [9, 3, 15, 20, 7], 3 is at index 1.'
+    title: '1. Root = preorder[0] = 3. Inorder Split: Left [9], Right [15, 20, 7]',
+    tree: treeRootOnly,
+    activeVal: 3,
+    visitedVals: [3],
+    nodeLabels: { 3: 'Root: 3' },
+    customCard: {
+      title: 'Global Root Partitioning',
+      rows: [
+        { label: 'Preorder Array', value: '[3, 9, 20, 15, 7]' },
+        { label: 'Inorder Array', value: '[9, 3, 15, 20, 7]' },
+        { label: 'Root Element', value: 'preorder[0] = 3', accent: true },
+        { label: 'Inorder Split', value: 'Left: [9] | Right: [15, 20, 7]' }
+      ]
+    },
+    variables: {
+      preorder: '[3, 9, 20, 15, 7]',
+      inorder: '[9, 3, 15, 20, 7]',
+      rootVal: 3,
+      leftSubtreeSize: 1,
+      rightSubtreeSize: 3
+    },
+    metrics: [
+      { label: 'Root', value: '3' },
+      { label: 'Left Size', value: '1' },
+      { label: 'Right Size', value: '3', highlight: true }
+    ],
+    explain: 'The first element of preorder is root 3. In inorder, 3 sits at index 1. Everything to the left [9] forms the left subtree; everything to the right [15, 20, 7] forms the right subtree.'
   },
   {
-    title: '2. Split Inorder: Left Subtree = [9], Right Subtree = [15, 20, 7]',
-    phase: 'SUBTREE_SPLIT',
-    codeLine: 23,
-    rootVal: 3,
-    inRootIdx: 1,
-    leftSub: [9],
-    rightSub: [15, 20, 7],
-    explain: 'Left of index 1 has size 1 (value 9). Right has size 3 (values [15, 20, 7]).'
-  },
-  {
-    title: '3. Build Left Subtree: Root = 9 (Leaf node)',
     phase: 'BUILD_LEFT',
-    codeLine: 25,
-    rootVal: 9,
-    inRootIdx: 0,
-    leftSub: [],
-    rightSub: [],
-    explain: 'preorder[1] = 9. 9 has 0 left and right elements in inorder. 3.left = Node(9).'
+    title: '2. Construct Left Child: preorder[1] = 9 (Leaf Node)',
+    tree: treeRootLeft,
+    activeVal: 9,
+    visitedVals: [3, 9],
+    nodeLabels: { 3: 'Root', 9: 'Left Child' },
+    customCard: {
+      title: 'Left Subtree Construction',
+      rows: [
+        { label: 'Preorder Segment', value: '[9]' },
+        { label: 'Inorder Segment', value: '[9]' },
+        { label: 'Created Node', value: 'Node 9', accent: true },
+        { label: 'Attachment', value: 'root.left = Node 9' }
+      ]
+    },
+    variables: {
+      activeSubtree: 'Left Subtree',
+      nodeVal: 9,
+      isLeaf: true
+    },
+    metrics: [
+      { label: 'Created Node', value: '9' },
+      { label: 'Parent', value: '3' },
+      { label: 'Status', value: 'Left Subtree Done', highlight: true }
+    ],
+    explain: 'Left subtree has size 1. Node 9 has no children and attaches directly as the left child of root 3.'
   },
   {
-    title: '4. Build Right Subtree: Root = 20 &rarr; Left = 15, Right = 7',
-    phase: 'BUILD_RIGHT',
-    codeLine: 27,
-    rootVal: 20,
-    inRootIdx: 3,
-    leftSub: [15],
-    rightSub: [7],
-    explain: 'Next preorder element is 20. In inorder, 15 is to left of 20 and 7 is to right of 20.'
+    phase: 'BUILD_RIGHT_ROOT',
+    title: '3. Construct Right Subtree Root: preorder[2] = 20',
+    tree: treeRootBoth,
+    activeVal: 20,
+    visitedVals: [3, 9, 20],
+    nodeLabels: { 3: 'Root', 9: 'Left', 20: 'Right Subtree Root' },
+    customCard: {
+      title: 'Right Subtree Partitioning',
+      rows: [
+        { label: 'Preorder Right', value: '[20, 15, 7]' },
+        { label: 'Inorder Right', value: '[15, 20, 7]' },
+        { label: 'Subtree Root', value: '20 (Inorder index 3)', accent: true },
+        { label: 'Children Split', value: 'Left: [15] | Right: [7]' }
+      ]
+    },
+    variables: {
+      activeSubtree: 'Right Subtree',
+      nodeVal: 20,
+      subLeft: 15,
+      subRight: 7
+    },
+    metrics: [
+      { label: 'Right Root', value: '20' },
+      { label: 'Sub-Left', value: '15' },
+      { label: 'Sub-Right', value: '7', highlight: true }
+    ],
+    explain: 'The right subtree preorder starts at 20. In inorder, 20 separates left child 15 and right child 7.'
   },
   {
-    title: '5. Complete: Binary Tree Fully Reconstructed!',
     phase: 'COMPLETE',
-    codeLine: 38,
-    rootVal: 3,
-    inRootIdx: null,
-    leftSub: [],
-    rightSub: [],
-    explain: 'Tree reconstructed: Root 3 with left child 9 and right child 20 (which has children 15 and 7).'
+    title: '4. Final Tree Reconstructed with Leaves 15 and 7',
+    tree: treeFinal,
+    activeVal: null,
+    visitedVals: [3, 9, 20, 15, 7],
+    nodeLabels: { 3: 'Root', 9: 'Leaf', 20: 'Branch', 15: 'Leaf', 7: 'Leaf' },
+    customCard: {
+      title: 'Tree Construction Complete',
+      rows: [
+        { label: 'Total Nodes', value: '5 nodes assembled' },
+        { label: 'Preorder Verification', value: '[3, 9, 20, 15, 7] (Matches!)', accent: true },
+        { label: 'Inorder Verification', value: '[9, 3, 15, 20, 7] (Matches!)', accent: true },
+        { label: 'Runtime Complexity', value: 'O(N) with hash map lookup' }
+      ]
+    },
+    variables: {
+      status: 'Fully Constructed',
+      nodeCount: 5,
+      height: 3
+    },
+    metrics: [
+      { label: 'Total Nodes', value: '5' },
+      { label: 'Height', value: '3' },
+      { label: 'Verification', value: 'EXACT MATCH', highlight: true }
+    ],
+    explain: 'Nodes 15 and 7 attach as left and right children of 20. The binary tree is uniquely and completely reconstructed in O(N) time.'
   }
 ];
-
-export default function ConstructABtFromPreorderAndInorderVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-  const preorder = [3, 9, 20, 15, 7];
-  const inorder = [9, 3, 15, 20, 7];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Active Root: <strong className="text-cyan-400">Node {step.rootVal}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Inorder Partitioning: <strong>O(1) Map Lookup</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Traversal Arrays Partition</span>
-          <span className="text-cyan-400 font-bold">Preorder &amp; Inorder</span>
-        </div>
-
-        {/* Arrays Display */}
-        <div className="flex flex-col gap-3 w-full py-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-[#6e7596] w-20">Preorder:</span>
-            <div className="flex gap-2">
-              {preorder.map((v, i) => (
-                <span
-                  key={i}
-                  className={`w-9 h-9 rounded-lg border flex items-center justify-center font-mono font-bold text-xs ${
-                    v === step.rootVal
-                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200'
-                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-                  }`}
-                >
-                  {v}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-[#6e7596] w-20">Inorder:</span>
-            <div className="flex gap-2">
-              {inorder.map((v, i) => {
-                const isLeft = step.leftSub.includes(v);
-                const isRight = step.rightSub.includes(v);
-                const isRoot = v === step.rootVal;
-
-                return (
-                  <span
-                    key={i}
-                    className={`w-9 h-9 rounded-lg border flex items-center justify-center font-mono font-bold text-xs ${
-                      isRoot
-                        ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200'
-                        : isLeft
-                        ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                        : isRight
-                        ? 'bg-purple-500/20 border-purple-400 text-purple-200'
-                        : 'bg-[#181a26] border-[#31364d] text-[#6a718f]'
-                    }`}
-                  >
-                    {v}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          Green = Left Subtree elements | Cyan = Subtree Root | Purple = Right Subtree elements
-        </div>
-      </div>
-    </div>
-  );
-}

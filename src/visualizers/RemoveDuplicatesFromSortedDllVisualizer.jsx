@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Remove Duplicates from Sorted DLL',
@@ -7,6 +7,32 @@ export const meta = {
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1)',
   description: 'Removes duplicate value nodes from a sorted doubly linked list in O(N) time and O(1) space by rewiring adjacent next and prev pointers to bypass duplicate chains.'
+};
+
+export const ideaMap = {
+  title: 'Duplicate Removal Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Identify Duplicate Runs',
+      detail: 'Since list is sorted, identical values appear in contiguous clusters.'
+    },
+    {
+      id: 'step2',
+      label: 'Find Next Distinct Node',
+      detail: 'Advance nextNode pointer until reaching a node with a different value or null.'
+    },
+    {
+      id: 'step3',
+      label: 'Bypass Duplicates',
+      detail: 'Set curr.next = nextNode, and if nextNode != null, set nextNode.prev = curr.'
+    },
+    {
+      id: 'step4',
+      label: 'Advance curr',
+      detail: 'Move curr = curr.next and repeat until end of list.'
+    }
+  ]
 };
 
 export const solutions = {
@@ -28,14 +54,11 @@ public:
 
         while (curr != nullptr && curr->next != nullptr) {
             Node* nextNode = curr->next;
-
-            // Skip all duplicate consecutive nodes
             while (nextNode != nullptr && nextNode->data == curr->data) {
                 Node* duplicate = nextNode;
                 nextNode = nextNode->next;
                 delete duplicate;
             }
-
             curr->next = nextNode;
             if (nextNode != nullptr) {
                 nextNode->prev = curr;
@@ -46,51 +69,45 @@ public:
         return head;
     }
 };`,
-  python: `# Python 3 Remove Duplicates from Sorted DLL
+  python: `# Python Remove Duplicates from Sorted Doubly Linked List
 class Node:
-    def __init__(self, data=0, next=None, prev=None):
+    def __init__(self, data):
         self.data = data
-        self.next = next
-        self.prev = prev
+        self.next = None
+        self.prev = None
 
 class Solution:
     def removeDuplicates(self, head: Node) -> Node:
         curr = head
 
         while curr and curr.next:
-            next_node = curr.next
-            while next_node and next_node.data == curr.data:
-                next_node = next_node.next
+            nextNode = curr.next
+            while nextNode and nextNode.data == curr.data:
+                nextNode = nextNode.next
 
-            curr.next = next_node
-            if next_node:
-                next_node.prev = curr
+            curr.next = nextNode
+            if nextNode:
+                nextNode.prev = curr
+
             curr = curr.next
 
         return head`,
-  java: `// Java Remove Duplicates from Sorted DLL
+  java: `// Java Remove Duplicates from Sorted Doubly Linked List
 class Node {
     int data;
-    Node next;
-    Node prev;
-    Node(int data) {
-        this.data = data;
-        this.next = null;
-        this.prev = null;
-    }
+    Node next, prev;
+    Node(int d) { data = d; next = prev = null; }
 }
 
-class Solution {
+public class Solution {
     public Node removeDuplicates(Node head) {
         Node curr = head;
 
         while (curr != null && curr.next != null) {
             Node nextNode = curr.next;
-
             while (nextNode != null && nextNode.data == curr.data) {
                 nextNode = nextNode.next;
             }
-
             curr.next = nextNode;
             if (nextNode != null) {
                 nextNode.prev = curr;
@@ -101,165 +118,183 @@ class Solution {
         return head;
     }
 }`,
-  javascript: `// JavaScript Remove Duplicates from Sorted DLL
-var removeDuplicates = function(head) {
-    let curr = head;
+  javascript: `// JavaScript Remove Duplicates from Sorted Doubly Linked List
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+    this.prev = null;
+  }
+}
 
-    while (curr && curr.next) {
-        let nextNode = curr.next;
+function removeDuplicates(head) {
+  let curr = head;
 
-        while (nextNode && nextNode.data === curr.data) {
-            nextNode = nextNode.next;
-        }
-
-        curr.next = nextNode;
-        if (nextNode) {
-            nextNode.prev = curr;
-        }
-        curr = curr.next;
+  while (curr && curr.next) {
+    let nextNode = curr.next;
+    while (nextNode && nextNode.data === curr.data) {
+      nextNode = nextNode.next;
     }
 
-    return head;
-};`
+    curr.next = nextNode;
+    if (nextNode) {
+      nextNode.prev = curr;
+    }
+
+    curr = curr.next;
+  }
+
+  return head;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Initial State: Sorted DLL [1 <=> 2 <=> 2 <=> 2 <=> 3]',
-    phase: 'INITIAL',
-    codeLine: 16,
-    nodes: [1, 2, 2, 2, 3],
-    currIdx: 0,
-    activeDuplicates: [],
-    variables: { list: '[1, 2, 2, 2, 3]', curr: 'Node(1)', strategy: 'Bypass duplicate runs' },
-    explain: 'Consecutive duplicate values [2, 2, 2] exist in the sorted list. curr starts at head (1).',
-    intuition: 'Because the DLL is sorted, all identical elements form contiguous runs.'
+    title: 'Initial Sorted DLL',
+    phase: 'SETUP',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 1, pointers: ['head', 'curr'] },
+      { id: 1, val: 1, pointers: [] },
+      { id: 2, val: 2, pointers: [] },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 3, pointers: ['tail'] }
+    ],
+    pointers: { head: 0, curr: 0, tail: 4 },
+    variables: { currVal: 1, duplicatesFound: 0 },
+    metrics: [
+      { label: 'Length', value: '5' },
+      { label: 'curr.data', value: '1' },
+      { label: 'Duplicates', value: '0' }
+    ],
+    explain: 'Doubly Linked List is sorted: 1 <-> 1 <-> 2 <-> 3 <-> 3. Duplicate values are guaranteed to be consecutive.',
+    action: 'Initialize curr = head.',
+    intuition: 'Because the DLL is sorted, all occurrences of any value are adjacent. We can bypass entire duplicate clusters in a single pass.',
+    formula: 'curr.data == nextNode.data => bypass duplicate'
   },
   {
-    title: '2. Check Node(1): Next is 2 (Different Value). Advance curr = curr->next',
-    phase: 'NO_DUPLICATE',
-    codeLine: 31,
-    nodes: [1, 2, 2, 2, 3],
-    currIdx: 1,
-    activeDuplicates: [],
-    variables: { curr: 'Node(2)', 'curr->data': 2, next: 'Node(2)' },
-    explain: 'Node 1 has value 1 != 2. Advance curr to Node 2 (index 1).',
-    intuition: 'No duplicate at node 1.'
+    title: 'Detect Duplicate of Value 1',
+    phase: 'DETECT_DUPLICATE_1',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 1, pointers: ['curr'], isHighlighted: true },
+      { id: 1, val: 1, pointers: ['dup'], isDeleted: true },
+      { id: 2, val: 2, pointers: ['nextNode'], isHighlighted: true },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 3, pointers: ['tail'] }
+    ],
+    pointers: { curr: 0, dup: 1, nextNode: 2 },
+    highlightIndices: [0, 2],
+    deletedIndices: [1],
+    variables: { 'curr.data': 1, 'dup.data': 1, 'nextNode.data': 2 },
+    metrics: [
+      { label: 'curr', value: '1' },
+      { label: 'Duplicate', value: '1' },
+      { label: 'Next Distinct', value: '2' }
+    ],
+    explain: 'curr.next has data 1 == curr.data. Advance nextNode to the first distinct value, which is node 2.',
+    action: 'Scan forward while nextNode.data == curr.data.',
+    intuition: 'nextNode points to node 2, which will become curr.next, safely bypassing the duplicate.',
+    formula: 'nextNode = 2'
   },
   {
-    title: '3. Detect Duplicate Run: Multiple 2s after curr (index 1)',
-    phase: 'SCAN_DUPLICATES',
-    codeLine: 22,
-    nodes: [1, 2, 2, 2, 3],
-    currIdx: 1,
-    activeDuplicates: [2, 3], // indices of duplicate nodes to remove
-    variables: { curr: 'Node(2)', duplicatesIdentified: '2 nodes at index 2 and 3', nextDistinct: 'Node(3)' },
-    explain: 'nextNode scans ahead through all nodes with value 2 until it finds Node 3. Nodes at index 2 and 3 are marked for deletion.',
-    intuition: 'Locate the first strictly greater node.'
+    title: 'Bypass Duplicate Node 1',
+    phase: 'BYPASS_DUPLICATE_1',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 1, pointers: ['head', 'curr'], isModified: true },
+      { id: 2, val: 2, pointers: ['nextNode'], isModified: true, isHighlighted: true },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 3, pointers: ['tail'] }
+    ],
+    pointers: { head: 0, curr: 0, nextNode: 1 },
+    highlightIndices: [0, 1],
+    variables: { '1.next': '2', '2.prev': '1', duplicatesRemoved: 1 },
+    metrics: [
+      { label: 'curr.next', value: '2' },
+      { label: '2.prev', value: '1' },
+      { label: 'Removed', value: '1' }
+    ],
+    explain: 'Rewire pointers: curr.next = nextNode (1 -> 2) and nextNode.prev = curr (2 <- 1). Duplicate node 1 is pruned from DLL.',
+    action: 'curr.next = nextNode; nextNode.prev = curr;',
+    intuition: 'Directly linking 1 and 2 excises the duplicate while keeping both forward and backward traversals intact.',
+    formula: '1 <-> 2 established'
   },
   {
-    title: '4. Rewire Bidirectional Pointers: curr->next = Node(3), Node(3)->prev = curr',
-    phase: 'BYPASS_REWIRE',
-    codeLine: 28,
-    nodes: [1, 2, 3],
-    currIdx: 1,
-    activeDuplicates: [],
-    variables: { '2->next': 'Node(3)', '3->prev': 'Node(2)', deleted: 'Two redundant 2s' },
-    explain: 'curr->next bridges directly to Node 3, and Node 3->prev points backward to curr (2). Duplicate nodes bypassed and freed.',
-    intuition: 'Bidirectional links stitched around the removed cluster.'
+    title: 'Advance curr to Node 2 (No Duplicates)',
+    phase: 'INSPECT_NODE_2',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'] },
+      { id: 2, val: 2, pointers: ['curr'], isHighlighted: true },
+      { id: 3, val: 3, pointers: ['next'] },
+      { id: 4, val: 3, pointers: ['tail'] }
+    ],
+    pointers: { head: 0, curr: 1, next: 2 },
+    highlightIndices: [1],
+    variables: { 'curr.data': 2, 'next.data': 3, isDuplicate: 'false' },
+    metrics: [
+      { label: 'curr.data', value: '2' },
+      { label: 'next.data', value: '3' },
+      { label: 'Duplicate', value: 'None' }
+    ],
+    explain: 'curr advances to node 2. curr.next is node 3. Since 2 != 3, there are no duplicates for value 2.',
+    action: 'Advance curr to node 3.',
+    intuition: 'When adjacent values differ, no pointer re-stitching is needed; curr simply advances.',
+    formula: '2 != 3 => proceed'
   },
   {
-    title: '5. Advance curr to Node(3): End of List reached',
-    phase: 'ADVANCE',
-    codeLine: 31,
-    nodes: [1, 2, 3],
-    currIdx: 2,
-    activeDuplicates: [],
-    variables: { curr: 'Node(3)', 'curr->next': 'NULL', status: 'Loop terminates' },
-    explain: 'Node 3 is the tail. No further nodes to process.',
-    intuition: 'List iteration concludes.'
+    title: 'Detect and Bypass Duplicate of Value 3',
+    phase: 'BYPASS_DUPLICATE_3',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'] },
+      { id: 2, val: 2, pointers: [] },
+      { id: 3, val: 3, pointers: ['curr'], isHighlighted: true, isModified: true },
+      { id: 4, val: 3, pointers: ['dup', 'tail'], isDeleted: true }
+    ],
+    pointers: { head: 0, curr: 2, dup: 3 },
+    highlightIndices: [2],
+    deletedIndices: [3],
+    variables: { 'curr.data': 3, 'dup.data': 3, nextNode: 'null' },
+    metrics: [
+      { label: 'curr', value: '3' },
+      { label: 'Duplicate', value: '3 (Tail)' },
+      { label: 'nextNode', value: 'null' }
+    ],
+    explain: 'curr is at node 3. Its neighbor is also 3. nextNode advances past the end of the list to null. Set curr.next = null.',
+    action: 'curr.next = null; delete duplicate node 3;',
+    intuition: 'Since nextNode is null, node 3 becomes the new tail of the DLL.',
+    formula: '3.next = null (New Tail)'
   },
   {
-    title: '6. Result: Clean Sorted DLL [1 <=> 2 <=> 3]',
-    phase: 'RESULT',
-    codeLine: 34,
-    nodes: [1, 2, 3],
-    currIdx: null,
-    activeDuplicates: [],
-    variables: { finalDLL: '[1 <=> 2 <=> 3]', time: 'O(N)', space: 'O(1)' },
-    explain: 'All duplicates removed in single pass O(N) time with O(1) extra space.',
-    intuition: 'Returns original head with pristine bidirectional links.'
+    title: 'Duplicates Removed: DLL Fully Pruned',
+    phase: 'COMPLETED',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'], isHighlighted: true },
+      { id: 2, val: 2, pointers: [], isHighlighted: true },
+      { id: 3, val: 3, pointers: ['tail'], isHighlighted: true }
+    ],
+    pointers: { head: 0, tail: 2 },
+    variables: { head: 1, tail: 3, finalLength: 3, uniqueList: '1 <-> 2 <-> 3' },
+    metrics: [
+      { label: 'Final Length', value: '3' },
+      { label: 'Time', value: 'O(N)' },
+      { label: 'Space', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Deduplication Summary',
+      rows: [
+        { label: 'Input DLL', value: '1 <-> 1 <-> 2 <-> 3 <-> 3' },
+        { label: 'Result DLL', value: '1 <-> 2 <-> 3', accent: true },
+        { label: 'Time Complexity', value: 'O(N) - each node visited once' },
+        { label: 'Space Complexity', value: 'O(1) in-place link reassignments' }
+      ]
+    },
+    explain: 'All redundant duplicate nodes have been safely unlinked. The resulting Doubly Linked List has strictly unique values: 1 <-> 2 <-> 3.',
+    action: 'Return head.',
+    intuition: 'Single-pass pointer adjustment achieves optimal linear time and constant auxiliary memory.',
+    formula: 'Result: [1 <-> 2 <-> 3]'
   }
 ];
-
-export default function RemoveDuplicatesFromSortedDllVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          Operation: Remove Duplicates in Sorted DLL
-        </span>
-        {step.activeDuplicates.length > 0 && (
-          <span className="px-3 py-1.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 font-mono text-xs font-semibold animate-pulse">
-            Bypassing {step.activeDuplicates.length} Duplicate Node(s)
-          </span>
-        )}
-      </div>
-
-      {/* Visual DLL Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
-        {step.nodes.map((val, idx) => {
-          const isCurr = step.currIdx === idx;
-          const isDuplicate = step.activeDuplicates.includes(idx);
-
-          let style = 'border-[var(--line)] bg-[var(--board-raised)] text-[var(--chalk)]';
-          if (isDuplicate) {
-            style = 'border-rose-500/50 bg-rose-500/20 text-rose-300 line-through scale-95 opacity-60';
-          } else if (isCurr) {
-            style = 'border-amber-400 bg-amber-500/20 text-amber-200 scale-105 shadow-md shadow-amber-500/20';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="relative flex flex-col items-center">
-                {isCurr && (
-                  <span className="absolute -top-6 text-[10px] font-mono text-amber-400 font-bold bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
-                    curr
-                  </span>
-                )}
-                {isDuplicate && (
-                  <span className="absolute -top-6 text-[9px] font-mono text-rose-400 font-bold">
-                    dup
-                  </span>
-                )}
-
-                <div className={`w-14 h-14 rounded-xl border flex items-center justify-center font-mono font-bold text-base transition-all ${style}`}>
-                  {val}
-                </div>
-
-                <span className="text-[10px] font-mono text-[#5b6076] mt-1">[{idx}]</span>
-              </div>
-
-              {idx < step.nodes.length - 1 && (
-                <div className="flex flex-col items-center justify-center text-xs font-mono text-cyan-400 font-bold px-0.5">
-                  <span>&rarr;</span>
-                  <span>&larr;</span>
-                </div>
-              )}
-            </React.Fragment>
-          );
-        })}
-      </div>
-
-      {/* Result Card */}
-      {step.phase === 'RESULT' && (
-        <div className="w-full p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center gap-2 text-emerald-300 font-mono text-base font-bold">
-          <span>🎉 Duplicates Cleaned: [1 &hArr; 2 &hArr; 3] in O(N) Time</span>
-        </div>
-      )}
-    </div>
-  );
-}

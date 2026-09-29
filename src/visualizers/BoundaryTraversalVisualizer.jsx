@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Boundary Traversal of Binary Tree',
@@ -6,7 +6,33 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(H) recursion stack',
-  description: 'Traverses the boundary of a binary tree in anti-clockwise direction: left boundary (excluding leaves), all leaf nodes left-to-right, and right boundary (bottom-to-top in reverse, excluding leaves).'
+  description: 'Traverses the outer boundary of a binary tree in anti-clockwise order across three non-overlapping phases: left boundary (excluding leaves), all leaf nodes from left to right, and right boundary (from bottom to top in reverse, excluding leaves).'
+};
+
+export const ideaMap = {
+  title: 'Anti-Clockwise Boundary Traversal Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Root Node Inclusion',
+      detail: 'If the root is not a leaf node, append root.val to the result list.'
+    },
+    {
+      id: 'step2',
+      label: 'Left Boundary (Top-Down)',
+      detail: 'Descend through curr = root.left; if curr is not a leaf, add it. Favor left child; if missing, branch to right child.'
+    },
+    {
+      id: 'step3',
+      label: 'Leaf Nodes (Left-to-Right)',
+      detail: 'Perform inorder/preorder DFS to collect all leaf nodes (node.left == null && node.right == null) left to right.'
+    },
+    {
+      id: 'step4',
+      label: 'Right Boundary (Bottom-Up)',
+      detail: 'Descend rightward curr = root.right collecting non-leaf nodes into a temporary buffer; push reversed to result.'
+    }
+  ]
 };
 
 export const solutions = {
@@ -22,7 +48,7 @@ struct TreeNode {
 };
 
 bool isLeaf(TreeNode* node) {
-    return (node->left == nullptr && node->right == nullptr);
+    return (!node->left && !node->right);
 }
 
 void addLeftBoundary(TreeNode* root, vector<int>& res) {
@@ -64,18 +90,18 @@ vector<int> boundaryTraversal(TreeNode* root) {
     addLeftBoundary(root, res);
     addLeaves(root, res);
     addRightBoundary(root, res);
-
     return res;
 }`,
   java: `// Java: Boundary Traversal of Binary Tree
-import java.util.ArrayList;
+// Time Complexity: O(N) | Space Complexity: O(H)
+import java.util.*;
 
 class Solution {
-    boolean isLeaf(TreeNode node) {
-        return node.left == null && node.right == null;
+    private boolean isLeaf(TreeNode node) {
+        return (node.left == null && node.right == null);
     }
 
-    void addLeftBoundary(TreeNode root, ArrayList<Integer> res) {
+    private void addLeftBoundary(TreeNode root, ArrayList<Integer> res) {
         TreeNode curr = root.left;
         while (curr != null) {
             if (!isLeaf(curr)) res.add(curr.val);
@@ -84,7 +110,7 @@ class Solution {
         }
     }
 
-    void addLeaves(TreeNode root, ArrayList<Integer> res) {
+    private void addLeaves(TreeNode root, ArrayList<Integer> res) {
         if (isLeaf(root)) {
             res.add(root.val);
             return;
@@ -93,7 +119,7 @@ class Solution {
         if (root.right != null) addLeaves(root.right, res);
     }
 
-    void addRightBoundary(TreeNode root, ArrayList<Integer> res) {
+    private void addRightBoundary(TreeNode root, ArrayList<Integer> res) {
         TreeNode curr = root.right;
         ArrayList<Integer> temp = new ArrayList<>();
         while (curr != null) {
@@ -106,7 +132,7 @@ class Solution {
         }
     }
 
-    ArrayList<Integer> boundary(TreeNode node) {
+    public ArrayList<Integer> boundary(TreeNode node) {
         ArrayList<Integer> res = new ArrayList<>();
         if (node == null) return res;
         if (!isLeaf(node)) res.add(node.val);
@@ -117,8 +143,9 @@ class Solution {
         return res;
     }
 }`,
-  python: `# Python 3: Boundary Traversal of Binary Tree
-def boundary_traversal(root):
+  python: `# Python: Boundary Traversal of Binary Tree
+# Time Complexity: O(N) | Space Complexity: O(H)
+def boundaryTraversal(root):
     if not root:
         return []
 
@@ -129,14 +156,14 @@ def boundary_traversal(root):
     if not is_leaf(root):
         res.append(root.val)
 
-    # 1. Left boundary
+    # 1. Left boundary top-down
     curr = root.left
     while curr:
         if not is_leaf(curr):
             res.append(curr.val)
         curr = curr.left if curr.left else curr.right
 
-    # 2. Leaves
+    # 2. Leaves left to right
     def add_leaves(node):
         if is_leaf(node):
             res.append(node.val)
@@ -146,7 +173,7 @@ def boundary_traversal(root):
 
     add_leaves(root)
 
-    # 3. Right boundary reverse
+    # 3. Right boundary bottom-up
     curr = root.right
     right_temp = []
     while curr:
@@ -157,134 +184,205 @@ def boundary_traversal(root):
     res.extend(reversed(right_temp))
     return res`,
   javascript: `// JavaScript: Boundary Traversal of Binary Tree
+// Time Complexity: O(N) | Space Complexity: O(H)
 function boundaryTraversal(root) {
-    if (!root) return [];
-    const isLeaf = (node) => !node.left && !node.right;
-    const res = [];
+  if (!root) return [];
+  const isLeaf = (node) => !node.left && !node.right;
+  const res = [];
 
-    if (!isLeaf(root)) res.push(root.val);
+  if (!isLeaf(root)) res.push(root.val);
 
-    // Left boundary
-    let curr = root.left;
-    while (curr) {
-        if (!isLeaf(curr)) res.push(curr.val);
-        curr = curr.left ? curr.left : curr.right;
+  // 1. Left boundary
+  let curr = root.left;
+  while (curr) {
+    if (!isLeaf(curr)) res.push(curr.val);
+    curr = curr.left ? curr.left : curr.right;
+  }
+
+  // 2. Leaf nodes
+  function addLeaves(node) {
+    if (isLeaf(node)) {
+      res.push(node.val);
+      return;
     }
+    if (node.left) addLeaves(node.left);
+    if (node.right) addLeaves(node.right);
+  }
+  addLeaves(root);
 
-    // Leaves
-    function addLeaves(node) {
-        if (isLeaf(node)) {
-            res.push(node.val);
-            return;
-        }
-        if (node.left) addLeaves(node.left);
-        if (node.right) addLeaves(node.right);
-    }
-    addLeaves(root);
+  // 3. Right boundary (reversed)
+  curr = root.right;
+  const rightTemp = [];
+  while (curr) {
+    if (!isLeaf(curr)) rightTemp.push(curr.val);
+    curr = curr.right ? curr.right : curr.left;
+  }
+  rightTemp.reverse();
+  res.push(...rightTemp);
 
-    // Right boundary reverse
-    curr = root.right;
-    const rightTemp = [];
-    while (curr) {
-        if (!isLeaf(curr)) rightTemp.push(curr.val);
-        curr = curr.right ? curr.right : curr.left;
-    }
-    rightTemp.reverse();
-    res.push(...rightTemp);
-
-    return res;
+  return res;
 }`
+};
+
+const sampleTree = {
+  val: 1,
+  left: {
+    val: 2,
+    left: { val: 4, left: null, right: null },
+    right: { val: 5, left: null, right: null }
+  },
+  right: {
+    val: 3,
+    left: { val: 7, left: null, right: null },
+    right: { val: 8, left: null, right: null }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Root Node: Add Root 1',
     phase: 'ROOT',
-    codeLine: 54,
-    boundaryType: 'Root',
+    title: '1. Root Node Phase: Add Root 1',
+    tree: sampleTree,
+    activeVal: 1,
+    visitedVals: [1],
     traversal: [1],
-    explain: 'Start at root. Since root 1 is not a leaf, add 1.'
+    nodeLabels: { 1: 'Root' },
+    customCard: {
+      title: 'Anti-Clockwise Boundary Traversal',
+      rows: [
+        { label: 'Active Phase', value: 'Phase 1: Root Node', accent: true },
+        { label: 'Leaf Check', value: 'Node 1 is NOT a leaf -> Added' },
+        { label: 'Direction', value: 'Perimeter Anti-Clockwise' },
+        { label: 'Current Boundary', value: '[1]' }
+      ]
+    },
+    variables: {
+      phase: 'Root Node',
+      currentNode: 1,
+      traversalSequence: '[1]'
+    },
+    metrics: [
+      { label: 'Active Node', value: '1' },
+      { label: 'Boundary Phase', value: 'Root' },
+      { label: 'Nodes Collected', value: '1', highlight: true }
+    ],
+    explain: 'Initiate anti-clockwise boundary traversal. Root 1 is not a leaf node, so append 1 to the boundary sequence.'
   },
   {
-    title: '2. Left Boundary: Add Node 2 (Exclude leaf)',
     phase: 'LEFT_BOUNDARY',
-    codeLine: 20,
-    boundaryType: 'Left Boundary',
+    title: '2. Left Boundary Phase: Add Node 2 (Exclude Leaves)',
+    tree: sampleTree,
+    activeVal: 2,
+    visitedVals: [1, 2],
     traversal: [1, 2],
-    explain: 'Traverse left downward. Node 2 is not a leaf, add 2. Next node (4) is a leaf, so left boundary stops.'
+    nodeLabels: { 1: 'Root', 2: 'Left Boundary' },
+    customCard: {
+      title: 'Left Boundary Traversal',
+      rows: [
+        { label: 'Active Phase', value: 'Phase 2: Left Boundary (Top-Down)', accent: true },
+        { label: 'Evaluated Node', value: 'Node 2 (not a leaf -> Added)' },
+        { label: 'Next Left Descendant', value: 'Node 4 is a leaf (Left boundary stops)' },
+        { label: 'Current Boundary', value: '[1, 2]' }
+      ]
+    },
+    variables: {
+      phase: 'Left Boundary',
+      currentNode: 2,
+      traversalSequence: '[1, 2]'
+    },
+    metrics: [
+      { label: 'Active Node', value: '2' },
+      { label: 'Boundary Phase', value: 'Left' },
+      { label: 'Nodes Collected', value: '2', highlight: true }
+    ],
+    explain: 'Descend leftward down root.left. Node 2 is not a leaf, so append 2. Its child 4 is a leaf, terminating the left boundary phase to prevent duplicates.'
   },
   {
-    title: '3. Leaf Nodes: Collect all leaves left to right &rarr; [4, 5, 7, 8]',
     phase: 'LEAF_NODES',
-    codeLine: 30,
-    boundaryType: 'Leaves',
+    title: '3. Leaf Nodes Phase: Collect Leaves Left-to-Right [4, 5, 7, 8]',
+    tree: sampleTree,
+    activeVal: 4,
+    visitedVals: [1, 2, 4, 5, 7, 8],
     traversal: [1, 2, 4, 5, 7, 8],
-    explain: 'Inorder scan of leaves discovers 4, 5, 7, and 8. All leaves added in left-to-right order.'
+    nodeLabels: { 1: 'Root', 2: 'Left', 4: 'Leaf 1', 5: 'Leaf 2', 7: 'Leaf 3', 8: 'Leaf 4' },
+    customCard: {
+      title: 'Leaf Nodes Harvest',
+      rows: [
+        { label: 'Active Phase', value: 'Phase 3: All Leaf Nodes Left-to-Right', accent: true },
+        { label: 'Left Subtree Leaves', value: 'Nodes 4 and 5' },
+        { label: 'Right Subtree Leaves', value: 'Nodes 7 and 8' },
+        { label: 'Current Boundary', value: '[1, 2, 4, 5, 7, 8]' }
+      ]
+    },
+    variables: {
+      phase: 'Leaf Nodes',
+      currentNode: 'Leaves (4,5,7,8)',
+      traversalSequence: '[1, 2, 4, 5, 7, 8]'
+    },
+    metrics: [
+      { label: 'Active Node', value: '4,5,7,8' },
+      { label: 'Boundary Phase', value: 'Leaves' },
+      { label: 'Nodes Collected', value: '6', highlight: true }
+    ],
+    explain: 'Run DFS to collect all leaf nodes in strict left-to-right order: Node 4, Node 5, Node 7, and Node 8. All bottom perimeter endpoints are captured.'
   },
   {
-    title: '4. Right Boundary (Reversed): Add Node 3 (bottom-to-top)',
     phase: 'RIGHT_BOUNDARY',
-    codeLine: 40,
-    boundaryType: 'Right Boundary (Reversed)',
+    title: '4. Right Boundary Phase (Reversed): Add Node 3 (Bottom-Up)',
+    tree: sampleTree,
+    activeVal: 3,
+    visitedVals: [1, 2, 4, 5, 7, 8, 3],
     traversal: [1, 2, 4, 5, 7, 8, 3],
-    explain: 'Collect right boundary downwards ([3]), then reverse it to complete the anti-clockwise loop. Node 3 added.'
+    nodeLabels: { 1: 'Root', 2: 'Left', 4: 'Leaf', 5: 'Leaf', 7: 'Leaf', 8: 'Leaf', 3: 'Right (Rev)' },
+    customCard: {
+      title: 'Right Boundary Upward Return',
+      rows: [
+        { label: 'Active Phase', value: 'Phase 4: Right Boundary (Bottom-Up)', accent: true },
+        { label: 'Descendant Collected', value: 'Node 3 (non-leaf)' },
+        { label: 'Reversal Rule', value: 'Reversed so path ascends back to root' },
+        { label: 'Current Boundary', value: '[1, 2, 4, 5, 7, 8, 3]' }
+      ]
+    },
+    variables: {
+      phase: 'Right Boundary (Rev)',
+      currentNode: 3,
+      traversalSequence: '[1, 2, 4, 5, 7, 8, 3]'
+    },
+    metrics: [
+      { label: 'Active Node', value: '3' },
+      { label: 'Boundary Phase', value: 'Right (Rev)' },
+      { label: 'Nodes Collected', value: '7', highlight: true }
+    ],
+    explain: 'Right boundary descending from root.right discovers Node 3 (excluding leaf 8). Adding Node 3 completes the anti-clockwise loop ascending back to root.'
   },
   {
-    title: '5. Complete Boundary Traversal: [1, 2, 4, 5, 7, 8, 3]',
     phase: 'COMPLETE',
-    codeLine: 57,
-    boundaryType: 'Full Boundary',
+    title: '5. Boundary Traversal Complete: [1, 2, 4, 5, 7, 8, 3]',
+    tree: sampleTree,
+    activeVal: null,
+    visitedVals: [1, 2, 4, 5, 7, 8, 3],
     traversal: [1, 2, 4, 5, 7, 8, 3],
-    explain: 'Full perimeter walked in exact anti-clockwise sequence without duplicate leaves!'
+    nodeLabels: { 1: 'Root', 2: 'Left', 4: 'Leaf', 5: 'Leaf', 7: 'Leaf', 8: 'Leaf', 3: 'Right' },
+    customCard: {
+      title: 'Full Anti-Clockwise Perimeter',
+      rows: [
+        { label: 'Left Boundary', value: '[1, 2]' },
+        { label: 'Leaves (L-to-R)', value: '[4, 5, 7, 8]' },
+        { label: 'Right Boundary (Rev)', value: '[3]' },
+        { label: 'Final Traversal', value: '[1, 2, 4, 5, 7, 8, 3]', accent: true },
+        { label: 'Time Complexity', value: 'O(N) linear time' }
+      ]
+    },
+    variables: {
+      phase: 'Finished',
+      currentNode: 'All',
+      traversalSequence: '[1, 2, 4, 5, 7, 8, 3]'
+    },
+    metrics: [
+      { label: 'Status', value: 'Complete' },
+      { label: 'Total Nodes', value: '7' },
+      { label: 'Boundary', value: '[1,2,4,5,7,8,3]', highlight: true }
+    ],
+    explain: 'Complete anti-clockwise perimeter traversal finished with zero duplicates. Left boundary -> leaves -> right boundary (reversed).'
   }
 ];
-
-export default function BoundaryTraversalVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Section: <strong className="text-cyan-200">{step.boundaryType}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Direction: <strong>Anti-Clockwise</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Boundary Pathway Breakdown</span>
-          <span className="text-cyan-400 font-bold">3-Phase Perimeter</span>
-        </div>
-
-        {/* Pathway sequence badges */}
-        <div className="flex items-center justify-center gap-2 flex-wrap w-full py-4">
-          {step.traversal.map((val, idx) => (
-            <div key={idx} className="flex items-center gap-1.5">
-              <span className="w-10 h-10 rounded-xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-200 font-mono font-bold text-sm flex items-center justify-center shadow-md">
-                {val}
-              </span>
-              {idx < step.traversal.length - 1 && (
-                <span className="text-xs text-[#525777] font-mono">&rarr;</span>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 w-full text-center text-xs font-mono pt-2">
-          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-cyan-300">
-            1. Left Boundary
-          </div>
-          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-purple-300">
-            2. Leaf Nodes
-          </div>
-          <div className="p-2.5 rounded-xl bg-[var(--board-raised-2)] border border-[#26293a] text-emerald-300">
-            3. Right Boundary (Rev)
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

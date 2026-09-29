@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Binary Tree Maximum Path Sum',
@@ -6,37 +6,62 @@ export const meta = {
   difficulty: 'Hard',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(H) recursion stack',
-  description: 'Finds the maximum path sum of any non-empty path in a binary tree with negative values by greedily dropping subtrees with negative gain (max(0, gain)).'
+  description: 'Finds the maximum path sum of any non-empty path in a binary tree where path values can be negative. Greedily prunes negative subtree gains with max(0, gain) while updating a global maximum path at every root of an inverted U curve.'
+};
+
+export const ideaMap = {
+  title: 'Maximum Path Sum Bottom-Up DFS Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Postorder Subtree Traversal',
+      detail: 'Recursively compute the maximum branch gain from the left child and right child.'
+    },
+    {
+      id: 'step2',
+      label: 'Greedy Negative Gain Pruning',
+      detail: 'If a subtree contributes a negative sum, ignore it using max(0, gain) to avoid reducing overall path value.'
+    },
+    {
+      id: 'step3',
+      label: 'Local Curve Peak Check',
+      detail: 'Compute local curve sum node.val + leftGain + rightGain; update global maxSum = max(maxSum, localPath).'
+    },
+    {
+      id: 'step4',
+      label: 'Single Branch Contribution Return',
+      detail: 'Return node.val + max(leftGain, rightGain) to the parent, as a valid path cannot bifurcate twice.'
+    }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++ Binary Tree Maximum Path Sum
-// Time: O(N) | Space: O(H)
+  cpp: `// C++: Binary Tree Maximum Path Sum (LeetCode 124)
+// Time Complexity: O(N) | Space Complexity: O(H)
 #include <algorithm>
 #include <climits>
 using namespace std;
 
 struct TreeNode {
     int val;
-    TreeNode *left;
-    TreeNode *right;
+    TreeNode *left, *right;
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
 class Solution {
 private:
     int maxGain(TreeNode* node, int& maxSum) {
-        if (node == nullptr) return 0;
+        if (!node) return 0;
 
         // Discard negative subtree paths by comparing with 0
         int leftGain = max(0, maxGain(node->left, maxSum));
         int rightGain = max(0, maxGain(node->right, maxSum));
 
-        // Path passing through this node as curve top
+        // Path passing through this node as curve apex
         int currentPathSum = node->val + leftGain + rightGain;
         maxSum = max(maxSum, currentPathSum);
 
-        // Return max branch contribution to parent
+        // Return single branch contribution to parent
         return node->val + max(leftGain, rightGain);
     }
 public:
@@ -46,7 +71,33 @@ public:
         return maxSum;
     }
 };`,
-  python: `# Python 3 Binary Tree Maximum Path Sum
+  java: `// Java: Binary Tree Maximum Path Sum (LeetCode 124)
+// Time Complexity: O(N) | Space Complexity: O(H)
+class Solution {
+    private int maxSum = Integer.MIN_VALUE;
+
+    public int maxPathSum(TreeNode root) {
+        maxGain(root);
+        return maxSum;
+    }
+
+    private int maxGain(TreeNode node) {
+        if (node == null) return 0;
+
+        // Ignore negative branches
+        int leftGain = Math.max(0, maxGain(node.left));
+        int rightGain = Math.max(0, maxGain(node.right));
+
+        // Inverted U path apex at this node
+        int localCurve = node.val + leftGain + rightGain;
+        maxSum = Math.max(maxSum, localCurve);
+
+        // Propagate linear branch upward
+        return node.val + Math.max(leftGain, rightGain);
+    }
+}`,
+  python: `# Python: Binary Tree Maximum Path Sum (LeetCode 124)
+# Time Complexity: O(N) | Space Complexity: O(H)
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
@@ -62,179 +113,226 @@ class Solution:
             if not node:
                 return 0
 
-            # Ignore negative paths
+            # Prune negative subtree contributions
             left_gain = max(0, max_gain(node.left))
             right_gain = max(0, max_gain(node.right))
 
-            current_path = node.val + left_gain + right_gain
-            max_sum = max(max_sum, current_path)
+            # Local path sum through node
+            local_curve = node.val + left_gain + right_gain
+            max_sum = max(max_sum, local_curve)
 
+            # Return max unbranching path to parent
             return node.val + max(left_gain, right_gain)
 
         max_gain(root)
-        return int(max_sum)`,
-  java: `// Java Binary Tree Maximum Path Sum
-class Solution {
-    private int maxGain(TreeNode node, int[] maxSum) {
-        if (node == null) return 0;
+        return max_sum`,
+  javascript: `// JavaScript: Binary Tree Maximum Path Sum (LeetCode 124)
+// Time Complexity: O(N) | Space Complexity: O(H)
+function maxPathSum(root) {
+  let maxSum = -Infinity;
 
-        int leftGain = Math.max(0, maxGain(node.left, maxSum));
-        int rightGain = Math.max(0, maxGain(node.right, maxSum));
+  function maxGain(node) {
+    if (!node) return 0;
 
-        int currentPath = node.val + leftGain + rightGain;
-        maxSum[0] = Math.max(maxSum[0], currentPath);
+    const leftGain = Math.max(0, maxGain(node.left));
+    const rightGain = Math.max(0, maxGain(node.right));
 
-        return node.val + Math.max(leftGain, rightGain);
-    }
+    const localCurve = node.val + leftGain + rightGain;
+    maxSum = Math.max(maxSum, localCurve);
 
-    public int maxPathSum(TreeNode root) {
-        int[] maxSum = new int[]{Integer.MIN_VALUE};
-        maxGain(root, maxSum);
-        return maxSum[0];
-    }
-}`,
-  javascript: `// JavaScript Binary Tree Maximum Path Sum
-var maxPathSum = function(root) {
-    let maxSum = -Infinity;
+    return node.val + Math.max(leftGain, rightGain);
+  }
 
-    function maxGain(node) {
-        if (!node) return 0;
+  maxGain(root);
+  return maxSum;
+}`
+};
 
-        const leftGain = Math.max(0, maxGain(node.left));
-        const rightGain = Math.max(0, maxGain(node.right));
-
-        const currentPath = node.val + leftGain + rightGain;
-        maxSum = Math.max(maxSum, currentPath);
-
-        return node.val + Math.max(leftGain, rightGain);
-    }
-
-    maxGain(root);
-    return maxSum;
-};`
+const sampleTree = {
+  val: -10,
+  left: { val: 9, left: null, right: null },
+  right: {
+    val: 20,
+    left: { val: 15, left: null, right: null },
+    right: { val: 7, left: null, right: null }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Tree: [-10, 9, 20, null, null, 15, 7]. Rule: Ignore Negative Paths',
-    phase: 'INITIAL',
-    codeLine: 21,
-    activeNode: -10,
-    maxSum: -Infinity,
-    localPathSum: 0,
-    variables: { root: -10, formula: 'node.val + max(0, left) + max(0, right)' },
-    explain: 'Paths can turn at any node. If a subtree has negative sum, we replace its contribution with 0 (max(0, gain)).',
-    intuition: 'Never extend into negative branches.'
+    phase: 'START',
+    title: '1. Initiate Postorder DFS at Root Node (-10)',
+    tree: sampleTree,
+    activeVal: -10,
+    visitedVals: [],
+    nodeLabels: { '-10': 'pending' },
+    customCard: {
+      title: 'Path Sum Evaluation State',
+      rows: [
+        { label: 'Current Node', value: 'Root (-10)', accent: true },
+        { label: 'Formula', value: 'node.val + max(0, left) + max(0, right)' },
+        { label: 'Global maxSum', value: '-Infinity' },
+        { label: 'Call Stack', value: '[maxGain(-10)]' }
+      ]
+    },
+    variables: {
+      activeNode: -10,
+      leftGain: 'pending',
+      rightGain: 'pending',
+      localCurve: 'pending',
+      globalMaxSum: -Infinity
+    },
+    metrics: [
+      { label: 'Active Node', value: '-10' },
+      { label: 'Global Max', value: '-Infinity', highlight: true }
+    ],
+    explain: 'Start postorder traversal at root (-10). Before evaluating root, we must compute return gains from left child 9 and right child 20.'
   },
   {
-    title: '2. Node 9 (Left Child): Leaf with value 9 -> Gain = 9, maxSum = 9',
-    phase: 'EVAL_NODE',
-    codeLine: 26,
-    activeNode: 9,
-    maxSum: 9,
-    localPathSum: 9,
-    variables: { node: 9, leftGain: 0, rightGain: 0, gainReturned: 9 },
-    explain: 'Node 9 has children null. Path sum at 9 is 9. Updates global maxSum to 9.',
-    intuition: 'Single node path [9].'
+    phase: 'EVAL_LEFT_LEAF',
+    title: '2. Evaluate Leaf Node 9: Gain = 9, maxSum = 9',
+    tree: sampleTree,
+    activeVal: 9,
+    visitedVals: [9],
+    nodeLabels: { 9: 'gain=9', '-10': 'pending' },
+    customCard: {
+      title: 'Leaf Node 9 Evaluation',
+      rows: [
+        { label: 'Left / Right Gains', value: '0 / 0 (null leaves)' },
+        { label: 'Local Curve Sum', value: '9 + 0 + 0 = 9', accent: true },
+        { label: 'Branch Return', value: '9 + max(0, 0) = 9' },
+        { label: 'Global maxSum', value: 'Updated to 9' }
+      ]
+    },
+    variables: {
+      activeNode: 9,
+      leftGain: 0,
+      rightGain: 0,
+      localCurve: 9,
+      globalMaxSum: 9
+    },
+    metrics: [
+      { label: 'Active Node', value: '9' },
+      { label: 'Local Curve', value: '9' },
+      { label: 'Global Max', value: '9', highlight: true }
+    ],
+    explain: 'Leaf 9 has no children. Local curve = 9. Global maxSum updates from -Infinity to 9. Return branch gain 9 to parent.'
   },
   {
-    title: '3. Nodes 15 and 7: Return gains 15 and 7 respectively to Node 20',
-    phase: 'EVAL_LEAVES',
-    codeLine: 26,
-    activeNode: 15,
-    maxSum: 15,
-    localPathSum: 15,
-    variables: { node15Gain: 15, node7Gain: 7, maxSum: 15 },
-    explain: 'Node 15 and Node 7 evaluated. Maximum path sum so far is 15.',
-    intuition: 'Leaf gains computed.'
+    phase: 'EVAL_RIGHT_SUBTREE_LEAF',
+    title: '3. Evaluate Leaf Node 15: Gain = 15, maxSum = 15',
+    tree: sampleTree,
+    activeVal: 15,
+    visitedVals: [9, 15],
+    nodeLabels: { 9: 'gain=9', 15: 'gain=15', '-10': 'pending' },
+    customCard: {
+      title: 'Leaf Node 15 Evaluation',
+      rows: [
+        { label: 'Left / Right Gains', value: '0 / 0' },
+        { label: 'Local Curve Sum', value: '15 + 0 + 0 = 15', accent: true },
+        { label: 'Global maxSum', value: 'Updated to 15' }
+      ]
+    },
+    variables: {
+      activeNode: 15,
+      leftGain: 0,
+      rightGain: 0,
+      localCurve: 15,
+      globalMaxSum: 15
+    },
+    metrics: [
+      { label: 'Active Node', value: '15' },
+      { label: 'Global Max', value: '15', highlight: true }
+    ],
+    explain: 'DFS traverses right subtree down to leaf 15. Local path = 15. Global maxSum updates to 15. Returns 15 to Node 20.'
   },
   {
-    title: '4. Node 20: Path = 20 + 15 + 7 = 42! Global maxSum = 42',
-    phase: 'CURVE_PEAK',
-    codeLine: 26,
-    activeNode: 20,
-    maxSum: 42,
-    localPathSum: 42,
-    variables: { node: 20, leftGain: 15, rightGain: 7, path: '15 + 20 + 7 = 42', maxSum: 42 },
-    explain: 'Path through node 20 combining both children: 15 + 20 + 7 = 42. Global maxSum updates to 42!',
-    intuition: 'Optimal subtree peak path found.'
+    phase: 'EVAL_RIGHT_SUBTREE_LEAF',
+    title: '4. Evaluate Leaf Node 7: Gain = 7, maxSum = 15',
+    tree: sampleTree,
+    activeVal: 7,
+    visitedVals: [9, 15, 7],
+    nodeLabels: { 9: 'gain=9', 15: 'gain=15', 7: 'gain=7', '-10': 'pending' },
+    customCard: {
+      title: 'Leaf Node 7 Evaluation',
+      rows: [
+        { label: 'Local Curve Sum', value: '7 + 0 + 0 = 7' },
+        { label: 'Comparison', value: '7 < 15, maxSum remains 15' },
+        { label: 'Branch Return', value: 'Returns 7 to Node 20' }
+      ]
+    },
+    variables: {
+      activeNode: 7,
+      leftGain: 0,
+      rightGain: 0,
+      localCurve: 7,
+      globalMaxSum: 15
+    },
+    metrics: [
+      { label: 'Active Node', value: '7' },
+      { label: 'Global Max', value: '15', highlight: true }
+    ],
+    explain: 'Leaf 7 yields local path 7. Global maxSum remains 15. Returns branch gain 7 to parent Node 20.'
   },
   {
-    title: '5. Root Node -10: Path = -10 + 9 + 35 = 34 <= 42. Max Sum remains 42',
-    phase: 'COMPLETED',
-    codeLine: 35,
-    activeNode: -10,
-    maxSum: 42,
-    localPathSum: 34,
-    variables: { root: -10, node20ReturnGain: 35, totalThroughRoot: 34, optimalMaxSum: 42 },
-    explain: 'Node 20 returns 20 + max(15, 7) = 35 to root. Path through root is -10 + 9 + 35 = 34, which is less than 42. Maximum path sum is 42 (Path: 15 -> 20 -> 7).',
-    intuition: 'Maximum path sum = 42.'
+    phase: 'APEX_PATH',
+    title: '5. Apex Curve at Node 20: 15 + 20 + 7 = 42! Global maxSum = 42',
+    tree: sampleTree,
+    activeVal: 20,
+    visitedVals: [9, 15, 7, 20],
+    nodeLabels: { 9: 'gain=9', 15: 'gain=15', 7: 'gain=7', 20: 'curve=42' },
+    customCard: {
+      title: 'Subtree Peak Path Discovered',
+      rows: [
+        { label: 'Subtree Path', value: '15 -> 20 -> 7', accent: true },
+        { label: 'Calculation', value: '20 + left(15) + right(7) = 42' },
+        { label: 'Branch Upward', value: '20 + max(15, 7) = 35 to root' },
+        { label: 'Global maxSum', value: 'Updated from 15 to 42!', accent: true }
+      ]
+    },
+    variables: {
+      activeNode: 20,
+      leftGain: 15,
+      rightGain: 7,
+      localCurve: 42,
+      branchReturn: 35,
+      globalMaxSum: 42
+    },
+    metrics: [
+      { label: 'Active Node', value: '20' },
+      { label: 'Local Curve', value: '42' },
+      { label: 'Global Max', value: '42', highlight: true }
+    ],
+    explain: 'Node 20 combines both positive child branches: 15 + 20 + 7 = 42. This exceeds current max (15), so global maxSum = 42! Upward return to root is 20 + 15 = 35.'
+  },
+  {
+    phase: 'FINISH',
+    title: '6. Root Evaluation (-10): Curve = 34 <= 42. Max Sum = 42',
+    tree: sampleTree,
+    activeVal: -10,
+    visitedVals: [9, 15, 7, 20, -10],
+    nodeLabels: { 9: 'gain=9', 15: 'gain=15', 7: 'gain=7', 20: 'ret=35', '-10': 'sum=34' },
+    customCard: {
+      title: 'Global Maximum Path Result',
+      rows: [
+        { label: 'Path Through Root', value: '-10 + 9 + 35 = 34' },
+        { label: 'Optimal Path', value: '15 -> 20 -> 7', accent: true },
+        { label: 'Optimal Max Sum', value: '42', accent: true },
+        { label: 'Time Complexity', value: 'O(N) single pass postorder' }
+      ]
+    },
+    variables: {
+      activeNode: -10,
+      leftGain: 9,
+      rightGain: 35,
+      localCurve: 34,
+      globalMaxSum: 42
+    },
+    metrics: [
+      { label: 'Active Node', value: '-10' },
+      { label: 'Path Through Root', value: '34' },
+      { label: 'Global Max', value: '42', highlight: true }
+    ],
+    explain: 'Evaluating root (-10): -10 + 9 + 35 = 34, which is less than 42. The global maximum path sum is 42 (subpath 15 -> 20 -> 7).'
   }
 ];
-
-export default function MaximumPathSumVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Evaluating Node: {step.activeNode}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Local Path Sum = {step.localPathSum}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Global Max Path Sum = {step.maxSum}
-        </span>
-      </div>
-
-      {/* Tree View with Optimal Path Highlight */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Path Sum Evaluation</span>
-
-        <div className="flex flex-col items-center gap-4 py-2 w-full">
-          {/* Root -10 */}
-          <div className="flex justify-center">
-            <div className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center font-mono font-bold transition-all ${
-              step.activeNode === -10 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-            }`}>
-              -10
-            </div>
-          </div>
-
-          {/* Level 1: 9 and 20 */}
-          <div className="flex justify-center gap-24">
-            <div className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center font-mono font-bold transition-all ${
-              step.activeNode === 9 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-            }`}>
-              9
-            </div>
-            <div className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center font-mono font-bold transition-all ${
-              step.activeNode === 20 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
-            }`}>
-              20
-            </div>
-          </div>
-
-          {/* Level 2: 15 and 7 */}
-          <div className="flex justify-end gap-6 pr-12">
-            {[15, 7].map((val) => (
-              <div key={val} className={`w-13 h-13 rounded-2xl border-2 flex items-center justify-center font-mono font-bold transition-all ${
-                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-emerald-500 bg-emerald-500/20 text-emerald-300'
-              }`}>
-                {val}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

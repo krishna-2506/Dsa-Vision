@@ -287,7 +287,13 @@ export function normalizeLinkedListStep(rawStep = {}, stepIndex = 0) {
 
   // Raw nodes can be array of numbers/strings [1, 2, 3] or array of node objects
   const rawNodes = Array.isArray(rawStep.nodes) ? rawStep.nodes : (Array.isArray(rawStep.track) ? rawStep.track : []);
-  const rawPointers = rawStep.pointers || {};
+  const rawPointers = { ...(rawStep.pointers || {}) };
+  const commonPtrs = ['head', 'tail', 'curr', 'prev', 'next', 'slow', 'fast', 'temp', 'p1', 'p2', 'first', 'second'];
+  for (const p of commonPtrs) {
+    if (typeof rawStep[p] === 'number' && rawPointers[p] === undefined) {
+      rawPointers[p] = rawStep[p];
+    }
+  }
   const highlightSet = new Set(Array.isArray(rawStep.highlightIndices) ? rawStep.highlightIndices : (rawStep.activeIndices || []));
   const visitedSet = new Set(rawStep.visitedIndices || []);
   const modifiedSet = new Set(rawStep.modifiedIndices || []);
@@ -766,5 +772,4 @@ export function normalizeStackQueueStep(rawStep = {}, stepIndex = 0) {
     metrics
   };
 }
-
 

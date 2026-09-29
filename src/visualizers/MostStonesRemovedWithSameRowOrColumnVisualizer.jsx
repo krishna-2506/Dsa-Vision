@@ -1,16 +1,43 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Most Stones Removed with Same Row or Column',
   category: 'Step 15: Graphs [Concepts & Problems]',
   difficulty: 'Medium',
-  timeComplexity: 'O(N * 4alpha)',
-  spaceComplexity: 'O(maxRow + maxCol)',
-  description: 'Calculates maximum removable stones where a stone can be removed if it shares a row or column with an active stone. Solved via DSU: Max Removals = Total Stones - Number of Connected Components (LeetCode 947).'
+  timeComplexity: 'O(N * alpha(V))',
+  spaceComplexity: 'O(maxRow + maxCol) DSU arrays',
+  description: 'Calculates the maximum number of stones that can be removed where a stone is removable if it shares the same row or column with another non-removed stone. Modeled with Disjoint Set Union (DSU) where Max Removals = Total Stones - Number of Connected Components (LeetCode 947).'
+};
+
+export const ideaMap = {
+  title: 'DSU Component Reduction Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Bipartite Row-Column Projection',
+      detail: 'Treat rows and columns as graph nodes. Offset column indices by maxRow + 1 to avoid ID collisions.'
+    },
+    {
+      id: 'step2',
+      label: 'DSU Union for Each Stone',
+      detail: 'For stone at (r, c), connect row node r with column node c + offset using union-by-size.'
+    },
+    {
+      id: 'step3',
+      label: 'Count Connected Components',
+      detail: 'Identify all unique root parents among the active row and column nodes that contain stones.'
+    },
+    {
+      id: 'step4',
+      label: 'Optimal Removal Formula',
+      detail: 'In any component of size S, S - 1 stones can be safely removed leaving 1 anchor stone: Removals = N - C.'
+    }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++: Most Stones Removed (LeetCode 947)
+  cpp: `// C++: Most Stones Removed with Same Row or Column (LeetCode 947)
+// Time Complexity: O(N * alpha(V)) | Space Complexity: O(maxRow + maxCol)
 #include <vector>
 #include <unordered_map>
 using namespace std;
@@ -19,32 +46,32 @@ class DisjointSet {
 public:
     unordered_map<int, int> parent, size;
     int findUPar(int node) {
-        if (!parent.count(node)) parent[node] = node, size[node] = 1;
+        if (!parent.count(node)) {
+            parent[node] = node;
+            size[node] = 1;
+        }
         if (node == parent[node]) return node;
         return parent[node] = findUPar(parent[node]);
     }
     void unionBySize(int u, int v) {
-        int ulp_u = findUPar(u), ulp_v = findUPar(v);
-        if (ulp_u == ulp_v) return;
-        if (size[ulp_u] < size[ulp_v]) {
-            parent[ulp_u] = ulp_v;
-            size[ulp_v] += size[ulp_u];
+        int rootU = findUPar(u), rootV = findUPar(v);
+        if (rootU == rootV) return;
+        if (size[rootU] < size[rootV]) {
+            parent[rootU] = rootV;
+            size[rootV] += size[rootU];
         } else {
-            parent[ulp_v] = ulp_u;
-            size[ulp_u] += size[ulp_v];
+            parent[rootV] = rootU;
+            size[rootU] += size[rootV];
         }
     }
 };
 
 int removeStones(vector<vector<int>>& stones) {
     DisjointSet ds;
-    int maxRow = 0, maxCol = 0;
-    for (auto& it : stones) {
-        maxRow = max(maxRow, it[0]);
-        maxCol = max(maxCol, it[1]);
-    }
+    int maxRow = 0;
+    for (auto& it : stones) maxRow = max(maxRow, it[0]);
     
-    // Offset columns to avoid collision with row IDs
+    // Connect row node with shifted column node
     for (auto& it : stones) {
         int nodeRow = it[0];
         int nodeCol = it[1] + maxRow + 1;
@@ -56,103 +83,258 @@ int removeStones(vector<vector<int>>& stones) {
         uniqueRoots[ds.findUPar(it[0])] = 1;
     }
     
+    // Max Removals = Total Stones - Connected Components
     return stones.size() - uniqueRoots.size();
 }`,
-  java: `// Java: Most Stones Removed
+  java: `// Java: Most Stones Removed (LeetCode 947)
+// Time Complexity: O(N * alpha(V)) | Space Complexity: O(maxRow + maxCol)
 import java.util.*;
 
 class Solution {
+    class DisjointSet {
+        Map<Integer, Integer> parent = new HashMap<>();
+        Map<Integer, Integer> size = new HashMap<>();
+        
+        int find(int node) {
+            if (!parent.containsKey(node)) {
+                parent.put(node, node);
+                size.put(node, 1);
+            }
+            if (node == parent.get(node)) return node;
+            parent.put(node, find(parent.get(node)));
+            return parent.get(node);
+        }
+        
+        void union(int u, int v) {
+            int rootU = find(u), rootV = find(v);
+            if (rootU == rootV) return;
+            if (size.get(rootU) < size.get(rootV)) {
+                parent.put(rootU, rootV);
+                size.put(rootV, size.get(rootV) + size.get(rootU));
+            } else {
+                parent.put(rootV, rootU);
+                size.put(rootU, size.get(rootU) + size.get(rootV));
+            }
+        }
+    }
+    
     public int removeStones(int[][] stones) {
-        // DSU connecting row and col+offset
-        // Total stones - connected components
-        return 0;
+        DisjointSet ds = new DisjointSet();
+        int maxRow = 0;
+        for (int[] s : stones) maxRow = Math.max(maxRow, s[0]);
+        
+        for (int[] s : stones) {
+            int r = s[0], c = s[1] + maxRow + 1;
+            ds.union(r, c);
+        }
+        
+        Set<Integer> uniqueRoots = new HashSet<>();
+        for (int[] s : stones) {
+            uniqueRoots.add(ds.find(s[0]));
+        }
+        
+        return stones.length - uniqueRoots.size();
     }
 }`,
-  python: `# Python: Most Stones Removed
+  python: `# Python: Most Stones Removed (LeetCode 947)
+# Time Complexity: O(N * alpha(V)) | Space Complexity: O(maxRow + maxCol)
+class DisjointSet:
+    def __init__(self):
+        self.parent = {}
+        self.size = {}
+        
+    def find(self, u):
+        if u not in self.parent:
+            self.parent[u] = u
+            self.size[u] = 1
+        if self.parent[u] == u:
+            return u
+        self.parent[u] = self.find(self.parent[u])
+        return self.parent[u]
+        
+    def union(self, u, v):
+        ru, rv = self.find(u), self.find(v)
+        if ru == rv:
+            return
+        if self.size[ru] < self.size[rv]:
+            self.parent[ru] = rv
+            self.size[rv] += self.size[ru]
+        else:
+            self.parent[rv] = ru
+            self.size[ru] += self.size[rv]
+
 def removeStones(stones: list[list[int]]) -> int:
-    # DSU grouping rows and columns
-    # return len(stones) - num_components
-    return 0
-`,
-  javascript: `// JavaScript: Most Stones Removed
+    ds = DisjointSet()
+    max_row = max(s[0] for s in stones)
+    
+    for r, c in stones:
+        ds.union(r, c + max_row + 1)
+        
+    unique_roots = {ds.find(s[0]) for s in stones}
+    return len(stones) - len(unique_roots)`,
+  javascript: `// JavaScript: Most Stones Removed (LeetCode 947)
+// Time Complexity: O(N * alpha(V)) | Space Complexity: O(maxRow + maxCol)
 function removeStones(stones) {
-  // Stones - connected components
-  return 0;
+  const parent = new Map();
+  const size = new Map();
+  
+  function find(u) {
+    if (!parent.has(u)) {
+      parent.set(u, u);
+      size.set(u, 1);
+    }
+    if (parent.get(u) === u) return u;
+    parent.set(u, find(parent.get(u)));
+    return parent.get(u);
+  }
+  
+  function union(u, v) {
+    const rootU = find(u), rootV = find(v);
+    if (rootU === rootV) return;
+    if (size.get(rootU) < size.get(rootV)) {
+      parent.set(rootU, rootV);
+      size.set(rootV, size.get(rootV) + size.get(rootU));
+    } else {
+      parent.set(rootV, rootU);
+      size.set(rootU, size.get(rootU) + size.get(rootV));
+    }
+  }
+  
+  let maxRow = 0;
+  for (const [r] of stones) maxRow = Math.max(maxRow, r);
+  
+  for (const [r, c] of stones) {
+    union(r, c + maxRow + 1);
+  }
+  
+  const uniqueRoots = new Set();
+  for (const [r] of stones) {
+    uniqueRoots.add(find(r));
+  }
+  
+  return stones.length - uniqueRoots.size();
 }`
 };
 
 export const steps = [
   {
-    title: '1. Place 6 Stones on Grid: [0,0], [0,1], [1,0], [1,2], [2,1], [2,2]',
     phase: 'SETUP',
-    codeLine: 29,
-    totalStones: 6,
-    components: 6,
-    removable: 0,
-    info: '6 stones placed. Every stone initially considered an individual node.'
+    title: '1. Place 6 Stones on Coordinate Plane',
+    arr: ['(0,0)', '(0,1)', '(1,0)', '(1,2)', '(2,1)', '(2,2)'],
+    auxiliaryTrack: ['Isolated', 'Isolated', 'Isolated', 'Isolated', 'Isolated', 'Isolated'],
+    auxiliaryLabel: 'Component Status',
+    activeIndices: [],
+    customCard: {
+      title: 'Initial Stone Configuration',
+      rows: [
+        { label: 'Total Stones (N)', value: '6 stones', accent: true },
+        { label: 'Coordinate Range', value: 'Rows 0..2, Cols 0..2' },
+        { label: 'Col Offset', value: 'maxRow + 1 = 3 (Cols shifted 3..5)' },
+        { label: 'Components Initial', value: '6 disjoint nodes' }
+      ]
+    },
+    variables: {
+      totalStones: 6,
+      connectedComponents: 6,
+      maxRemovals: 0,
+      activeStone: 'None'
+    },
+    explanation: 'Place 6 stones at coordinates [0,0], [0,1], [1,0], [1,2], [2,1], [2,2]. Each stone can bridge its row with its column in a Disjoint Set Union.'
   },
   {
-    title: '2. Connect Rows and Columns via DSU',
-    phase: 'DSU_UNION',
-    codeLine: 38,
-    totalStones: 6,
-    components: 1,
-    removable: 5,
-    info: 'Row 0 connects to Col 0 and Col 1. Row 1 connects to Col 0 and Col 2. All 6 stones form a SINGLE connected component!'
+    phase: 'UNION_ROW_0',
+    title: '2. Union Stones in Row 0: Connect (0,0) and (0,1)',
+    arr: ['(0,0)', '(0,1)', '(1,0)', '(1,2)', '(2,1)', '(2,2)'],
+    auxiliaryTrack: ['Comp A (Root 0)', 'Comp A (Root 0)', 'Isolated', 'Isolated', 'Isolated', 'Isolated'],
+    auxiliaryLabel: 'Component Status',
+    activeIndices: [0, 1],
+    customCard: {
+      title: 'Row 0 Shared Connectivity',
+      rows: [
+        { label: 'Active Stones', value: '(0,0) and (0,1)', accent: true },
+        { label: 'Shared Axis', value: 'Row 0 connects Col 0 and Col 1' },
+        { label: 'DSU Operations', value: 'union(0, 3) & union(0, 4)' },
+        { label: 'Components Left', value: '5 components' }
+      ]
+    },
+    variables: {
+      totalStones: 6,
+      connectedComponents: 5,
+      maxRemovals: 1,
+      activeStone: '[0, 0] & [0, 1]'
+    },
+    explanation: 'Stones at (0,0) and (0,1) share Row 0. DSU merges their sets. Both stones are now linked in Component A.'
   },
   {
-    title: '3. Max Removals = Stones (6) - Components (1) = 5 Stones!',
-    phase: 'MAX_REMOVAL',
-    codeLine: 48,
-    totalStones: 6,
-    components: 1,
-    removable: 5,
-    info: 'In any connected component of size S, we can remove S - 1 stones leaving exactly 1 pivot stone. Max removed = 6 - 1 = 5!'
+    phase: 'UNION_ROW_1',
+    title: '3. Union Stones in Row 1: Connect via Col 0',
+    arr: ['(0,0)', '(0,1)', '(1,0)', '(1,2)', '(2,1)', '(2,2)'],
+    auxiliaryTrack: ['Comp A', 'Comp A', 'Comp A (via Col 0)', 'Comp A (via Row 1)', 'Isolated', 'Isolated'],
+    auxiliaryLabel: 'Component Status',
+    activeIndices: [2, 3],
+    customCard: {
+      title: 'Row 1 & Column 0 Bridge',
+      rows: [
+        { label: 'Bridge Stone', value: '(1,0) shares Col 0 with (0,0)', accent: true },
+        { label: 'Branch Extension', value: '(1,2) shares Row 1 with (1,0)' },
+        { label: 'DSU Operations', value: 'union(1, 3) & union(1, 5)' },
+        { label: 'Components Left', value: '3 components' }
+      ]
+    },
+    variables: {
+      totalStones: 6,
+      connectedComponents: 3,
+      maxRemovals: 3,
+      activeStone: '[1, 0] & [1, 2]'
+    },
+    explanation: 'Stone (1,0) shares column 0 with stone (0,0). Stone (1,2) shares row 1 with stone (1,0). Component A expands to include 4 stones.'
+  },
+  {
+    phase: 'UNION_ROW_2',
+    title: '4. Union Stones in Row 2: Complete Global Cluster',
+    arr: ['(0,0)', '(0,1)', '(1,0)', '(1,2)', '(2,1)', '(2,2)'],
+    auxiliaryTrack: ['Comp A', 'Comp A', 'Comp A', 'Comp A', 'Comp A (via Col 1)', 'Comp A (via Col 2)'],
+    auxiliaryLabel: 'Component Status',
+    activeIndices: [4, 5],
+    customCard: {
+      title: 'Row 2 Shared Ties',
+      rows: [
+        { label: 'Stones Joined', value: '(2,1) and (2,2)', accent: true },
+        { label: 'Connecting Links', value: '(2,1) links to Col 1; (2,2) links to Col 2' },
+        { label: 'Global Component', value: 'All 6 stones form 1 connected component!' },
+        { label: 'Total Components (C)', value: '1' }
+      ]
+    },
+    variables: {
+      totalStones: 6,
+      connectedComponents: 1,
+      maxRemovals: 5,
+      activeStone: '[2, 1] & [2, 2]'
+    },
+    explanation: 'Stone (2,1) shares column 1 with (0,1), and stone (2,2) shares column 2 with (1,2). All 6 stones are now mutually connected into a single connected component (C = 1).'
+  },
+  {
+    phase: 'RESULT',
+    title: '5. Max Stones Removed = Total Stones (6) - Components (1) = 5',
+    arr: ['(0,0)', '(0,1)', '(1,0)', '(1,2)', '(2,1)', '(2,2)'],
+    auxiliaryTrack: ['Pivot (Kept)', 'Removed #1', 'Removed #2', 'Removed #3', 'Removed #4', 'Removed #5'],
+    auxiliaryLabel: 'Optimal Removal Plan',
+    activeIndices: [1, 2, 3, 4, 5],
+    customCard: {
+      title: 'Optimal Removal Theorem',
+      rows: [
+        { label: 'Total Stones (N)', value: '6' },
+        { label: 'Connected Components (C)', value: '1' },
+        { label: 'Survivor Anchor Stones', value: '1 stone remaining', accent: true },
+        { label: 'Max Stones Removed', value: '6 - 1 = 5 Stones', accent: true }
+      ]
+    },
+    variables: {
+      totalStones: 6,
+      connectedComponents: 1,
+      maxRemovals: 5,
+      formula: 'N - C = 6 - 1 = 5'
+    },
+    explanation: 'In any connected component of size S, we can remove stones in reverse topological leaf order until only 1 anchor stone remains. Max removable stones = Total Stones - Components = 6 - 1 = 5 stones!'
   }
 ];
-
-export default function MostStonesRemovedWithSameRowOrColumnVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Total Stones: <strong className="text-cyan-200">{step.totalStones}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Connected Components: <strong className="text-purple-200">{step.components}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-          Max Stones Removed: <strong className="text-emerald-200">{step.removable}</strong>
-        </div>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
-          <span>Component-to-Removal DSU Theorem</span>
-          <span className="text-emerald-400 font-bold">Formula: N - Components</span>
-        </div>
-
-        <div className="p-4 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-2 font-mono text-xs">
-          <div className="flex justify-between text-[var(--chalk-dim)]">
-            <span>Stones in Component:</span>
-            <span className="text-cyan-300 font-bold">6 stones sharing lines</span>
-          </div>
-          <div className="flex justify-between text-[var(--chalk-dim)]">
-            <span>Survivor Anchor Stones:</span>
-            <span className="text-purple-300 font-bold">1 per component</span>
-          </div>
-          <div className="flex justify-between text-[var(--chalk-dim)] border-t border-[var(--line)] pt-2">
-            <span>Removable Stones:</span>
-            <span className="text-emerald-400 font-extrabold text-sm">{step.removable} stones</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.info}
-      </div>
-    </div>
-  );
-}

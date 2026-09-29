@@ -1,258 +1,321 @@
-import React, { useState } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
-// 0. Multi-language production solution code with detailed educational comments
+export const meta = {
+  title: 'Left Rotate Array by One Place',
+  category: 'Arrays & In-Place Shifting',
+  difficulty: 'Easy',
+  timeComplexity: 'O(N)',
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Rotates an array to the left by one position in-place by caching the head element, shifting remaining elements leftward, and restoring the head to the tail.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Left Rotation Shift Strategy',
+  nodes: [
+    { id: 'root', label: 'In-Place Left Shift Invariant', children: ['cache-head', 'linear-shift', 'tail-restore', 'order-integrity', 'complexity'] },
+    { id: 'cache-head', label: '1. Cache Head Element', detail: 'Store temp = arr[0] before it is overwritten by subsequent leftward shifts.' },
+    { id: 'linear-shift', label: '2. Leftward Cascade', detail: 'Iterate i from 0 to N-2, setting arr[i] = arr[i + 1] to shift each item 1 position left.' },
+    { id: 'tail-restore', label: '3. Tail Restoration', detail: 'Assign arr[N - 1] = temp to wrap the original head element around to the final index.' },
+    { id: 'order-integrity', label: '4. Preserved Sequence', detail: 'All elements maintain their exact relative cyclic order shifted by exactly 1 index.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Strictly O(N) runtime visiting each element once with O(1) extra space.' }
+  ]
+};
+
 export const solutions = {
-  cpp: `// C++ Optimal Solution: Store and Shift
-// Time Complexity: O(N) as we iterate through the array once.
-// Space Complexity: O(1) since we only use a single 'temp' variable.
+  cpp: `// C++ Optimal In-Place Left Rotation by One Place
+// Time Complexity: O(N) | Space Complexity: O(1)
+#include <vector>
+using namespace std;
 
 class Solution {
 public:
     vector<int> rotateArray(vector<int>& arr, int n) {
-        // Step 1: Save the first element before it gets overwritten
+        if (n <= 1) return arr;
+
+        // 1. Cache the first element
         int temp = arr[0];
-        
-        // Step 2: Shift all subsequent elements one position to the left
+
+        // 2. Shift all elements one step left
         for (int i = 0; i < n - 1; i++) {
             arr[i] = arr[i + 1];
         }
-        
-        // Step 3: Place the saved first element at the very end
+
+        // 3. Place cached element at the tail
         arr[n - 1] = temp;
 
         return arr;
     }
-};
-`,
-  python: `# Python 3 Optimal Solution: Store and Shift
+};`,
+  python: `# Python 3 Optimal Left Rotation by One Place
 # Time Complexity: O(N) | Space Complexity: O(1)
-
 class Solution:
-    def rotateArray(self, arr: list, n: int) -> list:
-        # Step 1: Store the first element
+    def rotateArray(self, arr: list[int], n: int) -> list[int]:
+        if n <= 1:
+            return arr
+
         temp = arr[0]
-        
-        # Step 2: Shift elements to the left
         for i in range(n - 1):
             arr[i] = arr[i + 1]
-            
-        # Step 3: Put the first element at the last index
         arr[n - 1] = temp
-        
-        return arr
-`,
-  java: `// Java Optimal Solution: Store and Shift
-// Time Complexity: O(N) | Space Complexity: O(1)
 
+        return arr`,
+  java: `// Java Optimal Left Rotation by One Place
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public int[] rotateArray(int[] arr, int n) {
-        // Save the element that will fall off the left edge
+        if (n <= 1) return arr;
+
         int temp = arr[0];
-        
-        // Shift every element from index 1 to n-1 left by one position
         for (int i = 0; i < n - 1; i++) {
             arr[i] = arr[i + 1];
         }
-        
-        // Restore the saved element to the rightmost position
         arr[n - 1] = temp;
-        
+
         return arr;
     }
-}
-`,
-  javascript: `// JavaScript Optimal Solution: Store and Shift
+}`,
+  javascript: `// JavaScript Optimal Left Rotation by One Place
 // Time Complexity: O(N) | Space Complexity: O(1)
-
-/**
- * @param {number[]} arr
- * @param {number} n
- * @return {number[]}
- */
 var rotateArray = function(arr, n) {
-    // Keep track of the first item
-    let temp = arr[0];
-    
-    // Iterate through the array and shift values leftwards
+    if (n <= 1) return arr;
+
+    const temp = arr[0];
     for (let i = 0; i < n - 1; i++) {
         arr[i] = arr[i + 1];
     }
-    
-    // Assign the tracked item to the end
     arr[n - 1] = temp;
-    
+
     return arr;
+};`
 };
-`,
-};
-
-export const meta = {
-  display_id: 'Q-005',
-  title: "Rotate Array Left By 1place",
-  category: "1. Arrays",
-  difficulty: "Easy",
-  timeComplexity: "O(N)",
-  spaceComplexity: "O(1)",
-  description: "Given an array 'ARR' containing 'N' elements, rotate this array Left by once means to shift all elements by one place to the left and move the first element to the last position in the array."
-};
-
-// Realistic sample array based on the problem statement
-const SAMPLE_DATA = [1, 2, 3, 4, 5];
 
 export const steps = [
   {
-    title: "1. Initialize State & Store temp",
-    codeLine: 4, 
-    code: "int temp = arr[0];",
-    explanation: "We must shift every element left. If we immediately copy arr[1] into arr[0], we will lose the value of arr[0] forever! Therefore, our very first step is to store arr[0] (which is 1) safely in a temporary variable.",
-    array: [1, 2, 3, 4, 5],
-    temp: 1,
-    pointers: [{ index: 0, label: 'temp source', color: 'amber' }],
-    highlightIndices: [0],
-    hudText: "Stored arr[0] into 'temp' variable."
-  },
-  {
-    title: "2. Shift Element (i=0)",
-    codeLine: 7, 
-    code: "arr[i] = arr[i + 1];",
-    explanation: "We start our loop at i=0. We take the value from arr[1] (which is 2) and overwrite arr[0] with it. We don't worry about losing the original '1' because we already safely stored it in 'temp'.",
-    array: [2, 2, 3, 4, 5],
-    temp: 1,
+    title: '1. Cache First Element: temp = arr[0] (val: 1)',
+    phase: 'INITIALIZATION',
+    codeLine: 13,
+    track: {
+      label: 'arr (original)',
+      items: [
+        { val: 1, status: 'current' },
+        { val: 2, status: 'default' },
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'default' }
+      ]
+    },
     pointers: [
-      { index: 0, label: 'i', color: 'indigo' },
-      { index: 1, label: 'i+1', color: 'emerald' }
+      { index: 0, label: 'temp = 1', color: 'amber' }
     ],
-    highlightIndices: [0, 1],
-    hudText: "Copied arr[1] to arr[0]."
+    activeIndices: [0],
+    metrics: [
+      { label: 'Array Size', value: '5' },
+      { label: 'Cached temp', value: '1' },
+      { label: 'Shift Index i', value: '0' },
+      { label: 'Status', value: 'Head Secured' }
+    ],
+    customCard: {
+      title: 'Cache Invariant',
+      rows: [
+        { label: 'temp variable', value: 'arr[0] = 1 saved into register' },
+        { label: 'Purpose', value: 'Prevents value loss when index 0 is overwritten' },
+        { label: 'Loop Target', value: 'Shift arr[1..4] into arr[0..3]' }
+      ]
+    },
+    formula: 'int temp = arr[0]; // temp = 1',
+    action: 'Save arr[0] (1) into temp variable before commencing leftward shift cascade.',
+    explain: 'Because arr[0] will be overwritten by arr[1], saving it in temp ensures it can be placed at the tail.',
+    intuition: 'A cyclic left shift of 1 is fundamentally an array shift followed by a tail deposit.'
   },
   {
-    title: "3. Shift Element (i=1)",
-    codeLine: 7, 
-    code: "arr[i] = arr[i + 1];",
-    explanation: "The loop advances to i=1. We take the value from arr[2] (which is 3) and copy it into arr[1]. The shift operation ripples through the array.",
-    array: [2, 3, 3, 4, 5],
-    temp: 1,
+    title: '2. Shift Index 0: arr[0] = arr[1] (val: 2)',
+    phase: 'SHIFTING',
+    codeLine: 18,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 2, status: 'match' },
+        { val: 2, status: 'current' },
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'default' }
+      ]
+    },
     pointers: [
-      { index: 1, label: 'i', color: 'indigo' },
-      { index: 2, label: 'i+1', color: 'emerald' }
+      { index: 0, label: 'i=0', color: 'accent' },
+      { index: 1, label: 'i+1=1', color: 'amber' }
     ],
-    highlightIndices: [1, 2],
-    hudText: "Copied arr[2] to arr[1]."
+    activeIndices: [0, 1],
+    metrics: [
+      { label: 'Source', value: 'arr[1] = 2' },
+      { label: 'Destination', value: 'arr[0]' },
+      { label: 'Cached temp', value: '1' },
+      { label: 'Array State', value: '[2, 2, 3, 4, 5]' }
+    ],
+    customCard: {
+      title: 'Left Shift Step 1',
+      rows: [
+        { label: 'Operation', value: 'arr[0] = arr[1] (2 copied into slot 0)' },
+        { label: 'Slot 0 New Value', value: '2' },
+        { label: 'Next Pair', value: 'i = 1, shift arr[2] into arr[1]' }
+      ]
+    },
+    formula: 'arr[0] = arr[1]; // arr[0] becomes 2',
+    action: 'Copy arr[1] (2) into arr[0]. Index 0 is now 2.',
+    explain: 'Element 2 takes its new place at the head of the rotated array.',
+    intuition: 'Each element moves 1 position to the left.'
   },
   {
-    title: "4. Shift Element (i=2)",
-    codeLine: 7, 
-    code: "arr[i] = arr[i + 1];",
-    explanation: "The loop advances to i=2. We copy the value from arr[3] (which is 4) into arr[2]. Notice how elements are moving one slot to the left.",
-    array: [2, 3, 4, 4, 5],
-    temp: 1,
+    title: '3. Shift Index 1: arr[1] = arr[2] (val: 3)',
+    phase: 'SHIFTING',
+    codeLine: 18,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 2, status: 'dimmed' },
+        { val: 3, status: 'match' },
+        { val: 3, status: 'current' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'default' }
+      ]
+    },
     pointers: [
-      { index: 2, label: 'i', color: 'indigo' },
-      { index: 3, label: 'i+1', color: 'emerald' }
+      { index: 1, label: 'i=1', color: 'accent' },
+      { index: 2, label: 'i+1=2', color: 'amber' }
     ],
-    highlightIndices: [2, 3],
-    hudText: "Copied arr[3] to arr[2]."
+    activeIndices: [1, 2],
+    metrics: [
+      { label: 'Source', value: 'arr[2] = 3' },
+      { label: 'Destination', value: 'arr[1]' },
+      { label: 'Cached temp', value: '1' },
+      { label: 'Array State', value: '[2, 3, 3, 4, 5]' }
+    ],
+    customCard: {
+      title: 'Left Shift Step 2',
+      rows: [
+        { label: 'Operation', value: 'arr[1] = arr[2] (3 copied into slot 1)' },
+        { label: 'Slot 1 New Value', value: '3' },
+        { label: 'Next Pair', value: 'i = 2, shift arr[3] into arr[2]' }
+      ]
+    },
+    formula: 'arr[1] = arr[2]; // arr[1] becomes 3',
+    action: 'Copy arr[2] (3) into arr[1]. Index 1 is now 3.',
+    explain: 'Element 3 advances to index 1.',
+    intuition: 'The cascade moves monotonically from left to right.'
   },
   {
-    title: "5. Shift Element (i=3)",
-    codeLine: 7, 
-    code: "arr[i] = arr[i + 1];",
-    explanation: "This is the last iteration of the loop (i=3). We copy the value from arr[4] (which is 5) into arr[3]. The entire right side of the array has now been shifted left. Notice we have a duplicate '5' at the end.",
-    array: [2, 3, 4, 5, 5],
-    temp: 1,
+    title: '4. Shift Index 2: arr[2] = arr[3] (val: 4)',
+    phase: 'SHIFTING',
+    codeLine: 18,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 2, status: 'dimmed' },
+        { val: 3, status: 'dimmed' },
+        { val: 4, status: 'match' },
+        { val: 4, status: 'current' },
+        { val: 5, status: 'default' }
+      ]
+    },
     pointers: [
-      { index: 3, label: 'i', color: 'indigo' },
-      { index: 4, label: 'i+1', color: 'emerald' }
+      { index: 2, label: 'i=2', color: 'accent' },
+      { index: 3, label: 'i+1=3', color: 'amber' }
     ],
-    highlightIndices: [3, 4],
-    hudText: "Copied arr[4] to arr[3]."
+    activeIndices: [2, 3],
+    metrics: [
+      { label: 'Source', value: 'arr[3] = 4' },
+      { label: 'Destination', value: 'arr[2]' },
+      { label: 'Cached temp', value: '1' },
+      { label: 'Array State', value: '[2, 3, 4, 4, 5]' }
+    ],
+    customCard: {
+      title: 'Left Shift Step 3',
+      rows: [
+        { label: 'Operation', value: 'arr[2] = arr[3] (4 copied into slot 2)' },
+        { label: 'Slot 2 New Value', value: '4' },
+        { label: 'Next Pair', value: 'i = 3, shift arr[4] into arr[3]' }
+      ]
+    },
+    formula: 'arr[2] = arr[3]; // arr[2] becomes 4',
+    action: 'Copy arr[3] (4) into arr[2]. Index 2 is now 4.',
+    explain: 'Element 4 advances to index 2.',
+    intuition: 'Only the final rightmost shift remains.'
   },
   {
-    title: "6. Restore Temp to Last Position",
-    codeLine: 9, 
-    code: "arr[n - 1] = temp;",
-    explanation: "The loop has finished. The final step is to take the original first element that we saved in 'temp' (1) and place it in the very last position of the array (arr[n-1]).",
-    array: [2, 3, 4, 5, 1],
-    temp: 1,
-    pointers: [{ index: 4, label: 'n-1', color: 'amber' }],
-    highlightIndices: [4],
-    hudText: "Placed 'temp' into arr[n-1]."
+    title: '5. Shift Index 3: arr[3] = arr[4] (val: 5)',
+    phase: 'SHIFTING',
+    codeLine: 18,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 2, status: 'dimmed' },
+        { val: 3, status: 'dimmed' },
+        { val: 4, status: 'dimmed' },
+        { val: 5, status: 'match' },
+        { val: 5, status: 'current' }
+      ]
+    },
+    pointers: [
+      { index: 3, label: 'i=3', color: 'accent' },
+      { index: 4, label: 'i+1=4', color: 'amber' }
+    ],
+    activeIndices: [3, 4],
+    metrics: [
+      { label: 'Source', value: 'arr[4] = 5' },
+      { label: 'Destination', value: 'arr[3]' },
+      { label: 'Cached temp', value: '1' },
+      { label: 'Array State', value: '[2, 3, 4, 5, 5]' }
+    ],
+    customCard: {
+      title: 'Left Shift Step 4 (Final Shift)',
+      rows: [
+        { label: 'Operation', value: 'arr[3] = arr[4] (5 copied into slot 3)' },
+        { label: 'Shift Loop Completed', value: 'All elements 1..4 have shifted left' },
+        { label: 'Tail Slot Open', value: 'arr[4] is ready to receive temp' }
+      ]
+    },
+    formula: 'arr[3] = arr[4]; // arr[3] becomes 5',
+    action: 'Copy arr[4] (5) into arr[3]. The shift loop terminates.',
+    explain: 'Index 3 holds value 5. Now the tail position arr[4] must be filled with temp (1).',
+    intuition: 'The vacant slot is at the end of the array.'
   },
   {
-    title: "7. Algorithm Complete",
-    codeLine: 11, 
-    code: "return arr;",
-    explanation: "The array has been successfully rotated left by one place. Every element shifted left by 1, and the first element wrapped around to become the last element.",
-    array: [2, 3, 4, 5, 1],
-    temp: 1,
-    pointers: [],
-    highlightIndices: [0, 1, 2, 3, 4],
-    hudText: "Rotation complete in O(N) time and O(1) space."
+    title: '6. Place temp at Tail: arr[4] = 1 -> Rotation Complete!',
+    phase: 'COMPLETED',
+    codeLine: 22,
+    track: {
+      label: 'arr (rotated)',
+      items: [
+        { val: 2, status: 'match' },
+        { val: 3, status: 'match' },
+        { val: 4, status: 'match' },
+        { val: 5, status: 'match' },
+        { val: 1, status: 'match' }
+      ]
+    },
+    pointers: [
+      { index: 4, label: 'tail = temp (1)', color: 'amber' }
+    ],
+    activeIndices: [0, 1, 2, 3, 4],
+    metrics: [
+      { label: 'Final Result', value: '[2, 3, 4, 5, 1]' },
+      { label: 'Original', value: '[1, 2, 3, 4, 5]' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1) Auxiliary' }
+    ],
+    customCard: {
+      title: 'Rotation Summary',
+      rows: [
+        { label: 'Restoration', value: 'arr[N - 1] = temp (arr[4] = 1)' },
+        { label: 'Shift Result', value: '[1, 2, 3, 4, 5] -> [2, 3, 4, 5, 1]' },
+        { label: 'In-Place Mutation', value: 'Single pass O(N) with O(1) memory' }
+      ]
+    },
+    formula: 'arr[n - 1] = temp; return arr; // [2, 3, 4, 5, 1]',
+    action: 'Assign arr[4] = temp (1). Array left rotation by 1 place is complete.',
+    explain: 'All elements shifted left by 1; the original first element (1) now occupies the last position.',
+    intuition: 'Storing 1 scalar variable allows full in-place cyclic permutation without buffer allocation.'
   }
 ];
-
-export default function RotateArrayLeftBy1placeVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[240px]">
-        
-        {/* Memory Variables (Temp) */}
-        <div className="w-full max-w-lg mb-6 flex justify-end">
-           <div className={`px-4 py-2 rounded-lg border font-mono text-sm shadow-sm transition-colors duration-300 ${
-             stepIndex === 0 ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 
-             stepIndex === steps.length - 2 ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 
-             'bg-[#121520] border-white/10 text-zinc-400'
-           }`}>
-             <span className="opacity-70 mr-2">int temp =</span>
-             <strong>{stepData.temp !== undefined ? stepData.temp : '?'}</strong>
-           </div>
-        </div>
-
-        <ArrayView 
-          items={stepData.array || SAMPLE_DATA} 
-          pointers={stepData.pointers || []} 
-          matchIndices={stepData.highlightIndices || []} 
-        />
-        
-        {/* Real-time HUD Status & Variables */}
-        <div className="mt-8 flex items-center gap-3 px-4 py-2.5 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
-          <span className="text-zinc-400">Status: <strong className={stepIndex === steps.length - 1 ? "text-emerald-400" : "text-indigo-400"}>{stepData.hudText || 'Processing...'}</strong></span>
-        </div>
-      </div>
-
-      {/* 3. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-xs text-[var(--chalk-dim)] leading-relaxed font-sans">
-        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
-        <span className="opacity-90">{stepData.explanation}</span>
-      </div>
-    </div>
-  );
-}

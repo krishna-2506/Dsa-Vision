@@ -1,17 +1,42 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Add One to a Number Represented by LL',
   category: 'Linked List',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(N) recursive call stack',
-  description: 'Adds 1 to a number represented as a linked list (most significant digit at head) using an elegant backtracking recursion to propagate carry from the tail node back to the head.'
+  spaceComplexity: 'O(N) recursion stack',
+  description: 'Adds 1 to a number represented as a linked list (most significant digit at head) using recursive backtracking to propagate carry from the tail node back to the head.'
+};
+
+export const ideaMap = {
+  title: 'Backtracking Carry Propagation',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Recurse to Tail',
+      detail: 'Traverse to the end of the list until reaching NULL.'
+    },
+    {
+      id: 'step2',
+      label: 'Base Case Returns Carry 1',
+      detail: 'When temp == NULL, return carry = 1 to add to the units digit.'
+    },
+    {
+      id: 'step3',
+      label: 'Unwind & Update',
+      detail: 'Add carry to node.data: if sum >= 10, set data = 0 and pass carry = 1 upward.'
+    },
+    {
+      id: 'step4',
+      label: 'Overflow Node Creation',
+      detail: 'If head still generates carry = 1, prepend a new Node(1) as the new head.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Recursive Backtracking Carry Propagation
-// Time Complexity: O(N) | Space Complexity: O(N) recursive stack
 #include <iostream>
 using namespace std;
 
@@ -23,15 +48,15 @@ struct Node {
 
 class Solution {
     int addHelper(Node* temp) {
-        if (temp == nullptr) return 1; // Base case: carry 1 from the virtual right
-        
+        if (temp == nullptr) return 1; // Base case: virtual +1 at tail
+
         int carry = addHelper(temp->next);
         temp->data += carry;
-        
+
         if (temp->data < 10) return 0; // No further carry
-        
+
         temp->data = 0;
-        return 1; // Carry forwards
+        return 1; // Propagate carry
     }
 
 public:
@@ -45,44 +70,41 @@ public:
         return head;
     }
 };`,
-  python: `# Python 3 Recursive Backtracking Add 1 to LL
+  python: `# Python 3 Recursive Backtracking Carry Propagation
 class Node:
-    def __init__(self, data=0, next=None):
+    def __init__(self, data):
         self.data = data
-        self.next = next
+        self.next = None
 
 class Solution:
-    def addOne(self, head: Node) -> Node:
-        def add_helper(node):
-            if not node:
-                return 1
-            
-            carry = add_helper(node.next)
-            node.data += carry
-            
-            if node.data < 10:
-                return 0
-            
-            node.data = 0
-            return 1
+    def addHelper(self, temp: Node) -> int:
+        if not temp:
+            return 1 # Base case: virtual +1
 
-        carry = add_helper(head)
+        carry = self.addHelper(temp.next)
+        temp.data += carry
+
+        if temp.data < 10:
+            return 0
+
+        temp.data = 0
+        return 1
+
+    def addOne(self, head: Node) -> Node:
+        carry = self.addHelper(head)
         if carry == 1:
             new_head = Node(1)
             new_head.next = head
             return new_head
         return head`,
-  java: `// Java Recursive Backtracking Add 1 to LL
+  java: `// Java Recursive Backtracking Carry Propagation
 class Node {
     int data;
     Node next;
-    Node(int data) {
-        this.data = data;
-        this.next = null;
-    }
+    Node(int d) { data = d; next = null; }
 }
 
-class Solution {
+public class Solution {
     private int addHelper(Node temp) {
         if (temp == null) return 1;
 
@@ -105,157 +127,171 @@ class Solution {
         return head;
     }
 }`,
-  javascript: `// JavaScript Recursive Backtracking Add 1 to LL
-var addOne = function(head) {
-    const addHelper = (temp) => {
-        if (!temp) return 1;
+  javascript: `// JavaScript Recursive Backtracking Carry Propagation
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
 
-        const carry = addHelper(temp.next);
-        temp.data += carry;
+function addHelper(temp) {
+  if (temp === null) return 1;
 
-        if (temp.data < 10) return 0;
+  const carry = addHelper(temp.next);
+  temp.data += carry;
 
-        temp.data = 0;
-        return 1;
-    };
+  if (temp.data < 10) return 0;
 
-    const carry = addHelper(head);
-    if (carry === 1) {
-        const newHead = { data: 1, next: head };
-        return newHead;
-    }
-    return head;
-};`
+  temp.data = 0;
+  return 1;
+}
+
+function addOne(head) {
+  const carry = addHelper(head);
+  if (carry === 1) {
+    const newHead = new Node(1);
+    newHead.next = head;
+    return newHead;
+  }
+  return head;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Problem Setup: Add 1 to Number [1 -> 9 -> 9] (199 + 1 = 200)',
-    phase: 'INITIAL',
-    codeLine: 28,
-    nodes: [1, 9, 9],
-    activeIdx: null,
-    carry: null,
-    variables: { inputNumber: 199, operation: '+ 1', expected: 200 },
-    explain: 'The linked list represents number 199 with head at 1. We must add 1 at the least significant digit (tail 9) and carry leftwards.',
-    intuition: 'Instead of reversing the list twice, recursion naturally explores to NULL and unwinds back right-to-left.'
+    title: 'Initial List State: Represents 999',
+    phase: 'SETUP',
+    nodes: [
+      { id: 0, val: 9, pointers: ['head'] },
+      { id: 1, val: 9, pointers: [] },
+      { id: 2, val: 9, pointers: ['tail'] }
+    ],
+    pointers: { head: 0, tail: 2 },
+    variables: { number: 999, operation: '+ 1', carry: 'pending' },
+    metrics: [
+      { label: 'Original Number', value: '999' },
+      { label: 'Length', value: '3' },
+      { label: 'Recursion Depth', value: '0' }
+    ],
+    explain: 'The linked list nodes [9 -> 9 -> 9] represent the integer 999. We need to add 1 without reversing the list by leveraging recursive backtracking.',
+    action: 'Invoke addHelper(head).',
+    intuition: 'Recursion navigates forward to the tail (least significant digit) and unwinds backward to handle carry overflow.',
+    formula: 'addHelper(head)'
   },
   {
-    title: '2. Recurse to Tail Node(9 at index 2): Add Base Carry = 1',
-    phase: 'TAIL_ADD',
-    codeLine: 16,
-    nodes: [1, 9, 0],
-    activeIdx: 2,
-    carry: 1,
-    variables: { nodeIndex: 2, calculation: '9 + 1 = 10', 'node->data': 0, returnCarry: 1 },
-    explain: 'Base case returns carry = 1. Tail node becomes 9 + 1 = 10. Since 10 >= 10, set data = 0 and return carry = 1.',
-    intuition: 'Digit 9 overflows to 0 with a carry of 1.'
+    title: 'Recurse to Tail: Base Case Reached',
+    phase: 'BASE_CASE',
+    nodes: [
+      { id: 0, val: 9, pointers: ['head'] },
+      { id: 1, val: 9, pointers: [] },
+      { id: 2, val: 9, pointers: ['curr'], isHighlighted: true }
+    ],
+    pointers: { head: 0, curr: 2 },
+    highlightIndices: [2],
+    variables: { 'temp->next': 'null', returnedCarry: 1, callStackDepth: 3 },
+    metrics: [
+      { label: 'Active Node', value: 'Tail (9)' },
+      { label: 'Base Case', value: 'carry = 1' },
+      { label: 'Stack Depth', value: '3' }
+    ],
+    explain: 'The call stack reaches temp->next == null after Node 2. Base case triggers and returns carry = 1.',
+    action: 'return 1 to tail caller.',
+    intuition: 'Returning 1 from NULL effectively initiates the +1 addition at the units place.',
+    formula: 'if (temp == null) return 1'
   },
   {
-    title: '3. Backtrack to Middle Node(9 at index 1): Add Carry = 1',
-    phase: 'PROPAGATE_CARRY',
-    codeLine: 18,
-    nodes: [1, 0, 0],
-    activeIdx: 1,
-    carry: 1,
-    variables: { nodeIndex: 1, calculation: '9 + 1 = 10', 'node->data': 0, returnCarry: 1 },
-    explain: 'Receive carry 1 from right. Middle node becomes 9 + 1 = 10. Set data = 0 and pass carry = 1 to the left.',
-    intuition: 'Cascade of carry continues to unwind.'
+    title: 'Unwind at Tail: 9 + 1 = 10 -> Set 0, Carry 1',
+    phase: 'UNWIND_TAIL',
+    nodes: [
+      { id: 0, val: 9, pointers: ['head'] },
+      { id: 1, val: 9, pointers: [] },
+      { id: 2, val: 0, pointers: ['curr'], isModified: true, isHighlighted: true }
+    ],
+    pointers: { head: 0, curr: 2 },
+    highlightIndices: [2],
+    variables: { '9 + 1': 10, 'node.val': 0, carryOut: 1 },
+    metrics: [
+      { label: 'Tail Val', value: '0' },
+      { label: 'Carry Generated', value: '1' },
+      { label: 'Stack Depth', value: '2' }
+    ],
+    explain: 'At tail (index 2): data += carry (9 + 1 = 10). Since 10 >= 10, data becomes 0, and carry = 1 propagates backward to the tens node.',
+    action: 'temp->data = 0; return 1;',
+    intuition: 'Carry 1 moves upward to the tens digit.',
+    formula: '9 + 1 = 10 => data = 0, carry = 1'
   },
   {
-    title: '4. Backtrack to Head Node(1 at index 0): Add Carry = 1',
-    phase: 'HEAD_ADD',
-    codeLine: 20,
-    nodes: [2, 0, 0],
-    activeIdx: 0,
-    carry: 0,
-    variables: { nodeIndex: 0, calculation: '1 + 1 = 2', 'node->data': 2, returnCarry: 0 },
-    explain: 'Receive carry 1 from right. Head node becomes 1 + 1 = 2. Since 2 < 10, data stays 2 and carry becomes 0!',
-    intuition: 'Carry absorbed! No extra node needed at front.'
+    title: 'Unwind at Middle: 9 + 1 = 10 -> Set 0, Carry 1',
+    phase: 'UNWIND_MID',
+    nodes: [
+      { id: 0, val: 9, pointers: ['head'] },
+      { id: 1, val: 0, pointers: ['curr'], isModified: true, isHighlighted: true },
+      { id: 2, val: 0, pointers: [] }
+    ],
+    pointers: { head: 0, curr: 1 },
+    highlightIndices: [1],
+    variables: { '9 + 1': 10, 'node.val': 0, carryOut: 1 },
+    metrics: [
+      { label: 'Mid Val', value: '0' },
+      { label: 'Carry Generated', value: '1' },
+      { label: 'Stack Depth', value: '1' }
+    ],
+    explain: 'At index 1: data += carry (9 + 1 = 10). Data becomes 0, and carry = 1 propagates backward to the head node.',
+    action: 'temp->data = 0; return 1;',
+    intuition: 'Carry 1 moves upward to the hundreds digit.',
+    formula: '9 + 1 = 10 => data = 0, carry = 1'
   },
   {
-    title: '5. Completed: Result List is [2 -> 0 -> 0] = 200',
-    phase: 'COMPLETE',
-    codeLine: 34,
-    nodes: [2, 0, 0],
-    activeIdx: null,
-    carry: 0,
-    variables: { finalResult: 200, carryOut: 0, newNodesCreated: 0 },
-    explain: 'Recursion finishes unwinding. Carry is 0, so original head is returned. Result 200 is correct.',
-    intuition: 'Single-pass recursive carry propagation solves in O(N) time without reversing links.'
+    title: 'Unwind at Head: 9 + 1 = 10 -> Set 0, Carry 1',
+    phase: 'UNWIND_HEAD',
+    nodes: [
+      { id: 0, val: 0, pointers: ['head', 'curr'], isModified: true, isHighlighted: true },
+      { id: 1, val: 0, pointers: [] },
+      { id: 2, val: 0, pointers: [] }
+    ],
+    pointers: { head: 0, curr: 0 },
+    highlightIndices: [0],
+    variables: { '9 + 1': 10, 'head.val': 0, overflowCarry: 1 },
+    metrics: [
+      { label: 'Head Val', value: '0' },
+      { label: 'Overflow Carry', value: '1' },
+      { label: 'Current Digits', value: '0 -> 0 -> 0' }
+    ],
+    explain: 'At head (index 0): data += carry (9 + 1 = 10). Data becomes 0. The helper returns carry = 1 out of the entire list.',
+    action: 'addHelper returns 1.',
+    intuition: 'An overall carry of 1 requires expanding the linked list with a new head node.',
+    formula: 'carry == 1 => prepend Node(1)'
+  },
+  {
+    title: 'Prepend Overflow Node: New Head (1)',
+    phase: 'PREPEND_OVERFLOW',
+    nodes: [
+      { id: 3, val: 1, pointers: ['newHead'], isHighlighted: true, isModified: true },
+      { id: 0, val: 0, pointers: [] },
+      { id: 1, val: 0, pointers: [] },
+      { id: 2, val: 0, pointers: ['tail'] }
+    ],
+    pointers: { newHead: 0, tail: 3 },
+    highlightIndices: [0],
+    variables: { newHeadVal: 1, totalLength: 4, value: 1000 },
+    metrics: [
+      { label: 'New Head', value: '1' },
+      { label: 'New Number', value: '1000' },
+      { label: 'New Length', value: '4' }
+    ],
+    customCard: {
+      title: 'Carry Overflow Resolution',
+      rows: [
+        { label: 'Original Value', value: '999' },
+        { label: 'Resulting Value', value: '1000 (1 -> 0 -> 0 -> 0)', accent: true },
+        { label: 'Allocated Node', value: 'newHead = new Node(1) prepended in O(1)' },
+        { label: 'Total Complexity', value: 'O(N) time, O(N) call stack space' }
+      ]
+    },
+    explain: 'Because carry == 1, we allocate newHead = new Node(1) and wire newHead->next = head. The resulting list represents 1000.',
+    action: 'return newHead;',
+    intuition: 'Backtracking handles carry propagation naturally, and constant-time prepend handles number expansion.',
+    formula: 'Result: 1 -> 0 -> 0 -> 0 (1000)'
   }
 ];
-
-export default function AddOneToANumberRepresentedByLlVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          Operation: Number + 1
-        </span>
-        {step.carry !== null && (
-          <span className={`px-3 py-1.5 rounded-xl font-mono text-xs font-semibold ${
-            step.carry === 1 ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-          }`}>
-            Active Carry = {step.carry}
-          </span>
-        )}
-      </div>
-
-      {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex items-center justify-center overflow-x-auto gap-2 py-8">
-        {step.nodes.map((val, idx) => {
-          const isActive = step.activeIdx === idx;
-          const isUpdated = idx >= (step.activeIdx ?? 99);
-
-          let nodeStyle = 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]';
-          if (isActive) {
-            nodeStyle = 'bg-amber-500/25 border-amber-400 text-amber-200 scale-110 shadow-lg shadow-amber-500/25';
-          } else if (isUpdated) {
-            nodeStyle = 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300';
-          }
-
-          return (
-            <React.Fragment key={idx}>
-              <div className="relative flex flex-col items-center">
-                {isActive && (
-                  <div className="absolute -top-7 flex flex-col items-center">
-                    <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30 animate-pulse">
-                      + carry
-                    </span>
-                    <div className="w-px h-2 bg-amber-400"></div>
-                  </div>
-                )}
-
-                <div className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center font-mono font-bold text-lg transition-all ${nodeStyle}`}>
-                  {val}
-                </div>
-
-                <span className="text-[10px] font-mono text-[#5b6076] mt-1">
-                  {idx === 0 ? 'head [100s]' : idx === 1 ? '[10s]' : '[1s]'}
-                </span>
-              </div>
-
-              {/* Arrow */}
-              <div className="text-base font-bold text-[var(--chalk-dim)]">&rarr;</div>
-            </React.Fragment>
-          );
-        })}
-
-        {/* NULL */}
-        <div className="w-14 h-14 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[var(--chalk-dim)]">
-          NULL
-        </div>
-      </div>
-
-      {/* Result Value Banner */}
-      <div className="w-full p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-center gap-3 font-mono text-sm">
-        <span className="text-[var(--chalk-dim)]">Current List Value:</span>
-        <span className="text-2xl font-bold text-[var(--chalk)] tracking-widest">{step.nodes.join('')}</span>
-      </div>
-    </div>
-  );
-}

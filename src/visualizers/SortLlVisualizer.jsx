@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Sort Linked List (Merge Sort)',
@@ -6,12 +6,37 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O(N log N)',
   spaceComplexity: 'O(log N) recursion stack',
-  description: 'Sorts a singly linked list in O(N log N) time using Divide and Conquer Merge Sort, splitting the list at the middle node and merging sorted halves in-place.'
+  description: 'Sorts a singly linked list in optimal O(N log N) time using Divide and Conquer Merge Sort: splits the list at the middle node via slow/fast pointers, recursively sorts each half, and merges the sorted chains in-place.'
+};
+
+export const ideaMap = {
+  title: 'Merge Sort on Linked List Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Find Middle Node',
+      detail: 'Use slow and fast tortoise-and-hare pointers to find middle in a single pass.'
+    },
+    {
+      id: 'step2',
+      label: 'Split List in Halves',
+      detail: 'Disconnect left and right halves: right = mid.next; mid.next = null.'
+    },
+    {
+      id: 'step3',
+      label: 'Recursive Sub-Sort',
+      detail: 'Recursively sort left and right halves down to single-node base cases.'
+    },
+    {
+      id: 'step4',
+      label: 'Merge Sorted Halves',
+      detail: 'Merge two sorted lists in O(N) time using pointer stitching with a dummy head.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Merge Sort on Linked List
-// Time: O(N log N) | Space: O(log N) stack
 #include <iostream>
 using namespace std;
 
@@ -47,76 +72,80 @@ class Solution {
             curr = curr->next;
         }
 
-        if (l1 != nullptr) curr->next = l1;
-        if (l2 != nullptr) curr->next = l2;
-
+        curr->next = (l1 != nullptr) ? l1 : l2;
         return dummy.next;
     }
 
 public:
     Node* sortList(Node* head) {
-        if (head == nullptr || head->next == nullptr) return head;
+        if (head == nullptr || head->next == nullptr) {
+            return head;
+        }
 
         Node* mid = findMiddle(head);
-        Node* rightHead = mid->next;
-        mid->next = nullptr; // Disconnect left and right halves
+        Node* right = mid->next;
+        mid->next = nullptr; // Disconnect halves
 
-        Node* left = sortList(head);
-        Node* right = sortList(rightHead);
+        Node* leftSorted = sortList(head);
+        Node* rightSorted = sortList(right);
 
-        return merge(left, right);
+        return merge(leftSorted, rightSorted);
     }
 };`,
   python: `# Python 3 Merge Sort on Linked List
 class Node:
-    def __init__(self, data=0, next=None):
+    def __init__(self, data):
         self.data = data
-        self.next = next
+        self.next = None
 
 class Solution:
+    def findMiddle(self, head: Node) -> Node:
+        slow = head
+        fast = head.next
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+        return slow
+
+    def merge(self, l1: Node, l2: Node) -> Node:
+        dummy = Node(0)
+        curr = dummy
+
+        while l1 and l2:
+            if l1.data <= l2.data:
+                curr.next = l1
+                l1 = l1.next
+            else:
+                curr.next = l2
+                l2 = l2.next
+            curr = curr.next
+
+        curr.next = l1 if l1 else l2
+        return dummy.next
+
     def sortList(self, head: Node) -> Node:
         if not head or not head.next:
             return head
 
-        # Find middle
-        slow, fast = head, head.next
-        while fast and fast.next:
-            slow = slow.next
-            fast = fast.next.next
-
-        right_head = slow.next
-        slow.next = None
+        mid = self.findMiddle(head)
+        right = mid.next
+        mid.next = None
 
         left = self.sortList(head)
-        right = self.sortList(right_head)
+        right = self.sortList(right)
 
-        # Merge
-        dummy = Node(0)
-        curr = dummy
-        while left and right:
-            if left.data <= right.data:
-                curr.next = left
-                left = left.next
-            else:
-                curr.next = right
-                right = right.next
-            curr = curr.next
-
-        curr.next = left if left else right
-        return dummy.next`,
+        return self.merge(left, right)`,
   java: `// Java Merge Sort on Linked List
 class Node {
     int data;
     Node next;
-    Node(int data) {
-        this.data = data;
-        this.next = null;
-    }
+    Node(int d) { data = d; next = null; }
 }
 
-class Solution {
-    private Node findMiddle(Node head) {
-        Node slow = head, fast = head.next;
+public class Solution {
+    private static Node findMiddle(Node head) {
+        Node slow = head;
+        Node fast = head.next;
         while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
@@ -124,7 +153,7 @@ class Solution {
         return slow;
     }
 
-    private Node merge(Node l1, Node l2) {
+    private static Node merge(Node l1, Node l2) {
         Node dummy = new Node(0);
         Node curr = dummy;
 
@@ -139,206 +168,204 @@ class Solution {
             curr = curr.next;
         }
 
-        if (l1 != null) curr.next = l1;
-        if (l2 != null) curr.next = l2;
-
+        curr.next = (l1 != null) ? l1 : l2;
         return dummy.next;
     }
 
-    public Node sortList(Node head) {
+    public static Node sortList(Node head) {
         if (head == null || head.next == null) return head;
 
         Node mid = findMiddle(head);
-        Node rightHead = mid.next;
+        Node right = mid.next;
         mid.next = null;
 
-        Node left = sortList(head);
-        Node right = sortList(rightHead);
+        Node leftSorted = sortList(head);
+        Node rightSorted = sortList(right);
 
-        return merge(left, right);
+        return merge(leftSorted, rightSorted);
     }
 }`,
   javascript: `// JavaScript Merge Sort on Linked List
-var sortList = function(head) {
-    if (!head || !head.next) return head;
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
 
-    let slow = head, fast = head.next;
-    while (fast && fast.next) {
-        slow = slow.next;
-        fast = fast.next.next;
+function findMiddle(head) {
+  let slow = head;
+  let fast = head.next;
+  while (fast && fast.next) {
+    slow = slow.next;
+    fast = fast.next.next;
+  }
+  return slow;
+}
+
+function merge(l1, l2) {
+  const dummy = new Node(0);
+  let curr = dummy;
+
+  while (l1 && l2) {
+    if (l1.data <= l2.data) {
+      curr.next = l1;
+      l1 = l1.next;
+    } else {
+      curr.next = l2;
+      l2 = l2.next;
     }
+    curr = curr.next;
+  }
 
-    const rightHead = slow.next;
-    slow.next = null;
+  curr.next = l1 ? l1 : l2;
+  return dummy.next;
+}
 
-    const left = sortList(head);
-    const right = sortList(rightHead);
+function sortList(head) {
+  if (!head || !head.next) return head;
 
-    const dummy = { data: 0, next: null };
-    let curr = dummy;
-    let l1 = left, l2 = right;
+  const mid = findMiddle(head);
+  const right = mid.next;
+  mid.next = null;
 
-    while (l1 && l2) {
-        if (l1.data <= l2.data) {
-            curr.next = l1;
-            l1 = l1.next;
-        } else {
-            curr.next = l2;
-            l2 = l2.next;
-        }
-        curr = curr.next;
-    }
+  const leftSorted = sortList(head);
+  const rightSorted = sortList(right);
 
-    curr.next = l1 ? l1 : l2;
-    return dummy.next;
-};`
+  return merge(leftSorted, rightSorted);
+}`
 };
 
 export const steps = [
   {
-    title: '1. Problem Overview: Unsorted Linked List [4 -> 2 -> 1 -> 3]',
-    phase: 'INITIAL',
-    codeLine: 49,
-    stage: 'DIVIDE',
-    leftHalf: [4, 2],
-    rightHalf: [1, 3],
-    merged: [],
-    variables: { list: '[4, 2, 1, 3]', algorithm: 'Merge Sort', targetComplexity: 'O(N log N)' },
-    explain: 'Merge Sort is optimal for linked lists because finding mid takes O(N) and merging requires zero auxiliary arrays (unlike array merge sort).',
-    intuition: 'Divide the list into halves, sort them recursively, and merge using two pointers.'
+    title: 'Initial Unsorted List: [4 -> 2 -> 1 -> 3]',
+    phase: 'SETUP',
+    nodes: [
+      { id: 0, val: 4, pointers: ['head'] },
+      { id: 1, val: 2, pointers: [] },
+      { id: 2, val: 1, pointers: [] },
+      { id: 3, val: 3, pointers: ['tail'] }
+    ],
+    pointers: { head: 0, tail: 3 },
+    variables: { algorithm: 'Merge Sort', length: 4, status: 'Divide' },
+    metrics: [
+      { label: 'Length', value: '4' },
+      { label: 'Time Bound', value: 'O(N log N)' },
+      { label: 'Target', value: 'Ascending' }
+    ],
+    explain: 'Starting with unsorted linked list: 4 -> 2 -> 1 -> 3. We apply divide and conquer merge sort.',
+    action: 'Find middle node using slow and fast pointers.',
+    intuition: 'Merge sort is optimal for linked lists because sequential access suits merging without random indexing overhead.',
+    formula: 'T(N) = 2T(N/2) + O(N)'
   },
   {
-    title: '2. Divide Step: Split into Left [4, 2] and Right [1, 3]',
+    title: 'Find Middle: Split into Left and Right Halves',
     phase: 'SPLIT',
-    codeLine: 53,
-    stage: 'DIVIDE',
-    leftHalf: [4, 2],
-    rightHalf: [1, 3],
-    merged: [],
-    variables: { mid: 'Node(2)', 'mid->next': 'NULL', left: '[4, 2]', right: '[1, 3]' },
-    explain: 'Using slow & fast pointers, identify mid (2). Cut connection by setting mid->next = NULL.',
-    intuition: 'Isolated sublists can now be sorted independently.'
+    nodes: [
+      { id: 0, val: 4, pointers: ['head'] },
+      { id: 1, val: 2, pointers: ['mid'], isHighlighted: true }
+    ],
+    auxiliaryNodes: [
+      { id: 2, val: 1, pointers: ['rightHead'], isHighlighted: true },
+      { id: 3, val: 3, pointers: ['rightTail'] }
+    ],
+    auxiliaryLabel: 'Right Sub-List: [1 -> 3]',
+    pointers: { head: 0, mid: 1 },
+    highlightIndices: [1],
+    variables: { midVal: 2, rightHead: 1, leftHalves: '4 -> 2', rightHalves: '1 -> 3' },
+    metrics: [
+      { label: 'Mid Node', value: '2' },
+      { label: 'Left Size', value: '2' },
+      { label: 'Right Size', value: '2' }
+    ],
+    explain: 'Slow pointer locates middle node (val = 2). We disconnect mid.next = null, splitting the list into Left [4 -> 2] and Right [1 -> 3].',
+    action: 'right = mid.next; mid.next = null;',
+    intuition: 'Breaking the link isolates each half for independent recursive sorting.',
+    formula: 'Left: [4, 2] | Right: [1, 3]'
   },
   {
-    title: '3. Conquer Left: Sort [4, 2] -> [2, 4]',
+    title: 'Recursively Sort Left Half: [4, 2] -> [2 -> 4]',
     phase: 'SORT_LEFT',
-    codeLine: 56,
-    stage: 'CONQUER',
-    leftHalf: [2, 4],
-    rightHalf: [1, 3],
-    merged: [],
-    variables: { sortedLeft: '[2, 4]', state: 'Left half sorted' },
-    explain: 'Recursive base cases sort the left branch into [2 -> 4].',
-    intuition: 'Left subproblem resolved.'
+    nodes: [
+      { id: 1, val: 2, pointers: ['leftSortedHead'], isModified: true, isHighlighted: true },
+      { id: 0, val: 4, pointers: ['leftSortedTail'] }
+    ],
+    auxiliaryNodes: [
+      { id: 2, val: 1, pointers: ['rightHead'] },
+      { id: 3, val: 3, pointers: ['rightTail'] }
+    ],
+    auxiliaryLabel: 'Right Half Pending Sort: [1 -> 3]',
+    pointers: { leftSortedHead: 0 },
+    variables: { leftResult: '2 -> 4', rightStatus: 'already sorted (1 -> 3)' },
+    metrics: [
+      { label: 'Left Sorted', value: '2 -> 4' },
+      { label: 'Right Sub-list', value: '1 -> 3' },
+      { label: 'Phase', value: 'Merge Preparation' }
+    ],
+    explain: 'Left half recursively splits down to single elements and merges into sorted chain: 2 -> 4. Right half is already 1 -> 3.',
+    action: 'merge(2 -> 4, 1 -> 3);',
+    intuition: 'Both sub-lists are now sorted; we can merge them by comparing their leading pointers.',
+    formula: 'merge(l1, l2)'
   },
   {
-    title: '4. Conquer Right: Sort [1, 3] -> [1, 3]',
-    phase: 'SORT_RIGHT',
-    codeLine: 57,
-    stage: 'CONQUER',
-    leftHalf: [2, 4],
-    rightHalf: [1, 3],
-    merged: [],
-    variables: { sortedRight: '[1, 3]', state: 'Right half sorted' },
-    explain: 'Recursive base cases sort the right branch into [1 -> 3].',
-    intuition: 'Right subproblem resolved.'
+    title: 'Merge Two Sorted Chains: Compare Leaders',
+    phase: 'MERGE_STITCH',
+    nodes: [
+      { id: 2, val: 1, pointers: ['mergedHead', 'curr'], isHighlighted: true },
+      { id: 1, val: 2, pointers: [] },
+      { id: 3, val: 3, pointers: [] },
+      { id: 0, val: 4, pointers: ['tail'] }
+    ],
+    pointers: { mergedHead: 0, curr: 0, tail: 3 },
+    highlightIndices: [0, 1, 2, 3],
+    variables: { '1 vs 2': '1 chosen', '2 vs 3': '2 chosen', '3 vs 4': '3 chosen', remaining: '4 appended' },
+    metrics: [
+      { label: 'Merged Head', value: '1' },
+      { label: 'Comparisons', value: '3' },
+      { label: 'In-Place', value: 'true' }
+    ],
+    customCard: {
+      title: 'Merge Comparison Ladder',
+      rows: [
+        { label: 'Step 1: 1 <= 2', value: 'Pick node 1 from Right' },
+        { label: 'Step 2: 2 <= 3', value: 'Pick node 2 from Left' },
+        { label: 'Step 3: 4 > 3', value: 'Pick node 3 from Right' },
+        { label: 'Step 4: Remainder', value: 'Append remaining node 4', accent: true }
+      ]
+    },
+    explain: 'We step through both sorted chains with a dummy node: 1 < 2, then 2 < 3, then 3 < 4, then append remaining 4.',
+    action: 'curr.next = min(l1, l2); curr = curr.next;',
+    intuition: 'Standard two-pointer merge synthesizes the final sorted list in linear O(N) time.',
+    formula: 'Resulting chain: 1 -> 2 -> 3 -> 4'
   },
   {
-    title: '5. Merge Step: Stitch sorted halves [2, 4] and [1, 3]',
-    phase: 'MERGE_PROGRESS',
-    codeLine: 31,
-    stage: 'MERGE',
-    leftHalf: [4],
-    rightHalf: [3],
-    merged: [1, 2],
-    variables: { compare: '1 < 2 -> pick 1, then 2 < 3 -> pick 2', mergedSoFar: '[1 -> 2]' },
-    explain: 'Two pointers traverse left and right halves, selecting the smaller head element at each step.',
-    intuition: 'In-place pointer rewiring merges in linear O(N) time.'
-  },
-  {
-    title: '6. Sorted Linked List Complete: [1 -> 2 -> 3 -> 4 -> NULL]',
-    phase: 'RESULT',
-    codeLine: 59,
-    stage: 'COMPLETE',
-    leftHalf: [],
-    rightHalf: [],
-    merged: [1, 2, 3, 4],
-    variables: { finalSorted: '[1, 2, 3, 4]', time: 'O(N log N)', auxSpace: 'O(1) (excluding stack)' },
-    explain: 'All nodes merged into fully sorted linked list. Total runtime is strictly O(N log N).',
-    intuition: 'Merge Sort is the gold standard for singly linked list sorting.'
+    title: 'Merge Sort Complete: Sorted Linked List',
+    phase: 'COMPLETED',
+    nodes: [
+      { id: 2, val: 1, pointers: ['head'], isHighlighted: true },
+      { id: 1, val: 2, pointers: [] },
+      { id: 3, val: 3, pointers: [] },
+      { id: 0, val: 4, pointers: ['tail'], isHighlighted: true }
+    ],
+    pointers: { head: 0, tail: 3 },
+    variables: { sortedList: '1 -> 2 -> 3 -> 4', totalNodes: 4 },
+    metrics: [
+      { label: 'Final Order', value: '1 -> 2 -> 3 -> 4' },
+      { label: 'Time Complexity', value: 'O(N log N)' },
+      { label: 'Space Complexity', value: 'O(log N)' }
+    ],
+    customCard: {
+      title: 'Merge Sort Complexity Audit',
+      rows: [
+        { label: 'Recursion Depth', value: 'log2(4) = 2 levels' },
+        { label: 'Time Complexity', value: 'O(N log N) optimal comparison sort', accent: true },
+        { label: 'Auxiliary Memory', value: 'O(log N) stack frames, O(1) heap allocations' },
+        { label: 'Stability', value: 'Preserves relative order of equal elements' }
+      ]
+    },
+    explain: 'The linked list is completely sorted: 1 -> 2 -> 3 -> 4. Pointer relinking achieved optimal O(N log N) runtime without extra array buffers.',
+    action: 'Return new head (Node 1).',
+    intuition: 'Merge Sort is the gold standard sorting algorithm for singly linked lists.',
+    formula: 'Result: 1 -> 2 -> 3 -> 4'
   }
 ];
-
-export default function SortLlVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          Stage: {step.stage}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-semibold">
-          Merge Sort on Linked List O(N log N)
-        </span>
-      </div>
-
-      {/* Visual Sublists Display */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-6">
-        {step.stage !== 'COMPLETE' ? (
-          <div className="grid grid-cols-2 gap-4">
-            {/* Left Sublist */}
-            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2">
-              <span className="text-xs font-mono text-amber-400 font-bold">Left Sublist:</span>
-              <div className="flex items-center gap-2">
-                {step.leftHalf.map((val, idx) => (
-                  <div key={idx} className="w-11 h-11 rounded-lg border border-amber-500/30 bg-amber-500/15 text-amber-300 flex items-center justify-center font-mono font-bold text-base">
-                    {val}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Sublist */}
-            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2">
-              <span className="text-xs font-mono text-cyan-400 font-bold">Right Sublist:</span>
-              <div className="flex items-center gap-2">
-                {step.rightHalf.map((val, idx) => (
-                  <div key={idx} className="w-11 h-11 rounded-lg border border-cyan-500/30 bg-cyan-500/15 text-cyan-300 flex items-center justify-center font-mono font-bold text-base">
-                    {val}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : null}
-
-        {/* Merged Chain */}
-        {step.merged.length > 0 && (
-          <div className="p-4 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex flex-col gap-2">
-            <span className="text-xs font-mono text-emerald-400 font-bold">Sorted Merged Chain:</span>
-            <div className="flex items-center gap-2 overflow-x-auto py-2">
-              {step.merged.map((val, idx) => (
-                <React.Fragment key={idx}>
-                  <div className="w-12 h-12 rounded-xl border border-emerald-400/50 bg-emerald-500/20 text-emerald-200 flex items-center justify-center font-mono font-bold text-base shadow-md shadow-emerald-500/20">
-                    {val}
-                  </div>
-                  <span className="text-emerald-400 font-bold">&rarr;</span>
-                </React.Fragment>
-              ))}
-              <span className="text-xs font-mono text-[var(--chalk-dim)]">NULL</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Result Card */}
-      {step.stage === 'COMPLETE' && (
-        <div className="w-full p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center gap-2 text-emerald-300 font-mono text-base font-bold">
-          <span>🎉 List Fully Sorted: [1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; NULL]</span>
-        </div>
-      )}
-    </div>
-  );
-}

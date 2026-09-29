@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'queue';
 
 export const meta = {
   title: 'Course Schedule I',
@@ -9,43 +9,74 @@ export const meta = {
   description: 'Determines whether you can finish all courses given prerequisite pairs [course, prereq]. A valid schedule exists if and only if the prerequisite graph contains NO directed cycle (LeetCode 207).'
 };
 
+export const ideaMap = {
+  title: 'Kahn\'s In-Degree Reduction Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'In-Degree Tabulation',
+      detail: 'Construct adjacency list (prereq -> course) and record the incoming prerequisite count (in-degree) for every course.'
+    },
+    {
+      id: 'step2',
+      label: 'Zero-Prerequisite Seeding',
+      detail: 'Find all courses with in-degree 0 (free of prerequisites) and enqueue them into the ready queue.'
+    },
+    {
+      id: 'step3',
+      label: 'Topological In-Degree Reduction',
+      detail: 'Dequeue completed course u; for each dependent course v, decrement in-degree[v]. If in-degree[v] becomes 0, enqueue v.'
+    },
+    {
+      id: 'step4',
+      label: 'Cycle / Feasibility Verdict',
+      detail: 'If the total number of processed courses equals numCourses, all courses can be finished without deadlock.'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Course Schedule I (LeetCode 207)
+// Time Complexity: O(V + E) | Space Complexity: O(V + E)
 #include <vector>
 #include <queue>
 using namespace std;
 
-bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
-    vector<vector<int>> adj(numCourses);
-    vector<int> indegree(numCourses, 0);
-    
-    // [course, prereq] -> prereq is prerequisite of course: prereq -> course
-    for (auto& edge : prerequisites) {
-        adj[edge[1]].push_back(edge[0]);
-        indegree[edge[0]]++;
-    }
-    
-    queue<int> q;
-    for (int i = 0; i < numCourses; i++) {
-        if (indegree[i] == 0) q.push(i);
-    }
-    
-    int completedCourses = 0;
-    while (!q.empty()) {
-        int node = q.front();
-        q.pop();
-        completedCourses++;
+class Solution {
+public:
+    bool canFinish(int numCourses, vector<vector<int>>& prerequisites) {
+        vector<vector<int>> adj(numCourses);
+        vector<int> indegree(numCourses, 0);
         
-        for (auto nextCourse : adj[node]) {
-            indegree[nextCourse]--;
-            if (indegree[nextCourse] == 0) {
-                q.push(nextCourse);
+        // [course, prereq] -> prereq is prerequisite of course: prereq -> course
+        for (const auto& edge : prerequisites) {
+            adj[edge[1]].push_back(edge[0]);
+            indegree[edge[0]]++;
+        }
+        
+        queue<int> q;
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) q.push(i);
+        }
+        
+        int completedCourses = 0;
+        while (!q.empty()) {
+            int node = q.front();
+            q.pop();
+            completedCourses++;
+            
+            for (int nextCourse : adj[node]) {
+                indegree[nextCourse]--;
+                if (indegree[nextCourse] == 0) {
+                    q.push(nextCourse);
+                }
             }
         }
+        return completedCourses == numCourses;
     }
-    return completedCourses == numCourses;
-}`,
-  java: `// Java: Course Schedule I
+};`,
+  java: `// Java: Course Schedule I (LeetCode 207)
+// Time Complexity: O(V + E) | Space Complexity: O(V + E)
 import java.util.*;
 
 class Solution {
@@ -61,59 +92,69 @@ class Solution {
         
         Queue<Integer> q = new LinkedList<>();
         for (int i = 0; i < numCourses; i++) {
-            if (indegree[i] == 0) q.add(i);
+            if (indegree[i] == 0) q.offer(i);
         }
         
         int completed = 0;
         while (!q.isEmpty()) {
-            int cur = q.poll();
+            int node = q.poll();
             completed++;
-            for (int next : adj.get(cur)) {
+            for (int next : adj.get(node)) {
                 indegree[next]--;
-                if (indegree[next] == 0) q.add(next);
+                if (indegree[next] == 0) {
+                    q.offer(next);
+                }
             }
         }
         return completed == numCourses;
     }
 }`,
-  python: `# Python: Course Schedule I
+  python: `# Python: Course Schedule I (LeetCode 207)
+# Time Complexity: O(V + E) | Space Complexity: O(V + E)
 from collections import deque
 
-def canFinish(numCourses: int, prerequisites: list[list[int]]) -> bool:
-    adj = [[] for _ in range(numCourses)]
-    indegree = [0] * numCourses
-    for dest, src in prerequisites:
-        adj[src].append(dest)
-        indegree[dest] += 1
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: list[list[int]]) -> bool:
+        adj = [[] for _ in range(numCourses)]
+        indegree = [0] * numCourses
         
-    q = deque([i for i in range(numCourses) if indegree[i] == 0])
-    completed = 0
-    while q:
-        node = q.popleft()
-        completed += 1
-        for neighbor in adj[node]:
-            indegree[neighbor] -= 1
-            if indegree[neighbor] == 0:
-                q.append(neighbor)
-    return completed == numCourses
-`,
-  javascript: `// JavaScript: Course Schedule I
+        for crs, prereq in prerequisites:
+            adj[prereq].append(crs)
+            indegree[crs] += 1
+            
+        q = deque([i for i in range(numCourses) if indegree[i] == 0])
+        completed = 0
+        
+        while q:
+            node = q.popleft()
+            completed += 1
+            for next_crs in adj[node]:
+                indegree[next_crs] -= 1
+                if indegree[next_crs] == 0:
+                    q.append(next_crs)
+                    
+        return completed == numCourses`,
+  javascript: `// JavaScript: Course Schedule I (LeetCode 207)
+// Time Complexity: O(V + E) | Space Complexity: O(V + E)
 function canFinish(numCourses, prerequisites) {
   const adj = Array.from({ length: numCourses }, () => []);
   const indegree = new Array(numCourses).fill(0);
-  for (const [dest, src] of prerequisites) {
-    adj[src].push(dest);
-    indegree[dest]++;
+  
+  for (const [course, prereq] of prerequisites) {
+    adj[prereq].push(course);
+    indegree[course]++;
   }
+  
   const q = [];
   for (let i = 0; i < numCourses; i++) {
     if (indegree[i] === 0) q.push(i);
   }
+  
   let completed = 0;
-  while (q.length) {
-    const cur = q.shift();
+  while (q.length > 0) {
+    const node = q.shift();
     completed++;
-    for (const next of adj[cur]) {
+    for (const next of adj[node]) {
       indegree[next]--;
       if (indegree[next] === 0) q.push(next);
     }
@@ -124,94 +165,134 @@ function canFinish(numCourses, prerequisites) {
 
 export const steps = [
   {
-    title: '1. Prerequisite Graph: Courses [0, 1, 2, 3]',
     phase: 'GRAPH_SETUP',
-    codeLine: 11,
-    completed: 0,
-    indegree: [0, 1, 1, 1],
+    title: '1. Setup Dependency Graph: Courses [0, 1, 2, 3]',
+    mode: 'queue',
     queue: [0],
-    explanation: 'Edges: 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3. Course 0 has 0 prerequisites. Push 0 into queue.'
+    inputTrack: {
+      items: [0, 1, 1, 1],
+      label: 'Remaining In-Degrees (Course 0..3)'
+    },
+    scanIndex: 0,
+    activeIndices: [0],
+    customCard: {
+      title: 'Prerequisite Graph Analysis',
+      rows: [
+        { label: 'Prerequisites', value: '0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3', accent: true },
+        { label: 'In-Degrees', value: 'c0: 0, c1: 1, c2: 1, c3: 2' },
+        { label: 'Zero In-Degree Queue', value: '[ Course 0 ]' },
+        { label: 'Goal', value: 'Verify DAG acyclicity via Kahn\'s algorithm' }
+      ]
+    },
+    variables: {
+      completedCourses: '0 / 4',
+      queue: '[0]',
+      canFinish: 'Evaluating...'
+    },
+    metrics: {
+      completed: '0 / 4',
+      queueSize: 1,
+      cycleRisk: 'None'
+    },
+    explain: 'Course 0 has 0 prerequisites. Push Course 0 into the FIFO ready queue. All other courses wait on their prerequisites.',
+    intuition: 'Only courses with zero unresolved prerequisites can be taken immediately without conflict.'
   },
   {
-    title: '2. Complete Course 0: Unlock Courses 1 & 2',
     phase: 'COMPLETE_0',
-    codeLine: 24,
-    completed: 1,
-    indegree: [0, 0, 0, 1],
+    title: '2. Complete Course 0: Unlock Courses 1 & 2',
+    mode: 'queue',
     queue: [1, 2],
-    explanation: 'Finish Course 0. In-degrees of 1 and 2 drop to 0! Both are enqueued.'
+    inputTrack: {
+      items: [0, 0, 0, 2],
+      label: 'Remaining In-Degrees (Course 0..3)'
+    },
+    scanIndex: 0,
+    activeIndices: [1, 2],
+    customCard: {
+      title: 'Course 0 Graduation & Unlocks',
+      rows: [
+        { label: 'Course Taken', value: 'Course 0 completed', accent: true },
+        { label: 'Unlock c1', value: 'In-degree 1 -> 0 (Enqueued!)' },
+        { label: 'Unlock c2', value: 'In-degree 1 -> 0 (Enqueued!)' },
+        { label: 'Ready Queue', value: '[ Course 1, Course 2 ]' }
+      ]
+    },
+    variables: {
+      completedCourses: '1 / 4',
+      queue: '[1, 2]',
+      canFinish: 'True so far'
+    },
+    metrics: {
+      completed: '1 / 4',
+      queueSize: 2,
+      cycleRisk: 'None'
+    },
+    explain: 'Dequeue Course 0. Decrement in-degrees of dependent courses 1 and 2 to 0. Both become eligible and are pushed into the queue.',
+    intuition: 'Graduating from a course satisfies its prerequisite requirements for downstream courses.'
   },
   {
-    title: '3. Complete Courses 1 & 2: Unlock Course 3',
     phase: 'COMPLETE_1_2',
-    codeLine: 24,
-    completed: 3,
-    indegree: [0, 0, 0, 0],
+    title: '3. Complete Courses 1 & 2: Unlock Capstone Course 3',
+    mode: 'queue',
     queue: [3],
-    explanation: 'Finish Courses 1 & 2. In-degree of Course 3 drops to 0. Enqueued.'
+    inputTrack: {
+      items: [0, 0, 0, 0],
+      label: 'Remaining In-Degrees (Course 0..3)'
+    },
+    scanIndex: 3,
+    activeIndices: [3],
+    customCard: {
+      title: 'Intermediary Courses Completed',
+      rows: [
+        { label: 'Courses Taken', value: 'Courses 1 and 2 completed', accent: true },
+        { label: 'Unlock c3', value: 'In-degree drops: 2 -> 1 -> 0 (Enqueued!)' },
+        { label: 'Ready Queue', value: '[ Course 3 ]' }
+      ]
+    },
+    variables: {
+      completedCourses: '3 / 4',
+      queue: '[3]',
+      canFinish: 'True so far'
+    },
+    metrics: {
+      completed: '3 / 4',
+      queueSize: 1,
+      cycleRisk: 'None'
+    },
+    explain: 'Dequeue and complete Courses 1 and 2. Their graduation resolves all prerequisites for Course 3 (in-degree drops to 0). Course 3 is enqueued.',
+    intuition: 'A course with multiple prerequisites becomes ready only when the last dependency is resolved.'
   },
   {
-    title: '4. Complete Course 3: All 4 Courses Finished!',
     phase: 'ALL_DONE',
-    codeLine: 31,
-    completed: 4,
-    indegree: [0, 0, 0, 0],
+    title: '4. Complete Course 3: All 4 Courses Finished!',
+    mode: 'queue',
     queue: [],
-    explanation: 'Completed 4 / 4 courses with 0 cyclic deadlock! canFinish = true.'
+    inputTrack: {
+      items: [0, 0, 0, 0],
+      label: 'All In-Degrees Zeroed'
+    },
+    scanIndex: 3,
+    activeIndices: [0, 1, 2, 3],
+    customCard: {
+      title: 'Curriculum Feasibility Confirmed',
+      rows: [
+        { label: 'Total Completed', value: '4 / 4 courses', accent: true },
+        { label: 'Deadlock / Cycle', value: 'None detected' },
+        { label: 'Valid Linear Order', value: '[0, 1, 2, 3]' },
+        { label: 'Verdict', value: 'canFinish = true' }
+      ]
+    },
+    variables: {
+      completedCourses: '4 / 4',
+      queue: '[] (Empty)',
+      canFinish: 'true'
+    },
+    metrics: {
+      completed: '4 / 4',
+      queueSize: 0,
+      cycleRisk: 'Zero'
+    },
+    explain: 'Course 3 completed. All 4 out of 4 courses have been successfully taken with 0 cyclic deadlock! canFinish returns true.',
+    intuition: 'If an undetected cycle existed, the queue would empty prematurely leaving completed < numCourses.'
   }
 ];
-
-export default function CourseScheduleIVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Courses Finished: <strong className="text-cyan-200">{step.completed} / 4</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-          Feasibility: <strong className="text-emerald-200">TRUE (No Cycle)</strong>
-        </div>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
-          <span>Course Dependency Nodes &amp; Remaining Prerequisites</span>
-          <span className="text-cyan-400 font-bold">In-degree = Remaining Prereqs</span>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2.5 font-mono text-xs">
-          {[0, 1, 2, 3].map(c => (
-            <div
-              key={c}
-              className={`p-3 rounded-xl border flex flex-col items-center transition-all ${
-                step.completed > c
-                  ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-200'
-                  : step.indegree[c] === 0
-                  ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200'
-                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
-              }`}
-            >
-              <span className="font-bold">Course {c}</span>
-              <span className="text-[11px] mt-1 opacity-80">
-                {step.completed > c ? 'DONE' : `req: ${step.indegree[c]}`}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div className="p-3 rounded-xl bg-[#0f1017] border border-[#1f2233] text-xs font-mono flex items-center justify-between">
-          <span className="text-[#64748b]">Ready to Take (Queue):</span>
-          <span className="text-cyan-300 font-bold">
-            {step.queue.length > 0 ? `[${step.queue.map(c => `Course ${c}`).join(', ')}]` : 'None / Completed'}
-          </span>
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.explanation}
-      </div>
-    </div>
-  );
-}

@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Check for Prime Number',
@@ -6,12 +6,40 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(√N)',
   spaceComplexity: 'O(1)',
-  description: 'Determines if a given integer N is a prime number by testing potential divisors up to √N.'
+  description: 'Determines whether an integer N is a prime number in optimal O(√N) time by testing divisor divisibility up to i * i <= N.'
+};
+
+export const ideaMap = {
+  title: 'Square Root Primality Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Symmetric Divisor Pairs',
+      detail: 'If d divides N, then N/d also divides N. One factor is always <= √N and the other >= √N.'
+    },
+    {
+      id: 'step2',
+      label: 'Bound the Search Space',
+      detail: 'Testing numbers beyond √N is redundant. We only scan 2 <= i <= √N (or i * i <= N).'
+    },
+    {
+      id: 'step3',
+      label: 'Modulo Divisibility Test',
+      detail: 'If N % i == 0, N is composite (has factors other than 1 and itself).'
+    },
+    {
+      id: 'step4',
+      label: 'Conclude Primality',
+      detail: 'If no divisor divides N up to √N, N is strictly prime.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Prime Number Check (Optimal O(√N))
-// Time Complexity: O(√N) | Space Complexity: O(1)
+#include <iostream>
+using namespace std;
+
 class Solution {
 public:
     bool isPrime(int n) {
@@ -27,179 +55,143 @@ public:
         return true; // No divisors found, prime
     }
 };`,
-  python: `# Python 3 Prime Check
-import math
-
+  python: `# Python 3 Prime Check (Optimal O(√N))
 class Solution:
     def isPrime(self, n: int) -> bool:
         if n <= 1:
             return False
-            
-        for i in range(2, int(math.isqrt(n)) + 1):
+
+        i = 2
+        while i * i <= n:
             if n % i == 0:
                 return False
-                
+            i += 1
+
         return True`,
-  java: `// Java Prime Check
-class Solution {
+  java: `// Java Prime Check (Optimal O(√N))
+public class Solution {
     public boolean isPrime(int n) {
         if (n <= 1) return false;
+
         for (int i = 2; i * i <= n; i++) {
             if (n % i == 0) return false;
         }
+
         return true;
     }
 }`,
-  javascript: `// JavaScript Prime Check
-var isPrime = function(n) {
-    if (n <= 1) return false;
-    for (let i = 2; i * i <= n; i++) {
-        if (n % i === 0) return false;
-    }
-    return true;
-};`
+  javascript: `// JavaScript Prime Check (Optimal O(√N))
+function isPrime(n) {
+  if (n <= 1) return false;
+
+  for (let i = 2; i * i <= n; i++) {
+    if (n % i === 0) return false;
+  }
+
+  return true;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Setup: Test N = 37 up to √37 ≈ 6.08',
-    phase: 'INITIALIZATION',
-    codeLine: 9,
-    n: 37,
-    currentI: 2,
-    testedDivisors: [],
-    foundDivisor: null,
-    variables: { n: 37, 'limit (√n)': 6, i: 2 },
-    explain: 'To test if 37 is prime, we only need to test divisors up to √37 (i.e. i * i <= 37, max i = 6). Any factor pair > 6 would have a partner < 6.',
-    intuition: 'If n = a * b and both a, b > √n, then a * b > n (contradiction). Hence one factor must be <= √n.'
-  },
-  {
-    title: '2. Test i = 2: 37 % 2 = 1 (Not Divisible)',
-    phase: 'TESTING_DIVISOR',
-    codeLine: 10,
-    n: 37,
-    currentI: 2,
-    testedDivisors: [{ i: 2, rem: 1, divides: false }],
-    foundDivisor: null,
-    variables: { i: 2, '37 % 2': 1, divides: false },
-    explain: '37 divided by 2 gives remainder 1. 2 does not divide 37. Advance i to 3.',
-    intuition: 'Odd numbers are not divisible by 2.'
-  },
-  {
-    title: '3. Test i = 3: 37 % 3 = 1 (Not Divisible)',
-    phase: 'TESTING_DIVISOR',
-    codeLine: 10,
-    n: 37,
-    currentI: 3,
-    testedDivisors: [
-      { i: 2, rem: 1, divides: false },
-      { i: 3, rem: 1, divides: false }
+    title: 'Initialize Primality Test for N = 37',
+    phase: 'SETUP',
+    track: [2, 3, 4, 5, 6],
+    pointers: { i: 0 },
+    variables: { N: 37, sqrtN: '6.08', currentDivisor: 2 },
+    metrics: [
+      { label: 'Target N', value: '37' },
+      { label: 'Search Bound', value: 'i * i <= 37' },
+      { label: 'Max i to Test', value: '6' }
     ],
-    foundDivisor: null,
-    variables: { i: 3, '37 % 3': 1, divides: false },
-    explain: 'Sum of digits 3 + 7 = 10, not divisible by 3. 37 % 3 = 1. Advance i to 4.',
-    intuition: 'Divisibility test continues.'
+    explain: 'Testing if N = 37 is prime. Since factors occur in pairs (d, 37/d), any factor must appear at or below √37 ≈ 6.08. We test candidate divisors [2, 3, 4, 5, 6].',
+    action: 'Initialize divisor loop starting at i = 2.',
+    intuition: 'If 37 had a factor larger than 6, its complement pair would have to be smaller than 6. Testing up to 6 is exhaustive.',
+    formula: 'i * i <= N  =>  i <= √37 ≈ 6.08'
   },
   {
-    title: '4. Test i = 4 & i = 5: Remainder != 0',
-    phase: 'TESTING_DIVISOR',
-    codeLine: 10,
-    n: 37,
-    currentI: 5,
-    testedDivisors: [
-      { i: 2, rem: 1, divides: false },
-      { i: 3, rem: 1, divides: false },
-      { i: 4, rem: 1, divides: false },
-      { i: 5, rem: 2, divides: false }
+    title: 'Test Divisor i = 2',
+    phase: 'CHECK_DIVISOR',
+    track: [2, 3, 4, 5, 6],
+    pointers: { i: 0 },
+    highlightIndices: [0],
+    variables: { 'i * i': 4, '37 % 2': 1, divides: 'false' },
+    metrics: [
+      { label: 'Divisor i', value: '2' },
+      { label: 'i * i', value: '4 <= 37' },
+      { label: '37 % 2', value: '1 (No)' }
     ],
-    foundDivisor: null,
-    variables: { i: 5, '37 % 5': 2, divides: false },
-    explain: '37 % 4 = 1, 37 % 5 = 2. Neither divides 37.',
-    intuition: 'No factors found in 2, 3, 4, 5.'
+    explain: 'At i = 2: 2 * 2 = 4 <= 37. Check 37 % 2 = 1 != 0. 2 does not divide 37.',
+    action: 'Advance i to 3.',
+    intuition: '37 is odd, so 2 cannot be a factor.',
+    formula: '37 % 2 == 1 != 0'
   },
   {
-    title: '5. Test i = 6: 37 % 6 = 1 (Final Divisor Check)',
-    phase: 'BOUNDARY_REACHED',
-    codeLine: 10,
-    n: 37,
-    currentI: 6,
-    testedDivisors: [
-      { i: 2, rem: 1, divides: false },
-      { i: 3, rem: 1, divides: false },
-      { i: 4, rem: 1, divides: false },
-      { i: 5, rem: 2, divides: false },
-      { i: 6, rem: 1, divides: false }
+    title: 'Test Divisor i = 3',
+    phase: 'CHECK_DIVISOR',
+    track: [2, 3, 4, 5, 6],
+    pointers: { i: 1 },
+    highlightIndices: [1],
+    variables: { 'i * i': 9, '37 % 3': 1, divides: 'false' },
+    metrics: [
+      { label: 'Divisor i', value: '3' },
+      { label: 'i * i', value: '9 <= 37' },
+      { label: '37 % 3', value: '1 (No)' }
     ],
-    foundDivisor: null,
-    variables: { i: 6, 'i*i': 36, '37 % 6': 1, nextI: '7 (7*7=49 > 37)' },
-    explain: 'Final check: i = 6, 6*6 = 36 <= 37. 37 % 6 = 1. Next i = 7 has 7*7 = 49 > 37, which exceeds our √N limit!',
-    intuition: 'Loop terminates because i * i > n.'
+    explain: 'At i = 3: 3 * 3 = 9 <= 37. Check 37 % 3 = 1 != 0. 3 does not divide 37.',
+    action: 'Advance i to 4.',
+    intuition: 'Sum of digits 3 + 7 = 10 is not divisible by 3.',
+    formula: '37 % 3 == 1 != 0'
   },
   {
-    title: '6. Conclusion: 37 is a PRIME Number! ✓',
+    title: 'Test Divisors i = 4, 5, 6',
+    phase: 'CHECK_DIVISOR',
+    track: [2, 3, 4, 5, 6],
+    pointers: { i: 4 },
+    highlightIndices: [2, 3, 4],
+    variables: { '37 % 4': 1, '37 % 5': 2, '37 % 6': 1, allNonZero: 'true' },
+    metrics: [
+      { label: 'Tested Divisors', value: '4, 5, 6' },
+      { label: '6 * 6', value: '36 <= 37' },
+      { label: 'Any Factor?', value: 'None' }
+    ],
+    customCard: {
+      title: 'Divisibility Audit',
+      rows: [
+        { label: '37 % 4', value: '1 (Remainder > 0)' },
+        { label: '37 % 5', value: '2 (Remainder > 0)' },
+        { label: '37 % 6', value: '1 (Remainder > 0)' },
+        { label: 'Next i = 7', value: '7 * 7 = 49 > 37 (Terminates loop)', accent: true }
+      ]
+    },
+    explain: 'Testing i = 4, 5, and 6: none divide 37. For i = 7, 7 * 7 = 49 > 37, which exceeds the search boundary. Loop terminates.',
+    action: 'Terminate search: i * i > 37.',
+    intuition: 'All potential divisor pairs up to √N have been exhausted with zero matches.',
+    formula: 'i = 7 => 49 > 37 => Loop Exit'
+  },
+  {
+    title: 'Primality Confirmed: 37 is Prime',
     phase: 'COMPLETED',
-    codeLine: 15,
-    n: 37,
-    currentI: null,
-    testedDivisors: [
-      { i: 2, rem: 1, divides: false },
-      { i: 3, rem: 1, divides: false },
-      { i: 4, rem: 1, divides: false },
-      { i: 5, rem: 2, divides: false },
-      { i: 6, rem: 1, divides: false }
+    track: [2, 3, 4, 5, 6],
+    pointers: { result: 4 },
+    variables: { N: 37, isPrime: 'true', divisorsFound: 0 },
+    metrics: [
+      { label: 'Result', value: 'PRIME' },
+      { label: 'Time Complexity', value: 'O(√N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
     ],
-    foundDivisor: null,
-    variables: { isPrime: true, timeComplexity: 'O(√37) = 5 checks' },
-    explain: 'No divisors found in range [2 ... √37]. Therefore, 37 is guaranteed to be a PRIME number!',
-    intuition: 'O(√N) reduces checks from 37 iterations to just 5 iterations.'
+    customCard: {
+      title: 'Primality Summary',
+      rows: [
+        { label: 'Input Integer', value: 'N = 37', accent: true },
+        { label: 'Factors Found in [2..√N]', value: '0 factors' },
+        { label: 'Time Complexity', value: 'O(√N) - only 5 iterations tested' },
+        { label: 'Naive Comparison', value: 'O(N) would require 35 tests; O(√N) needs only 5' }
+      ]
+    },
+    explain: 'No integer between 2 and √37 divides 37. Therefore, 37 has no divisors other than 1 and itself. 37 is a PRIME number.',
+    action: 'Return true.',
+    intuition: 'Bounding tests by √N reduces a 10^12 query from 10^12 operations to just 10^6 operations in O(√N) time.',
+    formula: 'Result: 37 is PRIME'
   }
 ];
-
-export default function CheckForPrimeNumberVisualizer({ currentStep = 0, onStepChange }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Target Number Display */}
-      <div className="flex items-center gap-4">
-        <div className="px-6 py-3 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 text-center">
-          <span className="text-[10px] font-mono text-indigo-400 uppercase font-semibold block">Target Integer N</span>
-          <span className="text-3xl font-mono font-bold text-[var(--chalk)]">{step.n}</span>
-        </div>
-
-        <div className="px-5 py-3 rounded-2xl bg-[#14151c] border border-[#262834] text-center">
-          <span className="text-[10px] font-mono text-[#8e92a4] uppercase font-semibold block">Inspection Limit (√N)</span>
-          <span className="text-xl font-mono font-bold text-amber-400">i ≤ 6 (6² = 36)</span>
-        </div>
-      </div>
-
-      {/* Divisors Inspection Grid */}
-      <div className="w-full p-4 rounded-2xl bg-[#0c0d12] border border-[#20222a] space-y-3">
-        <h4 className="text-xs font-mono font-semibold text-[#8e92a4] uppercase tracking-wider">
-          Divisor Checks (2 to 6)
-        </h4>
-
-        <div className="grid grid-cols-5 gap-2.5">
-          {[2, 3, 4, 5, 6].map((divisor) => {
-            const isTested = step.testedDivisors.some((d) => d.i === divisor);
-            const isCurrent = step.currentI === divisor;
-
-            let cardStyle = 'border-[#262834] bg-[#14151c] text-[#5b5e6e]';
-            if (isCurrent) cardStyle = 'border-amber-500 bg-amber-500/20 text-amber-300 scale-105 shadow-md shadow-amber-500/25';
-            else if (isTested) cardStyle = 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300';
-
-            return (
-              <div key={divisor} className={`p-3 rounded-xl border flex flex-col items-center gap-1 font-mono transition-all ${cardStyle}`}>
-                <span className="text-xs text-[#8e92a4]">i = {divisor}</span>
-                <span className="text-base font-bold text-[var(--chalk)]">37 % {divisor}</span>
-                <span className="text-[11px] font-semibold">
-                  {isTested ? 'rem = ' + (37 % divisor) + ' ✗' : isCurrent ? 'testing...' : 'waiting'}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}

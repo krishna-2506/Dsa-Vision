@@ -1,5 +1,4 @@
-import React, { useState, useMemo } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   leetcode_id: 167,
@@ -7,659 +6,273 @@ export const meta = {
   category: 'Arrays & Two Pointers',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(1)',
+  spaceComplexity: 'O(1) Auxiliary',
   leetcodeUrl: 'https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/',
-  description: 'Find two numbers in a sorted array that sum up to target. Three approaches supported: Brute Force (O(N²)), Hash Map (O(N)), and Two Pointers (O(1) Space).'
+  description: 'Find two numbers such that they add up to a target sum in a sorted array using opposing Two Pointers in O(N) time and O(1) extra space.'
 };
 
-const DEFAULT_ARRAY = [2, 7, 11, 15, 19, 23];
-const DEFAULT_TARGET = 26;
+export const rendererType = 'array-scan';
 
-// ─── 1. OPTIMAL (TWO POINTERS) STEPS & TRACE ───
-export const defaultSteps = [
-  {
-    title: "1. Initialize Left & Right Pointers",
-    left: 0,
-    right: 5,
-    codeLine: 4,
-    variables: { left: 0, right: 5, target: 26, 'nums[left]': 2, 'nums[right]': 23, sum: 25 },
-    code: "// Initialize pointers at opposite array boundaries\nint left = 0, right = numbers.size() - 1;\nint target = 26;",
-    explanation: "Left pointer starts at index 0 (val=2), right pointer starts at index 5 (val=23). Target sum = 26.",
-    currentSum: 25,
-    status: 'less'
-  },
-  {
-    title: "2. Compute Sum: 2 + 23 = 25 (< 26)",
-    left: 0,
-    right: 5,
-    codeLine: 9,
-    variables: { left: 0, right: 5, target: 26, 'nums[left]': 2, 'nums[right]': 23, sum: 25 },
-    code: "int sum = numbers[left] + numbers[right]; // 2 + 23 = 25\nif (sum < target) left++; // Need larger sum",
-    explanation: "Sum 25 is strictly less than target 26. Since the array is sorted, increment left pointer to increase our sum.",
-    currentSum: 25,
-    status: 'less'
-  },
-  {
-    title: "3. Shift Left Pointer: index 0 ➔ 1",
-    left: 1,
-    right: 5,
-    codeLine: 10,
-    variables: { left: 1, right: 5, target: 26, 'nums[left]': 7, 'nums[right]': 23, sum: 30 },
-    code: "// Left pointer slides right to index 1 (val = 7)\nleft++;",
-    explanation: "Left pointer slides to index 1. New pair under evaluation is numbers[1] (7) and numbers[5] (23).",
-    currentSum: 30,
-    status: 'calc'
-  },
-  {
-    title: "4. Compute Sum: 7 + 23 = 30 (> 26)",
-    left: 1,
-    right: 5,
-    codeLine: 11,
-    variables: { left: 1, right: 5, target: 26, 'nums[left]': 7, 'nums[right]': 23, sum: 30 },
-    code: "int sum = numbers[left] + numbers[right]; // 7 + 23 = 30\nif (sum > target) right--; // Need smaller sum",
-    explanation: "Sum 30 exceeds target 26. Decrement right pointer to reduce our total sum.",
-    currentSum: 30,
-    status: 'greater'
-  },
-  {
-    title: "5. Shift Right Pointer: index 5 ➔ 4",
-    left: 1,
-    right: 4,
-    codeLine: 12,
-    variables: { left: 1, right: 4, target: 26, 'nums[left]': 7, 'nums[right]': 19, sum: 26 },
-    code: "// Right pointer slides left to index 4 (val = 19)\nright--;",
-    explanation: "Right pointer slides to index 4. Next evaluation pair: numbers[1] (7) and numbers[4] (19).",
-    currentSum: 26,
-    status: 'calc'
-  },
-  {
-    title: "6. Target Match Found! 7 + 19 == 26",
-    left: 1,
-    right: 4,
-    codeLine: 8,
-    variables: { left: 1, right: 4, target: 26, 'nums[left]': 7, 'nums[right]': 19, sum: 26, match: true },
-    code: "if (sum == target) return { left + 1, right + 1 }; // Return [2, 5]",
-    explanation: "Match confirmed! numbers[1] (7) + numbers[4] (19) equals 26. Completed in O(N) time with O(1) space.",
-    currentSum: 26,
-    status: 'found'
-  }
-];
+export const ideaMap = {
+  title: 'Two Pointers Search Strategy',
+  nodes: [
+    { id: 'root', label: 'Sorted Array Two-Pointer Invariant', children: ['bound-pointers', 'sum-check', 'branch-decision', 'match-termination', 'complexity'] },
+    { id: 'bound-pointers', label: '1. Boundary Pointers', detail: 'Place left = 0 (smallest available element) and right = N - 1 (largest available element).' },
+    { id: 'sum-check', label: '2. Evaluate Pair Sum', detail: 'Compute currentSum = nums[left] + nums[right] and compare with target.' },
+    { id: 'branch-decision', label: '3. Monotonic Adjustment', detail: 'If sum < target: increment left to enlarge sum. If sum > target: decrement right to diminish sum.' },
+    { id: 'match-termination', label: '4. Exact Target Match', detail: 'When currentSum == target, the unique pair is discovered; return 1-based indices [left + 1, right + 1].' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Linear O(N) runtime visiting each element at most once with strictly O(1) auxiliary memory.' }
+  ]
+};
 
-export const steps = defaultSteps;
-
-function generateTwoSumTrace(arr, target) {
-  const trace = [];
-  let left = 0;
-  let right = arr.length - 1;
-
-  trace.push({
-    title: `1. Initialize Left (idx=0) & Right (idx=${right})`,
-    left,
-    right,
-    codeLine: 4,
-    variables: { left, right, target, 'nums[left]': arr[left], 'nums[right]': arr[right], sum: arr[left] + arr[right] },
-    explanation: `Start two pointers at opposite array boundaries for target sum = ${target}.`,
-    currentSum: arr[left] + arr[right],
-    status: 'calc'
-  });
-
-  let stepNum = 2;
-  while (left < right) {
-    const sum = arr[left] + arr[right];
-
-    if (sum === target) {
-      trace.push({
-        title: `${stepNum}. Match Found! ${arr[left]} + ${arr[right]} == ${target}`,
-        left,
-        right,
-        codeLine: 8,
-        variables: { left, right, target, 'nums[left]': arr[left], 'nums[right]': arr[right], sum, match: true },
-        explanation: `Optimal pair discovered at indices [${left}, ${right}] summing exactly to ${target}!`,
-        currentSum: sum,
-        status: 'found'
-      });
-      return trace;
-    } else if (sum < target) {
-      trace.push({
-        title: `${stepNum}. Sum ${sum} < Target ${target} ➔ Shift Left Pointer`,
-        left,
-        right,
-        codeLine: 9,
-        variables: { left, right, target, 'nums[left]': arr[left], 'nums[right]': arr[right], sum },
-        explanation: `Sum ${sum} is too small. Increment left pointer from ${left} to ${left + 1} to increase pair sum.`,
-        currentSum: sum,
-        status: 'less'
-      });
-      left++;
-    } else {
-      trace.push({
-        title: `${stepNum}. Sum ${sum} > Target ${target} ➔ Shift Right Pointer`,
-        left,
-        right,
-        codeLine: 11,
-        variables: { left, right, target, 'nums[left]': arr[left], 'nums[right]': arr[right], sum },
-        explanation: `Sum ${sum} exceeds ${target}. Decrement right pointer from ${right} to ${right - 1} to decrease pair sum.`,
-        currentSum: sum,
-        status: 'greater'
-      });
-      right--;
-    }
-    stepNum++;
-  }
-
-  trace.push({
-    title: `${stepNum}. No Pair Found`,
-    left,
-    right,
-    codeLine: 13,
-    variables: { left, right, target, found: false },
-    explanation: `Pointers met without finding any valid pair summing to ${target}.`,
-    currentSum: '—',
-    status: 'not-found'
-  });
-
-  return trace;
-}
-
-// ─── 2. INTUITIVE (BRUTE FORCE NESTED LOOPS) TRACE ───
-function generateBruteForceTrace(arr, target) {
-  const trace = [];
-  let stepNum = 1;
-
-  trace.push({
-    title: `1. Begin Brute Force Search O(N²)`,
-    i: 0,
-    j: 1,
-    codeLine: 4,
-    variables: { i: 0, j: 1, target, 'nums[i]': arr[0], 'nums[j]': arr[1], sum: arr[0] + arr[1] },
-    explanation: `Scan through all pairs (i, j) where i < j until sum equals ${target}.`,
-    currentSum: arr[0] + arr[1],
-    status: 'calc'
-  });
-
-  for (let i = 0; i < arr.length; i++) {
-    for (let j = i + 1; j < arr.length; j++) {
-      const sum = arr[i] + arr[j];
-      stepNum++;
-      if (sum === target) {
-        trace.push({
-          title: `${stepNum}. Match Found at (i=${i}, j=${j})! ${arr[i]} + ${arr[j]} == ${target}`,
-          i,
-          j,
-          codeLine: 8,
-          variables: { i, j, target, 'nums[i]': arr[i], 'nums[j]': arr[j], sum, match: true },
-          explanation: `Brute force verified pair nums[${i}]=${arr[i]} and nums[${j}]=${arr[j]} equals target ${target}.`,
-          currentSum: sum,
-          status: 'found'
-        });
-        return trace;
-      } else {
-        // Sample up to first 6 steps to keep playback crisp
-        if (trace.length < 8) {
-          trace.push({
-            title: `${stepNum}. Check pair (${i}, ${j}): ${arr[i]} + ${arr[j]} = ${sum}`,
-            i,
-            j,
-            codeLine: 6,
-            variables: { i, j, target, 'nums[i]': arr[i], 'nums[j]': arr[j], sum },
-            explanation: `Pair sum ${sum} != ${target}. Advance inner loop pointer j.`,
-            currentSum: sum,
-            status: sum < target ? 'less' : 'greater'
-          });
-        }
-      }
-    }
-  }
-
-  trace.push({
-    title: `${stepNum}. Exhausted all pairs`,
-    i: arr.length - 1,
-    j: arr.length - 1,
-    codeLine: 12,
-    variables: { target, found: false },
-    explanation: `No two numbers sum to ${target}.`,
-    currentSum: '—',
-    status: 'not-found'
-  });
-  return trace;
-}
-
-// ─── 3. BETTER (HASH MAP LOOKUP) TRACE ───
-function generateHashMapTrace(arr, target) {
-  const trace = [];
-  const map = {};
-  let stepNum = 1;
-
-  trace.push({
-    title: `1. Initialize Empty Hash Map`,
-    i: 0,
-    hashMap: {},
-    codeLine: 3,
-    variables: { i: 0, target, complement: target - arr[0], 'map.size': 0 },
-    explanation: `Create a Hash Map storing value -> index. Single pass O(N) lookup.`,
-    currentSum: '—',
-    status: 'calc'
-  });
-
-  for (let i = 0; i < arr.length; i++) {
-    const val = arr[i];
-    const complement = target - val;
-    stepNum++;
-
-    if (map[complement] !== undefined) {
-      const matchIdx = map[complement];
-      trace.push({
-        title: `${stepNum}. Match in Hash Map! ${complement} was seen at idx ${matchIdx}`,
-        i,
-        matchIdx,
-        complement,
-        hashMap: { ...map },
-        codeLine: 7,
-        variables: { i, 'nums[i]': val, complement, matchIdx, match: true },
-        explanation: `Target ${target} - ${val} = ${complement}. ${complement} was found in the Hash Map! Total pair: [${matchIdx}, ${i}].`,
-        currentSum: val + complement,
-        status: 'found'
-      });
-      return trace;
-    } else {
-      map[val] = i;
-      trace.push({
-        title: `${stepNum}. Inspect nums[${i}]=${val}. Store in Map`,
-        i,
-        complement,
-        hashMap: { ...map },
-        codeLine: 9,
-        variables: { i, 'nums[i]': val, complement, 'map[val]': i },
-        explanation: `Complement ${complement} is not yet in Hash Map. Insert ${val} ➔ index ${i} into table.`,
-        currentSum: '—',
-        status: 'calc'
-      });
-    }
-  }
-
-  return trace;
-}
-
-// ─── MULTI-TIER APPROACHES SPECIFICATION ───
-export const approaches = {
-  intuitive: {
-    title: 'Intuitive: Brute Force Nested Loops',
-    badge: 'Brute Force',
-    complexity: { time: 'O(N²)', space: 'O(1)' },
-    steps: generateBruteForceTrace(DEFAULT_ARRAY, DEFAULT_TARGET),
-    solutions: {
-      cpp: `// 🥉 Intuitive Approach: Brute Force Nested Loops
-// Time Complexity: O(N^2) - checks every pair of elements
-// Space Complexity: O(1) - constant auxiliary memory
-
+export const solutions = {
+  cpp: `// C++ Optimal Two Pointers on Sorted Array
+// Time Complexity: O(N) | Space Complexity: O(1)
 #include <vector>
+using namespace std;
 
 class Solution {
 public:
-    std::vector<int> twoSum(const std::vector<int>& numbers, int target) {
-        int n = numbers.size();
-        // Check all pairs (i, j) with i < j
-        for (int i = 0; i < n; ++i) {
-            for (int j = i + 1; j < n; ++j) {
-                if (numbers[i] + numbers[j] == target) {
-                    // 1-based index
-                    return { i + 1, j + 1 };
-                }
-            }
-        }
-        return {};
-    }
-};`,
-      python: `# 🥉 Intuitive Approach: Brute Force Nested Loops
-# Time Complexity: O(N^2)
-# Space Complexity: O(1)
-
-class Solution:
-    def twoSum(self, numbers: list[int], target: int) -> list[int]:
-        n = len(numbers)
-        for i in range(n):
-            for j in range(i + 1, n):
-                if numbers[i] + numbers[j] == target:
-                    return [i + 1, j + 1]
-        return []`,
-      java: `// 🥉 Intuitive Approach: Brute Force Nested Loops
-// Time: O(N^2), Space: O(1)
-
-class Solution {
-    public int[] twoSum(int[] numbers, int target) {
-        int n = numbers.length;
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                if (numbers[i] + numbers[j] == target) {
-                    return new int[] { i + 1, j + 1 };
-                }
-            }
-        }
-        return new int[0];
-    }
-}`,
-      javascript: `// 🥉 Intuitive Approach: Brute Force Nested Loops
-// Time: O(N^2), Space: O(1)
-
-var twoSum = function(numbers, target) {
-    const n = numbers.length;
-    for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-            if (numbers[i] + numbers[j] === target) {
-                return [i + 1, j + 1];
-            }
-        }
-    }
-    return [];
-};`
-    }
-  },
-  better: {
-    title: 'Better: Hash Map Value Lookup',
-    badge: 'Hash Map',
-    complexity: { time: 'O(N)', space: 'O(N)' },
-    steps: generateHashMapTrace(DEFAULT_ARRAY, DEFAULT_TARGET),
-    solutions: {
-      cpp: `// 🥈 Better Approach: Hash Map Lookup
-// Time Complexity: O(N) - single pass through array
-// Space Complexity: O(N) - hash table stores seen values
-
-#include <vector>
-#include <unordered_map>
-
-class Solution {
-public:
-    std::vector<int> twoSum(const std::vector<int>& numbers, int target) {
-        std::unordered_map<int, int> seen;
-        for (int i = 0; i < numbers.size(); ++i) {
-            int complement = target - numbers[i];
-            if (seen.find(complement) != seen.end()) {
-                return { seen[complement], i + 1 };
-            }
-            seen[numbers[i]] = i + 1;
-        }
-        return {};
-    }
-};`,
-      python: `# 🥈 Better Approach: Hash Map Lookup
-# Time Complexity: O(N), Space Complexity: O(N)
-
-class Solution:
-    def twoSum(self, numbers: list[int], target: int) -> list[int]:
-        seen = {}
-        for i, num in enumerate(numbers):
-            complement = target - num
-            if complement in seen:
-                return [seen[complement] + 1, i + 1]
-            seen[num] = i
-        return []`,
-      java: `// 🥈 Better Approach: Hash Map Lookup
-// Time: O(N), Space: O(N)
-
-import java.util.HashMap;
-import java.util.Map;
-
-class Solution {
-    public int[] twoSum(int[] numbers, int target) {
-        Map<Integer, Integer> seen = new HashMap<>();
-        for (int i = 0; i < numbers.length; i++) {
-            int complement = target - numbers[i];
-            if (seen.containsKey(complement)) {
-                return new int[] { seen.get(complement) + 1, i + 1 };
-            }
-            seen.put(numbers[i], i);
-        }
-        return new int[0];
-    }
-}`,
-      javascript: `// 🥈 Better Approach: Hash Map Lookup
-// Time: O(N), Space: O(N)
-
-var twoSum = function(numbers, target) {
-    const seen = new Map();
-    for (let i = 0; i < numbers.length; i++) {
-        const complement = target - numbers[i];
-        if (seen.has(complement)) {
-            return [seen.get(complement) + 1, i + 1];
-        }
-        seen.set(numbers[i], i);
-    }
-    return [];
-};`
-    }
-  },
-  optimal: {
-    title: 'Optimal: Two Converging Pointers',
-    badge: 'Two Pointers',
-    complexity: { time: 'O(N)', space: 'O(1)' },
-    steps: defaultSteps,
-    solutions: {
-      cpp: `// 🥇 Optimal Approach: Two Converging Pointers
-// Time Complexity: O(N) - pointers converge inwards
-// Space Complexity: O(1) - no extra memory needed
-
-#include <vector>
-
-class Solution {
-public:
-    std::vector<int> twoSum(const std::vector<int>& numbers, int target) {
+    vector<int> twoSum(vector<int>& numbers, int target) {
         int left = 0;
-        int right = numbers.size() - 1;
+        int right = (int)numbers.size() - 1;
 
         while (left < right) {
-            int sum = numbers[left] + numbers[right];
-            if (sum == target) {
-                return { left + 1, right + 1 };
-            } else if (sum < target) {
-                left++;
+            int currentSum = numbers[left] + numbers[right];
+
+            if (currentSum == target) {
+                // Return 1-based indices as required by LeetCode 167
+                return {left + 1, right + 1};
+            } else if (currentSum < target) {
+                left++; // Sum too small -> advance left pointer
             } else {
-                right--;
+                right--; // Sum too large -> advance right pointer
             }
         }
+
         return {};
     }
 };`,
-      python: `# 🥇 Optimal Approach: Two Converging Pointers
-# Time Complexity: O(N)
-# Space Complexity: O(1)
-
+  python: `# Python 3 Optimal Two Pointers on Sorted Array
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def twoSum(self, numbers: list[int], target: int) -> list[int]:
-        left, right = 0, len(numbers) - 1
+        left = 0
+        right = len(numbers) - 1
+
         while left < right:
-            s = numbers[left] + numbers[right]
-            if s == target:
+            current_sum = numbers[left] + numbers[right]
+
+            if current_sum == target:
                 return [left + 1, right + 1]
-            elif s < target:
+            elif current_sum < target:
                 left += 1
             else:
                 right -= 1
-        return []`,
-      java: `// 🥇 Optimal Approach: Two Converging Pointers
-// Time: O(N), Space: O(1)
 
+        return []`,
+  java: `// Java Optimal Two Pointers on Sorted Array
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public int[] twoSum(int[] numbers, int target) {
-        int left = 0, right = numbers.length - 1;
+        int left = 0;
+        int right = numbers.length - 1;
+
         while (left < right) {
-            int sum = numbers[left] + numbers[right];
-            if (sum == target) {
-                return new int[] { left + 1, right + 1 };
-            } else if (sum < target) {
+            int currentSum = numbers[left] + numbers[right];
+
+            if (currentSum == target) {
+                return new int[]{left + 1, right + 1};
+            } else if (currentSum < target) {
                 left++;
             } else {
                 right--;
             }
         }
-        return new int[0];
+
+        return new int[]{};
     }
 }`,
-      javascript: `// 🥇 Optimal Approach: Two Converging Pointers
-// Time: O(N), Space: O(1)
-
+  javascript: `// JavaScript Optimal Two Pointers on Sorted Array
+// Time Complexity: O(N) | Space Complexity: O(1)
 var twoSum = function(numbers, target) {
-    let left = 0, right = numbers.length - 1;
+    let left = 0;
+    let right = numbers.length - 1;
+
     while (left < right) {
-        const sum = numbers[left] + numbers[right];
-        if (sum === target) {
+        const currentSum = numbers[left] + numbers[right];
+
+        if (currentSum === target) {
             return [left + 1, right + 1];
-        } else if (sum < target) {
+        } else if (currentSum < target) {
             left++;
         } else {
             right--;
         }
     }
+
     return [];
 };`
-    }
-  }
 };
 
-export default function TwoSumVisualizer({
-  currentStep: externalStep,
-  onStepChange,
-  customInput = '',
-  customTarget = '',
-  approachTier = 'optimal'
-}) {
-  const [internalStep, setInternalStep] = useState(0);
+const ARRAY = [2, 7, 11, 15, 19, 23];
+const TARGET = 26;
 
-  const { activeArray, activeTarget, activeSteps } = useMemo(() => {
-    let arr = DEFAULT_ARRAY;
-    let tgt = DEFAULT_TARGET;
-
-    if (customInput && customInput.trim()) {
-      try {
-        const parsed = JSON.parse(customInput.trim());
-        if (Array.isArray(parsed) && parsed.length >= 2) {
-          arr = parsed.map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
-        }
-      } catch {
-        const parts = customInput.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
-        if (parts.length >= 2) arr = parts.sort((a, b) => a - b);
-      }
-    }
-
-    if (customTarget && customTarget.trim() !== '') {
-      const parsedTgt = Number(customTarget);
-      if (!isNaN(parsedTgt)) tgt = parsedTgt;
-    }
-
-    let trace;
-    if (approachTier === 'intuitive') {
-      trace = generateBruteForceTrace(arr, tgt);
-    } else if (approachTier === 'better') {
-      trace = generateHashMapTrace(arr, tgt);
-    } else {
-      trace = (customInput || customTarget) ? generateTwoSumTrace(arr, tgt) : defaultSteps;
-    }
-
-    return {
-      activeArray: arr,
-      activeTarget: tgt,
-      activeSteps: trace
-    };
-  }, [customInput, customTarget, approachTier]);
-
-  const stepIndex = externalStep !== undefined ? Math.min(externalStep, activeSteps.length - 1) : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = activeSteps[stepIndex] || activeSteps[0];
-
-  const handleNext = () => {
-    if (stepIndex < activeSteps.length - 1) setStep(stepIndex + 1);
-  };
-
-  const handlePrev = () => {
-    if (stepIndex > 0) setStep(stepIndex - 1);
-  };
-
-  // Determine pointers based on approach tier
-  const pointers = useMemo(() => {
-    if (approachTier === 'intuitive') {
-      const pts = [];
-      if (stepData.i !== undefined) {
-        pts.push({ index: stepData.i, label: 'i', color: stepData.status === 'found' ? 'emerald' : 'indigo' });
-      }
-      if (stepData.j !== undefined) {
-        pts.push({ index: stepData.j, label: 'j', color: stepData.status === 'found' ? 'emerald' : 'amber' });
-      }
-      return pts;
-    }
-
-    if (approachTier === 'better') {
-      const pts = [];
-      if (stepData.i !== undefined) {
-        pts.push({ index: stepData.i, label: 'cur', color: stepData.status === 'found' ? 'emerald' : 'indigo' });
-      }
-      if (stepData.matchIdx !== undefined) {
-        pts.push({ index: stepData.matchIdx, label: 'match', color: 'emerald' });
-      }
-      return pts;
-    }
-
-    // Optimal Two Pointers
-    return [
-      { index: stepData.left, label: 'L', color: stepData.status === 'found' ? 'emerald' : 'indigo' },
-      { index: stepData.right, label: 'R', color: stepData.status === 'found' ? 'emerald' : 'amber' }
-    ];
-  }, [approachTier, stepData]);
-
-  const matchIndices = useMemo(() => {
-    if (stepData.status !== 'found') return [];
-    if (approachTier === 'intuitive') return [stepData.i, stepData.j].filter(n => n !== undefined);
-    if (approachTier === 'better') return [stepData.matchIdx, stepData.i].filter(n => n !== undefined);
-    return [stepData.left, stepData.right].filter(n => n !== undefined);
-  }, [approachTier, stepData]);
-
-  return (
-    <div className="w-full flex flex-col bg-[var(--board-raised)] rounded-[3px] overflow-hidden">
-      {/* Visualizer Canvas */}
-      <div className="p-4 sm:p-6 flex flex-col items-center justify-center min-h-[220px]">
-        <ArrayView
-          items={activeArray}
-          pointers={pointers}
-          matchIndices={matchIndices}
-        />
-
-        {/* Real-time Comparison HUD in chalkboard status-line style */}
-        {approachTier === 'better' ? (
-          <div className="status-line w-full text-center">
-            {stepData.hashMap && Object.keys(stepData.hashMap).length > 0 ? (
-              <span>
-                map = &#123;{' '}
-                {Object.entries(stepData.hashMap).map(([val, idx], i) => (
-                  <span key={val}>
-                    {i > 0 ? ', ' : ''}<b>{val}</b>: <span className="prev-b">[{idx}]</span>
-                  </span>
-                ))}{' '}
-                &#125; · target = <b>{activeTarget}</b>
-              </span>
-            ) : (
-              <span>map = &#123;&#125; (empty) · target = <b>{activeTarget}</b></span>
-            )}
-          </div>
-        ) : (
-          <div className="status-line w-full text-center">
-            {approachTier === 'intuitive' ? (
-              <span>
-                <b>nums[{stepData.i}] ({activeArray[stepData.i] ?? '—'})</b> + <span className="prev-b">nums[{stepData.j}] ({activeArray[stepData.j] ?? '—'})</span> = <b>{stepData.currentSum}</b> · target = {activeTarget}
-                {stepData.status === 'found' ? ' · <span style="color:var(--easy);font-weight:600">MATCH ✓</span>' : ''}
-              </span>
-            ) : (
-              <span>
-                <span className="prev-b">L[{stepData.left}] ({activeArray[stepData.left] ?? '—'})</span>, <b>R[{stepData.right}] ({activeArray[stepData.right] ?? '—'})</b> · sum = <b>{stepData.currentSum}</b>
-                {stepData.status === 'found' ? ' == target (26) · <span style="color:var(--easy);font-weight:600">MATCH ✓</span>' : stepData.status === 'less' ? ' < target (26)' : ' > target (26)'}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* Handwritten / Chalkboard Explanation */}
-        <p className="explain text-center mt-3">
-          <span className="note">Note: </span>
-          {stepData.explanation}
-        </p>
-      </div>
-    </div>
-  );
-}
+export const steps = [
+  {
+    title: '1. Setup Opposing Pointers',
+    phase: 'INITIALIZATION',
+    codeLine: 8,
+    track: {
+      label: 'nums (sorted)',
+      items: [
+        { val: 2, status: 'current' },
+        { val: 7, status: 'default' },
+        { val: 11, status: 'default' },
+        { val: 15, status: 'default' },
+        { val: 19, status: 'default' },
+        { val: 23, status: 'current' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'left', color: 'accent' },
+      { index: 5, label: 'right', color: 'amber' }
+    ],
+    activeIndices: [0, 5],
+    metrics: [
+      { label: 'Target', value: '26' },
+      { label: 'left (idx 0)', value: '2' },
+      { label: 'right (idx 5)', value: '23' },
+      { label: 'Current Sum', value: '25' }
+    ],
+    customCard: {
+      title: 'Boundary Evaluation',
+      rows: [
+        { label: 'nums[left] + nums[right]', value: '2 + 23 = 25' },
+        { label: 'Target Comparison', value: '25 < 26 (Deficit of 1)' },
+        { label: 'Action Decision', value: 'left++ (advance leftward bound)' }
+      ]
+    },
+    formula: 'left = 0, right = N - 1; sum = nums[0] + nums[5] = 25',
+    action: 'Initialize left at index 0 (val 2) and right at index 5 (val 23). Compute initial pair sum.',
+    explain: 'Array is monotonically sorted. The smallest possible sum with right=5 is 2 + 23 = 25. Since 25 < 26, any pair with left=0 and a smaller right will be even smaller than 25.',
+    intuition: 'Sorting gives us directionality. Because 2 + 23 is already too small, no other element paired with 2 can ever reach 26, so left=0 can be permanently eliminated.'
+  },
+  {
+    title: '2. Increment Left Pointer (left: 0 -> 1)',
+    phase: 'POINTER_SHIFT',
+    codeLine: 18,
+    track: {
+      label: 'nums (sorted)',
+      items: [
+        { val: 2, status: 'dimmed' },
+        { val: 7, status: 'current' },
+        { val: 11, status: 'default' },
+        { val: 15, status: 'default' },
+        { val: 19, status: 'default' },
+        { val: 23, status: 'current' }
+      ]
+    },
+    pointers: [
+      { index: 1, label: 'left', color: 'accent' },
+      { index: 5, label: 'right', color: 'amber' }
+    ],
+    activeIndices: [1, 5],
+    metrics: [
+      { label: 'Target', value: '26' },
+      { label: 'left (idx 1)', value: '7' },
+      { label: 'right (idx 5)', value: '23' },
+      { label: 'Current Sum', value: '30' }
+    ],
+    customCard: {
+      title: 'Boundary Evaluation',
+      rows: [
+        { label: 'nums[left] + nums[right]', value: '7 + 23 = 30' },
+        { label: 'Target Comparison', value: '30 > 26 (Surplus of 4)' },
+        { label: 'Action Decision', value: 'right-- (contract rightward bound)' }
+      ]
+    },
+    formula: 'left++; sum = nums[1] + nums[5] = 7 + 23 = 30',
+    action: 'Increment left to index 1 (value 7). Calculate new sum 7 + 23 = 30.',
+    explain: 'Sum 30 exceeds target 26. Since elements to the right of left are only larger, pairing right=5 (val 23) with any remaining index >= 1 will always produce a sum >= 30.',
+    intuition: 'Because 7 + 23 is strictly greater than 26, right=5 cannot pair with any valid element in [1..5]. Thus, right=5 is safely eliminated.'
+  },
+  {
+    title: '3. Decrement Right Pointer (right: 5 -> 4)',
+    phase: 'POINTER_SHIFT',
+    codeLine: 20,
+    track: {
+      label: 'nums (sorted)',
+      items: [
+        { val: 2, status: 'dimmed' },
+        { val: 7, status: 'match' },
+        { val: 11, status: 'default' },
+        { val: 15, status: 'default' },
+        { val: 19, status: 'match' },
+        { val: 23, status: 'dimmed' }
+      ]
+    },
+    pointers: [
+      { index: 1, label: 'left', color: 'accent' },
+      { index: 4, label: 'right', color: 'amber' }
+    ],
+    activeIndices: [1, 4],
+    metrics: [
+      { label: 'Target', value: '26' },
+      { label: 'left (idx 1)', value: '7' },
+      { label: 'right (idx 4)', value: '19' },
+      { label: 'Current Sum', value: '26' }
+    ],
+    customCard: {
+      title: 'Target Match Found!',
+      rows: [
+        { label: 'nums[left] + nums[right]', value: '7 + 19 = 26' },
+        { label: 'Target Comparison', value: '26 == 26 (EXACT MATCH!)' },
+        { label: '1-Based Indices', value: '[left + 1, right + 1] = [2, 5]' }
+      ]
+    },
+    formula: 'right--; sum = nums[1] + nums[4] = 7 + 19 = 26 == target',
+    action: 'Decrement right to index 4 (value 19). Evaluate sum: 7 + 19 = 26.',
+    explain: 'The current sum 26 exactly matches our target 26. The search terminates immediately.',
+    intuition: 'Each iteration permanently rules out either the left candidate or the right candidate, yielding a strictly monotonic window reduction in O(N) steps.'
+  },
+  {
+    title: '4. Return 1-Based Indices: [2, 5]',
+    phase: 'COMPLETED',
+    codeLine: 13,
+    track: {
+      label: 'nums (sorted)',
+      items: [
+        { val: 2, status: 'dimmed' },
+        { val: 7, status: 'match' },
+        { val: 11, status: 'dimmed' },
+        { val: 15, status: 'dimmed' },
+        { val: 19, status: 'match' },
+        { val: 23, status: 'dimmed' }
+      ]
+    },
+    pointers: [
+      { index: 1, label: 'ans[0]', color: 'accent' },
+      { index: 4, label: 'ans[1]', color: 'amber' }
+    ],
+    activeIndices: [1, 4],
+    metrics: [
+      { label: 'Result', value: '[2, 5]' },
+      { label: 'Values', value: '7 + 19 = 26' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Final Summary',
+      rows: [
+        { label: 'Matching Values', value: 'nums[1] = 7, nums[4] = 19' },
+        { label: 'Output Format', value: '1-based indices: [2, 5]' },
+        { label: 'Comparison Steps', value: 'Found in only 3 pointer steps' }
+      ]
+    },
+    formula: 'return {left + 1, right + 1}; // {2, 5}',
+    action: 'Return vector/array [2, 5]. Execution successfully completed.',
+    explain: 'The algorithm identified the exact solution in 3 steps without allocating any auxiliary memory arrays or hash structures.',
+    intuition: 'Opposing two pointers on a sorted array transforms an otherwise O(N²) quadratic search space into an elegant O(N) linear sweep with zero heap allocations.'
+  }
+];

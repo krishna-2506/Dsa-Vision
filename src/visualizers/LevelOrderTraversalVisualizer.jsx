@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Level Order Traversal of Binary Tree (BFS)',
@@ -6,12 +6,37 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(N) queue space',
-  description: 'Traverses a binary tree level by level from top to bottom and left to right using a First-In-First-Out (FIFO) queue.'
+  description: 'Traverses a binary tree level by level from top to bottom and left to right using a First-In-First-Out (FIFO) queue, processing each horizontal tier in optimal O(N) time.'
+};
+
+export const ideaMap = {
+  title: 'Breadth-First Level Traversal Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Enqueue Root Node',
+      detail: 'Push root node into a FIFO queue to seed the breadth-first frontier.'
+    },
+    {
+      id: 'step2',
+      label: 'Snapshot Level Width',
+      detail: 'Measure queue.size() at the start of each level to isolate the current tier.'
+    },
+    {
+      id: 'step3',
+      label: 'Dequeue & Enqueue Children',
+      detail: 'Pop nodes of current level and push their non-null left and right children.'
+    },
+    {
+      id: 'step4',
+      label: 'Iterate Until Queue Empty',
+      detail: 'Repeat until queue is exhausted, capturing each horizontal layer in order.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Level Order Traversal (BFS)
-// Time: O(N) | Space: O(N)
 #include <vector>
 #include <queue>
 using namespace std;
@@ -27,7 +52,7 @@ class Solution {
 public:
     vector<vector<int>> levelOrder(TreeNode* root) {
         vector<vector<int>> result;
-        if (root == nullptr) return result;
+        if (!root) return result;
 
         queue<TreeNode*> q;
         q.push(root);
@@ -39,11 +64,10 @@ public:
             for (int i = 0; i < levelSize; i++) {
                 TreeNode* node = q.front();
                 q.pop();
-
                 currentLevel.push_back(node->val);
 
-                if (node->left != nullptr) q.push(node->left);
-                if (node->right != nullptr) q.push(node->right);
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
             }
 
             result.push_back(currentLevel);
@@ -62,25 +86,25 @@ class TreeNode:
         self.right = right
 
 class Solution:
-    def levelOrder(self, root: TreeNode | None) -> list[list[int]]:
-        if not root:
-            return []
-
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
         result = []
-        q = deque([root])
+        if not root:
+            return result
 
-        while q:
-            level_size = len(q)
+        queue = deque([root])
+
+        while queue:
+            level_size = len(queue)
             current_level = []
 
             for _ in range(level_size):
-                node = q.popleft()
+                node = queue.popleft()
                 current_level.append(node.val)
 
                 if node.left:
-                    q.append(node.left)
+                    queue.append(node.left)
                 if node.right:
-                    q.append(node.right)
+                    queue.append(node.right)
 
             result.append(current_level)
 
@@ -88,24 +112,30 @@ class Solution:
   java: `// Java Level Order Traversal (BFS)
 import java.util.*;
 
-class Solution {
+class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int x) { val = x; }
+}
+
+public class Solution {
     public List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> result = new ArrayList<>();
         if (root == null) return result;
 
-        Queue<TreeNode> q = new LinkedList<>();
-        q.offer(root);
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
 
-        while (!q.isEmpty()) {
-            int levelSize = q.size();
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
             List<Integer> currentLevel = new ArrayList<>();
 
             for (int i = 0; i < levelSize; i++) {
-                TreeNode node = q.poll();
+                TreeNode node = queue.poll();
                 currentLevel.add(node.val);
 
-                if (node.left != null) q.offer(node.left);
-                if (node.right != null) q.offer(node.right);
+                if (node.left != null) queue.offer(node.left);
+                if (node.right != null) queue.offer(node.right);
             }
 
             result.add(currentLevel);
@@ -115,10 +145,10 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Level Order Traversal (BFS)
-var levelOrder = function(root) {
-    if (!root) return [];
-
+function levelOrder(root) {
     const result = [];
+    if (!root) return result;
+
     const queue = [root];
 
     while (queue.length > 0) {
@@ -137,114 +167,126 @@ var levelOrder = function(root) {
     }
 
     return result;
-};`
+}`
+};
+
+const tree = {
+  val: 1,
+  left: {
+    val: 2,
+    left: { val: 4 },
+    right: { val: 5 }
+  },
+  right: {
+    val: 3,
+    left: { val: 6 },
+    right: { val: 7 }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Initialize BFS Queue: Push Root (Node 1) into Queue',
-    phase: 'INITIAL',
-    codeLine: 21,
-    queue: [1],
-    levels: [],
-    activeLevel: 0,
-    variables: { queue: '[1]', levelSize: 1 },
-    explain: 'Queue holds current active frontier nodes. Level 0 contains just the root [1].',
-    intuition: 'FIFO queue ensures nodes are visited in breadth-first order.'
+    title: 'Initialize BFS Queue with Root (1)',
+    phase: 'SETUP',
+    tree,
+    activeVal: 1,
+    nodeLabels: { 1: 'Frontier (Q)' },
+    traversal: [],
+    traversalLabel: 'Level Order Output: []',
+    variables: { queue: '[1]', currentLevel: 0, levelNodes: '[1]' },
+    metrics: [
+      { label: 'Current Level', value: 'Level 0' },
+      { label: 'Queue Size', value: '1' },
+      { label: 'Traversed', value: '0 / 7' }
+    ],
+    explain: 'Initialize a FIFO queue and enqueue the root node (1). Level 0 has 1 node.',
+    action: 'queue.push(root);',
+    intuition: 'A FIFO queue ensures that all nodes at depth d are visited before any node at depth d + 1.',
+    formula: 'queue = [1]'
   },
   {
-    title: '2. Process Level 0: Pop 1 -> Enqueue children (2, 3) -> Level 0 = [1]',
-    phase: 'PROCESS_LEVEL',
-    codeLine: 28,
-    queue: [2, 3],
-    levels: [[1]],
-    activeLevel: 0,
-    variables: { popped: 1, enqueued: '[2, 3]', completedLevel: '[1]' },
-    explain: 'Node 1 popped. Its left child 2 and right child 3 are enqueued. Level 0 completed: [1].',
-    intuition: 'Level 0 finished.'
+    title: 'Process Level 0: Dequeue (1) -> Enqueue (2, 3)',
+    phase: 'PROCESS_LEVEL_0',
+    tree,
+    activeVal: 1,
+    nodeLabels: { 1: 'Processed', 2: 'Queued', 3: 'Queued' },
+    traversal: [1],
+    traversalLabel: 'Level Order Output: [1]',
+    variables: { dequeued: 1, enqueued: '2, 3', queue: '[2, 3]' },
+    metrics: [
+      { label: 'Completed Level', value: 'Level 0: [1]' },
+      { label: 'Queue Size', value: '2' },
+      { label: 'Next Level', value: 'Level 1' }
+    ],
+    explain: 'Pop Node 1 from queue and record it into output. Enqueue its non-null children: left (2) and right (3).',
+    action: 'levelResult = [1]; queue.push(1.left); queue.push(1.right);',
+    intuition: 'Children of the current level form the next horizontal tier in the queue.',
+    formula: 'Level 0: [1] | Queue: [2, 3]'
   },
   {
-    title: '3. Process Level 1: Pop 2 (enqueue 4, 5) -> Pop 3 (children null) -> Level 1 = [2, 3]',
-    phase: 'PROCESS_LEVEL',
-    codeLine: 28,
-    queue: [4, 5],
-    levels: [[1], [2, 3]],
-    activeLevel: 1,
-    variables: { popped: '2 and 3', enqueued: '[4, 5]', completedLevel: '[2, 3]' },
-    explain: 'Node 2 enqueues 4 and 5. Node 3 has no children. Level 1 completed: [2, 3].',
-    intuition: 'Level 1 finished.'
+    title: 'Process Level 1: Dequeue (2, 3) -> Enqueue (4, 5, 6, 7)',
+    phase: 'PROCESS_LEVEL_1',
+    tree,
+    activeVal: 3,
+    nodeLabels: { 1: 'Done', 2: 'Done', 3: 'Done', 4: 'Queued', 5: 'Queued', 6: 'Queued', 7: 'Queued' },
+    traversal: [1, 2, 3],
+    traversalLabel: 'Level Order Output: [1, 2, 3]',
+    variables: { dequeued: '2, then 3', enqueued: '4, 5, 6, 7', queue: '[4, 5, 6, 7]' },
+    metrics: [
+      { label: 'Completed Level', value: 'Level 1: [2, 3]' },
+      { label: 'Queue Size', value: '4 nodes' },
+      { label: 'Total Visited', value: '3 / 7' }
+    ],
+    explain: 'Level 1 size is 2. Dequeue Node 2 (push 4, 5). Dequeue Node 3 (push 6, 7). Level 1 output is [2, 3].',
+    action: 'levelResult = [2, 3]; queue = [4, 5, 6, 7];',
+    intuition: 'Processing nodes left-to-right preserves standard horizontal reading order.',
+    formula: 'Level 1: [2, 3] | Queue: [4, 5, 6, 7]'
   },
   {
-    title: '4. Process Level 2: Pop 4 and 5 (leaves) -> Level 2 = [4, 5], Queue Empty!',
+    title: 'Process Level 2: Dequeue Leaves (4, 5, 6, 7)',
+    phase: 'PROCESS_LEVEL_2',
+    tree,
+    activeVal: 7,
+    nodeLabels: { 4: 'Done', 5: 'Done', 6: 'Done', 7: 'Done' },
+    traversal: [1, 2, 3, 4, 5, 6, 7],
+    traversalLabel: 'Level Order Output: [1, 2, 3, 4, 5, 6, 7]',
+    variables: { dequeued: '4, 5, 6, 7', queue: '[] (Empty)' },
+    metrics: [
+      { label: 'Completed Level', value: 'Level 2: [4, 5, 6, 7]' },
+      { label: 'Queue Size', value: '0 (Empty)' },
+      { label: 'Total Visited', value: '7 / 7' }
+    ],
+    explain: 'Level 2 size is 4. Dequeue 4, 5, 6, 7. None have children, so no new nodes are enqueued. Queue becomes empty.',
+    action: 'levelResult = [4, 5, 6, 7]; while loop terminates.',
+    intuition: 'When the queue empties, all tree levels have been comprehensively traversed.',
+    formula: 'Level 2: [4, 5, 6, 7]'
+  },
+  {
+    title: 'Level Order Traversal Complete',
     phase: 'COMPLETED',
-    codeLine: 38,
-    queue: [],
-    levels: [[1], [2, 3], [4, 5]],
-    activeLevel: 2,
-    variables: { finalLevels: '[[1], [2, 3], [4, 5]]', queueSize: 0 },
-    explain: 'Nodes 4 and 5 are leaf nodes. Queue is empty. All levels grouped successfully.',
-    intuition: 'Total 3 levels traversed.'
+    tree,
+    activeVal: null,
+    nodeLabels: { 1: 'Level 0', 2: 'Level 1', 3: 'Level 1', 4: 'Level 2', 5: 'Level 2', 6: 'Level 2', 7: 'Level 2' },
+    traversal: [1, 2, 3, 4, 5, 6, 7],
+    traversalLabel: 'Final BFS Stream: [1, 2, 3, 4, 5, 6, 7]',
+    variables: { totalLevels: 3, levels: '[[1], [2, 3], [4, 5, 6, 7]]' },
+    metrics: [
+      { label: 'Levels Count', value: '3 Levels' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(N)' }
+    ],
+    customCard: {
+      title: 'Level Order BFS Summary',
+      rows: [
+        { label: 'Level 0', value: '[1]' },
+        { label: 'Level 1', value: '[2, 3]' },
+        { label: 'Level 2', value: '[4, 5, 6, 7]', accent: true },
+        { label: 'Algorithm', value: 'Breadth-First Search via FIFO Queue' }
+      ]
+    },
+    explain: 'Breadth-First Level Order Traversal completed in linear O(N) time with O(N) maximum queue memory.',
+    action: 'Return result = [[1], [2, 3], [4, 5, 6, 7]].',
+    intuition: 'BFS traverses hierarchical graphs layer by layer with optimal time complexity.',
+    formula: 'Result: [[1], [2, 3], [4, 5, 6, 7]]'
   }
 ];
-
-export default function LevelOrderTraversalVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Current Level: {step.activeLevel}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Queue: [{step.queue.join(', ')}]
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Levels Completed = {step.levels.length}
-        </span>
-      </div>
-
-      {/* Levels Breakdown */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Level-by-Level Tree Breakdown</span>
-
-        <div className="flex flex-col gap-3 w-full max-w-md">
-          {[
-            { lvl: 0, nodes: [1] },
-            { lvl: 1, nodes: [2, 3] },
-            { lvl: 2, nodes: [4, 5] }
-          ].map((row) => {
-            const isCompleted = step.levels.length > row.lvl;
-            const isActive = step.activeLevel === row.lvl && !isCompleted;
-
-            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-faint)]';
-            if (isCompleted) {
-              borderClass = 'border-emerald-500 bg-emerald-500/20 text-emerald-300';
-            } else if (isActive) {
-              borderClass = 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40';
-            }
-
-            return (
-              <div key={row.lvl} className={`p-3 rounded-xl border flex items-center justify-between font-mono transition-all ${borderClass}`}>
-                <span className="text-xs font-bold">Level {row.lvl}:</span>
-                <div className="flex items-center gap-2">
-                  {row.nodes.map((n) => (
-                    <span key={n} className="w-8 h-8 rounded-full border border-current flex items-center justify-center font-bold text-xs">
-                      {n}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

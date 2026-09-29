@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Reverse a Number (Digit Extraction)',
@@ -6,21 +6,49 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(log10 N)',
   spaceComplexity: 'O(1)',
-  description: 'Reverses the digits of an integer by repeatedly extracting the least significant digit with modulo 10 and accumulating it into the reversed total.'
+  description: 'Reverses the digits of an integer N in O(log10 N) time and O(1) space by repeatedly extracting the least significant digit with modulo 10 and accumulating it into the reversed total with decimal left-shifts (rev = rev * 10 + rem).'
+};
+
+export const ideaMap = {
+  title: 'Digit Reversal Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Extract Least Significant Digit',
+      detail: 'lastDigit = N % 10 peels off the current units digit.'
+    },
+    {
+      id: 'step2',
+      label: 'Shift & Accumulate',
+      detail: 'rev = (rev * 10) + lastDigit shifts accumulated digits left by 1 decimal place.'
+    },
+    {
+      id: 'step3',
+      label: 'Truncate Number',
+      detail: 'N = floor(N / 10) removes the processed digit.'
+    },
+    {
+      id: 'step4',
+      label: 'Termination',
+      detail: 'Repeat until N reaches 0; rev now contains the mirrored value.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Optimal Digit Reversal using Modulo & Division
-// Time Complexity: O(log10 N) | Space Complexity: O(1)
+#include <iostream>
+using namespace std;
+
 class Solution {
 public:
     int reverseNumber(int n) {
         int rev = 0;
 
         while (n > 0) {
-            int lastDigit = n % 10;      // Extract last digit
-            rev = (rev * 10) + lastDigit; // Append to reversed number
-            n = n / 10;                  // Truncate last digit
+            int lastDigit = n % 10;
+            rev = (rev * 10) + lastDigit;
+            n = n / 10;
         }
 
         return rev;
@@ -38,7 +66,7 @@ class Solution:
 
         return rev`,
   java: `// Java Optimal Digit Extraction Reversal
-class Solution {
+public class Solution {
     public int reverseNumber(int n) {
         int rev = 0;
 
@@ -52,109 +80,137 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Optimal Digit Extraction Reversal
-var reverseNumber = function(n) {
-    let rev = 0;
+function reverseNumber(n) {
+  let rev = 0;
 
-    while (n > 0) {
-        const lastDigit = n % 10;
-        rev = (rev * 10) + lastDigit;
-        n = Math.floor(n / 10);
-    }
+  while (n > 0) {
+    const lastDigit = n % 10;
+    rev = (rev * 10) + lastDigit;
+    n = Math.floor(n / 10);
+  }
 
-    return rev;
-};`
+  return rev;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Initialize: Number N = 7789, rev = 0',
-    phase: 'INITIAL',
-    codeLine: 6,
-    n: 7789,
-    extractedDigit: null,
-    rev: 0,
-    variables: { n: 7789, rev: 0 },
-    explain: 'We want to reverse the digits of 7789. At each step, n % 10 extracts the last digit, and n = n / 10 removes it.',
-    intuition: 'Decimal modulo extracts the unit digit, while dividing by 10 shifts decimal place leftward.'
+    title: 'Initialize Digit Reversal for N = 1234',
+    phase: 'SETUP',
+    track: [1, 2, 3, 4],
+    pointers: { N: 3 },
+    variables: { N: 1234, rev: 0, lastDigit: 'none' },
+    metrics: [
+      { label: 'Original N', value: '1234' },
+      { label: 'Reversed', value: '0' },
+      { label: 'Digit Target', value: 'Rightmost' }
+    ],
+    explain: 'Starting with integer N = 1234 and reversed accumulator rev = 0. We will peel digits from right to left.',
+    action: 'Initialize rev = 0.',
+    intuition: 'Multiplying rev by 10 makes room in the units place for each incoming digit.',
+    formula: 'rev = rev * 10 + lastDigit'
   },
   {
-    title: '2. Extract digit: 7789 % 10 = 9 -> rev = (0 * 10) + 9 = 9',
-    phase: 'EXTRACT',
-    codeLine: 10,
-    n: 778,
-    extractedDigit: 9,
-    rev: 9,
-    variables: { lastDigit: 9, rev: 9, newN: 778 },
-    explain: 'Extract 9. Multiply previous rev by 10 and add 9. n becomes 778.',
-    intuition: 'First digit 9 captured.'
+    title: 'Extract Digit 4: rev = 0 * 10 + 4 = 4',
+    phase: 'ACCUMULATE',
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [4],
+    auxiliaryLabel: 'Accumulated Reversed Digits',
+    pointers: { peeled: 3 },
+    highlightIndices: [3],
+    variables: { lastDigit: 4, rev: 4, remainingN: 123 },
+    metrics: [
+      { label: 'Peeled Digit', value: '4' },
+      { label: 'New rev', value: '4' },
+      { label: 'Remaining N', value: '123' }
+    ],
+    explain: 'Extract lastDigit = 1234 % 10 = 4. Accumulate rev = (0 * 10) + 4 = 4. Truncate N = 123.',
+    action: 'rev = (rev * 10) + 4; N = 123;',
+    intuition: '4 was the least significant digit; it is now the most significant digit of rev.',
+    formula: 'rev = 0 * 10 + 4 = 4'
   },
   {
-    title: '3. Extract digit: 778 % 10 = 8 -> rev = (9 * 10) + 8 = 98',
-    phase: 'EXTRACT',
-    codeLine: 10,
-    n: 77,
-    extractedDigit: 8,
-    rev: 98,
-    variables: { lastDigit: 8, rev: 98, newN: 77 },
-    explain: 'Extract 8. rev = 90 + 8 = 98. n becomes 77.',
-    intuition: 'Previous digits shifted left by one power of 10.'
+    title: 'Extract Digit 3: rev = 4 * 10 + 3 = 43',
+    phase: 'ACCUMULATE',
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [4, 3],
+    auxiliaryLabel: 'Accumulated Reversed Digits',
+    pointers: { peeled: 2 },
+    highlightIndices: [2],
+    variables: { lastDigit: 3, rev: 43, remainingN: 12 },
+    metrics: [
+      { label: 'Peeled Digit', value: '3' },
+      { label: 'New rev', value: '43' },
+      { label: 'Remaining N', value: '12' }
+    ],
+    explain: 'Extract lastDigit = 123 % 10 = 3. Shift previous digits: rev = (4 * 10) + 3 = 43. Truncate N = 12.',
+    action: 'rev = (rev * 10) + 3; N = 12;',
+    intuition: 'Multiplying 4 by 10 shifts it to the tens place, placing 3 into the units place.',
+    formula: 'rev = 4 * 10 + 3 = 43'
   },
   {
-    title: '4. Extract digit: 77 % 10 = 7 -> rev = (98 * 10) + 7 = 987',
-    phase: 'EXTRACT',
-    codeLine: 10,
-    n: 7,
-    extractedDigit: 7,
-    rev: 987,
-    variables: { lastDigit: 7, rev: 987, newN: 7 },
-    explain: 'Extract 7. rev = 980 + 7 = 987. n becomes 7.',
-    intuition: 'Third digit captured.'
+    title: 'Extract Digit 2: rev = 43 * 10 + 2 = 432',
+    phase: 'ACCUMULATE',
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [4, 3, 2],
+    auxiliaryLabel: 'Accumulated Reversed Digits',
+    pointers: { peeled: 1 },
+    highlightIndices: [1],
+    variables: { lastDigit: 2, rev: 432, remainingN: 1 },
+    metrics: [
+      { label: 'Peeled Digit', value: '2' },
+      { label: 'New rev', value: '432' },
+      { label: 'Remaining N', value: '1' }
+    ],
+    explain: 'Extract lastDigit = 12 % 10 = 2. rev = (43 * 10) + 2 = 432. Truncate N = 1.',
+    action: 'rev = (rev * 10) + 2; N = 1;',
+    intuition: 'Digits 4 and 3 shift leftward again as 2 enters.',
+    formula: 'rev = 43 * 10 + 2 = 432'
   },
   {
-    title: '5. Extract digit: 7 % 10 = 7 -> rev = (987 * 10) + 7 = 9877',
+    title: 'Extract Final Digit 1: rev = 432 * 10 + 1 = 4321',
+    phase: 'ACCUMULATE',
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [4, 3, 2, 1],
+    auxiliaryLabel: 'Accumulated Reversed Digits',
+    pointers: { peeled: 0 },
+    highlightIndices: [0],
+    variables: { lastDigit: 1, rev: 4321, remainingN: 0 },
+    metrics: [
+      { label: 'Peeled Digit', value: '1' },
+      { label: 'Final rev', value: '4321' },
+      { label: 'Remaining N', value: '0' }
+    ],
+    explain: 'Extract lastDigit = 1 % 10 = 1. rev = (432 * 10) + 1 = 4321. N becomes 0, terminating the loop.',
+    action: 'rev = (rev * 10) + 1; N = 0;',
+    intuition: 'The leading digit 1 has now become the trailing units digit.',
+    formula: 'rev = 432 * 10 + 1 = 4321'
+  },
+  {
+    title: 'Reversal Complete: 1234 -> 4321',
     phase: 'COMPLETED',
-    codeLine: 14,
-    n: 0,
-    extractedDigit: 7,
-    rev: 9877,
-    variables: { finalRev: 9877, n: 0, timeComplexity: 'O(log10 N)' },
-    explain: 'Extract 7. rev becomes 9877. n becomes 0. Loop terminates. Output is 9877!',
-    intuition: 'Digits reversed mathematically without string conversions.'
+    track: [1, 2, 3, 4],
+    auxiliaryTrack: [4, 3, 2, 1],
+    auxiliaryLabel: 'Final Reversed Number = 4321',
+    pointers: { result: 3 },
+    variables: { input: 1234, output: 4321 },
+    metrics: [
+      { label: 'Reversed Value', value: '4321' },
+      { label: 'Time Complexity', value: 'O(log10 N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Digit Transformation Trace',
+      rows: [
+        { label: 'Original Number', value: '1 2 3 4' },
+        { label: 'Reversed Number', value: '4 3 2 1', accent: true },
+        { label: 'Algorithm', value: 'Modulo 10 peel + Decimal shift (rev * 10 + rem)' },
+        { label: 'Complexity', value: 'O(log10 N) time, O(1) space' }
+      ]
+    },
+    explain: 'Number reversal successfully concluded without converting to strings or allocating extra memory arrays.',
+    action: 'Return rev (4321).',
+    intuition: 'Pure arithmetic decimal manipulation provides clean, high-performance digit reversal.',
+    formula: 'Result: 4321'
   }
 ];
-
-export default function ReverseANumberVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* State Cards */}
-      <div className="flex items-center gap-4 text-xs font-mono">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
-          <span className="text-[var(--chalk-dim)]">Remaining N:</span>
-          <span className="text-amber-300 font-bold text-sm">{step.n}</span>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)]">
-          <span className="text-[var(--chalk-dim)]">Reversed Total:</span>
-          <span className="text-emerald-300 font-bold text-sm">{step.rev}</span>
-        </div>
-      </div>
-
-      {/* Extracted Digit Animation Box */}
-      <div className="flex flex-col items-center gap-2 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl">
-        <span className="text-xs font-mono text-[var(--chalk-dim)]">Extracted Unit Digit (n % 10):</span>
-        <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center font-mono text-2xl font-bold transition-all duration-300 ${
-          step.extractedDigit !== null ? 'bg-amber-500/25 text-amber-300 border-amber-400 scale-110 shadow-lg shadow-amber-500/20' : 'bg-[#181a24] text-[#42465c] border-[#2b2e40]'
-        }`}>
-          {step.extractedDigit !== null ? step.extractedDigit : '-'}
-        </div>
-      </div>
-
-      {/* Formula Explanation */}
-      <div className="px-4 py-2 rounded-xl bg-[#141620] border border-[#262a3a] text-xs font-mono text-[var(--chalk-dim)]">
-        <span>Formula: </span>
-        <code className="text-indigo-300 font-bold">rev = (rev * 10) + digit</code>
-      </div>
-    </div>
-  );
-}

@@ -1,16 +1,43 @@
-import React from 'react';
+export const rendererType = 'dp-grid';
 
 export const meta = {
   title: 'Number of Islands II (Online Queries)',
-  category: 'Step 15: Graphs [Concepts & Problems]',
+  category: 'Graphs',
   difficulty: 'Hard',
   timeComplexity: 'O(Q * 4alpha)',
   spaceComplexity: 'O(N * M)',
   description: 'Tracks the dynamic count of connected islands as land cells are added one by one into an initially empty water grid. Uses Disjoint Set Union (DSU) to connect adjacent land cells online (LeetCode 305).'
 };
 
+export const ideaMap = {
+  title: 'Dynamic Online Island DSU Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'New Land Query & Tentative Island',
+      detail: 'When land is added at (r, c), mark as visited and tentatively increment island count by 1.'
+    },
+    {
+      id: 'step2',
+      label: '4-Directional Neighbor Inspection',
+      detail: 'Check adjacent cells (r±1, c±1); for each that is already land, test for component merging.'
+    },
+    {
+      id: 'step3',
+      label: 'DSU Component Fusion',
+      detail: 'If adjacent land belongs to a different component, unite them via DSU and decrement island count by 1.'
+    },
+    {
+      id: 'step4',
+      label: 'Record Live Query Answer',
+      detail: 'Append the resulting island count to the answer stream after each operator position.'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Number of Islands II (LeetCode 305)
+// Time Complexity: O(Q * 4alpha) | Space Complexity: O(N * M)
 #include <vector>
 using namespace std;
 
@@ -40,171 +67,337 @@ public:
     }
 };
 
-vector<int> numOfIslands(int n, int m, vector<vector<int>>& operators) {
-    DisjointSet ds(n * m);
-    vector<vector<int>> vis(n, vector<int>(m, 0));
-    int count = 0;
-    vector<int> ans;
-    
-    int dRow[] = {-1, 0, 1, 0};
-    int dCol[] = {0, 1, 0, -1};
-    
-    for (auto& it : operators) {
-        int r = it[0], c = it[1];
-        if (vis[r][c] == 1) {
-            ans.push_back(count);
-            continue;
-        }
-        
-        vis[r][c] = 1;
-        count++;
-        int nodeNo = r * m + c;
-        
-        for (int i = 0; i < 4; i++) {
-            int adjR = r + dRow[i], adjC = c + dCol[i];
-            if (adjR >= 0 && adjR < n && adjC >= 0 && adjC < m && vis[adjR][adjC] == 1) {
-                int adjNodeNo = adjR * m + adjC;
-                if (ds.unionBySize(nodeNo, adjNodeNo)) {
-                    count--; // Two previously disconnected islands merged!
+class Solution {
+public:
+    vector<int> numOfIslands(int n, int m, vector<vector<int>>& operators) {
+        DisjointSet ds(n * m);
+        vector<vector<int>> vis(n, vector<int>(m, 0));
+        int count = 0;
+        vector<int> ans;
+
+        int dRow[] = {-1, 0, 1, 0};
+        int dCol[] = {0, 1, 0, -1};
+
+        for (auto& it : operators) {
+            int r = it[0], c = it[1];
+            if (vis[r][c] == 1) {
+                ans.push_back(count);
+                continue;
+            }
+
+            vis[r][c] = 1;
+            count++;
+
+            for (int i = 0; i < 4; i++) {
+                int nr = r + dRow[i], nc = c + dCol[i];
+                if (nr >= 0 && nr < n && nc >= 0 && nc < m && vis[nr][nc] == 1) {
+                    int nodeNo = r * m + c;
+                    int adjNodeNo = nr * m + nc;
+                    if (ds.unionBySize(nodeNo, adjNodeNo)) {
+                        count--; // Two separate islands merged!
+                    }
                 }
             }
+            ans.push_back(count);
         }
-        ans.push_back(count);
+        return ans;
     }
-    return ans;
-}`,
-  java: `// Java: Number of Islands II
+};`,
+  java: `// Java: Number of Islands II (LeetCode 305)
+// Time Complexity: O(Q * 4alpha) | Space Complexity: O(N * M)
 import java.util.*;
 
 class Solution {
+    class DSU {
+        int[] parent, size;
+        DSU(int n) {
+            parent = new int[n];
+            size = new int[n];
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+                size[i] = 1;
+            }
+        }
+        int find(int i) {
+            if (parent[i] == i) return i;
+            return parent[i] = find(parent[i]);
+        }
+        boolean union(int u, int v) {
+            int rootU = find(u), rootV = find(v);
+            if (rootU == rootV) return false;
+            if (size[rootU] < size[rootV]) {
+                parent[rootU] = rootV;
+                size[rootV] += size[rootU];
+            } else {
+                parent[rootV] = rootU;
+                size[rootU] += size[rootV];
+            }
+            return true;
+        }
+    }
+
     public List<Integer> numOfIslands(int n, int m, int[][] operators) {
-        // DSU 2D to 1D index mapping: r * m + c
-        return new ArrayList<>();
+        DSU ds = new DSU(n * m);
+        boolean[][] vis = new boolean[n][m];
+        int count = 0;
+        List<Integer> ans = new ArrayList<>();
+
+        int[] dRow = {-1, 0, 1, 0};
+        int[] dCol = {0, 1, 0, -1};
+
+        for (int[] op : operators) {
+            int r = op[0], c = op[1];
+            if (vis[r][c]) {
+                ans.add(count);
+                continue;
+            }
+
+            vis[r][c] = true;
+            count++;
+
+            for (int i = 0; i < 4; i++) {
+                int nr = r + dRow[i], nc = c + dCol[i];
+                if (nr >= 0 && nr < n && nc >= 0 && nc < m && vis[nr][nc]) {
+                    if (ds.union(r * m + c, nr * m + nc)) {
+                        count--;
+                    }
+                }
+            }
+            ans.add(count);
+        }
+        return ans;
     }
 }`,
-  python: `# Python: Number of Islands II
-def numOfIslands(n, m, operators):
-    # Online land addition with DSU union decrements
-    return []
-`,
-  javascript: `// JavaScript: Number of Islands II
-function numOfIslands(n, m, operators) {
-  // Online DSU queries
-  return [];
+  python: `# Python: Number of Islands II (LeetCode 305)
+# Time Complexity: O(Q * 4alpha) | Space Complexity: O(N * M)
+class Solution:
+    def numIslands2(self, m: int, n: int, positions: list[list[int]]) -> list[int]:
+        parent = list(range(m * n))
+        size = [1] * (m * n)
+        vis = [[False] * n for _ in range(m)]
+
+        def find(i):
+            if parent[i] == i:
+                return i
+            parent[i] = find(parent[i])
+            return parent[i]
+
+        def union(u, v):
+            root_u, root_v = find(u), find(v)
+            if root_u == root_v:
+                return False
+            if size[root_u] < size[root_v]:
+                parent[root_u] = root_v
+                size[root_v] += size[root_u]
+            else:
+                parent[root_v] = root_u
+                size[root_u] += size[root_v]
+            return True
+
+        count = 0
+        ans = []
+        d_row = [-1, 0, 1, 0]
+        d_col = [0, 1, 0, -1]
+
+        for r, c in positions:
+            if vis[r][c]:
+                ans.append(count)
+                continue
+
+            vis[r][c] = True
+            count += 1
+
+            for i in range(4):
+                nr, nc = r + d_row[i], c + d_col[i]
+                if 0 <= nr < m and 0 <= nc < n and vis[nr][nc]:
+                    if union(r * n + c, nr * n + nc):
+                        count -= 1
+
+            ans.append(count)
+
+        return ans`,
+  javascript: `// JavaScript: Number of Islands II (LeetCode 305)
+// Time Complexity: O(Q * 4alpha) | Space Complexity: O(N * M)
+function numIslands2(m, n, positions) {
+    const parent = Array.from({ length: m * n }, (_, i) => i);
+    const size = Array(m * n).fill(1);
+    const vis = Array.from({ length: m }, () => Array(n).fill(false));
+
+    function find(i) {
+        if (parent[i] === i) return i;
+        return parent[i] = find(parent[i]);
+    }
+
+    function union(u, v) {
+        const rootU = find(u), rootV = find(v);
+        if (rootU === rootV) return false;
+        if (size[rootU] < size[rootV]) {
+            parent[rootU] = rootV;
+            size[rootV] += size[rootU];
+        } else {
+            parent[rootV] = rootU;
+            size[rootU] += size[rootV];
+        }
+        return true;
+    }
+
+    let count = 0;
+    const ans = [];
+    const dRow = [-1, 0, 1, 0];
+    const dCol = [0, 1, 0, -1];
+
+    for (const [r, c] of positions) {
+        if (vis[r][c]) {
+            ans.push(count);
+            continue;
+        }
+
+        vis[r][c] = true;
+        count++;
+
+        for (let i = 0; i < 4; i++) {
+            const nr = r + dRow[i], nc = c + dCol[i];
+            if (nr >= 0 && nr < m && nc >= 0 && nc < n && vis[nr][nc]) {
+                if (union(r * n + c, nr * n + nc)) {
+                    count--;
+                }
+            }
+        }
+        ans.push(count);
+    }
+    return ans;
 }`
 };
 
 export const steps = [
   {
-    title: '1. Add Land at (0, 0): Islands Count = 1',
-    phase: 'OP_1',
-    codeLine: 43,
-    islandCount: 1,
-    history: [1],
-    newPos: [0, 0],
+    phase: 'INITIALIZE',
+    title: 'Initialize 3x3 Ocean Grid: All Water (~)',
     grid: [
-      [1, 0, 0],
-      [0, 0, 0],
-      [0, 0, 0]
+      ['~', '~', '~'],
+      ['~', '~', '~'],
+      ['~', '~', '~']
     ],
-    info: 'Land created at (0, 0). No adjacent land. Islands = 1.'
+    rowLabels: ['R0', 'R1', 'R2'],
+    colLabels: ['C0', 'C1', 'C2'],
+    activeCell: null,
+    metrics: [
+      { label: 'Active Islands', value: 0 },
+      { label: 'Queries Answered', value: '0 / 4' },
+      { label: 'DSU Elements', value: 9 }
+    ],
+    variables: {
+      islandCount: 0,
+      queryStream: '[]',
+      phase: 'Ready for dynamic land additions'
+    },
+    explain: 'Start with an empty 3x3 ocean matrix containing no land cells. Queries will convert cells to land one by one.',
+    intuition: 'Online connectivity queries are efficiently handled by Disjoint Set Union without needing to rerun full DFS.'
   },
   {
-    title: '2. Add Land at (0, 2): Islands Count = 2',
-    phase: 'OP_2',
-    codeLine: 43,
-    islandCount: 2,
-    history: [1, 2],
-    newPos: [0, 2],
+    phase: 'ADD_LAND_0_0',
+    title: 'Query 1: Add Land at (0, 0) -> New Island Formed (Count = 1)',
     grid: [
-      [1, 0, 1],
-      [0, 0, 0],
-      [0, 0, 0]
+      ['1', '~', '~'],
+      ['~', '~', '~'],
+      ['~', '~', '~']
     ],
-    info: 'Land created at (0, 2). Separate from (0, 0). Islands = 2.'
+    rowLabels: ['R0', 'R1', 'R2'],
+    colLabels: ['C0', 'C1', 'C2'],
+    activeCell: { r: 0, c: 0 },
+    metrics: [
+      { label: 'Active Islands', value: 1 },
+      { label: 'Queries Answered', value: '1 / 4' },
+      { label: 'Result Stream', value: '[1]' }
+    ],
+    variables: {
+      addedCell: '(0, 0)',
+      neighborsLand: 'None',
+      islandCount: 1,
+      ans: '[1]'
+    },
+    explain: 'Operator adds land at (0, 0). It has no adjacent land neighbors. Island count increments from 0 to 1. Append 1 to result.',
+    intuition: 'An isolated land cell creates a new independent connected component.'
   },
   {
-    title: '3. Add Land at (1, 1): Islands Count = 3',
-    phase: 'OP_3',
-    codeLine: 43,
-    islandCount: 3,
-    history: [1, 2, 3],
-    newPos: [1, 1],
+    phase: 'ADD_LAND_0_1',
+    title: 'Query 2: Add Land at (0, 1) -> Merges with (0, 0) (Count Stays 1)',
     grid: [
-      [1, 0, 1],
-      [0, 1, 0],
-      [0, 0, 0]
+      ['1', '1', '~'],
+      ['~', '~', '~'],
+      ['~', '~', '~']
     ],
-    info: 'Land created at (1, 1). Diagonal to (0,0) and (0,2), not 4-connected. Islands = 3.'
+    rowLabels: ['R0', 'R1', 'R2'],
+    colLabels: ['C0', 'C1', 'C2'],
+    activeCell: { r: 0, c: 1 },
+    dependencyCells: [
+      { r: 0, c: 0, label: 'nbr' }
+    ],
+    metrics: [
+      { label: 'Active Islands', value: 1 },
+      { label: 'Queries Answered', value: '2 / 4' },
+      { label: 'Result Stream', value: '[1, 1]' }
+    ],
+    variables: {
+      addedCell: '(0, 1)',
+      neighbor: '(0, 0) [is land]',
+      unionAction: 'union((0,1), (0,0)) -> count: 1 + 1 - 1 = 1',
+      ans: '[1, 1]'
+    },
+    explain: 'Add land at (0, 1). Tentative count becomes 2. But left neighbor (0, 0) is already land! DSU unites them and count decrements by 1. Total islands remain 1.',
+    intuition: 'Adjacent land joins the existing component rather than creating a new island.'
   },
   {
-    title: '4. Add Land at (0, 1): BRIDGE MERGES (0,0) and (0,2)! Islands Count = 2',
-    phase: 'OP_4_MERGE',
-    codeLine: 50,
-    islandCount: 2,
-    history: [1, 2, 3, 2],
-    newPos: [0, 1],
+    phase: 'ADD_LAND_2_2',
+    title: 'Query 3: Add Land at (2, 2) -> Isolated Island #2 (Count = 2)',
     grid: [
-      [1, 1, 1],
-      [0, 1, 0],
-      [0, 0, 0]
+      ['1', '1', '~'],
+      ['~', '~', '~'],
+      ['~', '~', '1']
     ],
-    info: 'Land placed at (0, 1). Bridges (0,0) on left, (0,2) on right, and (1,1) below! 3 separate components merge into 1. Total islands drop to 2.'
+    rowLabels: ['R0', 'R1', 'R2'],
+    colLabels: ['C0', 'C1', 'C2'],
+    activeCell: { r: 2, c: 2 },
+    metrics: [
+      { label: 'Active Islands', value: 2 },
+      { label: 'Queries Answered', value: '3 / 4' },
+      { label: 'Result Stream', value: '[1, 1, 2]' }
+    ],
+    variables: {
+      addedCell: '(2, 2)',
+      neighborsLand: 'None',
+      islandCount: 2,
+      ans: '[1, 1, 2]'
+    },
+    explain: 'Add land at bottom-right corner (2, 2). It has no adjacent land cells. A second island is created. Island count becomes 2.',
+    intuition: 'Diagonal placement does not form a connected component in 4-directional adjacency.'
+  },
+  {
+    phase: 'ADD_LAND_1_2',
+    title: 'Query 4: Add Land at (1, 2) -> Connects to (2, 2) (Count Stays 2)',
+    grid: [
+      ['1', '1', '~'],
+      ['~', '~', '1'],
+      ['~', '~', '1']
+    ],
+    rowLabels: ['R0', 'R1', 'R2'],
+    colLabels: ['C0', 'C1', 'C2'],
+    activeCell: { r: 1, c: 2 },
+    dependencyCells: [
+      { r: 2, c: 2, label: 'nbr' }
+    ],
+    metrics: [
+      { label: 'Active Islands', value: 2 },
+      { label: 'Queries Answered', value: '4 / 4' },
+      { label: 'Result Stream', value: '[1, 1, 2, 2]' }
+    ],
+    variables: {
+      addedCell: '(1, 2)',
+      neighbor: '(2, 2) is land -> merged via DSU',
+      finalIslandCount: 2,
+      ans: '[1, 1, 2, 2]'
+    },
+    explain: 'Add land at (1, 2). It connects with southern neighbor (2, 2). DSU merges them into the same component. Island count stays 2. Final answer array = [1, 1, 2, 2].',
+    intuition: 'Each query is handled in O(alpha(N*M)) nearly constant amortized time.'
   }
 ];
-
-export default function NumberOfIslandsIiVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Current Position Added: <strong className="text-cyan-200">({step.newPos[0]}, {step.newPos[1]})</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-          Live Island Count: <strong className="text-emerald-200">{step.islandCount}</strong>
-        </div>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col items-center gap-4 w-full">
-        <div className="flex justify-between items-center w-full px-2 text-xs font-mono text-[var(--chalk-dim)]">
-          <span>Interactive Grid State [3 &times; 3]</span>
-          <span className="text-cyan-400 font-bold">Online Land Stream</span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-3">
-          {step.grid.map((row, r) =>
-            row.map((val, c) => {
-              const isNew = step.newPos[0] === r && step.newPos[1] === c;
-              return (
-                <div
-                  key={`${r}-${c}`}
-                  className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center font-mono font-bold text-sm border transition-all ${
-                    isNew
-                      ? 'bg-amber-500/30 border-amber-400 text-amber-200 ring-2 ring-amber-400 scale-105 shadow-lg'
-                      : val === 1
-                      ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-                      : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-faint)]'
-                  }`}
-                >
-                  <span>{val === 1 ? 'LAND' : 'WATER'}</span>
-                  <span className="text-[10px] opacity-60 font-normal">({r},{c})</span>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        <div className="w-full p-3 rounded-xl bg-[#0f1017] border border-[#1f2233] text-xs font-mono flex items-center justify-between">
-          <span className="text-[#64748b]">Answer Array Output:</span>
-          <span className="text-cyan-300 font-bold">[{step.history.join(', ')}]</span>
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.info}
-      </div>
-    </div>
-  );
-}

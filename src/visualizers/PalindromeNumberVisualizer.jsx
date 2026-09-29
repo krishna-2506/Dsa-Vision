@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Palindrome Number (Integer Palindrome Check)',
@@ -6,12 +6,40 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(log10 N)',
   spaceComplexity: 'O(1)',
-  description: 'Checks whether an integer reads the same forwards and backwards by reversing the number mathematically and comparing it with the original value.'
+  description: 'Determines whether an integer X is a palindrome by mathematically reversing its digits and checking if rev == original without string conversion.'
+};
+
+export const ideaMap = {
+  title: 'Integer Palindrome Logic',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Edge Case Elimination',
+      detail: 'Negative numbers (e.g. -121) and non-zero multiples of 10 (e.g. 10) are immediately false.'
+    },
+    {
+      id: 'step2',
+      label: 'Cache Original Value',
+      detail: 'Save dup = X before modifying X through iterative division.'
+    },
+    {
+      id: 'step3',
+      label: 'Mathematical Reversal',
+      detail: 'Iteratively peel digits: rev = (rev * 10) + (X % 10); X = floor(X / 10).'
+    },
+    {
+      id: 'step4',
+      label: 'Symmetry Comparison',
+      detail: 'If rev == dup, the number is symmetric and therefore a valid palindrome.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Optimal Integer Palindrome Check
-// Time Complexity: O(log10 N) | Space Complexity: O(1)
+#include <iostream>
+using namespace std;
+
 class Solution {
 public:
     bool isPalindrome(int x) {
@@ -42,11 +70,11 @@ class Solution:
         while x > 0:
             digit = x % 10
             rev = (rev * 10) + digit
-            x = x // 10
+            x //= 10
 
         return rev == dup`,
   java: `// Java Optimal Integer Palindrome Check
-class Solution {
+public class Solution {
     public boolean isPalindrome(int x) {
         if (x < 0 || (x % 10 == 0 && x != 0)) return false;
 
@@ -56,139 +84,128 @@ class Solution {
         while (x > 0) {
             int digit = x % 10;
             rev = (rev * 10) + digit;
-            x = x / 10;
+            x /= 10;
         }
 
         return rev == dup;
     }
 }`,
   javascript: `// JavaScript Optimal Integer Palindrome Check
-var isPalindrome = function(x) {
-    if (x < 0 || (x % 10 === 0 && x !== 0)) return false;
+function isPalindrome(x) {
+  if (x < 0 || (x % 10 === 0 && x !== 0)) return false;
 
-    let rev = 0;
-    let dup = x;
+  let rev = 0;
+  let dup = x;
 
-    while (x > 0) {
-        const digit = x % 10;
-        rev = (rev * 10) + digit;
-        x = Math.floor(x / 10);
-    }
+  while (x > 0) {
+    const digit = x % 10;
+    rev = (rev * 10) + digit;
+    x = Math.floor(x / 10);
+  }
 
-    return rev === dup;
-};`
+  return rev === dup;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Initialize: Input X = 121, dup = 121, rev = 0',
-    phase: 'INITIAL',
-    codeLine: 10,
-    original: 121,
-    currentX: 121,
-    rev: 0,
-    extractedDigit: null,
-    isMatch: null,
-    variables: { original: 121, dup: 121, rev: 0 },
-    explain: 'Check if integer 121 is a palindrome. Save original copy in dup, and iteratively reverse X.',
-    intuition: 'Negative numbers fail immediately because "-" cannot appear at the end.'
+    title: 'Initialize Palindrome Check for X = 121',
+    phase: 'SETUP',
+    track: [1, 2, 1],
+    pointers: { X: 2 },
+    variables: { originalX: 121, cachedDup: 121, rev: 0 },
+    metrics: [
+      { label: 'Input X', value: '121' },
+      { label: 'Reversed', value: '0' },
+      { label: 'Negative?', value: 'No (>= 0)' }
+    ],
+    explain: 'Consider X = 121. Check edge cases: X is not negative, and does not end with 0. Cache dup = 121 and initialize rev = 0.',
+    action: 'dup = 121; rev = 0;',
+    intuition: 'A palindrome reads identically forwards and backwards; its mathematical reversal must exactly equal its original value.',
+    formula: 'rev == dup ? true : false'
   },
   {
-    title: '2. Extract Digit 1: 121 % 10 = 1 -> rev = (0 * 10) + 1 = 1',
-    phase: 'REVERSING',
-    codeLine: 14,
-    original: 121,
-    currentX: 12,
-    rev: 1,
-    extractedDigit: 1,
-    isMatch: null,
-    variables: { digit: 1, rev: 1, newX: 12 },
-    explain: 'Extract 1. rev becomes 1. X truncated to 12.',
-    intuition: 'First digit captured.'
+    title: 'Extract Digit 1: rev = 0 * 10 + 1 = 1',
+    phase: 'PEEL_DIGIT',
+    track: [1, 2, 1],
+    auxiliaryTrack: [1],
+    auxiliaryLabel: 'Reversed Number Track',
+    pointers: { peeled: 2 },
+    highlightIndices: [2],
+    variables: { digit: 1, rev: 1, remainingX: 12 },
+    metrics: [
+      { label: 'Peeled Digit', value: '1' },
+      { label: 'Current rev', value: '1' },
+      { label: 'Remaining X', value: '12' }
+    ],
+    explain: 'Extract 121 % 10 = 1. rev = (0 * 10) + 1 = 1. Truncate X to 12.',
+    action: 'rev = rev * 10 + (X % 10); X = Math.floor(X / 10);',
+    intuition: 'Units digit 1 becomes the leading digit of our reversed tally.',
+    formula: 'rev = 0 * 10 + 1 = 1'
   },
   {
-    title: '3. Extract Digit 2: 12 % 10 = 2 -> rev = (1 * 10) + 2 = 12',
-    phase: 'REVERSING',
-    codeLine: 14,
-    original: 121,
-    currentX: 1,
-    rev: 12,
-    extractedDigit: 2,
-    isMatch: null,
-    variables: { digit: 2, rev: 12, newX: 1 },
-    explain: 'Extract 2. rev becomes 12. X truncated to 1.',
-    intuition: 'Second digit captured.'
+    title: 'Extract Digit 2: rev = 1 * 10 + 2 = 12',
+    phase: 'PEEL_DIGIT',
+    track: [1, 2, 1],
+    auxiliaryTrack: [1, 2],
+    auxiliaryLabel: 'Reversed Number Track',
+    pointers: { peeled: 1 },
+    highlightIndices: [1],
+    variables: { digit: 2, rev: 12, remainingX: 1 },
+    metrics: [
+      { label: 'Peeled Digit', value: '2' },
+      { label: 'Current rev', value: '12' },
+      { label: 'Remaining X', value: '1' }
+    ],
+    explain: 'Extract 12 % 10 = 2. rev = (1 * 10) + 2 = 12. Truncate X to 1.',
+    action: 'rev = rev * 10 + (X % 10); X = Math.floor(X / 10);',
+    intuition: 'Tens digit 2 is placed after 1.',
+    formula: 'rev = 1 * 10 + 2 = 12'
   },
   {
-    title: '4. Extract Digit 1: 1 % 10 = 1 -> rev = (12 * 10) + 1 = 121',
-    phase: 'REVERSING',
-    codeLine: 14,
-    original: 121,
-    currentX: 0,
-    rev: 121,
-    extractedDigit: 1,
-    isMatch: null,
-    variables: { digit: 1, rev: 121, newX: 0 },
-    explain: 'Extract 1. rev becomes 121. X truncated to 0. Reversal complete.',
-    intuition: 'Whole number reversed.'
+    title: 'Extract Final Digit 1: rev = 12 * 10 + 1 = 121',
+    phase: 'PEEL_DIGIT',
+    track: [1, 2, 1],
+    auxiliaryTrack: [1, 2, 1],
+    auxiliaryLabel: 'Reversed Number Track',
+    pointers: { peeled: 0 },
+    highlightIndices: [0],
+    variables: { digit: 1, rev: 121, remainingX: 0 },
+    metrics: [
+      { label: 'Peeled Digit', value: '1' },
+      { label: 'Current rev', value: '121' },
+      { label: 'Remaining X', value: '0' }
+    ],
+    explain: 'Extract 1 % 10 = 1. rev = (12 * 10) + 1 = 121. X reaches 0, ending the extraction loop.',
+    action: 'rev = rev * 10 + (X % 10); X = 0;',
+    intuition: 'All digits have been mirrored into rev.',
+    formula: 'rev = 12 * 10 + 1 = 121'
   },
   {
-    title: '5. Compare: rev (121) == dup (121) -> True! Palindrome Confirmed',
+    title: 'Compare rev == dup: Palindrome Confirmed',
     phase: 'COMPLETED',
-    codeLine: 18,
-    original: 121,
-    currentX: 0,
-    rev: 121,
-    extractedDigit: null,
-    isMatch: true,
-    variables: { 'rev == dup': '121 == 121', result: true, timeComplexity: 'O(log10 N)' },
-    explain: 'rev exactly matches original dup (121 == 121). Return true: 121 is a valid Palindrome Number!',
-    intuition: 'Pure arithmetic solution with zero string conversions or memory allocation.'
+    track: [1, 2, 1],
+    auxiliaryTrack: [1, 2, 1],
+    auxiliaryLabel: '121 == 121 (MATCH)',
+    pointers: { match: 2 },
+    variables: { original: 121, reversed: 121, isPalindrome: 'true' },
+    metrics: [
+      { label: 'Original dup', value: '121' },
+      { label: 'Reversed rev', value: '121' },
+      { label: 'Result', value: 'PALINDROME (true)' }
+    ],
+    customCard: {
+      title: 'Palindrome Decision Audit',
+      rows: [
+        { label: 'Original Value', value: '121' },
+        { label: 'Reversed Value', value: '121', accent: true },
+        { label: 'Condition rev == dup', value: '121 == 121 => true' },
+        { label: 'Complexity', value: 'O(log10 N) time, O(1) auxiliary space' }
+      ]
+    },
+    explain: 'rev (121) strictly equals cached original dup (121). Therefore, 121 is a valid Palindrome Number.',
+    action: 'Return true.',
+    intuition: 'Symmetric numbers yield equal values upon digit reversal.',
+    formula: 'Result: true (121 is Palindromic)'
   }
 ];
-
-export default function PalindromeNumberVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Top Comparison Header */}
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono">
-          <span className="text-[var(--chalk-dim)]">Original (dup):</span>
-          <span className="text-blue-300 font-bold text-sm">{step.original}</span>
-        </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono">
-          <span className="text-[var(--chalk-dim)]">Reversed (rev):</span>
-          <span className={`font-bold text-sm ${step.isMatch ? 'text-emerald-300' : 'text-amber-300'}`}>
-            {step.rev}
-          </span>
-        </div>
-      </div>
-
-      {/* Equality Evaluation Box */}
-      <div className="flex items-center justify-center gap-4 p-5 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl">
-        <div className="w-16 h-16 rounded-2xl bg-[#181a24] border border-[#2b2e40] flex items-center justify-center font-mono text-xl font-bold text-blue-300">
-          {step.original}
-        </div>
-
-        <span className="text-lg font-mono text-[#555a72]">
-          {step.phase === 'COMPLETED' ? '==' : '≟'}
-        </span>
-
-        <div className={`w-16 h-16 rounded-2xl border flex items-center justify-center font-mono text-xl font-bold transition-all duration-300 ${
-          step.isMatch ? 'bg-emerald-500/25 text-emerald-300 border-emerald-400 scale-105 shadow-md shadow-emerald-500/20' : 'bg-[#181a24] text-amber-300 border-[#2b2e40]'
-        }`}>
-          {step.rev}
-        </div>
-      </div>
-
-      {/* Result Indicator */}
-      {step.isMatch !== null && (
-        <span className="px-4 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold animate-pulse">
-          ✓ Palindrome Confirmed (121 == 121)
-        </span>
-      )}
-    </div>
-  );
-}

@@ -1,129 +1,276 @@
-import React, { useState } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
-  display_id: 'Q-010',
-  title: "Missing Number",
-  category: "1. Arrays",
-  difficulty: "Easy",
-  timeComplexity: "O(N)",
-  spaceComplexity: "O(1)",
-  description: "Given an array nums containing n distinct numbers in the range [0, n], return the only number in the range that is missing from the array.\r\n"
+  leetcode_id: 268,
+  title: 'Find Missing Number in Array',
+  category: 'Arrays & Math / Bit Manipulation',
+  difficulty: 'Easy',
+  timeComplexity: 'O(N)',
+  spaceComplexity: 'O(1) Auxiliary',
+  leetcodeUrl: 'https://leetcode.com/problems/missing-number/',
+  description: 'Finds the only number in the range [0, N] missing from an array of N distinct integers using Gauss sum summation and XOR bit cancellation.'
 };
 
-// Realistic sample array for this problem (n=3, missing=2)
-const SAMPLE_DATA = [3, 0, 1];
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Missing Number Detection Strategies',
+  nodes: [
+    { id: 'root', label: 'Summation & Bitwise Invariant', children: ['gauss-sum', 'running-sum', 'sum-difference', 'xor-cancellation', 'complexity'] },
+    { id: 'gauss-sum', label: '1. Theoretical Sum (Gauss Formula)', detail: 'Expected total = N * (N + 1) / 2 represents the sum if zero elements were missing.' },
+    { id: 'running-sum', label: '2. Array Sum Accumulation', detail: 'Accumulate actual_sum += nums[i] across the N present elements.' },
+    { id: 'sum-difference', label: '3. Difference Recovery', detail: 'missing = expected_sum - actual_sum identifies the absent number in O(N) time.' },
+    { id: 'xor-cancellation', label: '4. XOR Bit Invariant (Overflow Safe)', detail: 'XOR all numbers in [0..N] against all elements in nums. Identical values cancel out to 0 (x ^ x = 0).' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Strictly O(N) single-pass runtime with O(1) auxiliary space and zero heap allocation.' }
+  ]
+};
+
+export const solutions = {
+  cpp: `// C++ Optimal Missing Number (Sum & XOR Approaches)
+// Time Complexity: O(N) | Space Complexity: O(1)
+#include <vector>
+using namespace std;
+
+class Solution {
+public:
+    // Approach 1: Mathematical Gauss Sum
+    int missingNumberSum(vector<int>& nums) {
+        long long n = nums.size();
+        long long expectedSum = (n * (n + 1)) / 2;
+        long long actualSum = 0;
+
+        for (int x : nums) {
+            actualSum += x;
+        }
+
+        return (int)(expectedSum - actualSum);
+    }
+
+    // Approach 2: Bitwise XOR (Guaranteed no integer overflow)
+    int missingNumberXOR(vector<int>& nums) {
+        int n = nums.size();
+        int xorAll = 0;
+
+        for (int i = 0; i <= n; i++) xorAll ^= i;
+        for (int x : nums) xorAll ^= x;
+
+        return xorAll;
+    }
+};`,
+  python: `# Python 3 Optimal Missing Number
+# Time Complexity: O(N) | Space Complexity: O(1)
+class Solution:
+    def missingNumber(self, nums: list[int]) -> int:
+        n = len(nums)
+        expected_sum = (n * (n + 1)) // 2
+        actual_sum = sum(nums)
+        return expected_sum - actual_sum
+
+    def missingNumberXOR(self, nums: list[int]) -> int:
+        res = len(nums)
+        for i, num in enumerate(nums):
+            res ^= i ^ num
+        return res`,
+  java: `// Java Optimal Missing Number
+// Time Complexity: O(N) | Space Complexity: O(1)
+class Solution {
+    public int missingNumber(int[] nums) {
+        int n = nums.length;
+        int expectedSum = (n * (n + 1)) / 2;
+        int actualSum = 0;
+
+        for (int num : nums) {
+            actualSum += num;
+        }
+
+        return expectedSum - actualSum;
+    }
+}`,
+  javascript: `// JavaScript Optimal Missing Number
+// Time Complexity: O(N) | Space Complexity: O(1)
+var missingNumber = function(nums) {
+    const n = nums.length;
+    const expectedSum = (n * (n + 1)) / 2;
+    const actualSum = nums.reduce((acc, curr) => acc + curr, 0);
+
+    return expectedSum - actualSum;
+};`
+};
 
 export const steps = [
   {
-    title: "1. Determine Range (n)",
-    codeLine: 3,
-    code: "int n = nums.size();",
-    explanation: "The algorithm begins by determining the size of the input array using nums.size(). In this specific example, the array contains 3 elements, which establishes that n = 3. This crucial first step dictates that our array is expected to hold a sequence of distinct integers ranging precisely from 0 up to 3. Any deviation means a number is missing.",
-    pointers: [],
-    highlightIndices: [],
-    hudText: "n = 3 | actual_sum = 0"
+    title: '1. Problem Setup: Compute Theoretical Sum for N = 3',
+    phase: 'INITIALIZATION',
+    codeLine: 12,
+    track: {
+      label: 'nums [0..3]',
+      items: [
+        { val: 3, status: 'default' },
+        { val: 0, status: 'default' },
+        { val: 1, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'head', color: 'accent' }
+    ],
+    metrics: [
+      { label: 'Array Size (N)', value: '3' },
+      { label: 'Expected Range', value: '[0..3]' },
+      { label: 'Theoretical Sum', value: '6' },
+      { label: 'Actual Sum', value: '0' }
+    ],
+    customCard: {
+      title: 'Gauss Sum Invariant',
+      rows: [
+        { label: 'Formula', value: 'expected_sum = N * (N + 1) / 2' },
+        { label: 'Evaluation', value: '3 * 4 / 2 = 6' },
+        { label: 'Baseline', value: 'Sum of [0, 1, 2, 3] if complete is 6' }
+      ]
+    },
+    formula: 'expected = N * (N + 1) / 2 = 3 * 4 / 2 = 6; actual = 0;',
+    action: 'Determine array size N = 3. Compute expected sum of complete range [0..3] = 6.',
+    explain: 'By comparing the expected total sum against the observed sum of array elements, the missing integer is found directly.',
+    intuition: 'Gauss summation converts an otherwise O(N) search into a single difference subtraction.'
   },
   {
-    title: "2. Calculate Optimum Sum",
-    codeLine: 4,
-    code: "long long optimum_sum = (n * (n + 1)) / 2;",
-    explanation: "Next, we calculate the 'optimum sum'—the total sum if absolutely no numbers were missing from the sequence 0 to n. This leverages the mathematical formula for the sum of the first N natural numbers: (n * (n + 1)) / 2. By plugging in our n value of 3, the operation evaluates to (3 * 4) / 2, resulting in an optimum sum of 6. This acts as our theoretical baseline.",
-    pointers: [],
-    highlightIndices: [],
-    hudText: "optimum_sum = 6 | actual_sum = 0"
+    title: '2. Scan Index 0: Add nums[0] = 3 -> Actual Sum = 3',
+    phase: 'ACCUMULATION',
+    codeLine: 16,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'current' },
+        { val: 0, status: 'default' },
+        { val: 1, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'i=0', color: 'accent' }
+    ],
+    activeIndices: [0],
+    metrics: [
+      { label: 'Element', value: 'nums[0] = 3' },
+      { label: 'Actual Sum', value: '3' },
+      { label: 'Expected Sum', value: '6' },
+      { label: 'Current Deficit', value: '3' }
+    ],
+    customCard: {
+      title: 'Accumulation Step 1',
+      rows: [
+        { label: 'nums[0]', value: '3' },
+        { label: 'actualSum', value: '0 + 3 = 3' },
+        { label: 'Difference', value: '6 - 3 = 3' }
+      ]
+    },
+    formula: 'actual_sum += nums[0] (3); // actual_sum = 3',
+    action: 'Inspect index 0. Add 3 to running actual sum.',
+    explain: 'Running sum updates to 3. Two elements remain to be added.',
+    intuition: 'Each addition bridges the gap towards the theoretical total.'
   },
   {
-    title: "3. Accumulate Actual Sum (Index 0)",
-    codeLine: 8,
-    code: "actual_sum += it; // it = 3",
-    explanation: "We initiate a linear scan through the given array to tally the 'actual sum' of the elements currently present. The iteration points to the first element at index 0, which holds the value 3. We take this value and add it to our running actual_sum variable. Consequently, actual_sum updates from 0 to 3.",
-    pointers: [{ index: 0, label: 'it', color: 'indigo' }],
-    highlightIndices: [0],
-    hudText: "optimum_sum = 6 | actual_sum = 0 + 3 = 3"
+    title: '3. Scan Index 1: Add nums[1] = 0 -> Actual Sum = 3',
+    phase: 'ACCUMULATION',
+    codeLine: 16,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'dimmed' },
+        { val: 0, status: 'current' },
+        { val: 1, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 1, label: 'i=1', color: 'accent' }
+    ],
+    activeIndices: [1],
+    metrics: [
+      { label: 'Element', value: 'nums[1] = 0' },
+      { label: 'Actual Sum', value: '3' },
+      { label: 'Expected Sum', value: '6' },
+      { label: 'Current Deficit', value: '3' }
+    ],
+    customCard: {
+      title: 'Accumulation Step 2',
+      rows: [
+        { label: 'nums[1]', value: '0' },
+        { label: 'actualSum', value: '3 + 0 = 3' },
+        { label: 'Identity', value: 'Adding 0 preserves sum without distortion' }
+      ]
+    },
+    formula: 'actual_sum += nums[1] (0); // actual_sum = 3',
+    action: 'Inspect index 1. Value is 0. Running actual sum remains 3.',
+    explain: 'Value 0 is safely incorporated into the sum without inflating total.',
+    intuition: 'Additive identity ensures 0 does not mask or affect any other number.'
   },
   {
-    title: "4. Accumulate Actual Sum (Index 1)",
-    codeLine: 8,
-    code: "actual_sum += it; // it = 0",
-    explanation: "The loop progresses to the next element at index 1, where it encounters the value 0. We continuously update our actual_sum by adding this new value. Adding 0 to our existing total of 3 leaves the actual_sum unchanged at 3. This step emphasizes that the presence of 0 seamlessly integrates into our cumulative addition strategy without inflating the total.",
-    pointers: [{ index: 1, label: 'it', color: 'indigo' }],
-    highlightIndices: [1],
-    hudText: "optimum_sum = 6 | actual_sum = 3 + 0 = 3"
+    title: '4. Scan Index 2: Add nums[2] = 1 -> Actual Sum = 4',
+    phase: 'ACCUMULATION',
+    codeLine: 16,
+    track: {
+      label: 'nums',
+      items: [
+        { val: 3, status: 'dimmed' },
+        { val: 0, status: 'dimmed' },
+        { val: 1, status: 'current' }
+      ]
+    },
+    pointers: [
+      { index: 2, label: 'i=2', color: 'accent' }
+    ],
+    activeIndices: [2],
+    metrics: [
+      { label: 'Element', value: 'nums[2] = 1' },
+      { label: 'Actual Sum', value: '4' },
+      { label: 'Expected Sum', value: '6' },
+      { label: 'Final Deficit', value: '2' }
+    ],
+    customCard: {
+      title: 'Accumulation Step 3',
+      rows: [
+        { label: 'nums[2]', value: '1' },
+        { label: 'actualSum', value: '3 + 1 = 4' },
+        { label: 'Final Difference', value: '6 - 4 = 2 (The Missing Number!)' }
+      ]
+    },
+    formula: 'actual_sum += nums[2] (1); // actual_sum = 4',
+    action: 'Inspect index 2. Add 1 to running actual sum. Array traversal complete with actual sum = 4.',
+    explain: 'Total sum of all present elements is 4.',
+    intuition: 'The gap between expected sum (6) and actual sum (4) must be the missing number.'
   },
   {
-    title: "5. Accumulate Actual Sum (Index 2)",
-    codeLine: 8,
-    code: "actual_sum += it; // it = 1",
-    explanation: "Our loop pointer reaches the final element of the array at index 2, which contains the value 1. This value is added to our ongoing actual_sum (currently 3). The new actual_sum evaluates to 4. Having successfully traversed the entire array, we have now accurately aggregated the sum of all existing elements.",
-    pointers: [{ index: 2, label: 'it', color: 'indigo' }],
-    highlightIndices: [2],
-    hudText: "optimum_sum = 6 | actual_sum = 3 + 1 = 4"
-  },
-  {
-    title: "6. Compute and Return Missing Number",
-    codeLine: 10,
-    code: "return optimum_sum - actual_sum;",
-    explanation: "In the final step of the algorithm, we isolate the missing number by comparing our theoretical baseline against our practical result. We subtract the actual_sum (4) from the optimum_sum (6). The mathematical difference perfectly represents the value that was omitted from the sequence. The algorithm successfully concludes and returns 2.",
-    pointers: [],
-    highlightIndices: [0, 1, 2],
-    hudText: "Result: 6 - 4 = 2 (Missing Number)"
+    title: '5. Result: Missing Number = 6 - 4 = 2',
+    phase: 'COMPLETED',
+    codeLine: 19,
+    track: {
+      label: 'nums (complete)',
+      items: [
+        { val: 3, status: 'match' },
+        { val: 0, status: 'match' },
+        { val: 1, status: 'match' }
+      ]
+    },
+    pointers: [
+      { index: 1, label: 'missing = 2', color: 'amber' }
+    ],
+    activeIndices: [0, 1, 2],
+    metrics: [
+      { label: 'Missing Number', value: '2' },
+      { label: 'Expected Sum', value: '6' },
+      { label: 'Actual Sum', value: '4' },
+      { label: 'Space Complexity', value: 'O(1) Auxiliary' }
+    ],
+    customCard: {
+      title: 'Missing Number Identified',
+      rows: [
+        { label: 'Expected Sequence', value: '[0, 1, 2, 3]' },
+        { label: 'Present Sequence', value: '[3, 0, 1]' },
+        { label: 'Formula', value: '6 - 4 = 2' },
+        { label: 'Bitwise Check', value: '(0^1^2^3) ^ (3^0^1) = 2' }
+      ]
+    },
+    formula: 'return expected_sum - actual_sum; // 6 - 4 = 2',
+    action: 'Subtract actual sum 4 from expected sum 6. Result is 2.',
+    explain: 'The absent value from range [0..3] is uniquely identified as 2.',
+    intuition: 'Arithmetic cancellation operates in strictly O(N) time with constant O(1) space.'
   }
 ];
-
-export default function MissingNumberVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
-        <ArrayView
-          items={SAMPLE_DATA}
-          pointers={stepData.pointers || []}
-          matchIndices={stepData.highlightIndices || []}
-        />
-
-        {/* 3. Real-Time HUD */}
-        <div className="mt-5 flex flex-col gap-2 w-full max-w-md">
-          <div className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-            <span className="text-[var(--chalk-dim)]">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
-          </div>
-          <div className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs">
-            <span className="text-[var(--chalk-dim)]">Executing: <strong className="text-emerald-400">{stepData.code}</strong></span>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-[var(--chalk-dim)] leading-relaxed font-sans">
-        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
-        {stepData.explanation}
-      </div>
-    </div>
-  );
-}

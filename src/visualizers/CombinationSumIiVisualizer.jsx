@@ -1,17 +1,32 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
-  title: 'Combination Sum II (Unique with Duplicates)',
+  title: 'Combination Sum II',
   category: 'Recursion / Backtracking',
   difficulty: 'Medium',
   timeComplexity: 'O(2^N * K)',
-  spaceComplexity: 'O(K * X) combinations',
-  description: 'Finds all unique combinations that sum up to target where each number in the array can only be used once, skipping duplicates at the same recursion level.'
+  spaceComplexity: 'O(K * X) combinations recursion stack',
+  description: 'Finds all unique combinations in candidates where the candidate numbers sum to target. Each number in candidates may only be used once in the combination, and duplicate combinations are skipped by sorting and level pruning.'
 };
+
+export const ideaMap = [
+  {
+    title: 'Sort for Level-Order Deduplication',
+    description: 'Sorting the candidate array places identical numbers adjacent to each other. During the loop at depth ind, if i > ind and candidates[i] == candidates[i - 1], we skip that branch to prevent identical combinations.'
+  },
+  {
+    title: 'Single-Use Forward Movement',
+    description: 'Unlike Combination Sum I, each element may only be used once. After picking candidates[i], the recursive call advances to i + 1.'
+  },
+  {
+    title: 'Early Pruning',
+    description: 'Because the array is sorted in ascending order, if candidates[i] exceeds the remaining target, all subsequent candidates in the current loop will also exceed it, allowing an immediate break.'
+  }
+];
 
 export const solutions = {
   cpp: `// C++ Combination Sum II (Backtracking with Duplicate Pruning)
-// Time: O(2^N) | Space: O(N)
+// Time: O(2^N * K) | Space: O(K * X)
 #include <vector>
 #include <algorithm>
 using namespace std;
@@ -25,14 +40,14 @@ private:
         }
 
         for (int i = ind; i < arr.size(); i++) {
-            // Skip duplicate elements at the same tree level
+            // Skip duplicates at the same recursion level
             if (i > ind && arr[i] == arr[i - 1]) continue;
 
-            // Elements are sorted, if current element exceeds remaining target, stop
+            // Early pruning: array is sorted, so if arr[i] > target, subsequent elements will also exceed
             if (arr[i] > target) break;
 
             current.push_back(arr[i]);
-            backtrack(i + 1, target - arr[i], arr, current, result); // i + 1 because each used once
+            backtrack(i + 1, target - arr[i], arr, current, result); // i + 1: each used once
             current.pop_back(); // backtrack
         }
     }
@@ -57,9 +72,10 @@ class Solution:
                 return
 
             for i in range(ind, len(candidates)):
-                # Skip duplicates at the same level
+                # Skip duplicate elements at the same level
                 if i > ind and candidates[i] == candidates[i - 1]:
                     continue
+                # Early break since candidates are sorted
                 if candidates[i] > remain:
                     break
 
@@ -126,138 +142,278 @@ export const steps = [
   {
     title: '1. Sorted Candidates: [1, 1, 2, 5, 6, 7, 10], Target = 8',
     phase: 'INITIAL',
-    codeLine: 31,
-    candidates: [1, 1, 2, 5, 6, 7, 10],
-    currentIndex: 0,
-    remain: 8,
-    currentCombo: [],
-    results: [],
-    skippedDuplicate: false,
-    variables: { candidates: '[1, 1, 2, 5, 6, 7, 10]', target: 8 },
-    explain: 'Sorting allows pruning: 1) if candidates[i] > target, stop loop immediately. 2) if i > ind && candidates[i] == candidates[i-1], skip duplicate branch.',
-    intuition: 'Sorting puts identical numbers adjacent, enabling level-order duplicate pruning.'
+    codeLine: 41,
+    arr: [
+      { val: 1, state: 'pointer', label: 'ind=0' },
+      { val: 1, state: 'inactive' },
+      { val: 2, state: 'inactive' },
+      { val: 5, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [{ name: 'ind', index: 0 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [] },
+      { label: 'Found Combinations', items: [] }
+    ],
+    customCard: {
+      title: 'Initial State',
+      rows: [
+        { label: 'Target', value: '8' },
+        { label: 'Array Sorted', value: 'Yes: [1, 1, 2, 5, 6, 7, 10]' },
+        { label: 'Pruning Strategy', value: 'Skip if i > ind && arr[i] == arr[i-1]' },
+        { label: 'Early Exit', value: 'Break if arr[i] > remain' }
+      ]
+    },
+    variables: { ind: 0, target: 8, remain: 8, current: '[]', resultCount: 0 },
+    explain: 'Candidates are sorted to enable duplicate pruning and early break when candidate exceeds remaining target.',
+    intuition: 'Sorting places duplicate values together so we only pick the first occurrence at any specific tree level.'
   },
   {
-    title: '2. Pick 1 (idx 0), then 1 (idx 1), then 6 (idx 4): 1 + 1 + 6 = 8 -> Match 1 Found!',
+    title: '2. Pick candidates[0] = 1, then candidates[1] = 1: Target = 8 - 1 - 1 = 6',
+    phase: 'PICK',
+    codeLine: 34,
+    arr: [
+      { val: 1, state: 'active', label: 'pick i=0' },
+      { val: 1, state: 'active', label: 'pick i=1' },
+      { val: 2, state: 'inactive' },
+      { val: 5, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [{ name: 'i', index: 1 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [1, 1] },
+      { label: 'Found Combinations', items: [] }
+    ],
+    customCard: {
+      title: 'Deeper Recursion Level',
+      rows: [
+        { label: 'Selected So Far', value: '[1, 1]' },
+        { label: 'Remaining Target', value: '6' },
+        { label: 'Next Start Index', value: 'i = 2 (advance to prevent reuse)' }
+      ]
+    },
+    variables: { ind: 2, remain: 6, current: '[1, 1]', resultCount: 0 },
+    explain: 'Picking identical elements across different recursion depths is valid. Current combo is [1, 1] with target 6.',
+    intuition: 'Duplicates across different depths are legitimate; duplicates at the same depth are pruned.'
+  },
+  {
+    title: '3. Pick candidates[4] = 6: 1 + 1 + 6 = 8 -> Match 1 Found!',
     phase: 'MATCH_FOUND',
-    codeLine: 12,
-    candidates: [1, 1, 2, 5, 6, 7, 10],
-    currentIndex: 4,
-    remain: 0,
-    currentCombo: [1, 1, 6],
-    results: [[1, 1, 6]],
-    skippedDuplicate: false,
-    variables: { matched: '[1, 1, 6]', remain: 0 },
-    explain: 'Picking both 1s and 6 produces sum 8. First valid combination recorded.',
-    intuition: 'Identical numbers can be used together across different recursion depths.'
+    codeLine: 23,
+    arr: [
+      { val: 1, state: 'match' },
+      { val: 1, state: 'match' },
+      { val: 2, state: 'inactive' },
+      { val: 5, state: 'inactive' },
+      { val: 6, state: 'match', label: 'pick i=4' },
+      { val: 7, state: 'inactive' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [{ name: 'i', index: 4 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [1, 1, 6] },
+      { label: 'Found Combinations', items: ['[1, 1, 6]'] }
+    ],
+    customCard: {
+      title: 'Match 1 Recorded',
+      rows: [
+        { label: 'Combination', value: '[1, 1, 6]' },
+        { label: 'Sum', value: '1 + 1 + 6 = 8' },
+        { label: 'Remaining Target', value: '0' },
+        { label: 'Result Set', value: '[[1, 1, 6]]' }
+      ]
+    },
+    variables: { remain: 0, current: '[1, 1, 6]', resultCount: 1 },
+    explain: 'Candidate 6 matches remaining target 6 exactly. First unique combination [1, 1, 6] recorded.',
+    intuition: 'Base case remain == 0 saves the valid combination.'
   },
   {
-    title: '3. Backtrack to [1], explore 2 and 5: 1 + 2 + 5 = 8 -> Match 2 Found!',
+    title: '4. Backtrack to [1], Pick 2 then 5: 1 + 2 + 5 = 8 -> Match 2 Found!',
     phase: 'MATCH_FOUND',
-    codeLine: 12,
-    candidates: [1, 1, 2, 5, 6, 7, 10],
-    currentIndex: 3,
-    remain: 0,
-    currentCombo: [1, 2, 5],
-    results: [[1, 1, 6], [1, 2, 5]],
-    skippedDuplicate: false,
-    variables: { matched: '[1, 2, 5]', remain: 0 },
-    explain: 'Branch with 1, 2, 5 hits target 8. Second valid combination recorded.',
-    intuition: 'Valid combination found.'
+    codeLine: 23,
+    arr: [
+      { val: 1, state: 'match' },
+      { val: 1, state: 'inactive' },
+      { val: 2, state: 'match' },
+      { val: 5, state: 'match' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [{ name: 'i', index: 3 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [1, 2, 5] },
+      { label: 'Found Combinations', items: ['[1, 1, 6]', '[1, 2, 5]'] }
+    ],
+    customCard: {
+      title: 'Match 2 Recorded',
+      rows: [
+        { label: 'Combination', value: '[1, 2, 5]' },
+        { label: 'Sum', value: '1 + 2 + 5 = 8' },
+        { label: 'Remaining Target', value: '0' },
+        { label: 'Result Set', value: '[[1, 1, 6], [1, 2, 5]]' }
+      ]
+    },
+    variables: { remain: 0, current: '[1, 2, 5]', resultCount: 2 },
+    explain: 'Backtracking explores [1, 2, 5]. Sum equals 8, so second unique combination [1, 2, 5] is stored.',
+    intuition: 'Backtracking pops elements and restores the search state.'
   },
   {
-    title: '4. At root level, candidate at idx 1 is "1" (duplicate of idx 0): SKIPPED!',
-    phase: 'SKIP_DUPLICATE',
-    codeLine: 18,
-    candidates: [1, 1, 2, 5, 6, 7, 10],
-    currentIndex: 1,
-    remain: 8,
-    currentCombo: [],
-    results: [[1, 1, 6], [1, 2, 5], [1, 7]],
-    skippedDuplicate: true,
-    variables: { skippedIndex: 1, val: 1, reason: 'i > ind and arr[i] == arr[i-1]' },
-    explain: 'Starting a new combination with the second "1" would create identical duplicates of all combinations that started with the first "1". We skip it!',
-    intuition: 'Skip duplicate branches at the same tree level to guarantee uniqueness.'
+    title: '5. Backtrack to [1], Pick 7: 1 + 7 = 8 -> Match 3 Found!',
+    phase: 'MATCH_FOUND',
+    codeLine: 23,
+    arr: [
+      { val: 1, state: 'match' },
+      { val: 1, state: 'inactive' },
+      { val: 2, state: 'inactive' },
+      { val: 5, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'match' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [{ name: 'i', index: 5 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [1, 7] },
+      { label: 'Found Combinations', items: ['[1, 1, 6]', '[1, 2, 5]', '[1, 7]'] }
+    ],
+    customCard: {
+      title: 'Match 3 Recorded',
+      rows: [
+        { label: 'Combination', value: '[1, 7]' },
+        { label: 'Sum', value: '1 + 7 = 8' },
+        { label: 'Remaining Target', value: '0' },
+        { label: 'Result Set', value: '[[1, 1, 6], [1, 2, 5], [1, 7]]' }
+      ]
+    },
+    variables: { remain: 0, current: '[1, 7]', resultCount: 3 },
+    explain: 'Backtracking finds combination [1, 7] = 8.',
+    intuition: 'Each branch discovers valid subsets without redundant search.'
   },
   {
-    title: '5. Completed: 4 Unique Combinations Found: [[1, 1, 6], [1, 2, 5], [1, 7], [2, 6]]',
+    title: '6. Backtrack to Root: Skip Duplicate candidates[1] = 1 at Same Level!',
+    phase: 'PRUNE',
+    codeLine: 29,
+    arr: [
+      { val: 1, state: 'visited', label: 'explored' },
+      { val: 1, state: 'inactive', label: 'SKIPPED' },
+      { val: 2, state: 'pointer', label: 'ind=2' },
+      { val: 5, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [{ name: 'i', index: 1 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [] },
+      { label: 'Found Combinations', items: ['[1, 1, 6]', '[1, 2, 5]', '[1, 7]'] }
+    ],
+    customCard: {
+      title: 'Duplicate Pruned',
+      rows: [
+        { label: 'Index', value: 'i = 1' },
+        { label: 'Condition', value: 'i > ind (1 > 0) && arr[1] == arr[0]' },
+        { label: 'Decision', value: 'SKIP! Avoid duplicate subtree' },
+        { label: 'Next Candidate', value: 'Advance to arr[2] = 2' }
+      ]
+    },
+    variables: { i: 1, ind: 0, skipped: true, current: '[]', resultCount: 3 },
+    explain: 'At recursion level ind=0, candidate at index 1 is identical to candidate at index 0. Skipping it completely avoids generating duplicate combinations.',
+    intuition: 'Level-order duplicate pruning ensures unique output without needing an expensive hash set.'
+  },
+  {
+    title: '7. Pick 2, then Pick 6: 2 + 6 = 8 -> Match 4 Found!',
+    phase: 'MATCH_FOUND',
+    codeLine: 23,
+    arr: [
+      { val: 1, state: 'visited' },
+      { val: 1, state: 'visited' },
+      { val: 2, state: 'match' },
+      { val: 5, state: 'inactive' },
+      { val: 6, state: 'match' },
+      { val: 7, state: 'inactive' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [{ name: 'i', index: 4 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [2, 6] },
+      { label: 'Found Combinations', items: ['[1, 1, 6]', '[1, 2, 5]', '[1, 7]', '[2, 6]'] }
+    ],
+    customCard: {
+      title: 'Match 4 Recorded',
+      rows: [
+        { label: 'Combination', value: '[2, 6]' },
+        { label: 'Sum', value: '2 + 6 = 8' },
+        { label: 'Remaining Target', value: '0' },
+        { label: 'Result Set Count', value: '4 combinations' }
+      ]
+    },
+    variables: { remain: 0, current: '[2, 6]', resultCount: 4 },
+    explain: 'Branch starting with 2 picks 6: 2 + 6 = 8. Fourth unique combination recorded.',
+    intuition: 'Subtree beginning with 2 is cleanly evaluated.'
+  },
+  {
+    title: '8. Early Pruning at candidates[6] = 10 > 8: Break Loop',
+    phase: 'PRUNE',
+    codeLine: 32,
+    arr: [
+      { val: 1, state: 'visited' },
+      { val: 1, state: 'visited' },
+      { val: 2, state: 'visited' },
+      { val: 5, state: 'visited' },
+      { val: 6, state: 'visited' },
+      { val: 7, state: 'visited' },
+      { val: 10, state: 'inactive', label: '10 > 8 (BREAK)' }
+    ],
+    pointers: [{ name: 'i', index: 6 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [] },
+      { label: 'Found Combinations', items: ['[1, 1, 6]', '[1, 2, 5]', '[1, 7]', '[2, 6]'] }
+    ],
+    customCard: {
+      title: 'Early Break Pruning',
+      rows: [
+        { label: 'Candidate', value: 'arr[6] = 10' },
+        { label: 'Remaining Target', value: '8' },
+        { label: 'Condition', value: '10 > 8 -> BREAK loop' },
+        { label: 'Benefit', value: 'Stops useless recursion branch instantly' }
+      ]
+    },
+    variables: { i: 6, remain: 8, broken: true, resultCount: 4 },
+    explain: 'Since candidates[6] = 10 > 8 and the array is sorted, no subsequent elements can sum to 8. Break out of loop.',
+    intuition: 'Sorted order enables early termination of entire loop iterations.'
+  },
+  {
+    title: '9. Completed: All Unique Combinations Discovered',
     phase: 'COMPLETED',
-    codeLine: 35,
-    candidates: [1, 1, 2, 5, 6, 7, 10],
-    currentIndex: 6,
-    remain: 0,
-    currentCombo: [],
-    results: [[1, 1, 6], [1, 2, 5], [1, 7], [2, 6]],
-    skippedDuplicate: false,
-    variables: { uniqueCombos: 4, finalSet: '[[1,1,6], [1,2,5], [1,7], [2,6]]' },
-    explain: 'Backtracking terminated. All 4 unique combinations that sum to 8 have been found without any duplicates.',
-    intuition: 'Duplicate pruning ensures strictly unique combinations without using a hash set.'
+    codeLine: 45,
+    arr: [
+      { val: 1, state: 'match' },
+      { val: 1, state: 'match' },
+      { val: 2, state: 'match' },
+      { val: 5, state: 'match' },
+      { val: 6, state: 'match' },
+      { val: 7, state: 'match' },
+      { val: 10, state: 'inactive' }
+    ],
+    pointers: [],
+    auxiliaryTrack: [
+      { label: 'Final Unique Combinations', items: ['[1, 1, 6]', '[1, 2, 5]', '[1, 7]', '[2, 6]'] }
+    ],
+    customCard: {
+      title: 'Final Summary',
+      rows: [
+        { label: 'Total Unique Combinations', value: '4' },
+        { label: 'Results', value: '[[1, 1, 6], [1, 2, 5], [1, 7], [2, 6]]' },
+        { label: 'Deduplication', value: 'O(1) condition i > ind && arr[i] == arr[i-1]' },
+        { label: 'Complexity', value: 'O(2^N * K) Time | O(K * X) Space' }
+      ]
+    },
+    variables: { totalCount: 4, finalResult: '[[1, 1, 6], [1, 2, 5], [1, 7], [2, 6]]' },
+    explain: 'Backtracking complete. Exactly 4 unique combinations sum to 8 without duplicates.',
+    intuition: 'Sorted level-order skipping guarantees zero duplicate combinations with maximum efficiency.'
   }
 ];
-
-export default function CombinationSumIiVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Active Index: {step.currentIndex} (val: {step.candidates[step.currentIndex]})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Remaining Target: {step.remain}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Unique Combos: {step.results.length}
-        </span>
-      </div>
-
-      {/* Sorted Candidates with Duplicate Highlight */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-5 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Sorted Candidate Pool</span>
-
-        <div className="flex items-center justify-center gap-2.5 overflow-x-auto w-full py-1">
-          {step.candidates.map((val, idx) => {
-            const isCurrent = idx === step.currentIndex;
-            const isDuplicate = idx > 0 && val === step.candidates[idx - 1];
-
-            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
-            if (isCurrent && step.skippedDuplicate) {
-              borderClass = 'border-rose-500 bg-rose-500/20 text-rose-300 ring-2 ring-rose-500/40 line-through';
-            } else if (isCurrent) {
-              borderClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-2 ring-amber-500/40 shadow-lg';
-            } else if (isDuplicate) {
-              borderClass = 'border-purple-500/40 bg-purple-500/10 text-purple-300';
-            }
-
-            return (
-              <div key={idx} className={`w-12 h-16 rounded-xl border flex flex-col items-center justify-center font-mono font-bold transition-all ${borderClass}`}>
-                <span className="text-base">{val}</span>
-                <span className="text-[8px] text-[var(--chalk-faint)]">[{idx}]</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Solutions Container */}
-      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
-        <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Discovered Unique Combinations</span>
-        <div className="flex items-center gap-2 flex-wrap">
-          {step.results.map((combo, idx) => (
-            <span key={idx} className="px-3 py-1.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-xs">
-              [{combo.join(', ')}]
-            </span>
-          ))}
-          {step.results.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Exploring paths...</span>}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

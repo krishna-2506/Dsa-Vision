@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'queue';
 
 export const meta = {
   title: 'Alien Dictionary',
@@ -9,8 +9,35 @@ export const meta = {
   description: 'Reconstructs the alphabet ordering of an alien language given a lexicographically sorted list of alien words by building a directed graph of character precedence and applying Topological Sort.'
 };
 
+export const ideaMap = {
+  title: 'Alien Lexicographic Topological Deduction',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Adjacent Word Comparison',
+      detail: 'Compare adjacent words dict[i] and dict[i+1]. The first differing character pair (c1, c2) defines directed edge c1 -> c2.'
+    },
+    {
+      id: 'step2',
+      label: 'Character In-Degree Counting',
+      detail: 'Record in-degrees for all K alien letters based on directed precedence edges.'
+    },
+    {
+      id: 'step3',
+      label: 'Kahn\'s BFS Topological Extraction',
+      detail: 'Push characters with in-degree 0 into the ready queue. Dequeue, append to alphabet string, and decrement neighbor in-degrees.'
+    },
+    {
+      id: 'step4',
+      label: 'Valid Alphabet Validation',
+      detail: 'If reconstructed string length equals K, return the alphabet order; if a cycle exists, return empty string "".'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Alien Dictionary (Topological Sort)
+// Time: O(N * len + K) | Space: O(K)
 #include <string>
 #include <vector>
 #include <queue>
@@ -49,9 +76,10 @@ string findOrder(string dict[], int N, int K) {
             if (indegree[v] == 0) q.push(v);
         }
     }
-    return order;
+    return order.length() == K ? order : "";
 }`,
-  java: `// Java: Alien Dictionary
+  java: `// Java: Alien Dictionary (Topological Sort)
+// Time: O(N * len + K) | Space: O(K)
 import java.util.*;
 
 class Solution {
@@ -63,47 +91,52 @@ class Solution {
         for (int i = 0; i < N - 1; i++) {
             String w1 = words[i], w2 = words[i + 1];
             int len = Math.min(w1.length(), w2.length());
-            for (int j = 0; j < len; j++) {
-                if (w1.charAt(j) != w2.charAt(j)) {
-                    adj.get(w1.charAt(j) - 'a').add(w2.charAt(j) - 'a');
-                    indegree[w2.charAt(j) - 'a']++;
+            for (int ptr = 0; ptr < len; ptr++) {
+                if (w1.charAt(ptr) != w2.charAt(ptr)) {
+                    adj.get(w1.charAt(ptr) - 'a').add(w2.charAt(ptr) - 'a');
+                    indegree[w2.charAt(ptr) - 'a']++;
                     break;
                 }
             }
         }
         
         Queue<Integer> q = new LinkedList<>();
-        for (int i = 0; i < K; i++) if (indegree[i] == 0) q.add(i);
+        for (int i = 0; i < K; i++) {
+            if (indegree[i] == 0) q.offer(i);
+        }
         
-        StringBuilder sb = new StringBuilder();
+        StringBuilder order = new StringBuilder();
         while (!q.isEmpty()) {
             int u = q.poll();
-            sb.append((char)(u + 'a'));
+            order.append((char)(u + 'a'));
             for (int v : adj.get(u)) {
                 indegree[v]--;
-                if (indegree[v] == 0) q.add(v);
+                if (indegree[v] == 0) q.offer(v);
             }
         }
-        return sb.toString();
+        return order.length() == K ? order.toString() : "";
     }
 }`,
-  python: `# Python: Alien Dictionary
-from collections import deque
+  python: `# Python: Alien Dictionary (Topological Sort)
+# Time: O(N * len + K) | Space: O(K)
+from collections import deque, defaultdict
 
-def findOrder(words: list[str], K: int) -> str:
-    adj = {chr(ord('a') + i): [] for i in range(K)}
+def findOrder(dict_words: list[str], N: int, K: int) -> str:
+    adj = defaultdict(list)
     indegree = {chr(ord('a') + i): 0 for i in range(K)}
     
-    for i in range(len(words) - 1):
-        w1, w2 = words[i], words[i+1]
-        for c1, c2 in zip(w1, w2):
-            if c1 != c2:
-                adj[c1].append(c2)
-                indegree[c2] += 1
+    for i in range(N - 1):
+        w1, w2 = dict_words[i], dict_words[i + 1]
+        min_len = min(len(w1), len(w2))
+        for ptr in range(min_len):
+            if w1[ptr] != w2[ptr]:
+                adj[w1[ptr]].append(w2[ptr])
+                indegree[w2[ptr]] += 1
                 break
                 
-    q = deque([c for c in indegree if indegree[c] == 0])
+    q = deque([ch for ch in indegree if indegree[ch] == 0])
     order = []
+    
     while q:
         u = q.popleft()
         order.append(u)
@@ -111,110 +144,177 @@ def findOrder(words: list[str], K: int) -> str:
             indegree[v] -= 1
             if indegree[v] == 0:
                 q.append(v)
-    return "".join(order)
-`,
-  javascript: `// JavaScript: Alien Dictionary
-function findOrder(words, K) {
-  // Compare words, build DAG, Kahn's topo sort
-  return "";
+                
+    return "".join(order) if len(order) == K else ""`,
+  javascript: `// JavaScript: Alien Dictionary (Topological Sort)
+// Time: O(N * len + K) | Space: O(K)
+function findOrder(words, N, K) {
+  const adj = Array.from({ length: K }, () => []);
+  const indegree = new Array(K).fill(0);
+  
+  for (let i = 0; i < N - 1; i++) {
+    const w1 = words[i], w2 = words[i + 1];
+    const len = Math.min(w1.length(), w2.length());
+    for (let ptr = 0; ptr < len; ptr++) {
+      if (w1[ptr] !== w2[ptr]) {
+        const u = w1.charCodeAt(ptr) - 97;
+        const v = w2.charCodeAt(ptr) - 97;
+        adj[u].push(v);
+        indegree[v]++;
+        break;
+      }
+    }
+  }
+  
+  const q = [];
+  for (let i = 0; i < K; i++) {
+    if (indegree[i] === 0) q.push(i);
+  }
+  
+  let order = '';
+  while (q.length > 0) {
+    const u = q.shift();
+    order += String.fromCharCode(u + 97);
+    for (const v of adj[u]) {
+      indegree[v]--;
+      if (indegree[v] === 0) q.push(v);
+    }
+  }
+  return order.length === K ? order : '';
 }`
 };
 
 export const steps = [
   {
-    title: '1. Given Alien Words: ["baa", "abcd", "abca", "cab", "cad"]',
-    phase: 'INPUT',
-    codeLine: 11,
-    pairExamined: 'Initial Dictionary',
-    edgesDeduced: [],
-    alienAlphabet: '',
-    explanation: 'Lexicographically sorted dictionary of 5 words over 4 letters: {b, a, c, d}.'
+    phase: 'SETUP',
+    title: '1. Deduce Letter Precedence from Word Pairs',
+    mode: 'queue',
+    queue: ['b'],
+    inputTrack: {
+      items: [2, 0, 1, 1],
+      label: 'Character In-Degrees [a, b, c, d]'
+    },
+    scanIndex: 1,
+    activeIndices: [1],
+    customCard: {
+      title: 'Word Pair Comparisons',
+      rows: [
+        { label: '"baa" vs "abcd"', value: 'b comes before a (b -> a)', accent: true },
+        { label: '"abcd" vs "abca"', value: 'd comes before a (d -> a)' },
+        { label: '"abca" vs "cab"', value: 'a comes before c (a -> c)' },
+        { label: '"cab" vs "cad"', value: 'b comes before d (b -> d)' }
+      ]
+    },
+    variables: {
+      alienAlphabet: '""',
+      queue: '["b"]',
+      inDegrees: '{a: 2, b: 0, c: 1, d: 1}'
+    },
+    metrics: {
+      alphabetLength: '0 / 4',
+      queueSize: 1,
+      currentChar: 'b'
+    },
+    explain: 'Adjacent word comparisons produce directed edges b->a, d->a, a->c, b->d. Letter "b" has in-degree 0; enqueue "b".',
+    intuition: 'The first mismatch between lexicographically ordered words reveals strict relative precedence.'
   },
   {
-    title: '2. Compare "baa" & "abcd" -> Deduce Edge b -> a',
-    phase: 'EDGE_1',
-    codeLine: 17,
-    pairExamined: '"baa" vs "abcd"',
-    edgesDeduced: ['b &rarr; a'],
-    alienAlphabet: '',
-    explanation: 'First mismatch at index 0: \'b\' appears before \'a\'. Deduces directed edge b &rarr; a.'
+    phase: 'PROCESS_B',
+    title: '2. Dequeue "b": Unlock Letter "d"',
+    mode: 'queue',
+    queue: ['d'],
+    inputTrack: {
+      items: [1, 0, 1, 0],
+      label: 'Character In-Degrees [a, b, c, d]'
+    },
+    scanIndex: 3,
+    activeIndices: [3],
+    customCard: {
+      title: 'First Letter Emitted',
+      rows: [
+        { label: 'Alien Alphabet', value: '"b"', accent: true },
+        { label: 'Edge b -> a', value: 'a in-degree drops 2 -> 1' },
+        { label: 'Edge b -> d', value: 'd in-degree drops 1 -> 0 (Enqueued!)' },
+        { label: 'Queue', value: '["d"]' }
+      ]
+    },
+    variables: {
+      alienAlphabet: '"b"',
+      queue: '["d"]',
+      inDegrees: '{a: 1, b: 0, c: 1, d: 0}'
+    },
+    metrics: {
+      alphabetLength: '1 / 4',
+      queueSize: 1,
+      currentChar: 'd'
+    },
+    explain: 'Dequeue "b". Alphabet becomes "b". Edges b->a and b->d reduce in-degrees. Letter "d" reaches in-degree 0 and is enqueued.',
+    intuition: 'Processing the root letter clears the way for subsequent characters in the alien language.'
   },
   {
-    title: '3. Compare "abcd" & "abca" -> Deduce Edge d -> a',
-    phase: 'EDGE_2',
-    codeLine: 17,
-    pairExamined: '"abcd" vs "abca"',
-    edgesDeduced: ['b &rarr; a', 'd &rarr; a'],
-    alienAlphabet: '',
-    explanation: 'First mismatch at index 3: \'d\' appears before \'a\'. Deduces directed edge d &rarr; a.'
+    phase: 'PROCESS_D_A',
+    title: '3. Dequeue "d" & "a": Unlock Letter "c"',
+    mode: 'queue',
+    queue: ['c'],
+    inputTrack: {
+      items: [0, 0, 0, 0],
+      label: 'Character In-Degrees [a, b, c, d]'
+    },
+    scanIndex: 0,
+    activeIndices: [0, 2],
+    customCard: {
+      title: 'Successive Alphabet Additions',
+      rows: [
+        { label: 'Alien Alphabet', value: '"b" -> "bd" -> "bda"', accent: true },
+        { label: 'Edge d -> a', value: 'a in-degree drops 1 -> 0 (Processed)' },
+        { label: 'Edge a -> c', value: 'c in-degree drops 1 -> 0 (Enqueued!)' },
+        { label: 'Queue', value: '["c"]' }
+      ]
+    },
+    variables: {
+      alienAlphabet: '"bda"',
+      queue: '["c"]',
+      inDegrees: '{a: 0, b: 0, c: 0, d: 0}'
+    },
+    metrics: {
+      alphabetLength: '3 / 4',
+      queueSize: 1,
+      currentChar: 'a'
+    },
+    explain: 'Dequeue "d" then "a". Alphabet advances to "bda". Edge a->c decrements in-degree of "c" to 0; enqueue "c".',
+    intuition: 'Topological sorting systematically respects all relative precedence rules.'
   },
   {
-    title: '4. Compare "abca" & "cab", "cab" & "cad" -> a -> c, b -> d',
-    phase: 'DAG_BUILT',
-    codeLine: 24,
-    pairExamined: 'Remaining Pairs',
-    edgesDeduced: ['b &rarr; a', 'd &rarr; a', 'a &rarr; c', 'b &rarr; d'],
-    alienAlphabet: '',
-    explanation: 'All character order constraints collected. Topological sort begins with in-degree 0 nodes.'
-  },
-  {
-    title: '5. Topological Ordering Resolved: "b d a c"',
     phase: 'COMPLETE',
-    codeLine: 35,
-    pairExamined: 'Topo Complete',
-    edgesDeduced: ['b &rarr; a', 'd &rarr; a', 'a &rarr; c', 'b &rarr; d'],
-    alienAlphabet: 'b -> d -> a -> c',
-    explanation: 'Node \'b\' has in-degree 0, followed by \'d\', then \'a\', then \'c\'. Alien alphabet: "bdac"!'
+    title: '4. Dequeue "c": Alien Alphabet Reconstructed "bdac"',
+    mode: 'queue',
+    queue: [],
+    inputTrack: {
+      items: [0, 0, 0, 0],
+      label: 'All Letters Resolved'
+    },
+    scanIndex: 2,
+    activeIndices: [0, 1, 2, 3],
+    customCard: {
+      title: 'Alien Lexicon Solved',
+      rows: [
+        { label: 'Final Alien Alphabet', value: '"bdac"', accent: true },
+        { label: 'Unique Characters (K)', value: '4 letters' },
+        { label: 'Validity', value: 'Complete DAG sequence with 0 cycles' },
+        { label: 'Status', value: 'Success' }
+      ]
+    },
+    variables: {
+      alienAlphabet: '"bdac"',
+      queue: '[] (Empty)',
+      inDegrees: '{a: 0, b: 0, c: 0, d: 0}'
+    },
+    metrics: {
+      alphabetLength: '4 / 4',
+      queueSize: 0,
+      currentChar: 'c'
+    },
+    explain: 'Dequeue "c". Alphabet becomes "bdac". Queue is empty and length equals K = 4. Reconstructed alphabet: "bdac"!',
+    intuition: 'Topological sort guarantees every prefix relation in the dictionary is rigorously honored.'
   }
 ];
-
-export default function AlienDictionaryVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Comparing: <strong className="text-purple-200">{step.pairExamined}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Order Deduced: <strong className="text-cyan-200">{step.alienAlphabet || 'Computing...'}</strong>
-        </div>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
-          <span>Precedence Relations Inferred</span>
-          <span className="text-emerald-400 font-bold">Directed Character Graph</span>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap min-h-[48px] p-3 rounded-xl bg-[#0f1017] border border-[#1f2233]">
-          {step.edgesDeduced.length === 0 ? (
-            <span className="text-[#475569] font-mono text-xs italic">Awaiting pairwise character scans...</span>
-          ) : (
-            step.edgesDeduced.map((edgeStr, idx) => (
-              <span
-                key={idx}
-                dangerouslySetInnerHTML={{ __html: edgeStr }}
-                className="px-3 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-500/40 text-cyan-200 font-mono text-xs font-bold shadow"
-              />
-            ))
-          )}
-        </div>
-
-        {step.alienAlphabet && (
-          <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-between text-xs font-mono">
-            <span className="text-emerald-300">Alien Alphabet Sequence:</span>
-            <span className="text-base font-bold text-emerald-200 tracking-wider">
-              {step.alienAlphabet}
-            </span>
-          </div>
-        )}
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.explanation}
-      </div>
-    </div>
-  );
-}

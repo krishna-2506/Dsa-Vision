@@ -1,175 +1,497 @@
-import React, { useState } from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Merge Sort - Divide & Conquer',
-  category: 'Sorting & Searching',
+  category: 'Sorting Algorithms',
   difficulty: 'Medium',
-  timeComplexity: 'O(N log N)',
-  spaceComplexity: 'O(N)',
-  description: 'Recursively divides array into two halves, sorts each half independently, and combines them via two-pointer merging.'
+  timeComplexity: 'O(N log N) All Cases',
+  spaceComplexity: 'O(N) Auxiliary Buffer',
+  description: 'Recursively divides the array into two halves, sorts each half independently, and merges the sorted subarrays using an auxiliary buffer.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Divide and Conquer Merge Strategy',
+  nodes: [
+    { id: 'root', label: 'Merge Sort Invariant', children: ['divide-halves', 'base-case', 'two-pointer-merge', 'copy-back', 'complexity'] },
+    { id: 'divide-halves', label: '1. Midpoint Division', detail: 'Compute mid = low + (high - low) / 2 to split subarray [low..high] into [low..mid] and [mid+1..high].' },
+    { id: 'base-case', label: '2. Atomic Subarrays (low >= high)', detail: 'Single-element or empty subarrays are intrinsically sorted; recursion unwinds to begin merging.' },
+    { id: 'two-pointer-merge', label: '3. Two-Pointer Merging', detail: 'Compare left pointer (in [low..mid]) and right pointer (in [mid+1..high]); append the smaller element into temp buffer.' },
+    { id: 'copy-back', label: '4. Writeback to Original', detail: 'Copy all elements from the auxiliary buffer back into arr[low..high], locking the range into sorted order.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Guaranteed O(N log N) time in best, average, and worst cases with O(N) extra buffer memory.' }
+  ]
+};
+
+export const solutions = {
+  cpp: `// C++ Merge Sort Implementation
+// Time Complexity: O(N log N) | Space Complexity: O(N)
+#include <vector>
+using namespace std;
+
+class Solution {
+    void merge(vector<int>& arr, int low, int mid, int high) {
+        vector<int> temp;
+        int left = low;
+        int right = mid + 1;
+
+        while (left <= mid && right <= high) {
+            if (arr[left] <= arr[right]) {
+                temp.push_back(arr[left++]);
+            } else {
+                temp.push_back(arr[right++]);
+            }
+        }
+
+        while (left <= mid) temp.push_back(arr[left++]);
+        while (right <= high) temp.push_back(arr[right++]);
+
+        for (int i = low; i <= high; i++) {
+            arr[i] = temp[i - low];
+        }
+    }
+
+    void mergeSortHelper(vector<int>& arr, int low, int high) {
+        if (low >= high) return;
+        int mid = low + (high - low) / 2;
+        mergeSortHelper(arr, low, mid);
+        mergeSortHelper(arr, mid + 1, high);
+        merge(arr, low, mid, high);
+    }
+
+public:
+    void mergeSort(vector<int>& arr) {
+        mergeSortHelper(arr, 0, (int)arr.size() - 1);
+    }
+};`,
+  python: `# Python 3 Merge Sort Implementation
+# Time Complexity: O(N log N) | Space Complexity: O(N)
+class Solution:
+    def mergeSort(self, arr: list[int]) -> list[int]:
+        if len(arr) <= 1:
+            return arr
+
+        mid = len(arr) // 2
+        left = self.mergeSort(arr[:mid])
+        right = self.mergeSort(arr[mid:])
+
+        # Merge step
+        res = []
+        i = j = 0
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                res.append(left[i])
+                i += 1
+            else:
+                res.append(right[j])
+                j += 1
+
+        res.extend(left[i:])
+        res.extend(right[j:])
+        return res`,
+  java: `// Java Merge Sort Implementation
+// Time Complexity: O(N log N) | Space Complexity: O(N)
+import java.util.ArrayList;
+
+class Solution {
+    private static void merge(int[] arr, int low, int mid, int high) {
+        ArrayList<Integer> temp = new ArrayList<>();
+        int left = low, right = mid + 1;
+
+        while (left <= mid && right <= high) {
+            if (arr[left] <= arr[right]) {
+                temp.add(arr[left++]);
+            } else {
+                temp.add(arr[right++]);
+            }
+        }
+
+        while (left <= mid) temp.add(arr[left++]);
+        while (right <= high) temp.add(arr[right++]);
+
+        for (int i = low; i <= high; i++) {
+            arr[i] = temp.get(i - low);
+        }
+    }
+
+    public static void mergeSort(int[] arr, int low, int high) {
+        if (low >= high) return;
+        int mid = low + (high - low) / 2;
+        mergeSort(arr, low, mid);
+        mergeSort(arr, mid + 1, high);
+        merge(arr, low, mid, high);
+    }
+}`,
+  javascript: `// JavaScript Merge Sort Implementation
+// Time Complexity: O(N log N) | Space Complexity: O(N)
+function mergeSort(arr) {
+    if (arr.length <= 1) return arr;
+
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+
+    const merged = [];
+    let i = 0, j = 0;
+
+    while (i < left.length && j < right.length) {
+        if (left[i] <= right[j]) {
+            merged.push(left[i++]);
+        } else {
+            merged.push(right[j++]);
+        }
+    }
+
+    return [...merged, ...left.slice(i), ...right.slice(j)];
+}`
 };
 
 export const steps = [
   {
-    title: "Initial Unsorted Array",
-    stage: "divide",
-    tree: [
-      { id: 'root', items: [38, 27, 43, 3, 9, 82, 10], active: true, label: "Original Array" }
+    title: '1. Initial Unsorted Array & Midpoint Split',
+    phase: 'DIVIDE',
+    codeLine: 28,
+    track: {
+      label: 'arr (original)',
+      items: [
+        { val: 38, status: 'current' },
+        { val: 27, status: 'current' },
+        { val: 43, status: 'current' },
+        { val: 3, status: 'default' },
+        { val: 9, status: 'default' },
+        { val: 82, status: 'default' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'merge buffer',
+      items: ['—', '—', '—', '—', '—', '—']
+    },
+    pointers: [
+      { index: 0, label: 'low', color: 'accent' },
+      { index: 2, label: 'mid', color: 'amber' },
+      { index: 5, label: 'high', color: 'indigo' }
     ],
-    code: "void mergeSort(int arr[], int l, int r) {\n  if (l >= r) return;\n  int m = l + (r - l) / 2;\n  mergeSort(arr, l, m);\n  mergeSort(arr, m + 1, r);\n  merge(arr, l, m, r);\n}",
-    explanation: "Starting with 7 unsorted elements. We find the midpoint index to divide into left and right subarrays."
+    windowStart: 0,
+    windowEnd: 5,
+    metrics: [
+      { label: 'low', value: '0' },
+      { label: 'mid', value: '2' },
+      { label: 'high', value: '5' },
+      { label: 'Left Partition', value: '[38, 27, 43]' },
+      { label: 'Right Partition', value: '[3, 9, 82]' }
+    ],
+    customCard: {
+      title: 'Subarray Partitioning',
+      rows: [
+        { label: 'Array Segment', value: '[38, 27, 43, 3, 9, 82]' },
+        { label: 'Mid Formula', value: 'mid = 0 + (5 - 0)/2 = 2' },
+        { label: 'Left Subproblem', value: 'mergeSort(0, 2) -> [38, 27, 43]' },
+        { label: 'Right Subproblem', value: 'mergeSort(3, 5) -> [3, 9, 82]' }
+      ]
+    },
+    formula: 'mid = low + (high - low) / 2 = 2',
+    action: 'Calculate mid index 2. Array divides into left half [0..2] and right half [3..5].',
+    explain: 'Merge Sort recursively splits the problem until subarrays contain exactly 1 element.',
+    intuition: 'Breaking an array into halves produces a recursion tree of height log2(N).'
   },
   {
-    title: "Divide into Two Halves",
-    stage: "divide",
-    tree: [
-      { id: 'left', items: [38, 27, 43], active: true, label: "Left Subarray" },
-      { id: 'right', items: [3, 9, 82, 10], active: true, label: "Right Subarray" }
+    title: '2. Left Partition Sorted: [27, 38, 43]',
+    phase: 'RECURSION_UNWIND',
+    codeLine: 29,
+    track: {
+      label: 'arr (partial)',
+      items: [
+        { val: 27, status: 'match' },
+        { val: 38, status: 'match' },
+        { val: 43, status: 'match' },
+        { val: 3, status: 'default' },
+        { val: 9, status: 'default' },
+        { val: 82, status: 'default' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'merge buffer',
+      items: ['—', '—', '—', '—', '—', '—']
+    },
+    pointers: [
+      { index: 0, label: 'left', color: 'accent' },
+      { index: 2, label: 'mid', color: 'amber' }
     ],
-    code: "int m = l + (r - l) / 2;\nmergeSort(arr, 0, 2); // [38, 27, 43]\nmergeSort(arr, 3, 6); // [3, 9, 82, 10]",
-    explanation: "Left partition gets 3 elements [38, 27, 43]. Right partition gets 4 elements [3, 9, 82, 10]."
+    windowStart: 0,
+    windowEnd: 2,
+    metrics: [
+      { label: 'Sorted Left Subarray', value: '[27, 38, 43]' },
+      { label: 'Next Call', value: 'mergeSort(arr, 3, 5)' },
+      { label: 'Unsorted Right Subarray', value: '[3, 9, 82]' }
+    ],
+    customCard: {
+      title: 'Left Branch Completed',
+      rows: [
+        { label: 'Recursive Return', value: 'mergeSort(0, 2) finished' },
+        { label: 'Sorted State', value: 'arr[0..2] = [27, 38, 43]' },
+        { label: 'Upcoming Operation', value: 'Sort right partition arr[3..5]' }
+      ]
+    },
+    formula: 'mergeSort(arr, 0, 2) resolved; arr[0..2] sorted',
+    action: 'The left subtree merges atomic units into sorted subarray [27, 38, 43].',
+    explain: 'With left half fully sorted, the algorithm now processes the right partition [3, 9, 82].',
+    intuition: 'Each recursive step guarantees its local half is monotonically sorted before final combination.'
   },
   {
-    title: "Atomic Decomposition (Base Case)",
-    stage: "divide",
-    tree: [
-      { id: 'a1', items: [38], active: true, label: "Base" },
-      { id: 'a2', items: [27, 43], active: true, label: "Sub" },
-      { id: 'b1', items: [3, 9], active: true, label: "Sub" },
-      { id: 'b2', items: [82, 10], active: true, label: "Sub" }
+    title: '3. Right Partition Sorted: [3, 9, 82]',
+    phase: 'RECURSION_UNWIND',
+    codeLine: 30,
+    track: {
+      label: 'arr (both sorted)',
+      items: [
+        { val: 27, status: 'match' },
+        { val: 38, status: 'match' },
+        { val: 43, status: 'match' },
+        { val: 3, status: 'match' },
+        { val: 9, status: 'match' },
+        { val: 82, status: 'match' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'merge buffer',
+      items: ['—', '—', '—', '—', '—', '—']
+    },
+    pointers: [
+      { index: 0, label: 'left', color: 'accent' },
+      { index: 3, label: 'right', color: 'indigo' }
     ],
-    code: "if (l >= r) return; // Base case: single element arrays are already sorted",
-    explanation: "Subarrays with 1 element are trivially sorted. Now the conquering (merging) phase begins."
+    windowStart: 0,
+    windowEnd: 5,
+    metrics: [
+      { label: 'left pointer', value: 'idx 0 (val 27)' },
+      { label: 'right pointer', value: 'idx 3 (val 3)' },
+      { label: 'Buffer Space', value: '6 slots' }
+    ],
+    customCard: {
+      title: 'Top-Level Merge Stage',
+      rows: [
+        { label: 'Left Sorted Subarray', value: '[27, 38, 43] (indices 0..2)' },
+        { label: 'Right Sorted Subarray', value: '[3, 9, 82] (indices 3..5)' },
+        { label: 'Merge Setup', value: 'left = 0, right = 3, compare arr[left] vs arr[right]' }
+      ]
+    },
+    formula: 'merge(arr, 0, 2, 5); left = 0, right = 3',
+    action: 'Both halves are independently sorted. Initialize two pointers left=0 and right=3 for final merge.',
+    explain: 'We now perform a linear scan comparing arr[left] against arr[right] and populating temp.',
+    intuition: 'Merging two pre-sorted lists takes strictly linear time proportional to their combined lengths.'
   },
   {
-    title: "Merge Left Branch [27, 38, 43]",
-    stage: "merge",
-    tree: [
-      { id: 'm-left', items: [27, 38, 43], active: true, label: "Sorted Left Half" },
-      { id: 'm-right', items: [3, 9, 10, 82], active: false, label: "Right Half Pending" }
+    title: '4. Merge Step: Compare arr[0]=27 vs arr[3]=3 -> Choose 3',
+    phase: 'MERGING',
+    codeLine: 14,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 27, status: 'current' },
+        { val: 38, status: 'default' },
+        { val: 43, status: 'default' },
+        { val: 3, status: 'match' },
+        { val: 9, status: 'default' },
+        { val: 82, status: 'default' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'merge buffer',
+      items: [3, '—', '—', '—', '—', '—']
+    },
+    pointers: [
+      { index: 0, label: 'left', color: 'accent' },
+      { index: 4, label: 'right (new)', color: 'indigo' }
     ],
-    code: "merge(arr, 0, 1, 2); // Merging [38] with [27, 43] -> [27, 38, 43]",
-    explanation: "Comparing smallest elements: 27 comes first, then 38, then 43. Left half is now fully sorted!"
+    activeIndices: [0, 3],
+    metrics: [
+      { label: 'arr[left]', value: '27' },
+      { label: 'arr[right]', value: '3' },
+      { label: 'Selected Element', value: '3 (right)' },
+      { label: 'Buffer Content', value: '[3]' }
+    ],
+    customCard: {
+      title: 'Element Selection',
+      rows: [
+        { label: 'Comparison', value: '27 <= 3 is False' },
+        { label: 'Chosen Value', value: '3 appended to temp buffer' },
+        { label: 'Pointer Shift', value: 'right++ (moves from idx 3 to 4)' }
+      ]
+    },
+    formula: 'arr[left] > arr[right] -> temp.push_back(arr[right++])',
+    action: '3 < 27. Append 3 to temp buffer. Advance right pointer to index 4.',
+    explain: 'Right partition element 3 is smaller than 27. It takes the first slot in our merged output.',
+    intuition: 'At each comparison, taking the smaller element guarantees monotonic sorting in temp.'
   },
   {
-    title: "Merge Right Branch [3, 9, 10, 82]",
-    stage: "merge",
-    tree: [
-      { id: 'm-left', items: [27, 38, 43], active: false, label: "Sorted Left Half" },
-      { id: 'm-right', items: [3, 9, 10, 82], active: true, label: "Sorted Right Half" }
+    title: '5. Merge Step: Compare arr[0]=27 vs arr[4]=9 -> Choose 9',
+    phase: 'MERGING',
+    codeLine: 14,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 27, status: 'current' },
+        { val: 38, status: 'default' },
+        { val: 43, status: 'default' },
+        { val: 3, status: 'dimmed' },
+        { val: 9, status: 'match' },
+        { val: 82, status: 'default' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'merge buffer',
+      items: [3, 9, '—', '—', '—', '—']
+    },
+    pointers: [
+      { index: 0, label: 'left', color: 'accent' },
+      { index: 5, label: 'right (new)', color: 'indigo' }
     ],
-    code: "merge(arr, 3, 4, 6); // Merging [3, 9] with [10, 82] -> [3, 9, 10, 82]",
-    explanation: "Right half is merged using two pointers: [3, 9, 10, 82] is now ordered."
+    activeIndices: [0, 4],
+    metrics: [
+      { label: 'arr[left]', value: '27' },
+      { label: 'arr[right]', value: '9' },
+      { label: 'Selected Element', value: '9 (right)' },
+      { label: 'Buffer Content', value: '[3, 9]' }
+    ],
+    customCard: {
+      title: 'Element Selection',
+      rows: [
+        { label: 'Comparison', value: '27 <= 9 is False' },
+        { label: 'Chosen Value', value: '9 appended to temp buffer' },
+        { label: 'Pointer Shift', value: 'right++ (moves from idx 4 to 5)' }
+      ]
+    },
+    formula: 'arr[left] > arr[right] -> temp.push_back(arr[right++])',
+    action: '9 < 27. Append 9 to temp. Advance right pointer to index 5 (val 82).',
+    explain: 'Element 9 is added to temp buffer. Buffer is now [3, 9].',
+    intuition: 'The buffer accumulates elements in strictly non-decreasing order.'
   },
   {
-    title: "Final Merge: Complete Sorted Array",
-    stage: "complete",
-    tree: [
-      { id: 'final', items: [3, 9, 10, 27, 38, 43, 82], active: true, label: "Completely Sorted" }
+    title: '6. Merge Step: Compare arr[0]=27 vs arr[5]=82 -> Choose 27',
+    phase: 'MERGING',
+    codeLine: 12,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 27, status: 'match' },
+        { val: 38, status: 'default' },
+        { val: 43, status: 'default' },
+        { val: 3, status: 'dimmed' },
+        { val: 9, status: 'dimmed' },
+        { val: 82, status: 'current' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'merge buffer',
+      items: [3, 9, 27, '—', '—', '—']
+    },
+    pointers: [
+      { index: 1, label: 'left (new)', color: 'accent' },
+      { index: 5, label: 'right', color: 'indigo' }
     ],
-    code: "merge(arr, 0, 2, 6); // Final merge into destination array\n// Result: [3, 9, 10, 27, 38, 43, 82]",
-    explanation: "Final two-way merge takes O(N) time. The entire array is sorted! Total time complexity is O(N log N)."
+    activeIndices: [0, 5],
+    metrics: [
+      { label: 'arr[left]', value: '27' },
+      { label: 'arr[right]', value: '82' },
+      { label: 'Selected Element', value: '27 (left)' },
+      { label: 'Buffer Content', value: '[3, 9, 27]' }
+    ],
+    customCard: {
+      title: 'Element Selection',
+      rows: [
+        { label: 'Comparison', value: '27 <= 82 is True' },
+        { label: 'Chosen Value', value: '27 appended to temp buffer' },
+        { label: 'Pointer Shift', value: 'left++ (moves from idx 0 to 1)' }
+      ]
+    },
+    formula: 'arr[left] <= arr[right] -> temp.push_back(arr[left++])',
+    action: '27 <= 82. Append 27 to temp. Advance left pointer to index 1 (val 38).',
+    explain: 'Left partition element 27 is smaller than 82. Appended to temp buffer.',
+    intuition: 'Left and right pointers alternate naturally based on values.'
+  },
+  {
+    title: '7. Merge Remainder: Add 38, 43, and 82 to Complete Buffer',
+    phase: 'BUFFER_FILL',
+    codeLine: 18,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 27, status: 'dimmed' },
+        { val: 38, status: 'match' },
+        { val: 43, status: 'match' },
+        { val: 3, status: 'dimmed' },
+        { val: 9, status: 'dimmed' },
+        { val: 82, status: 'match' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'merge buffer',
+      items: [3, 9, 27, 38, 43, 82]
+    },
+    pointers: [
+      { index: 3, label: 'left exhaust', color: 'accent' },
+      { index: 6, label: 'right exhaust', color: 'indigo' }
+    ],
+    metrics: [
+      { label: 'Buffer Complete', value: '[3, 9, 27, 38, 43, 82]' },
+      { label: 'Elements Placed', value: '6 / 6' },
+      { label: 'Status', value: 'Ready for writeback' }
+    ],
+    customCard: {
+      title: 'Buffer Assembly Complete',
+      rows: [
+        { label: 'Remaining from Left', value: 'Append [38, 43]' },
+        { label: 'Remaining from Right', value: 'Append [82]' },
+        { label: 'Merged Array', value: '[3, 9, 27, 38, 43, 82]' }
+      ]
+    },
+    formula: 'temp buffer holds complete sorted sequence',
+    action: 'Remaining elements from both partitions are appended into temp buffer.',
+    explain: 'Once one partition exhausts, all remaining elements of the other partition are directly appended.',
+    intuition: 'Since subarrays were already sorted, leftover elements can be safely tacked on.'
+  },
+  {
+    title: '8. Writeback Buffer to Original Array: [3, 9, 27, 38, 43, 82]',
+    phase: 'COMPLETED',
+    codeLine: 24,
+    track: {
+      label: 'arr (fully sorted)',
+      items: [
+        { val: 3, status: 'match' },
+        { val: 9, status: 'match' },
+        { val: 27, status: 'match' },
+        { val: 38, status: 'match' },
+        { val: 43, status: 'match' },
+        { val: 82, status: 'match' }
+      ]
+    },
+    auxiliaryTrack: {
+      label: 'buffer copied',
+      items: [3, 9, 27, 38, 43, 82]
+    },
+    pointers: [
+      { index: 0, label: 'sorted', color: 'accent' },
+      { index: 5, label: 'sorted', color: 'accent' }
+    ],
+    windowStart: 0,
+    windowEnd: 5,
+    metrics: [
+      { label: 'Result', value: '[3, 9, 27, 38, 43, 82]' },
+      { label: 'Time Complexity', value: 'O(N log N)' },
+      { label: 'Space Complexity', value: 'O(N)' },
+      { label: 'Algorithm', value: 'Merge Sort' }
+    ],
+    customCard: {
+      title: 'Sorting Complete',
+      rows: [
+        { label: 'Final Array', value: '[3, 9, 27, 38, 43, 82]' },
+        { label: 'Stability', value: 'Stable (arr[left] <= arr[right] preserves duplicate order)' },
+        { label: 'Recurrence', value: 'T(N) = 2T(N/2) + O(N) = O(N log N)' }
+      ]
+    },
+    formula: 'for (int i = low; i <= high; i++) arr[i] = temp[i - low];',
+    action: 'Copy temp buffer back into arr[0..5]. Entire array is sorted.',
+    explain: 'Array is now fully sorted in O(N log N) time and stable order.',
+    intuition: 'Merge Sort guarantees O(N log N) performance regardless of initial array arrangement.'
   }
 ];
-
-export default function MergeSortVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => {
-    if (stepIndex < steps.length - 1) setStep(stepIndex + 1);
-  };
-
-  const handlePrev = () => {
-    if (stepIndex > 0) setStep(stepIndex - 1);
-  };
-
-  return (
-    <div className="w-full flex flex-col items-center">
-      <div className="w-full bg-slate-900/90 rounded-2xl border border-slate-700/60 shadow-2xl overflow-hidden backdrop-blur-xl">
-        <div className="px-6 py-4 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-violet-500/20 text-violet-400 border border-violet-500/30">
-                Phase {stepIndex + 1} of {steps.length}
-              </span>
-              <h3 className="text-lg font-bold text-[var(--chalk)]">{stepData.title}</h3>
-            </div>
-            <p className="text-[var(--chalk-dim)] text-xs mt-0.5">Divide & Conquer Tree View</p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handlePrev}
-              disabled={stepIndex === 0}
-              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-[var(--chalk)] text-xs font-medium rounded-lg border border-slate-700 transition"
-            >
-              ← Prev
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={stepIndex === steps.length - 1}
-              className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-[var(--chalk)] text-xs font-semibold rounded-lg shadow-lg shadow-violet-500/20 transition"
-            >
-              Next →
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
-          <div className="lg:col-span-5 p-6 bg-slate-950/40 flex flex-col gap-4">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[var(--chalk-dim)] block mb-2">Recursive Logic</span>
-              <pre className="bg-slate-950 p-3.5 rounded-xl text-emerald-400 text-xs font-mono overflow-x-auto border border-slate-800 shadow-inner">
-                {stepData.code}
-              </pre>
-            </div>
-
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--chalk-dim)] mb-1">State Breakdown</h4>
-              <p className="text-[var(--chalk-dim)] text-xs leading-relaxed bg-slate-800/40 p-3 rounded-xl border border-slate-700/50">
-                {stepData.explanation}
-              </p>
-            </div>
-
-            <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs font-mono">
-              <span className="text-[var(--chalk-dim)]">Current Phase:</span>
-              <span className="uppercase px-2.5 py-1 rounded bg-violet-500/20 text-violet-300 font-bold">
-                {stepData.stage}
-              </span>
-            </div>
-          </div>
-
-          <div className="lg:col-span-7 p-8 flex flex-col items-center justify-center min-h-[360px] bg-slate-900/50">
-            <div className="w-full flex flex-col items-center gap-6">
-              {stepData.tree.map((block) => (
-                <div key={block.id} className="flex flex-col items-center gap-2">
-                  <span className="text-[11px] font-mono text-[var(--chalk-dim)]">{block.label}</span>
-                  <div className="flex items-center gap-2">
-                    {block.items.map((num, i) => (
-                      <div
-                        key={i}
-                        className={`w-11 h-12 rounded-xl flex items-center justify-center font-mono font-bold text-sm shadow-md transition-all duration-300 ${
-                          stepData.stage === 'complete'
-                            ? 'bg-emerald-600 text-[var(--chalk)] ring-2 ring-emerald-400/40'
-                            : block.active
-                            ? 'bg-violet-600 text-[var(--chalk)] ring-2 ring-violet-400/40 scale-105'
-                            : 'bg-slate-800 text-[var(--chalk-dim)] border border-slate-700'
-                        }`}
-                      >
-                        {num}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}

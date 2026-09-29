@@ -1,138 +1,249 @@
-import React, { useState } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+export const rendererType = 'linked-list';
 
 export const meta = {
-  display_id: 'Q-085',
-  title: "Intro To Linked List",
-  category: "4. Linked List",
-  difficulty: "Medium",
-  timeComplexity: "O(n)",
-  spaceComplexity: "O(n)",
-  description: "Construct the linked list from arr and return the head of the linked list.\r\n\r\nExample 1:\r\n\r\nInput:\r\nn = 5\r\narr = [1,2,3,4,5]\r\nOutput:\r\n1 2 3 4 5"
+  title: 'Introduction to Singly Linked List (Array to Linked List)',
+  category: 'Linked List',
+  difficulty: 'Easy',
+  timeComplexity: 'O(N)',
+  spaceComplexity: 'O(N) for allocated nodes',
+  description: 'Constructs a singly linked list sequentially from an array of elements by dynamically allocating heap nodes and linking them together via next pointers.'
 };
 
-// Realistic sample array for this problem matching Example 1
-const SAMPLE_DATA = [1, 2, 3, 4, 5];
+export const ideaMap = {
+  title: 'Linked List Construction Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Allocate Head Node',
+      detail: 'Create head = new Node(arr[0]) to establish the permanent entry point.'
+    },
+    {
+      id: 'step2',
+      label: 'Initialize Current Pointer',
+      detail: 'Set curr = head to navigate and extend the list without moving head.'
+    },
+    {
+      id: 'step3',
+      label: 'Iterative Chaining',
+      detail: 'For each subsequent element arr[i], allocate temp = new Node(arr[i]), link curr.next = temp, and advance curr = temp.'
+    },
+    {
+      id: 'step4',
+      label: 'Return Head Anchor',
+      detail: 'The head pointer provides permanent access to the complete chain.'
+    }
+  ]
+};
+
+export const solutions = {
+  cpp: `// C++ Construct Linked List from Array
+#include <iostream>
+#include <vector>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) : data(val), next(nullptr) {}
+};
+
+class Solution {
+public:
+    Node* constructLL(vector<int>& arr) {
+        if (arr.empty()) return nullptr;
+
+        Node* head = new Node(arr[0]);
+        Node* curr = head;
+
+        for (int i = 1; i < arr.size(); i++) {
+            Node* temp = new Node(arr[i]);
+            curr->next = temp;
+            curr = temp;
+        }
+
+        return head;
+    }
+};`,
+  python: `# Python 3 Construct Linked List from Array
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class Solution:
+    def constructLL(self, arr: list[int]) -> Node:
+        if not arr:
+            return None
+
+        head = Node(arr[0])
+        curr = head
+
+        for i in range(1, len(arr)):
+            temp = Node(arr[i])
+            curr.next = temp
+            curr = temp
+
+        return head`,
+  java: `// Java Construct Linked List from Array
+class Node {
+    int data;
+    Node next;
+    Node(int d) { data = d; next = null; }
+}
+
+public class Solution {
+    public static Node constructLL(int[] arr) {
+        if (arr == null || arr.length == 0) return null;
+
+        Node head = new Node(arr[0]);
+        Node curr = head;
+
+        for (int i = 1; i < arr.length; i++) {
+            Node temp = new Node(arr[i]);
+            curr.next = temp;
+            curr = temp;
+        }
+
+        return head;
+    }
+}`,
+  javascript: `// JavaScript Construct Linked List from Array
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
+
+function constructLL(arr) {
+  if (!arr || arr.length === 0) return null;
+
+  const head = new Node(arr[0]);
+  let curr = head;
+
+  for (let i = 1; i < arr.length; i++) {
+    const temp = new Node(arr[i]);
+    curr.next = temp;
+    curr = temp;
+  }
+
+  return head;
+}`
+};
 
 export const steps = [
   {
-    title: "1. Create Head Node",
-    codeLine: 2, 
-    code: "Node* head = new Node(arr[0]);",
-    explanation: "We begin by allocating memory for the very first node of our linked list, known as the 'head'. We initialize its data payload using the first element of the array (arr[0], which is 1). This head node serves as the permanent anchor and entry point for our entire linked list.",
-    pointers: [{ index: 0, label: 'head', color: 'emerald' }],
-    highlightIndices: [0],
-    hudText: "List: 1 -> null"
+    title: 'Initialize Array Input: [1, 2, 3, 4, 5]',
+    phase: 'SETUP',
+    nodes: [],
+    auxiliaryNodes: [
+      { id: 0, val: 1 },
+      { id: 1, val: 2 },
+      { id: 2, val: 3 },
+      { id: 3, val: 4 },
+      { id: 4, val: 5 }
+    ],
+    auxiliaryLabel: 'Input Array: [1, 2, 3, 4, 5]',
+    variables: { arrayLength: 5, listNodes: 0, head: 'null' },
+    metrics: [
+      { label: 'Array Size', value: '5 elements' },
+      { label: 'Heap Nodes', value: '0' },
+      { label: 'Target', value: 'Dynamic Chaining' }
+    ],
+    explain: 'Starting with input array arr = [1, 2, 3, 4, 5]. In memory, array elements are contiguous. We will construct a dynamically linked list with pointer references.',
+    action: 'Load input array.',
+    intuition: 'Linked lists allow dynamic memory growth and O(1) insertions without contiguous block reallocation.',
+    formula: 'head = null'
   },
   {
-    title: "2. Initialize Current Pointer",
-    codeLine: 3, 
-    code: "Node* curr = head;",
-    explanation: "To dynamically build the rest of the list without losing our 'head' reference, we create a traversal pointer called 'curr' (current). We point it to the head node. We will use 'curr' to traverse the list and attach new nodes to the tail as we iterate through the array.",
-    pointers: [{ index: 0, label: 'head, curr', color: 'emerald' }],
-    highlightIndices: [0],
-    hudText: "curr positioned at node(1)"
+    title: 'Allocate Head Node: new Node(arr[0]) = 1',
+    phase: 'ALLOCATE_HEAD',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head', 'curr'], isHighlighted: true }
+    ],
+    pointers: { head: 0, curr: 0 },
+    variables: { 'head.val': 1, 'head.next': 'null', curr: 'Node 1' },
+    metrics: [
+      { label: 'Head Node', value: 'Node(1)' },
+      { label: 'List Length', value: '1' },
+      { label: 'curr Pointer', value: 'At Head' }
+    ],
+    explain: 'Allocate the head node using arr[0] = 1. Initialize pointer curr = head to extend the chain.',
+    action: 'Node* head = new Node(arr[0]); Node* curr = head;',
+    intuition: 'Never move the head pointer during construction, or the start of the list would be lost.',
+    formula: 'head = new Node(1), curr = head'
   },
   {
-    title: "3. Process Index 1",
-    codeLine: 5, 
-    code: "curr->next = new Node(arr[i]); curr = curr->next;",
-    explanation: "Entering the loop at index i=1, the array value is 2. We dynamically allocate a new node with this value. We then set the 'next' pointer of our current node (which holds 1) to point to this new node. Finally, we advance the 'curr' pointer forward to the newly appended node.",
-    pointers: [{ index: 1, label: 'i / curr', color: 'indigo' }],
-    highlightIndices: [0, 1],
-    hudText: "List: 1 -> 2 -> null"
+    title: 'Append Node 2: curr.next = new Node(2)',
+    phase: 'APPEND_NODE',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'] },
+      { id: 1, val: 2, pointers: ['curr'], isHighlighted: true, isModified: true }
+    ],
+    pointers: { head: 0, curr: 1 },
+    highlightIndices: [1],
+    variables: { 'curr.val': 2, appendedVal: 2, arrayIndex: 1 },
+    metrics: [
+      { label: 'Appended', value: 'Node(2)' },
+      { label: 'curr Pointer', value: 'Advanced' },
+      { label: 'List Length', value: '2' }
+    ],
+    explain: 'Allocate temp = new Node(2). Wire curr.next = temp, then advance curr = temp.',
+    action: 'curr.next = temp; curr = temp;',
+    intuition: 'curr always points to the last node in the growing chain.',
+    formula: '1 -> 2'
   },
   {
-    title: "4. Process Index 2",
-    codeLine: 5, 
-    code: "curr->next = new Node(arr[i]); curr = curr->next;",
-    explanation: "At index i=2, the array value is 3. We repeat the identical operation: allocate a new node for 3, link the 'next' of the previous tail (currently 2) to this new node, and advance the 'curr' pointer so it rests on node 3, ready for the next iteration.",
-    pointers: [{ index: 2, label: 'i / curr', color: 'indigo' }],
-    highlightIndices: [0, 1, 2],
-    hudText: "List: 1 -> 2 -> 3 -> null"
+    title: 'Append Node 3 & Node 4',
+    phase: 'APPEND_NODE',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'] },
+      { id: 1, val: 2, pointers: [] },
+      { id: 2, val: 3, pointers: [] },
+      { id: 3, val: 4, pointers: ['curr'], isHighlighted: true, isModified: true }
+    ],
+    pointers: { head: 0, curr: 3 },
+    highlightIndices: [3],
+    variables: { 'curr.val': 4, chain: '1 -> 2 -> 3 -> 4' },
+    metrics: [
+      { label: 'Active Node', value: 'Node(4)' },
+      { label: 'List Length', value: '4' },
+      { label: 'Remaining Items', value: '1' }
+    ],
+    explain: 'Sequential iteration appends Node 3 and Node 4, wiring next pointers in O(1) time per element.',
+    action: 'curr.next = new Node(arr[i]); curr = curr.next;',
+    intuition: 'Constant time append at tail is achieved through the curr pointer cache.',
+    formula: '1 -> 2 -> 3 -> 4'
   },
   {
-    title: "5. Process Index 3",
-    codeLine: 5, 
-    code: "curr->next = new Node(arr[i]); curr = curr->next;",
-    explanation: "At index i=3, we read the value 4. We allocate a new node for 4, link the previous tail (3) to it, and advance the 'curr' pointer forward.",
-    pointers: [{ index: 3, label: 'i / curr', color: 'indigo' }],
-    highlightIndices: [0, 1, 2, 3],
-    hudText: "List: 1 -> 2 -> 3 -> 4 -> null"
-  },
-  {
-    title: "6. Process Index 4 (Last Element)",
-    codeLine: 5, 
-    code: "curr->next = new Node(arr[i]); curr = curr->next;",
-    explanation: "Finally, at index i=4, we reach the last element: 5. We create the final node, link it to the chain, and advance 'curr'. The loop condition (i < arr.size()) will fail on the next check, ending our traversal.",
-    pointers: [{ index: 4, label: 'i / curr', color: 'indigo' }],
-    highlightIndices: [0, 1, 2, 3, 4],
-    hudText: "List: 1 -> 2 -> 3 -> 4 -> 5 -> null"
-  },
-  {
-    title: "7. Return Head",
-    codeLine: 8, 
-    code: "return head;",
-    explanation: "The entire array has been traversed and sequentially mapped into a chain of linked nodes. The 'head' pointer has remained safely at the beginning of the sequence. We return 'head' to yield the completely constructed linked list.",
-    pointers: [{ index: 0, label: 'head', color: 'emerald' }],
-    highlightIndices: [0, 1, 2, 3, 4],
-    hudText: "Result: 1 -> 2 -> 3 -> 4 -> 5 -> null"
+    title: 'Append Final Node 5 & Terminate with NULL',
+    phase: 'COMPLETED',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'], isHighlighted: true },
+      { id: 1, val: 2, pointers: [] },
+      { id: 2, val: 3, pointers: [] },
+      { id: 3, val: 4, pointers: [] },
+      { id: 4, val: 5, pointers: ['tail'], isHighlighted: true }
+    ],
+    pointers: { head: 0, tail: 4 },
+    variables: { list: '1 -> 2 -> 3 -> 4 -> 5 -> null', totalNodes: 5 },
+    metrics: [
+      { label: 'Total Nodes', value: '5' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(N)' }
+    ],
+    customCard: {
+      title: 'Construction Architecture Summary',
+      rows: [
+        { label: 'Array Input', value: '[1, 2, 3, 4, 5]' },
+        { label: 'Singly Linked List', value: '1 -> 2 -> 3 -> 4 -> 5 -> NULL', accent: true },
+        { label: 'Time Complexity', value: 'O(N) - single sequential pass' },
+        { label: 'Memory Allocation', value: 'O(N) - N discrete heap nodes' }
+      ]
+    },
+    explain: 'The linked list construction is complete. Node 5 points to NULL. The head pointer is returned as the entry point.',
+    action: 'Return head.',
+    intuition: 'The array has been successfully converted into an authentic Singly Linked List data structure.',
+    formula: 'Result: 1 -> 2 -> 3 -> 4 -> 5 -> null'
   }
 ];
-
-export default function IntroToLinkedListVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[220px]">
-        <ArrayView 
-          items={SAMPLE_DATA} 
-          pointers={stepData.pointers || []} 
-          matchIndices={stepData.highlightIndices || []} 
-        />
-        
-        {/* 3. Real-Time HUD */}
-        <div className="mt-5 flex flex-col gap-2 w-full max-w-lg">
-          <div className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs text-center">
-            <span className="text-[var(--chalk-dim)]">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
-          </div>
-          <div className="flex items-center justify-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs text-center">
-            <span className="text-[var(--chalk-dim)]">Executing: <strong className="text-emerald-400">{stepData.code}</strong></span>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-sm text-[var(--chalk-dim)] leading-relaxed font-sans">
-        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
-        {stepData.explanation}
-      </div>
-    </div>
-  );
-}

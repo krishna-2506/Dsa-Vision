@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
 export const meta = {
   title: 'Clone List with Random and Next Pointer',
@@ -6,7 +6,28 @@ export const meta = {
   difficulty: 'Hard',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1) auxiliary (no hash map)',
-  description: 'Creates a deep copy of a linked list where each node has a next and a random pointer, using a 3-step interleaved node insertion technique in O(N) time and O(1) extra space.'
+  description: 'Creates a deep copy of a linked list where each node has a next and a random pointer, using a 3-step interleaved node insertion technique in O(N) time and O(1) auxiliary space.'
+};
+
+export const ideaMap = {
+  title: 'Interleaved 3-Step Deep Copy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Interleave Cloned Nodes',
+      detail: 'Insert a cloned node directly after each original node: A -> A\' -> B -> B\'.'
+    },
+    {
+      id: 'step2',
+      label: 'Map Random Pointers',
+      detail: 'Set curr.next.random = curr.random ? curr.random.next : null in O(1) space.'
+    },
+    {
+      id: 'step3',
+      label: 'Separate Lists',
+      detail: 'Unweave original and cloned nodes to restore original list and return cloned head.'
+    }
+  ]
 };
 
 export const solutions = {
@@ -28,39 +49,41 @@ public:
 
         // Step 1: Insert copy nodes interleaved: A -> A' -> B -> B'
         Node* curr = head;
-        while (curr != nullptr) {
+        while (curr) {
             Node* copy = new Node(curr->val);
             copy->next = curr->next;
             curr->next = copy;
             curr = copy->next;
         }
 
-        // Step 2: Connect random pointers for copy nodes
+        // Step 2: Assign random pointers to copy nodes
         curr = head;
-        while (curr != nullptr) {
-            if (curr->random != nullptr) {
+        while (curr) {
+            if (curr->random) {
                 curr->next->random = curr->random->next;
             }
             curr = curr->next->next;
         }
 
         // Step 3: Separate original and cloned lists
+        curr = head;
         Node* dummy = new Node(0);
         Node* copyCurr = dummy;
-        curr = head;
 
-        while (curr != nullptr) {
-            Node* front = curr->next->next;
-            copyCurr->next = curr->next;
-            curr->next = front;
-            copyCurr = copyCurr->next;
-            curr = front;
+        while (curr) {
+            Node* copy = curr->next;
+            curr->next = copy->next;
+            copyCurr->next = copy;
+            copyCurr = copy;
+            curr = curr->next;
         }
 
-        return dummy->next;
+        Node* clonedHead = dummy->next;
+        delete dummy;
+        return clonedHead;
     }
 };`,
-  python: `# Python 3 O(1) Space Interleaved List Cloning
+  python: `# Python 3 O(1) Auxiliary Space Cloning with Interleaved Nodes
 class Node:
     def __init__(self, x: int, next: 'Node' = None, random: 'Node' = None):
         self.val = int(x)
@@ -72,50 +95,50 @@ class Solution:
         if not head:
             return None
 
-        # Step 1: Interleave copy nodes
+        # Step 1: Interleave cloned nodes
         curr = head
         while curr:
             copy = Node(curr.val, curr.next)
             curr.next = copy
             curr = copy.next
 
-        # Step 2: Assign random pointers
+        # Step 2: Copy random pointers
         curr = head
         while curr:
             if curr.random:
                 curr.next.random = curr.random.next
             curr = curr.next.next
 
-        # Step 3: Unweave lists
+        # Step 3: Separate lists
+        curr = head
         dummy = Node(0)
         copy_curr = dummy
-        curr = head
 
         while curr:
-            front = curr.next.next
-            copy_curr.next = curr.next
-            curr.next = front
-            copy_curr = copy_curr.next
-            curr = front
+            copy = curr.next
+            curr.next = copy.next
+            copy_curr.next = copy
+            copy_curr = copy
+            curr = curr.next
 
         return dummy.next`,
-  java: `// Java O(1) Space Interleaved List Cloning
+  java: `// Java O(1) Auxiliary Space Cloning with Interleaved Nodes
 class Node {
     int val;
     Node next;
     Node random;
-    Node(int val) {
+    public Node(int val) {
         this.val = val;
         this.next = null;
         this.random = null;
     }
 }
 
-class Solution {
+public class Solution {
     public Node copyRandomList(Node head) {
         if (head == null) return null;
 
-        // Step 1: Interleave copy nodes
+        // Step 1: Interleave
         Node curr = head;
         while (curr != null) {
             Node copy = new Node(curr.val);
@@ -124,7 +147,7 @@ class Solution {
             curr = copy.next;
         }
 
-        // Step 2: Assign random pointers
+        // Step 2: Random pointers
         curr = head;
         while (curr != null) {
             if (curr.random != null) {
@@ -133,220 +156,199 @@ class Solution {
             curr = curr.next.next;
         }
 
-        // Step 3: Unweave
+        // Step 3: Separate
+        curr = head;
         Node dummy = new Node(0);
         Node copyCurr = dummy;
-        curr = head;
 
         while (curr != null) {
-            Node front = curr.next.next;
-            copyCurr.next = curr.next;
-            curr.next = front;
-            copyCurr = copyCurr.next;
-            curr = front;
+            Node copy = curr.next;
+            curr.next = copy.next;
+            copyCurr.next = copy;
+            copyCurr = copy;
+            curr = curr.next;
         }
 
         return dummy.next;
     }
 }`,
-  javascript: `// JavaScript O(1) Space Interleaved List Cloning
-var copyRandomList = function(head) {
-    if (!head) return null;
+  javascript: `// JavaScript O(1) Auxiliary Space Cloning with Interleaved Nodes
+class Node {
+  constructor(val, next = null, random = null) {
+    this.val = val;
+    this.next = next;
+    this.random = random;
+  }
+}
 
-    let curr = head;
-    while (curr) {
-        const copy = { val: curr.val, next: curr.next, random: null };
-        curr.next = copy;
-        curr = copy.next;
+function copyRandomList(head) {
+  if (!head) return null;
+
+  // Step 1: Interleave copy nodes
+  let curr = head;
+  while (curr) {
+    const copy = new Node(curr.val, curr.next);
+    curr.next = copy;
+    curr = copy.next;
+  }
+
+  // Step 2: Wire random pointers
+  curr = head;
+  while (curr) {
+    if (curr.random) {
+      curr.next.random = curr.random.next;
     }
+    curr = curr.next.next;
+  }
 
-    curr = head;
-    while (curr) {
-        if (curr.random) {
-            curr.next.random = curr.random.next;
-        }
-        curr = curr.next.next;
-    }
+  // Step 3: Separate lists
+  curr = head;
+  const dummy = new Node(0);
+  let copyCurr = dummy;
 
-    const dummy = { val: 0, next: null };
-    let copyCurr = dummy;
-    curr = head;
+  while (curr) {
+    const copy = curr.next;
+    curr.next = copy.next;
+    copyCurr.next = copy;
+    copyCurr = copy;
+    curr = curr.next;
+  }
 
-    while (curr) {
-        const front = curr.next.next;
-        copyCurr.next = curr.next;
-        curr.next = front;
-        copyCurr = copyCurr.next;
-        curr = front;
-    }
-
-    return dummy.next;
-};`
+  return dummy.next;
+}`
 };
 
 export const steps = [
   {
-    title: '1. Problem Setup: Original List with Random Pointers',
-    phase: 'INITIAL',
-    codeLine: 18,
-    mode: 'ORIGINAL',
+    title: 'Original List with Random References',
+    phase: 'SETUP',
     nodes: [
-      { id: 'A', val: 7, random: 'null' },
-      { id: 'B', val: 13, random: 'A' },
-      { id: 'C', val: 11, random: 'B' }
+      { id: 0, val: 1, pointers: ['head', 'random->3'] },
+      { id: 1, val: 2, pointers: ['random->1'] },
+      { id: 2, val: 3, pointers: ['random->2'] }
     ],
-    variables: { nodes: 'A(7), B(13), C(11)', randomPointers: 'B.random -> A, C.random -> B' },
-    explain: 'Each node has next and random pointers. Standard cloning with HashMaps takes O(N) auxiliary space. We will do this in O(1) auxiliary space.',
-    intuition: 'Interleave cloned nodes right beside their parents to track mappings without a hash table.'
+    pointers: { head: 0 },
+    variables: { 'Node 1.random': 'Node 3', 'Node 2.random': 'Node 1', 'Node 3.random': 'Node 2' },
+    metrics: [
+      { label: 'Original Nodes', value: '3' },
+      { label: 'Random Pointers', value: '3' },
+      { label: 'Space Constraint', value: 'O(1) No Map' }
+    ],
+    explain: 'Original linked list: Node 1 (random -> 3), Node 2 (random -> 1), Node 3 (random -> 2). We must deep clone without a hash map.',
+    action: 'Begin 3-step interleaved deep copying.',
+    intuition: 'Interleaving copy nodes immediately after originals preserves relative positions in O(1) auxiliary memory.',
+    formula: 'copy.next = curr.next; curr.next = copy;'
   },
   {
-    title: '2. Step 1: Interleave Cloned Nodes: A -> A\' -> B -> B\' -> C -> C\'',
+    title: 'Step 1: Interleave Cloned Nodes (A -> A\' -> B -> B\')',
     phase: 'INTERLEAVE',
-    codeLine: 23,
-    mode: 'INTERLEAVED',
     nodes: [
-      { id: 'A', val: 7, isCopy: false },
-      { id: "A'", val: 7, isCopy: true },
-      { id: 'B', val: 13, isCopy: false },
-      { id: "B'", val: 13, isCopy: true },
-      { id: 'C', val: 11, isCopy: false },
-      { id: "C'", val: 11, isCopy: true }
+      { id: 0, val: 1, pointers: ['orig1'] },
+      { id: '1c', val: '1\'', pointers: ['copy1'], isHighlighted: true },
+      { id: 1, val: 2, pointers: ['orig2'] },
+      { id: '2c', val: '2\'', pointers: ['copy2'], isHighlighted: true },
+      { id: 2, val: 3, pointers: ['orig3'] },
+      { id: '3c', val: '3\'', pointers: ['copy3'], isHighlighted: true }
     ],
-    variables: { transformation: "curr->next = new Node(curr->val); copy->next = nextOriginal" },
-    explain: 'For every original node X, insert copy X\' directly after X. The copy node X\' can be accessed in O(1) via X->next.',
-    intuition: 'No hash table needed: X->next is X\'!'
+    pointers: { orig1: 0, copy1: 1, orig2: 2, copy2: 3, orig3: 4, copy3: 5 },
+    highlightIndices: [1, 3, 5],
+    variables: { interleavedChains: '1 -> 1\' -> 2 -> 2\' -> 3 -> 3\'', copyCount: 3 },
+    metrics: [
+      { label: 'Interleaved Size', value: '6 nodes' },
+      { label: 'Copies Created', value: '3 nodes' },
+      { label: 'Phase', value: 'Interleaving Done' }
+    ],
+    explain: 'Insert each clone node directly after its original: 1 -> 1\' -> 2 -> 2\' -> 3 -> 3\'.',
+    action: 'Interleave copy nodes for each element.',
+    intuition: 'For any original node curr, its clone is always accessible at curr.next.',
+    formula: 'curr.next.random = curr.random.next'
   },
   {
-    title: '3. Step 2: Connect Random Pointers: curr->next->random = curr->random->next',
-    phase: 'RANDOM_CONNECT',
-    codeLine: 32,
-    mode: 'RANDOM_CONNECTED',
+    title: 'Step 2: Assign Cloned Random Pointers',
+    phase: 'CONNECT_RANDOM',
     nodes: [
-      { id: 'A', val: 7, isCopy: false },
-      { id: "A'", val: 7, isCopy: true, randomTarget: 'null' },
-      { id: 'B', val: 13, isCopy: false },
-      { id: "B'", val: 13, isCopy: true, randomTarget: "A'" },
-      { id: 'C', val: 11, isCopy: false },
-      { id: "C'", val: 11, isCopy: true, randomTarget: "B'" }
+      { id: 0, val: 1, pointers: [] },
+      { id: '1c', val: '1\'', pointers: ['random->3\''], isHighlighted: true, isModified: true },
+      { id: 1, val: 2, pointers: [] },
+      { id: '2c', val: '2\'', pointers: ['random->1\''], isHighlighted: true, isModified: true },
+      { id: 2, val: 3, pointers: [] },
+      { id: '3c', val: '3\'', pointers: ['random->2\''], isHighlighted: true, isModified: true }
     ],
-    variables: { "B'->random": "B->random->next = A'", "C'->random": "C->random->next = B'" },
-    explain: 'Because A\' is A->next, B\'->random is simply B->random->next (which is A\'). Connect all cloned random pointers.',
-    intuition: 'Random pointers replicate flawlessly.'
+    pointers: { copy1: 1, copy2: 3, copy3: 5 },
+    highlightIndices: [1, 3, 5],
+    variables: { '1\'.random': '3\'', '2\'.random': '1\'', '3\'.random': '2\'' },
+    metrics: [
+      { label: '1\'.random', value: '3\'' },
+      { label: '2\'.random', value: '1\'' },
+      { label: '3\'.random', value: '2\'' }
+    ],
+    customCard: {
+      title: 'Random Pointer Translation',
+      rows: [
+        { label: 'Rule', value: 'curr.next.random = curr.random.next', accent: true },
+        { label: 'Node 1\'', value: '1.random is 3 => 3.next is 3\' => 1\'.random = 3\'' },
+        { label: 'Node 2\'', value: '2.random is 1 => 1.next is 1\' => 2\'.random = 1\'' },
+        { label: 'Node 3\'', value: '3.random is 2 => 2.next is 2\' => 3\'.random = 2\'' }
+      ]
+    },
+    explain: 'Wire random pointers: curr.next.random = curr.random ? curr.random.next : null. Clones now mirror all cross-references.',
+    action: 'Assign random references for all cloned nodes.',
+    intuition: 'Because copy of X is X.next, curr.random.next gives the exact clone in O(1) time.',
+    formula: 'curr.next.random = curr.random.next'
   },
   {
-    title: '4. Step 3: Unweave and Separate Cloned List from Original',
-    phase: 'UNWEAVE',
-    codeLine: 43,
-    mode: 'SEPARATED',
-    clonedList: [
-      { id: "A'", val: 7, random: 'null' },
-      { id: "B'", val: 13, random: "A'" },
-      { id: "C'", val: 11, random: "B'" }
+    title: 'Step 3: Unweave and Separate Cloned List',
+    phase: 'SEPARATE',
+    nodes: [
+      { id: 0, val: 1, pointers: ['origHead'] },
+      { id: 1, val: 2, pointers: [] },
+      { id: 2, val: 3, pointers: ['origTail'] }
     ],
-    originalList: [
-      { id: 'A', val: 7, random: 'null' },
-      { id: 'B', val: 13, random: 'A' },
-      { id: 'C', val: 11, random: 'B' }
+    auxiliaryNodes: [
+      { id: '1c', val: '1\'', pointers: ['clonedHead', 'rand->3\''], isHighlighted: true },
+      { id: '2c', val: '2\'', pointers: ['rand->1\''], isHighlighted: true },
+      { id: '3c', val: '3\'', pointers: ['clonedTail', 'rand->2\''], isHighlighted: true }
     ],
-    variables: { clonedList: "A'(7) -> B'(13) -> C'(11)", originalRestored: 'A(7) -> B(13) -> C(11)' },
-    explain: 'Restore original next pointers and stitch cloned next pointers into an independent linked list.',
-    intuition: 'Both lists separated with zero memory leaks.'
+    auxiliaryLabel: 'Deep Cloned List (Fully Isolated)',
+    pointers: { origHead: 0, origTail: 2 },
+    variables: { originalRestored: '1 -> 2 -> 3', clonedGenerated: '1\' -> 2\' -> 3\'' },
+    metrics: [
+      { label: 'Original', value: 'Preserved' },
+      { label: 'Clone', value: 'Deep Copied' },
+      { label: 'Aux Space', value: 'O(1) Constant' }
+    ],
+    explain: 'Unweave the interleaved chains: restore curr.next = copy.next and build dummy.next = copy. Original list is restored and clone is completely detached.',
+    action: 'Unweave original and cloned nodes.',
+    intuition: 'Both lists are now fully independent with intact next and random pointers.',
+    formula: 'curr.next = copy.next; copy.next = copy.next ? copy.next.next : null;'
   },
   {
-    title: '5. Result: Independent Deep Cloned List Returned',
-    phase: 'RESULT',
-    codeLine: 52,
-    mode: 'COMPLETE',
-    clonedList: [
-      { id: "A'", val: 7, random: 'null' },
-      { id: "B'", val: 13, random: "A'" },
-      { id: "C'", val: 11, random: "B'" }
+    title: 'Deep Cloning Complete in O(1) Aux Space',
+    phase: 'COMPLETED',
+    nodes: [
+      { id: '1c', val: '1\'', pointers: ['head', 'rand->3\''], isHighlighted: true },
+      { id: '2c', val: '2\'', pointers: ['rand->1\''], isHighlighted: true },
+      { id: '3c', val: '3\'', pointers: ['tail', 'rand->2\''], isHighlighted: true }
     ],
-    variables: { timeComplexity: 'O(N)', auxSpaceComplexity: 'O(1)', success: 'True Deep Copy' },
-    explain: 'Cloning completes in O(N) time with 0 extra hash map overhead.',
-    intuition: 'Interleaving technique achieves optimal complexity.'
+    pointers: { head: 0, tail: 2 },
+    variables: { result: '1\' -> 2\' -> 3\'', time: 'O(N)', space: 'O(1)' },
+    metrics: [
+      { label: 'Cloned Nodes', value: '3' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Auxiliary Memory', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Cloning Execution Summary',
+      rows: [
+        { label: 'Interleaving Pass', value: 'Created copy nodes in O(N) time' },
+        { label: 'Random Linking Pass', value: 'Mapped cross pointers in O(N) time' },
+        { label: 'Unweaving Pass', value: 'Separated lists and restored original in O(N) time', accent: true },
+        { label: 'Memory Advantage', value: 'O(1) extra space vs O(N) for hash map' }
+      ]
+    },
+    explain: 'Deep copy of the linked list with random pointers is complete. Zero hash map allocations were needed.',
+    action: 'Return clonedHead.',
+    intuition: 'Interleaving nodes allows using the linked list itself as an in-place mapping table.',
+    formula: 'Result: Complete Deep Copy Returned'
   }
 ];
-
-export default function CloneALlWithRandomAndNextPointerVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          3-Step Interleaved Cloning
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-semibold">
-          Aux Space: O(1) (No HashMap)
-        </span>
-      </div>
-
-      {/* Visual Interleaved / Separated Display */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col gap-4">
-        {step.mode !== 'SEPARATED' && step.mode !== 'COMPLETE' ? (
-          <div className="flex items-center justify-center overflow-x-auto gap-2 py-4">
-            {step.nodes.map((node, idx) => {
-              const isCopy = node.isCopy;
-
-              return (
-                <React.Fragment key={idx}>
-                  <div className="flex flex-col items-center gap-1">
-                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                      isCopy ? 'text-amber-400 bg-amber-500/20 border border-amber-500/30' : 'text-blue-400 bg-blue-500/20 border border-blue-500/30'
-                    }`}>
-                      {node.id}
-                    </span>
-
-                    <div className={`w-13 h-13 rounded-xl border flex flex-col items-center justify-center font-mono font-bold text-sm ${
-                      isCopy ? 'border-amber-400 bg-amber-500/15 text-amber-200' : 'border-blue-400/50 bg-[var(--board-raised)] text-[var(--chalk)]'
-                    }`}>
-                      <span>{node.val}</span>
-                      {node.randomTarget && (
-                        <span className="text-[8px] text-amber-400">rnd:{node.randomTarget}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {idx < step.nodes.length - 1 && (
-                    <span className="text-xs font-mono text-[var(--chalk-dim)]">&rarr;</span>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {/* Cloned List */}
-            <div className="p-3 rounded-xl bg-[var(--board-raised)] border border-emerald-500/30 flex flex-col gap-2">
-              <span className="text-xs font-mono text-emerald-400 font-bold">Cloned Deep Copy List:</span>
-              <div className="flex items-center gap-3 overflow-x-auto py-1">
-                {step.clonedList.map((node, idx) => (
-                  <React.Fragment key={idx}>
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-[10px] font-mono text-emerald-400 font-bold">{node.id}</span>
-                      <div className="w-12 h-12 rounded-xl border border-emerald-400/50 bg-emerald-500/20 text-emerald-200 flex flex-col items-center justify-center font-mono font-bold text-sm">
-                        <span>{node.val}</span>
-                        <span className="text-[8px] text-emerald-400">rnd:{node.random}</span>
-                      </div>
-                    </div>
-                    {idx < step.clonedList.length - 1 && <span className="text-emerald-400">&rarr;</span>}
-                  </React.Fragment>
-                ))}
-                <span className="text-xs font-mono text-[var(--chalk-dim)] ml-2">&rarr; NULL</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Result Banner */}
-      {step.phase === 'RESULT' && (
-        <div className="w-full p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center gap-2 text-emerald-300 font-mono text-base font-bold">
-          <span>🎉 Independent Deep Clone Created in O(N) Time and O(1) Auxiliary Space</span>
-        </div>
-      )}
-    </div>
-  );
-}

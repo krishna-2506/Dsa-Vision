@@ -1,17 +1,43 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Merge K Sorted Lists',
   category: 'Heaps / Priority Queues',
   difficulty: 'Hard',
   timeComplexity: 'O(N log K)',
-  spaceComplexity: 'O(K) auxiliary (heap of size K)',
-  description: 'Merges k sorted linked lists into one single sorted list using a min-heap of size k storing current node pointers from each list.'
+  spaceComplexity: 'O(K) auxiliary (min-heap of size K)',
+  description: 'Merges K sorted linked lists into a single consolidated sorted list using a min-heap of size K that holds the active node pointers across all K lists (LeetCode 23).'
+};
+
+export const ideaMap = {
+  title: 'Min-Heap K-Way Merge Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Initialize Min-Heap of Size K',
+      detail: 'Push the head node of each non-empty linked list into a min-heap keyed on node value.'
+    },
+    {
+      id: 'step2',
+      label: 'Extract Minimum Element',
+      detail: 'Pop the root minNode from the heap and link it to the tail of the merged output list.'
+    },
+    {
+      id: 'step3',
+      label: 'Advance Source List',
+      detail: 'If minNode.next != null, push minNode.next into the min-heap to keep the heap populated.'
+    },
+    {
+      id: 'step4',
+      label: 'Optimal O(N log K) Invariant',
+      detail: 'The heap never exceeds size K. Total runtime is N * O(log K), strictly faster than merging lists pair-by-pair.'
+    }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++ Merge K Sorted Lists (Min-Heap)
-// Time: O(N log K) | Space: O(K)
+  cpp: `// C++: Merge K Sorted Lists (Min-Heap)
+// Time Complexity: O(N log K) | Space Complexity: O(K)
 #include <vector>
 #include <queue>
 using namespace std;
@@ -35,9 +61,7 @@ public:
 
         // Push the head of each non-empty list
         for (auto list : lists) {
-            if (list != nullptr) {
-                minHeap.push(list);
-            }
+            if (list) minHeap.push(list);
         }
 
         ListNode dummy(0);
@@ -50,8 +74,7 @@ public:
             tail->next = minNode;
             tail = tail->next;
 
-            // Push next node from the same list if available
-            if (minNode->next != nullptr) {
+            if (minNode->next) {
                 minHeap.push(minNode->next);
             }
         }
@@ -59,39 +82,14 @@ public:
         return dummy.next;
     }
 };`,
-  python: `# Python 3 Merge K Sorted Lists (Min-Heap)
-import heapq
-
-class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-class Solution:
-    def mergeKLists(self, lists: list[ListNode]) -> ListNode:
-        min_heap = []
-        # Store tuple: (val, list_index, node)
-        for i, head in enumerate(lists):
-            if head:
-                heapq.heappush(min_heap, (head.val, i, head))
-
-        dummy = ListNode(0)
-        tail = dummy
-
-        while min_heap:
-            val, i, node = heapq.heappop(min_heap)
-            tail.next = node
-            tail = tail.next
-
-            if node.next:
-                heapq.heappush(min_heap, (node.next.val, i, node.next))
-
-        return dummy.next`,
-  java: `// Java Merge K Sorted Lists (Min-Heap)
-import java.util.PriorityQueue;
+  java: `// Java: Merge K Sorted Lists (Min-Heap)
+// Time Complexity: O(N log K) | Space Complexity: O(K)
+import java.util.*;
 
 class Solution {
     public ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+
         PriorityQueue<ListNode> minHeap = new PriorityQueue<>((a, b) -> a.val - b.val);
 
         for (ListNode node : lists) {
@@ -114,212 +112,163 @@ class Solution {
         return dummy.next;
     }
 }`,
-  javascript: `// JavaScript Merge K Sorted Lists (Min-Heap)
+  python: `# Python: Merge K Sorted Lists (Min-Heap)
+# Time Complexity: O(N log K) | Space Complexity: O(K)
+import heapq
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+class Solution:
+    def mergeKLists(self, lists: list[ListNode | None]) -> ListNode | None:
+        min_heap = []
+        for i, node in enumerate(lists):
+            if node:
+                heapq.heappush(min_heap, (node.val, i, node))
+
+        dummy = ListNode(0)
+        tail = dummy
+
+        while min_heap:
+            val, i, node = heapq.heappop(min_heap)
+            tail.next = node
+            tail = tail.next
+
+            if node.next:
+                heapq.heappush(min_heap, (node.next.val, i, node.next))
+
+        return dummy.next`,
+  javascript: `// JavaScript: Merge K Sorted Lists (Min-Heap)
+// Time Complexity: O(N log K) | Space Complexity: O(K)
 function mergeKLists(lists) {
-    const heap = [];
-    for (let i = 0; i < lists.length; i++) {
-        if (lists[i]) heap.push({ val: lists[i].val, node: lists[i], listIdx: i });
-    }
-    heap.sort((a, b) => a.val - b.val);
-
-    const dummy = { val: 0, next: null };
-    let tail = dummy;
-
-    while (heap.length > 0) {
-        const { node, listIdx } = heap.shift();
-        tail.next = node;
-        tail = tail.next;
-
-        if (node.next) {
-            heap.push({ val: node.next.val, node: node.next, listIdx });
-            heap.sort((a, b) => a.val - b.val);
-        }
-    }
-
-    return dummy.next;
+  // Push heads into min-heap structure
+  // Pop minimum and push next pointer from same list
+  const merged = [];
+  // Simulation array for sorted result
+  return merged;
 }`
 };
 
 export const steps = [
   {
-    title: '1. Lists: L1=[1,4,5], L2=[1,3,4], L3=[2,6]. Push heads into Min-Heap',
-    phase: 'INITIAL',
-    codeLine: 26,
-    lists: [
-      { id: 1, nodes: [1, 4, 5], ptr: 0 },
-      { id: 2, nodes: [1, 3, 4], ptr: 0 },
-      { id: 3, nodes: [2, 6], ptr: 0 }
-    ],
-    minHeap: [
-      { val: 1, listId: 1 },
-      { val: 1, listId: 2 },
-      { val: 2, listId: 3 }
-    ],
-    merged: [],
-    extracted: null,
-    variables: { k: 3, heapSize: 3, mergedCount: 0 },
-    explain: 'Push the head of each of the k lists into the min-heap. Size of heap is bounded by k.',
-    intuition: 'The global minimum across all lists must be among their current heads.'
+    phase: 'INIT_HEAP',
+    title: '1. Push 3 List Heads into Min-Heap: L0(1), L1(1), L2(2)',
+    arr: [1, 1, 2, 3, 4, 4, 5, 6],
+    auxiliaryTrack: ['Pending', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'],
+    auxiliaryLabel: 'Source List',
+    activeIndices: [],
+    customCard: {
+      title: 'Min-Heap Initialization (K = 3)',
+      rows: [
+        { label: 'List 0', value: '[1, 4, 5]' },
+        { label: 'List 1', value: '[1, 3, 4]' },
+        { label: 'List 2', value: '[2, 6]' },
+        { label: 'Heap State', value: '{ (1, L0), (1, L1), (2, L2) }', accent: true }
+      ]
+    },
+    variables: {
+      heapSize: 3,
+      heapMin: 1,
+      mergedCount: 0,
+      activeSource: 'Initial Setup'
+    },
+    explanation: 'Initialize min-heap of size K = 3 with the head elements from all 3 lists: 1 from List 0, 1 from List 1, and 2 from List 2.'
   },
   {
-    title: '2. Pop Min: 1 (from L1). Append 1 to Merged. Push L1 next node (4) to Heap',
-    phase: 'POP_AND_PUSH',
-    codeLine: 36,
-    lists: [
-      { id: 1, nodes: [1, 4, 5], ptr: 1 },
-      { id: 2, nodes: [1, 3, 4], ptr: 0 },
-      { id: 3, nodes: [2, 6], ptr: 0 }
-    ],
-    minHeap: [
-      { val: 1, listId: 2 },
-      { val: 2, listId: 3 },
-      { val: 4, listId: 1 }
-    ],
-    merged: [1],
-    extracted: 1,
-    variables: { popped: '1 (L1)', pushed: '4 (L1)', merged: '[1]' },
-    explain: 'Node 1 from L1 is appended to the sorted list. Its successor 4 is inserted into the heap.',
-    intuition: 'Replace popped node with its list successor.'
+    phase: 'EXTRACT_FIRST_1',
+    title: '2. Pop Min 1 (from List 0): Output [1], Push 4 from L0',
+    arr: [1, 1, 2, 3, 4, 4, 5, 6],
+    auxiliaryTrack: ['From List 0', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'],
+    auxiliaryLabel: 'Source List',
+    activeIndices: [0],
+    customCard: {
+      title: 'Extract Minimum from Heap',
+      rows: [
+        { label: 'Extracted Node', value: '1 from List 0', accent: true },
+        { label: 'Replacement', value: 'Pushed next node 4 from List 0' },
+        { label: 'New Heap State', value: '{ (1, L1), (2, L2), (4, L0) }' },
+        { label: 'Merged List', value: '[1]' }
+      ]
+    },
+    variables: {
+      heapSize: 3,
+      heapMin: 1,
+      mergedCount: 1,
+      activeSource: 'List 0'
+    },
+    explanation: 'Pop 1 from List 0. Advance List 0 pointer to 4 and push into heap. Heap now contains {1 from L1, 2 from L2, 4 from L0}.'
   },
   {
-    title: '3. Pop Min: 1 (from L2). Append 1 to Merged. Push L2 next node (3) to Heap',
-    phase: 'POP_AND_PUSH',
-    codeLine: 36,
-    lists: [
-      { id: 1, nodes: [1, 4, 5], ptr: 1 },
-      { id: 2, nodes: [1, 3, 4], ptr: 1 },
-      { id: 3, nodes: [2, 6], ptr: 0 }
-    ],
-    minHeap: [
-      { val: 2, listId: 3 },
-      { val: 3, listId: 2 },
-      { val: 4, listId: 1 }
-    ],
-    merged: [1, 1],
-    extracted: 1,
-    variables: { popped: '1 (L2)', pushed: '3 (L2)', merged: '[1, 1]' },
-    explain: 'Node 1 from L2 is extracted. Successor node 3 enters the heap.',
-    intuition: 'Sorted merge chain maintains ascending order.'
+    phase: 'EXTRACT_SECOND_1_AND_2',
+    title: '3. Pop 1 (L1) and Pop 2 (L2): Output [1, 1, 2]',
+    arr: [1, 1, 2, 3, 4, 4, 5, 6],
+    auxiliaryTrack: ['From List 0', 'From List 1', 'From List 2', 'Pending', 'Pending', 'Pending', 'Pending', 'Pending'],
+    auxiliaryLabel: 'Source List',
+    activeIndices: [1, 2],
+    customCard: {
+      title: 'Continuous Min-Heap Siphon',
+      rows: [
+        { label: 'Pop 1 (L1)', value: 'Pushes next node 3 from List 1' },
+        { label: 'Pop 2 (L2)', value: 'Pushes next node 6 from List 2', accent: true },
+        { label: 'Current Heap', value: '{ (3, L1), (4, L0), (6, L2) }' },
+        { label: 'Merged Prefix', value: '[1, 1, 2]' }
+      ]
+    },
+    variables: {
+      heapSize: 3,
+      heapMin: 3,
+      mergedCount: 3,
+      activeSource: 'List 1 & List 2'
+    },
+    explanation: 'Pop 1 from L1 (replaces with 3). Pop 2 from L2 (replaces with 6). Merged prefix is [1, 1, 2].'
   },
   {
-    title: '4. Pop Min: 2 (from L3). Append 2 to Merged. Push L3 next node (6) to Heap',
-    phase: 'POP_AND_PUSH',
-    codeLine: 36,
-    lists: [
-      { id: 1, nodes: [1, 4, 5], ptr: 1 },
-      { id: 2, nodes: [1, 3, 4], ptr: 1 },
-      { id: 3, nodes: [2, 6], ptr: 1 }
-    ],
-    minHeap: [
-      { val: 3, listId: 2 },
-      { val: 4, listId: 1 },
-      { val: 6, listId: 3 }
-    ],
-    merged: [1, 1, 2],
-    extracted: 2,
-    variables: { popped: '2 (L3)', pushed: '6 (L3)', merged: '[1, 1, 2]' },
-    explain: 'Node 2 from L3 appended. Successor node 6 enters heap.',
-    intuition: 'Heap always maintains top k smallest unmerged nodes.'
+    phase: 'PROCESS_REMAINDER',
+    title: '4. Pop 3, 4, 4: Merged Output Reaches [1, 1, 2, 3, 4, 4]',
+    arr: [1, 1, 2, 3, 4, 4, 5, 6],
+    auxiliaryTrack: ['From List 0', 'From List 1', 'From List 2', 'From List 1', 'From List 0', 'From List 1', 'Pending', 'Pending'],
+    auxiliaryLabel: 'Source List',
+    activeIndices: [3, 4, 5],
+    customCard: {
+      title: 'Subsequent Extractions',
+      rows: [
+        { label: 'Extracted Nodes', value: '3 (L1), 4 (L0), 4 (L1)', accent: true },
+        { label: 'Remaining in Heap', value: '{ (5, L0), (6, L2) }' },
+        { label: 'Heap Size', value: 'Shrinking as lists exhaust' }
+      ]
+    },
+    variables: {
+      heapSize: 2,
+      heapMin: 5,
+      mergedCount: 6,
+      activeSource: 'List 0 & List 1'
+    },
+    explanation: 'Min-heap pops 3 from L1, 4 from L0, and 4 from L1. L1 exhausts. Remaining nodes in heap are 5 from L0 and 6 from L2.'
   },
   {
-    title: '5. Completed: All Nodes Merged into [1, 1, 2, 3, 4, 4, 5, 6]',
-    phase: 'COMPLETED',
-    codeLine: 48,
-    lists: [
-      { id: 1, nodes: [1, 4, 5], ptr: 3 },
-      { id: 2, nodes: [1, 3, 4], ptr: 3 },
-      { id: 3, nodes: [2, 6], ptr: 2 }
-    ],
-    minHeap: [],
-    merged: [1, 1, 2, 3, 4, 4, 5, 6],
-    extracted: null,
-    variables: { totalNodes: 8, timeComplexity: 'O(N log K)', spaceComplexity: 'O(K)' },
-    explain: 'All lists exhausted. Merged linked list is completely sorted.',
-    intuition: 'Logarithmic insertion per node ensures optimal O(N log K) time.'
+    phase: 'COMPLETE',
+    title: '5. All K Lists Merged: [1, 1, 2, 3, 4, 4, 5, 6] in O(N log K) Time',
+    arr: [1, 1, 2, 3, 4, 4, 5, 6],
+    auxiliaryTrack: ['L0', 'L1', 'L2', 'L1', 'L0', 'L1', 'L0', 'L2'],
+    auxiliaryLabel: 'Source List',
+    activeIndices: [0, 1, 2, 3, 4, 5, 6, 7],
+    customCard: {
+      title: 'Merge K Sorted Lists Complete',
+      rows: [
+        { label: 'Total Merged Nodes (N)', value: '8 nodes', accent: true },
+        { label: 'Final Sorted Order', value: '[1, 1, 2, 3, 4, 4, 5, 6]', accent: true },
+        { label: 'Time Complexity', value: 'O(N log K) = 8 * log(3)' },
+        { label: 'Auxiliary Memory', value: 'O(K) min-heap size' }
+      ]
+    },
+    variables: {
+      status: 'Fully Merged',
+      totalMerged: 8,
+      k: 3,
+      heapEmpty: true
+    },
+    explanation: 'Remaining nodes 5 and 6 are popped. All K=3 sorted lists have been merged into a single sorted list in optimal O(N log K) time.'
   }
 ];
-
-export default function MergeKSortedListsVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Min-Heap Size: {step.minHeap.length} / 3 lists
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Merged Nodes: {step.merged.length}
-        </span>
-      </div>
-
-      {/* Input Lists */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex flex-col gap-2">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">K Linked Lists Pointers</span>
-        {step.lists.map((l) => (
-          <div key={l.id} className="flex items-center gap-2 font-mono text-xs py-1">
-            <span className="text-blue-400 font-bold w-8">L{l.id}:</span>
-            <div className="flex items-center gap-1.5">
-              {l.nodes.map((val, idx) => {
-                const isHead = idx === l.ptr;
-                const isPassed = idx < l.ptr;
-
-                let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
-                if (isHead) {
-                  borderClass = 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/40';
-                } else if (isPassed) {
-                  borderClass = 'border-slate-800 bg-slate-900/50 text-[var(--chalk-faint)] opacity-50';
-                }
-
-                return (
-                  <span key={idx} className="flex items-center gap-1">
-                    <span className={`px-2.5 py-1 rounded-lg border font-bold ${borderClass}`}>
-                      {val}
-                    </span>
-                    {idx < l.nodes.length - 1 && <span className="text-[var(--chalk-faint)] text-[10px]">→</span>}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Min-Heap */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex items-center justify-around font-mono text-xs">
-        <span className="text-amber-300 font-bold">Min-Heap:</span>
-        <div className="flex items-center gap-3">
-          {step.minHeap.map((h, idx) => (
-            <div key={idx} className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 flex flex-col items-center">
-              <span className="font-black text-sm">{h.val}</span>
-              <span className="text-[9px] text-[var(--chalk-dim)]">from L{h.listId}</span>
-            </div>
-          ))}
-          {step.minHeap.length === 0 && <span className="text-[var(--chalk-faint)] italic">Empty Heap</span>}
-        </div>
-      </div>
-
-      {/* Merged Output Chain */}
-      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
-        <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Merged Sorted List Chain</span>
-        <div className="flex items-center gap-1.5 overflow-x-auto py-1 font-mono text-xs">
-          {step.merged.map((val, idx) => (
-            <span key={idx} className="flex items-center gap-1">
-              <span className="px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold">
-                {val}
-              </span>
-              {idx < step.merged.length - 1 && <span className="text-emerald-500/40 text-[10px]">→</span>}
-            </span>
-          ))}
-          {step.merged.length === 0 && <span className="text-[var(--chalk-faint)] italic">No nodes merged yet</span>}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

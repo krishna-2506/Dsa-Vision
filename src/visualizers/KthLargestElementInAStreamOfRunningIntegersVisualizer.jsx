@@ -1,16 +1,42 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Kth Largest Element in a Stream',
-  category: 'Heaps',
+  category: 'Heaps / Priority Queues',
   difficulty: 'Easy',
   timeComplexity: 'O(log K) per insertion',
   spaceComplexity: 'O(K)',
   description: 'Maintains a Min-Heap of size K to efficiently track the Kth largest element in an incoming stream of numbers in O(log K) time per query.'
 };
 
+export const ideaMap = {
+  title: 'Streaming Min-Heap Window Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Construct Min-Heap of Size K',
+      detail: 'Populate a min-heap with initial stream elements, maintaining at most K items.'
+    },
+    {
+      id: 'step2',
+      label: 'Stream Ingestion via add(val)',
+      detail: 'Push incoming stream value into the min-heap in O(log K) time.'
+    },
+    {
+      id: 'step3',
+      label: 'Size Clamping',
+      detail: 'If min-heap size exceeds K, pop the minimum root element.'
+    },
+    {
+      id: 'step4',
+      label: 'O(1) Root Inspection',
+      detail: 'Return minHeap.top(), which represents the Kth largest element among all streamed numbers.'
+    }
+  ]
+};
+
 export const solutions = {
-  cpp: `// C++ Kth Largest Element in a Stream
+  cpp: `// C++: Kth Largest Element in a Stream
 // Time: O(log K) per add | Space: O(K)
 #include <vector>
 #include <queue>
@@ -34,23 +60,7 @@ public:
         return minHeap.top();
     }
 };`,
-  python: `# Python 3 Kth Largest Element in a Stream
-# Time: O(log K) per add | Space: O(K)
-import heapq
-
-class KthLargest:
-    def __init__(self, k: int, nums: list[int]):
-        self.k = k
-        self.min_heap = []
-        for x in nums:
-            self.add(x)
-
-    def add(self, val: int) -> int:
-        heapq.heappush(self.min_heap, val)
-        if len(self.min_heap) > self.k:
-            heapq.heappop(self.min_heap)
-        return self.min_heap[0]`,
-  java: `// Java Kth Largest Element in a Stream
+  java: `// Java: Kth Largest Element in a Stream
 // Time: O(log K) per add | Space: O(K)
 import java.util.PriorityQueue;
 
@@ -73,147 +83,160 @@ class KthLargest {
         return minHeap.peek();
     }
 }`,
-  javascript: `// JavaScript Kth Largest Element in a Stream
+  python: `# Python: Kth Largest Element in a Stream
+# Time: O(log K) per add | Space: O(K)
+import heapq
+
+class KthLargest:
+    def __init__(self, k: int, nums: list[int]):
+        self.k = k
+        self.min_heap = []
+        for x in nums:
+            self.add(x)
+
+    def add(self, val: int) -> int:
+        heapq.heappush(self.min_heap, val)
+        if len(self.min_heap) > self.k:
+            heapq.heappop(self.min_heap)
+        return self.min_heap[0]`,
+  javascript: `// JavaScript: Kth Largest Element in a Stream
 // Time: O(log K) per add | Space: O(K)
 class KthLargest {
-    constructor(k, nums) {
-        this.k = k;
-        this.heap = [];
-        for (const x of nums) {
-            this.add(x);
-        }
+  constructor(k, nums) {
+    this.k = k;
+    this.heap = [];
+    for (const x of nums) {
+      this.add(x);
     }
+  }
 
-    add(val) {
-        this.heap.push(val);
-        this.heap.sort((a, b) => a - b);
-        if (this.heap.length > this.k) {
-            this.heap.shift();
-        }
-        return this.heap[0];
+  add(val) {
+    this.heap.push(val);
+    this.heap.sort((a, b) => a - b);
+    if (this.heap.length > this.k) {
+      this.heap.shift();
     }
+    return this.heap[0];
+  }
 }`
 };
 
 export const steps = [
   {
-    title: '1. Initialize: k = 3, nums = [4, 5, 8, 2]',
-    phase: 'INIT',
-    codeLine: 12,
-    k: 3,
-    stream: [4, 5, 8, 2],
-    heap: [4, 5, 8],
-    kthAnswer: 4,
-    variables: { k: 3, heapCapacity: 3, initialTop: 4 },
-    explain: 'After inserting [4, 5, 8, 2] and keeping only the top 3 largest elements, the Min-Heap contains [4, 5, 8]. The 3rd largest is the minimum at the top: 4.',
-    intuition: 'A Min-Heap of size K retains the K largest elements; the root is the smallest of these K elements.'
+    phase: 'INITIALIZE',
+    title: '1. Initialize Stream: nums = [4, 5, 8, 2], K = 3',
+    arr: [4, 5, 8, 2],
+    auxiliaryTrack: ['In Heap (Root: 4)', 'In Heap', 'In Heap', 'Discarded (2 < 4)'],
+    auxiliaryLabel: 'Initial Heap State',
+    activeIndices: [0, 1, 2],
+    customCard: {
+      title: 'Kth Largest Stream Setup',
+      rows: [
+        { label: 'Rank K', value: '3rd Largest', accent: true },
+        { label: 'Initial Numbers', value: '[4, 5, 8, 2]' },
+        { label: 'Active Min-Heap', value: '[4, 5, 8] (Capacity 3)' },
+        { label: 'Current 3rd Largest', value: 'minHeap.top() = 4' }
+      ]
+    },
+    variables: {
+      k: 3,
+      heapSize: 3,
+      heap: '[4, 5, 8]',
+      currentKth: 4
+    },
+    metrics: {
+      heapCapacity: '3 / 3',
+      current3rdLargest: 4,
+      queriesProcessed: 0
+    },
+    explain: 'Initial numbers are ingested. 2 is evicted as min. Heap of size 3 is [4, 5, 8]. The 3rd largest is root 4.',
+    intuition: 'Only the K largest numbers need to be retained across the entire stream.'
   },
   {
-    title: '2. add(3) -> 3 < 4 (Immediately dropped) -> Return 4',
     phase: 'ADD_3',
-    codeLine: 19,
-    k: 3,
-    stream: [4, 5, 8, 2, 3],
-    heap: [4, 5, 8],
-    kthAnswer: 4,
-    addedVal: 3,
-    variables: { added: 3, 'Heap before': '[3, 4, 5, 8]', 'Evicted min': 3, 'New top': 4 },
-    explain: '3 is pushed into the heap of size 3, bringing size to 4 [3, 4, 5, 8]. 3 is smallest and evicted. Top remains 4.',
-    intuition: 'Incoming elements smaller than the current Kth largest are discarded.'
+    title: '2. add(3): 3 < Root 4 -> Heap Remains [4, 5, 8] (Returns 4)',
+    arr: [4, 5, 8, 2, 3],
+    auxiliaryTrack: ['In Heap (Root: 4)', 'In Heap', 'In Heap', 'Discarded', 'Evicted (3 < 4)'],
+    auxiliaryLabel: 'Stream Operations',
+    activeIndices: [4],
+    customCard: {
+      title: 'Query: add(3)',
+      rows: [
+        { label: 'Incoming Number', value: '3', accent: true },
+        { label: 'Comparison', value: '3 < root 4 -> Cannot enter top 3' },
+        { label: 'Heap State', value: '[4, 5, 8] unchanged' },
+        { label: 'Query Return', value: 'minHeap.top() = 4' }
+      ]
+    },
+    variables: {
+      incoming: 3,
+      heap: '[4, 5, 8]',
+      currentKth: 4
+    },
+    metrics: {
+      heapCapacity: '3 / 3',
+      current3rdLargest: 4,
+      queriesProcessed: 1
+    },
+    explain: 'add(3) is called. 3 is smaller than root 4, so it is immediately evicted. Heap remains [4, 5, 8]. Returns 4.',
+    intuition: 'Stream items smaller than the minimum of the top K are discarded in O(log K) time.'
   },
   {
-    title: '3. add(5) -> Pushes 4 out -> Heap: [5, 5, 8] -> Return 5',
     phase: 'ADD_5',
-    codeLine: 19,
-    k: 3,
-    stream: [4, 5, 8, 2, 3, 5],
-    heap: [5, 5, 8],
-    kthAnswer: 5,
-    addedVal: 5,
-    variables: { added: 5, 'Heap': '[5, 5, 8]', 'Evicted min': 4, 'New top': 5 },
-    explain: '5 is pushed into heap. 4 is now the smallest among the 4 elements and is popped. The 3rd largest advances to 5.',
-    intuition: 'Larger incoming elements displace the previous threshold.'
+    title: '3. add(5): 5 > Root 4 -> Evict 4, Heap Becomes [5, 5, 8] (Returns 5)',
+    arr: [4, 5, 8, 2, 3, 5],
+    auxiliaryTrack: ['Evicted', 'In Heap (Root: 5)', 'In Heap', 'Discarded', 'Discarded', 'In Heap'],
+    auxiliaryLabel: 'Stream Operations',
+    activeIndices: [5],
+    customCard: {
+      title: 'Query: add(5)',
+      rows: [
+        { label: 'Incoming Number', value: '5', accent: true },
+        { label: 'Eviction', value: 'Root 4 is evicted (4 < 5)' },
+        { label: 'New Heap', value: '[5, 5, 8] (Root = 5)' },
+        { label: 'Query Return', value: 'minHeap.top() = 5' }
+      ]
+    },
+    variables: {
+      incoming: 5,
+      heap: '[5, 5, 8]',
+      currentKth: 5
+    },
+    metrics: {
+      heapCapacity: '3 / 3',
+      current3rdLargest: 5,
+      queriesProcessed: 2
+    },
+    explain: 'add(5) is called. 5 is pushed, displacing root 4. New heap is [5, 5, 8]. The 3rd largest element is now 5.',
+    intuition: 'When a new number surpasses the threshold, the old threshold element is ejected.'
   },
   {
-    title: '4. add(10) -> Pushes 5 out -> Heap: [5, 8, 10] -> Return 5',
-    phase: 'COMPLETED',
-    codeLine: 24,
-    k: 3,
-    stream: [4, 5, 8, 2, 3, 5, 10],
-    heap: [5, 8, 10],
-    kthAnswer: 5,
-    addedVal: 10,
-    variables: { added: 10, 'Final 3 largest': '[5, 8, 10]', kthLargest: 5 },
-    explain: '10 is added. One copy of 5 is evicted. The 3 largest elements are [5, 8, 10], with 5 at the root as the 3rd largest.',
-    intuition: 'Size-bounded Min-Heap answers rolling Kth largest queries in O(log K) time per item.'
+    phase: 'ADD_10_9',
+    title: '4. add(10) then add(9): Heap Becomes [8, 9, 10] (Returns 8)',
+    arr: [4, 5, 8, 2, 3, 5, 10, 9],
+    auxiliaryTrack: ['Evicted', 'Evicted', 'In Heap (Root: 8)', 'Discarded', 'Discarded', 'Evicted', 'In Heap', 'In Heap'],
+    auxiliaryLabel: 'Stream Operations',
+    activeIndices: [2, 6, 7],
+    customCard: {
+      title: 'Successive High-Value Queries',
+      rows: [
+        { label: 'add(10)', value: 'Evicts 5 -> Heap [5, 8, 10] (Returns 5)' },
+        { label: 'add(9)', value: 'Evicts 5 -> Heap [8, 9, 10] (Returns 8)', accent: true },
+        { label: 'Final Top 3', value: '[8, 9, 10]' },
+        { label: 'Query Return', value: 'minHeap.top() = 8' }
+      ]
+    },
+    variables: {
+      incoming: 9,
+      heap: '[8, 9, 10]',
+      currentKth: 8
+    },
+    metrics: {
+      heapCapacity: '3 / 3',
+      current3rdLargest: 8,
+      queriesProcessed: 4
+    },
+    explain: 'add(10) elevates the heap to [5, 8, 10]. Then add(9) replaces 5 with 9, yielding [8, 9, 10]. The 3rd largest is 8.',
+    intuition: 'The min-heap continuously adapts to streaming data, maintaining optimal rank tracking.'
   }
 ];
-
-export default function KthLargestElementInAStreamOfRunningIntegersVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Rank Target (K): {step.k}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Kth Largest Element: {step.kthAnswer}
-        </span>
-      </div>
-
-      {/* Heap State Display */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-4 shadow-xl">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">
-          Bounded Min-Heap Elements (Size = {step.k})
-        </span>
-
-        <div className="flex items-center justify-center gap-4 py-2 font-mono">
-          {step.heap.map((val, idx) => (
-            <div
-              key={idx}
-              className={`w-18 h-22 rounded-2xl border flex flex-col items-center justify-center transition-all duration-300 ${
-                idx === 0
-                  ? 'border-amber-400 bg-amber-400/25 text-amber-300 ring-2 ring-amber-400/50 scale-105 shadow-lg'
-                  : 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300'
-              }`}
-            >
-              <span className="text-[9px] text-[var(--chalk-dim)]">
-                {idx === 0 ? 'Kth Largest' : 'Top K Element'}
-              </span>
-              <span className="text-xl font-bold mt-0.5">{val}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Stream History */}
-        <div className="w-full border-t border-[var(--line)] pt-3 flex flex-col items-center gap-2">
-          <span className="text-[11px] font-mono text-[var(--chalk-dim)]">
-            Stream History (latest to right):
-          </span>
-          <div className="flex flex-wrap items-center justify-center gap-2 font-mono text-xs">
-            {step.stream.map((x, i) => (
-              <span
-                key={i}
-                className={`px-2.5 py-1 rounded-lg border ${
-                  x === step.addedVal
-                    ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold'
-                    : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-dim)]'
-                }`}
-              >
-                {x}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

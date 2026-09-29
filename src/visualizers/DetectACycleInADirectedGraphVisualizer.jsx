@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'queue';
 
 export const meta = {
   title: 'Detect Cycle in a Directed Graph (Kahn\'s BFS)',
@@ -9,8 +9,35 @@ export const meta = {
   description: 'Uses Kahn\'s Algorithm (BFS with In-degree count) to detect cycles in a Directed Graph. If the number of nodes in topological sort is strictly less than V, a directed cycle exists.'
 };
 
+export const ideaMap = {
+  title: 'Kahn\'s Directed Cycle In-Degree Trapping Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'In-Degree Calculation',
+      detail: 'Tabulate the number of incoming edges (in-degree) for all vertices in the directed graph.'
+    },
+    {
+      id: 'step2',
+      label: 'Zero-Prerequisite Seeding',
+      detail: 'Nodes with in-degree 0 have no incoming barriers and are pushed into the BFS queue.'
+    },
+    {
+      id: 'step3',
+      label: 'Topological Peel-Off',
+      detail: 'Dequeue a node, increment topological node count, and decrement in-degrees of all outgoing neighbors.'
+    },
+    {
+      id: 'step4',
+      label: 'Count < V Cycle Verdict',
+      detail: 'Nodes participating in a directed cycle maintain mutual incoming dependencies and never hit in-degree 0.'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Detect Cycle in Directed Graph using Kahn's Algorithm
+// Time Complexity: O(V + E) | Space Complexity: O(V)
 #include <vector>
 #include <queue>
 using namespace std;
@@ -28,17 +55,20 @@ bool isCyclic(int V, vector<vector<int>>& adj) {
     
     int count = 0;
     while (!q.empty()) {
-        int node = q.front(); q.pop();
+        int node = q.front();
+        q.pop();
         count++;
+        
         for (auto it : adj[node]) {
             indegree[it]--;
             if (indegree[it] == 0) q.push(it);
         }
     }
-    // If count < V, cycle is present!
+    // If topological count < V, a directed cycle exists!
     return (count < V);
 }`,
   java: `// Java: Cycle Detection in Directed Graph (Kahn's)
+// Time Complexity: O(V + E) | Space Complexity: O(V)
 import java.util.*;
 
 class Solution {
@@ -47,26 +77,29 @@ class Solution {
         for (int i = 0; i < V; i++) {
             for (int it : adj.get(i)) indegree[it]++;
         }
+        
         Queue<Integer> q = new LinkedList<>();
         for (int i = 0; i < V; i++) {
-            if (indegree[i] == 0) q.add(i);
+            if (indegree[i] == 0) q.offer(i);
         }
+        
         int count = 0;
         while (!q.isEmpty()) {
             int node = q.poll();
             count++;
             for (int it : adj.get(node)) {
                 indegree[it]--;
-                if (indegree[it] == 0) q.add(it);
+                if (indegree[it] == 0) q.offer(it);
             }
         }
-        return count != V;
+        return count < V;
     }
 }`,
-  python: `# Python: Kahn's Cycle Detection
+  python: `# Python: Cycle Detection in Directed Graph (Kahn's Algorithm)
+# Time Complexity: O(V + E) | Space Complexity: O(V)
 from collections import deque
 
-def isCyclic(V, adj):
+def isCyclic(V: int, adj: list[list[int]]) -> bool:
     indegree = [0] * V
     for u in range(V):
         for v in adj[u]:
@@ -74,30 +107,34 @@ def isCyclic(V, adj):
             
     q = deque([i for i in range(V) if indegree[i] == 0])
     count = 0
+    
     while q:
-        u = q.popleft()
+        node = q.popleft()
         count += 1
-        for v in adj[u]:
-            indegree[v] -= 1
-            if indegree[v] == 0:
-                q.append(v)
-    return count < V
-`,
-  javascript: `// JavaScript: Kahn's Cycle Detection
+        for neighbor in adj[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                q.append(neighbor)
+                
+    return count < V`,
+  javascript: `// JavaScript: Cycle Detection in Directed Graph (Kahn's Algorithm)
+// Time Complexity: O(V + E) | Space Complexity: O(V)
 function isCyclic(V, adj) {
   const indegree = new Array(V).fill(0);
-  for (let u = 0; u < V; u++) {
-    for (const v of adj[u]) indegree[v]++;
+  for (let i = 0; i < V; i++) {
+    for (const v of adj[i]) indegree[v]++;
   }
+  
   const q = [];
   for (let i = 0; i < V; i++) {
     if (indegree[i] === 0) q.push(i);
   }
+  
   let count = 0;
-  while (q.length) {
-    const u = q.shift();
+  while (q.length > 0) {
+    const node = q.shift();
     count++;
-    for (const v of adj[u]) {
+    for (const v of adj[node]) {
       indegree[v]--;
       if (indegree[v] === 0) q.push(v);
     }
@@ -108,91 +145,139 @@ function isCyclic(V, adj) {
 
 export const steps = [
   {
-    title: '1. Compute In-Degrees for All Vertices',
-    phase: 'INDEGREE_INIT',
-    codeLine: 8,
-    indegree: [0, 1, 1, 2],
-    queue: [0],
-    topoCount: 0,
-    cycle: false,
-    info: 'In-degrees: Node 0 has 0 in-degree. Push 0 into BFS queue. Topo count = 0.'
+    phase: 'SETUP',
+    title: '1. In-Degree Initialization: Queue [Node 0]',
+    mode: 'queue',
+    queue: ['Node 0'],
+    inputTrack: {
+      items: [0, 2, 1, 1],
+      label: 'In-Degrees [Node 0..3]'
+    },
+    scanIndex: 0,
+    activeIndices: [0],
+    customCard: {
+      title: 'Directed Graph In-Degree Status',
+      rows: [
+        { label: 'Directed Edges', value: '0->1, 1->2, 2->3, 3->1', accent: true },
+        { label: 'Calculated In-Degrees', value: 'n0: 0, n1: 2, n2: 1, n3: 1' },
+        { label: 'Zero In-Degree Queue', value: '[ Node 0 ]' },
+        { label: 'Topological Count', value: '0 / 4' }
+      ]
+    },
+    variables: {
+      topologicalCount: 0,
+      totalVertices: 4,
+      queue: '[0]',
+      cycleDetected: 'Evaluating...'
+    },
+    metrics: {
+      processedNodes: '0 / 4',
+      queueSize: 1,
+      hasCycle: 'Pending'
+    },
+    explain: 'Node 0 has 0 incoming edges (in-degree = 0). Enqueue Node 0. All other nodes have incoming dependencies.',
+    intuition: 'Only nodes with zero dependencies can be processed first in any topological ordering.'
   },
   {
-    title: '2. Pop Node 0: Reduce In-Degrees',
-    phase: 'POP_0',
-    codeLine: 21,
-    indegree: [0, 0, 1, 2],
-    queue: [1],
-    topoCount: 1,
-    cycle: false,
-    info: 'Pop 0. Edge 0->1 relaxed, indegree[1] becomes 0. Push 1 into queue. Topo count = 1.'
-  },
-  {
-    title: '3. Pop Node 1: Edge 1->2 Relaxed',
-    phase: 'POP_1',
-    codeLine: 21,
-    indegree: [0, 0, 0, 2],
-    queue: [2],
-    topoCount: 2,
-    cycle: false,
-    info: 'Pop 1. Edge 1->2 relaxed, indegree[2] becomes 0. Push 2 into queue. Topo count = 2.'
-  },
-  {
-    title: '4. Cycle Stagnation: Queue Empty & Count < V!',
-    phase: 'CYCLE_CONFIRMED',
-    codeLine: 27,
-    indegree: [0, 0, 0, 1],
+    phase: 'DEQUEUE_0',
+    title: '2. Dequeue Node 0: Decrement in-degree[1] from 2 to 1',
+    mode: 'queue',
     queue: [],
-    topoCount: 3,
-    cycle: true,
-    info: 'Node 3 is trapped in a self/directed dependency! Queue is empty but Topo Count (3) < Total V (4). Cycle detected!'
+    inputTrack: {
+      items: [0, 1, 1, 1],
+      label: 'In-Degrees [Node 0..3]'
+    },
+    scanIndex: 1,
+    activeIndices: [1],
+    customCard: {
+      title: 'Process Zero-In-Degree Node',
+      rows: [
+        { label: 'Dequeued Node', value: 'Node 0', accent: true },
+        { label: 'Topological Count', value: 'Increments to 1' },
+        { label: 'Outgoing Edge 0 -> 1', value: 'indegree[1] drops 2 -> 1' },
+        { label: 'New In-Degree of 1', value: '1 != 0 (Cannot enqueue Node 1)' }
+      ]
+    },
+    variables: {
+      topologicalCount: 1,
+      totalVertices: 4,
+      queue: '[] (Empty)',
+      cycleDetected: 'Deadlock imminent'
+    },
+    metrics: {
+      processedNodes: '1 / 4',
+      queueSize: 0,
+      hasCycle: 'Pending'
+    },
+    explain: 'Node 0 processed and popped. Edge 0->1 reduces in-degree[1] to 1. But node 1 still has incoming edge from 3, so in-degree is not 0!',
+    intuition: 'If in-degree is still non-zero, the node is blocked by an unresolved cycle or dependency.'
+  },
+  {
+    phase: 'DEADLOCK',
+    title: '3. Queue Empty! Nodes {1, 2, 3} Trapped in Cycle',
+    mode: 'queue',
+    queue: [],
+    inputTrack: {
+      items: [0, 1, 1, 1],
+      label: 'Trapped In-Degrees (Stuck at 1)'
+    },
+    scanIndex: 1,
+    activeIndices: [1, 2, 3],
+    customCard: {
+      title: 'Cyclic Deadlock Reached',
+      rows: [
+        { label: 'Queue Status', value: 'Empty [] while nodes remain!', accent: true },
+        { label: 'Trapped Cycle', value: '1 -> 2 -> 3 -> 1' },
+        { label: 'Cycle In-Degrees', value: 'Each cycle node has in-degree == 1' },
+        { label: 'Kahn\'s Condition', value: 'No zero in-degree node can ever emerge' }
+      ]
+    },
+    variables: {
+      topologicalCount: 1,
+      totalVertices: 4,
+      queue: '[]',
+      cycleDetected: true
+    },
+    metrics: {
+      processedNodes: '1 / 4',
+      queueSize: 0,
+      hasCycle: 'TRUE'
+    },
+    explain: 'The queue has emptied prematurely! Nodes 1, 2, and 3 are mutually dependent in cycle 1 -> 2 -> 3 -> 1, preventing their in-degrees from ever reaching 0.',
+    intuition: 'A directed cycle creates an unbreakable deadlock where no node has zero in-degree.'
+  },
+  {
+    phase: 'COMPLETE',
+    title: '4. Final Verdict: count (1) < V (4) => DIRECTED CYCLE PRESENT!',
+    mode: 'queue',
+    queue: [],
+    inputTrack: {
+      items: [0, 1, 1, 1],
+      label: 'Final In-Degree State'
+    },
+    scanIndex: 1,
+    activeIndices: [1, 2, 3],
+    customCard: {
+      title: 'Directed Cycle Confirmed',
+      rows: [
+        { label: 'Topological Count', value: '1 node resolved', accent: true },
+        { label: 'Total Vertices (V)', value: '4 nodes in graph' },
+        { label: 'Inequality', value: 'count (1) < V (4) (Strictly Less!)' },
+        { label: 'Verdict', value: 'isCyclic = true' }
+      ]
+    },
+    variables: {
+      topologicalCount: 1,
+      totalVertices: 4,
+      queue: '[]',
+      cycleDetected: true
+    },
+    metrics: {
+      processedNodes: '1 / 4',
+      queueSize: 0,
+      hasCycle: 'TRUE'
+    },
+    explain: 'Topological count is 1, which is strictly less than V = 4. A directed cycle exists in the graph! isCyclic returns true.',
+    intuition: 'Kahn\'s algorithm only processes all V vertices if the graph is a Directed Acyclic Graph (DAG).'
   }
 ];
-
-export default function DetectACycleInADirectedGraphVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Topo Count: <strong className="text-cyan-200">{step.topoCount} / 4</strong>
-        </div>
-        <div className={`px-3.5 py-1.5 rounded-xl border font-bold ${
-          step.cycle ? 'bg-red-500/20 border-red-500/50 text-red-300' : 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
-        }`}>
-          Cycle: {step.cycle ? 'DIRECTED CYCLE DETECTED' : 'PROCESSING'}
-        </div>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
-          <span>Vertex In-Degree Status</span>
-          <span className="text-cyan-400 font-bold">Kahn's Zero In-Degree Queue</span>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2 text-xs font-mono">
-          {[0, 1, 2, 3].map(v => (
-            <div key={v} className="p-3 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center">
-              <span className="text-[#64748b]">Node {v}</span>
-              <span className={`text-base font-bold mt-1 ${
-                step.indegree[v] === 0 ? 'text-emerald-400' : 'text-amber-400'
-              }`}>
-                deg = {step.indegree[v]}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div className="w-full p-2.5 rounded-xl bg-[#0f1017] border border-[#1f2233] text-xs font-mono flex items-center justify-between">
-          <span className="text-[#64748b]">BFS Queue:</span>
-          <span className="text-cyan-300 font-bold">[{step.queue.join(', ')}]</span>
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.info}
-      </div>
-    </div>
-  );
-}

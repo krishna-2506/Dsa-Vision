@@ -1,16 +1,43 @@
-import React from 'react';
+export const rendererType = 'dp-grid';
 
 export const meta = {
   title: 'Number of Provinces',
-  category: 'Step 15: Graphs [Concepts & Problems]',
+  category: 'Graphs',
   difficulty: 'Medium',
   timeComplexity: 'O(N^2)',
   spaceComplexity: 'O(N) visited array',
   description: 'Calculates the number of disconnected groups (provinces) of cities where a direct or indirect road connects cities in the same province (LeetCode 547).'
 };
 
+export const ideaMap = {
+  title: 'Connected Component DFS / Disjoint Set Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Adjacency Matrix Inspection',
+      detail: 'Examine the N x N symmetrical connectivity matrix isConnected where entry (i, j) == 1 denotes a road.'
+    },
+    {
+      id: 'step2',
+      label: 'Province Discovery Trigger',
+      detail: 'Iterate over cities 0 to N-1; if city i has not been visited, increment province counter by 1.'
+    },
+    {
+      id: 'step3',
+      label: 'Depth-First Component Flooding',
+      detail: 'Run DFS from city i to mark all transitively reachable cities as visited in vis[].'
+    },
+    {
+      id: 'step4',
+      label: 'Enumerate Disconnected Provinces',
+      detail: 'Continue linear scan; already grouped cities are skipped. Return final province count.'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Number of Provinces (LeetCode 547)
+// Time Complexity: O(N^2) | Space Complexity: O(N)
 #include <vector>
 using namespace std;
 
@@ -18,9 +45,9 @@ class Solution {
 private:
     void dfs(int node, vector<vector<int>>& isConnected, vector<int>& vis) {
         vis[node] = 1;
-        for (int j = 0; j < isConnected.size(); j++) {
-            if (isConnected[node][j] == 1 && !vis[j]) {
-                dfs(j, isConnected, vis);
+        for (int neighbor = 0; neighbor < isConnected.size(); neighbor++) {
+            if (isConnected[node][neighbor] == 1 && !vis[neighbor]) {
+                dfs(neighbor, isConnected, vis);
             }
         }
     }
@@ -29,6 +56,7 @@ public:
         int n = isConnected.size();
         vector<int> vis(n, 0);
         int provinces = 0;
+
         for (int i = 0; i < n; i++) {
             if (!vis[i]) {
                 provinces++;
@@ -38,7 +66,8 @@ public:
         return provinces;
     }
 };`,
-  java: `// Java: Number of Provinces
+  java: `// Java: Number of Provinces (LeetCode 547)
+// Time Complexity: O(N^2) | Space Complexity: O(N)
 class Solution {
     private void dfs(int u, int[][] isConnected, boolean[] vis) {
         vis[u] = true;
@@ -48,10 +77,12 @@ class Solution {
             }
         }
     }
+
     public int findCircleNum(int[][] isConnected) {
         int n = isConnected.length;
         boolean[] vis = new boolean[n];
         int count = 0;
+
         for (int i = 0; i < n; i++) {
             if (!vis[i]) {
                 count++;
@@ -61,155 +92,180 @@ class Solution {
         return count;
     }
 }`,
-  python: `# Python: Number of Provinces
+  python: `# Python: Number of Provinces (LeetCode 547)
+# Time Complexity: O(N^2) | Space Complexity: O(N)
 class Solution:
     def findCircleNum(self, isConnected: list[list[int]]) -> int:
         n = len(isConnected)
         vis = [False] * n
         provinces = 0
-        def dfs(u):
+
+        def dfs(u: int) -> None:
             vis[u] = True
             for v in range(n):
                 if isConnected[u][v] == 1 and not vis[v]:
                     dfs(v)
+
         for i in range(n):
             if not vis[i]:
                 provinces += 1
                 dfs(i)
-        return provinces
-`,
-  javascript: `// JavaScript: Number of Provinces
+
+        return provinces`,
+  javascript: `// JavaScript: Number of Provinces (LeetCode 547)
+// Time Complexity: O(N^2) | Space Complexity: O(N)
 function findCircleNum(isConnected) {
-  const n = isConnected.length;
-  const vis = new Array(n).fill(false);
-  let count = 0;
-  function dfs(u) {
-    vis[u] = true;
-    for (let v = 0; v < n; v++) {
-      if (isConnected[u][v] === 1 && !vis[v]) dfs(v);
+    const n = isConnected.length;
+    const vis = new Array(n).fill(false);
+    let provinces = 0;
+
+    function dfs(u) {
+        vis[u] = true;
+        for (let v = 0; v < n; v++) {
+            if (isConnected[u][v] === 1 && !vis[v]) {
+                dfs(v);
+            }
+        }
     }
-  }
-  for (let i = 0; i < n; i++) {
-    if (!vis[i]) {
-      count++;
-      dfs(i);
+
+    for (let i = 0; i < n; i++) {
+        if (!vis[i]) {
+            provinces++;
+            dfs(i);
+        }
     }
-  }
-  return count;
+    return provinces;
 }`
 };
 
 export const steps = [
   {
-    title: '1. Scan City 0: Province 1 Found',
-    phase: 'CITY_0',
-    codeLine: 21,
-    activeCity: 0,
-    provinces: 1,
-    vis: [1, 1, 0],
-    explanation: 'City 0 is unvisited. Increment province count to 1. DFS from City 0 explores City 1 (connected via isConnected[0][1]=1).'
+    phase: 'INITIALIZE',
+    title: 'Initialize City Network: 3x3 Adjacency Matrix',
+    grid: [
+      ['1', '1', '0'],
+      ['1', '1', '0'],
+      ['0', '0', '1']
+    ],
+    rowLabels: ['City 0', 'City 1', 'City 2'],
+    colLabels: ['City 0', 'City 1', 'City 2'],
+    activeCell: { r: 0, c: 0 },
+    metrics: [
+      { label: 'Provinces Found', value: 0 },
+      { label: 'Visited Cities', value: '0 / 3' },
+      { label: 'Examining', value: 'City 0' }
+    ],
+    variables: {
+      activeCity: 0,
+      vis: '[0, 0, 0]',
+      provinces: 0,
+      status: 'City 0 is unvisited -> launch Province 1 DFS'
+    },
+    explain: 'Start scanning cities at City 0. Since City 0 is unvisited (vis[0] == 0), increment province counter to 1 and launch DFS to explore its connected cluster.',
+    intuition: 'Each unvisited city marks the root of an independent connected graph component.'
   },
   {
-    title: '2. Check City 1: Already Visited',
-    phase: 'CITY_1',
-    codeLine: 20,
-    activeCity: 1,
-    provinces: 1,
-    vis: [1, 1, 0],
-    explanation: 'City 1 already marked in Province 1 (vis[1] == 1). Skip traversal.'
+    phase: 'EXPLORE_PROVINCE_1',
+    title: 'Province 1 Discovered: Road (0, 1) Connects City 0 and City 1',
+    grid: [
+      ['P1', 'P1', '0'],
+      ['P1', 'P1', '0'],
+      ['0', '0', '1']
+    ],
+    rowLabels: ['City 0', 'City 1', 'City 2'],
+    colLabels: ['City 0', 'City 1', 'City 2'],
+    activeCell: { r: 0, c: 1 },
+    dependencyCells: [
+      { r: 1, c: 0, label: 'road' }
+    ],
+    metrics: [
+      { label: 'Provinces Found', value: 1 },
+      { label: 'Visited Cities', value: '2 / 3 (Cities 0, 1)' },
+      { label: 'Cluster Size', value: '2 cities' }
+    ],
+    variables: {
+      activeCity: 1,
+      vis: '[1, 1, 0]',
+      province1Cities: '[City 0, City 1]',
+      status: 'DFS traversal traversed road between City 0 and City 1'
+    },
+    explain: 'Row 0 shows isConnected[0][1] == 1. DFS steps to City 1 and marks vis[1] = 1. City 1 connects back to City 0 and has no other links. Province 1 group {0, 1} is fully visited.',
+    intuition: 'Symmetric matrix entries (0,1) and (1,0) represent an undirected edge between two nodes.'
   },
   {
-    title: '3. Scan City 2: Province 2 Found',
-    phase: 'CITY_2',
-    codeLine: 21,
-    activeCity: 2,
-    provinces: 2,
-    vis: [1, 1, 1],
-    explanation: 'City 2 is unvisited (vis[2] == 0). Increment province count to 2. City 2 is isolated. Total provinces = 2.'
+    phase: 'SCAN_CITY_1',
+    title: 'Scan Advances to City 1: Already Visited (vis[1] == 1)',
+    grid: [
+      ['P1', 'P1', '0'],
+      ['P1', 'P1', '0'],
+      ['0', '0', '1']
+    ],
+    rowLabels: ['City 0', 'City 1', 'City 2'],
+    colLabels: ['City 0', 'City 1', 'City 2'],
+    activeCell: { r: 1, c: 1 },
+    dependencyCells: [],
+    metrics: [
+      { label: 'Provinces Found', value: 1 },
+      { label: 'Visited Cities', value: '2 / 3' },
+      { label: 'Action', value: 'SKIP CITY 1' }
+    ],
+    variables: {
+      activeCity: 1,
+      'vis[1]': 'true',
+      action: 'Already belongs to Province 1; skip DFS'
+    },
+    explain: 'The outer loop inspects City 1. Since vis[1] is already true from the previous DFS traversal, no new province is formed. Skip to City 2.',
+    intuition: 'Visited array ensures that each city is processed exactly once, achieving O(N^2) total edge checks.'
+  },
+  {
+    phase: 'EXPLORE_PROVINCE_2',
+    title: 'Scan Advances to City 2: Isolated Province 2 Found',
+    grid: [
+      ['P1', 'P1', '0'],
+      ['P1', 'P1', '0'],
+      ['0', '0', 'P2']
+    ],
+    rowLabels: ['City 0', 'City 1', 'City 2'],
+    colLabels: ['City 0', 'City 1', 'City 2'],
+    activeCell: { r: 2, c: 2 },
+    dependencyCells: [],
+    metrics: [
+      { label: 'Provinces Found', value: 2 },
+      { label: 'Visited Cities', value: '3 / 3' },
+      { label: 'Examining', value: 'City 2' }
+    ],
+    variables: {
+      activeCity: 2,
+      vis: '[1, 1, 1]',
+      provinces: 2,
+      status: 'City 2 has no external roads; forms isolated Province 2'
+    },
+    explain: 'City 2 has vis[2] == 0. Increment province counter to 2! Row 2 shows isConnected[2][0] == 0 and isConnected[2][1] == 0. City 2 is completely isolated.',
+    intuition: 'Isolated nodes with no outgoing edges form single-node connected components.'
+  },
+  {
+    phase: 'COMPLETE',
+    title: 'Traversal Complete: Total Provinces = 2',
+    grid: [
+      ['P1', 'P1', '0'],
+      ['P1', 'P1', '0'],
+      ['0', '0', 'P2']
+    ],
+    rowLabels: ['City 0', 'City 1', 'City 2'],
+    colLabels: ['City 0', 'City 1', 'City 2'],
+    activeCell: null,
+    dependencyCells: [],
+    metrics: [
+      { label: 'Total Provinces', value: 2 },
+      { label: 'Province 1', value: '{City 0, City 1}' },
+      { label: 'Province 2', value: '{City 2}' }
+    ],
+    variables: {
+      finalResult: 2,
+      timeComplexity: 'O(N^2)',
+      spaceComplexity: 'O(N)'
+    },
+    explain: 'All 3 cities have been visited across the matrix. Exactly 2 independent provinces exist: Province 1 ({City 0, City 1}) and Province 2 ({City 2}). Return 2.',
+    intuition: 'Counting provinces is mathematically equivalent to computing the number of connected components in an undirected graph.'
   }
 ];
-
-export default function NumberOfProvincesVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  const matrix = [
-    [1, 1, 0],
-    [1, 1, 0],
-    [0, 0, 1]
-  ];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Provinces Count: <strong className="text-cyan-200">{step.provinces}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Current City Examined: <strong className="text-purple-200">City {step.activeCity}</strong>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-        {/* Matrix View */}
-        <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl">
-          <span className="text-xs font-mono font-semibold text-cyan-400 block mb-3">isConnected[3][3] Matrix</span>
-          <div className="grid grid-cols-4 gap-1 text-center font-mono text-xs">
-            <div className="text-[#525777] p-1 font-bold">City</div>
-            {[0, 1, 2].map(c => (
-              <div key={c} className="text-cyan-300 p-1 font-bold bg-[#181a27] rounded">{c}</div>
-            ))}
-            {matrix.map((row, r) => (
-              <React.Fragment key={r}>
-                <div className="text-cyan-300 p-1 font-bold bg-[#181a27] rounded flex items-center justify-center">{r}</div>
-                {row.map((val, c) => (
-                  <div
-                    key={c}
-                    className={`p-2 rounded font-bold transition-all ${
-                      val === 1
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                        : 'bg-[var(--board-raised-2)] text-[#475569]'
-                    }`}
-                  >
-                    {val}
-                  </div>
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-
-        {/* Visited & Province Clusters */}
-        <div className="p-4 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-xl flex flex-col justify-between">
-          <div>
-            <span className="text-xs font-mono font-semibold text-purple-400 block mb-3">Province Allotment</span>
-            <div className="space-y-2 text-xs font-mono">
-              <div className="p-2.5 rounded-xl bg-blue-950/40 border border-blue-800/40 text-blue-200 flex justify-between items-center">
-                <span>Province #1:</span>
-                <span className="font-bold text-cyan-300">&#123; City 0, City 1 &#125;</span>
-              </div>
-              <div className={`p-2.5 rounded-xl border transition-all flex justify-between items-center ${
-                step.provinces >= 2
-                  ? 'bg-purple-950/40 border-purple-800/40 text-purple-200'
-                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[#525777]'
-              }`}>
-                <span>Province #2:</span>
-                <span className="font-bold text-purple-300">
-                  {step.provinces >= 2 ? '{ City 2 }' : 'Pending...'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-[var(--line)] flex justify-between text-xs font-mono text-[var(--chalk-dim)]">
-            <span>vis Array:</span>
-            <span className="text-emerald-400 font-bold">[{step.vis.join(', ')}]</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.explanation}
-      </div>
-    </div>
-  );
-}

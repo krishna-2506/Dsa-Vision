@@ -1,299 +1,333 @@
-import React, { useState } from 'react';
-import ArrayView from '../components/primitives/ArrayView';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
-// 0. Multi-language production solution code with detailed educational comments
+export const meta = {
+  title: 'Longest Subarray with Sum K',
+  category: 'Arrays & Two Pointers',
+  difficulty: 'Medium',
+  timeComplexity: 'O(2N) ~ O(N) Sliding Window (Positives) / O(N) Hash Map',
+  spaceComplexity: 'O(1) Two Pointers / O(N) Prefix Map',
+  description: 'Finds the maximum length of a contiguous subarray whose elements sum to K using an expanding and contracting sliding window.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Sliding Window Subarray Strategy',
+  nodes: [
+    { id: 'root', label: 'Dynamic Sliding Window Invariant', children: ['expand-right', 'shrink-left', 'target-match', 'max-update', 'complexity'] },
+    { id: 'expand-right', label: '1. Window Expansion', detail: 'Advance end pointer rightward and add nums[end] to current window sum.' },
+    { id: 'shrink-left', label: '2. Excess Shrinkage (sum > k)', detail: 'While sum > k and start <= end, subtract nums[start] and advance start++.' },
+    { id: 'target-match', label: '3. Exact Match Check (sum == k)', detail: 'When sum equals k, compute current window length: (end - start + 1).' },
+    { id: 'max-update', label: '4. Maximize Length Invariant', detail: 'Update maxLen = max(maxLen, end - start + 1) to retain the global longest subarray.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Each element enters and exits the window at most once: strictly O(2N) time with O(1) extra space.' }
+  ]
+};
+
 export const solutions = {
-  cpp: `// C++ Optimal Solution: Sliding Window (Two Pointers)
-// Time Complexity: O(2N) ~ O(N) because each element is visited at most twice (by end and start)
-// Space Complexity: O(1) as we only use a few variables
+  cpp: `// C++ Optimal Sliding Window for Positive Arrays
+// Time Complexity: O(2N) ~ O(N) | Space Complexity: O(1)
+#include <vector>
+#include <algorithm>
+using namespace std;
 
 class Solution {
 public:
-    int longestSubarrayWithSumK(vector<int> a, long long k) {
-        int start = 0; // Left pointer of our sliding window
-        int ans = 0;   // Stores the maximum length found so far
-        long long sum = 0; // Tracks the sum of the current window
+    int longestSubarrayWithSumK(vector<int>& a, long long k) {
+        int start = 0;
+        int maxLen = 0;
+        long long sum = 0;
         int n = a.size();
 
-        // Right pointer 'end' expands the window
         for (int end = 0; end < n; end++) {
-            sum += a[end]; // Add the new element to our window's sum
-            
-            // If sum exceeds k, shrink the window from the left
-            // This loop ensures our window sum is always <= k (for positive arrays)
-            while (sum > k) {
-                sum -= a[start]; // Remove the element at 'start' from the sum
-                start++;         // Move the left pointer forward
-            }
-            
-            // If the current window exactly matches the target sum 'k'
-            if (sum == k) {
-                // Update max length. Current window length is (end - start + 1)
-                ans = max(ans, end - start + 1);
-            }
-        }
-        return ans;
-    }
-};
-`,
-  python: `# Python 3 Optimal Solution: Sliding Window
-# Time Complexity: O(N) | Space Complexity: O(1)
+            sum += a[end];
 
-class Solution:
-    def longestSubarrayWithSumK(self, a: list[int], k: int) -> int:
-        start = 0      # Left boundary of the window
-        max_len = 0    # Stores the longest valid subarray length
-        current_sum = 0 # Sum of elements within the current window
-        
-        # 'end' pointer expands the window to the right
-        for end in range(len(a)):
-            current_sum += a[end]
-            
-            # While the sum is too large, shrink the window from the left.
-            # (Note: This logic assumes array elements are non-negative)
-            while current_sum > k and start <= end:
-                current_sum -= a[start]
-                start += 1
-                
-            # Whenever the window sum hits the target 'k', check if it's the longest
-            if current_sum == k:
-                max_len = max(max_len, end - start + 1)
-                
-        return max_len
-`,
-  java: `// Java Optimal Solution: Sliding Window
-// Time Complexity: O(N) | Space Complexity: O(1)
-
-class Solution {
-    public int longestSubarrayWithSumK(int[] a, long k) {
-        int start = 0;
-        int ans = 0;
-        long sum = 0;
-        int n = a.length;
-
-        // Iterate with the 'end' pointer expanding the sliding window
-        for (int end = 0; end < n; end++) {
-            sum += a[end]; // Include current element
-            
-            // Shrink window from the left if the sum exceeds the target 'k'
+            // Shrink window from left if sum exceeds target k
             while (sum > k && start <= end) {
                 sum -= a[start];
                 start++;
             }
-            
-            // If we found a valid subarray, update the maximum length
+
+            // Record maximum length if exact match
             if (sum == k) {
-                ans = Math.max(ans, end - start + 1);
+                maxLen = max(maxLen, end - start + 1);
             }
         }
-        
-        return ans;
-    }
-}
-`,
-  javascript: `// JavaScript Optimal Solution: Sliding Window
-// Time Complexity: O(N) | Space Complexity: O(1)
 
-/**
- * @param {number[]} a
- * @param {number} k
- * @return {number}
- */
+        return maxLen;
+    }
+};`,
+  python: `# Python 3 Optimal Sliding Window
+# Time Complexity: O(N) | Space Complexity: O(1)
+class Solution:
+    def longestSubarrayWithSumK(self, a: list[int], k: int) -> int:
+        start = 0
+        max_len = 0
+        window_sum = 0
+
+        for end in range(len(a)):
+            window_sum += a[end]
+
+            while window_sum > k and start <= end:
+                window_sum -= a[start]
+                start += 1
+
+            if window_sum == k:
+                max_len = max(max_len, end - start + 1)
+
+        return max_len`,
+  java: `// Java Optimal Sliding Window
+// Time Complexity: O(N) | Space Complexity: O(1)
+class Solution {
+    public int longestSubarrayWithSumK(int[] a, long k) {
+        int start = 0;
+        int maxLen = 0;
+        long sum = 0;
+        int n = a.length;
+
+        for (int end = 0; end < n; end++) {
+            sum += a[end];
+
+            while (sum > k && start <= end) {
+                sum -= a[start];
+                start++;
+            }
+
+            if (sum == k) {
+                maxLen = Math.max(maxLen, end - start + 1);
+            }
+        }
+
+        return maxLen;
+    }
+}`,
+  javascript: `// JavaScript Optimal Sliding Window
+// Time Complexity: O(N) | Space Complexity: O(1)
 var longestSubarrayWithSumK = function(a, k) {
     let start = 0;
-    let maxLength = 0;
+    let maxLen = 0;
     let sum = 0;
-    
-    // 'end' is the right pointer expanding our window
+
     for (let end = 0; end < a.length; end++) {
         sum += a[end];
-        
-        // If sum overflows 'k', slide the left pointer ('start') forward
+
         while (sum > k && start <= end) {
             sum -= a[start];
             start++;
         }
-        
-        // Target matched! Record the length if it's the largest we've seen
+
         if (sum === k) {
-            maxLength = Math.max(maxLength, end - start + 1);
+            maxLen = Math.max(maxLen, end - start + 1);
         }
     }
-    
-    return maxLength;
-};
-`,
-};
 
-export const meta = {
-  display_id: 'Q-012',
-  title: "Longest Subarray With Given Sum",
-  category: "1. Arrays",
-  difficulty: "Easy",
-  timeComplexity: "O(N)",
-  spaceComplexity: "O(1)",
-  description: "You are given an array 'A' of size 'N' and an integer 'K'. You need to print the length of the longest subarray of array 'A' whose sum = 'K'. Assuming non-negative integers."
+    return maxLen;
+};`
 };
-
-// Realistic sample array/data extracted directly from the problem statement & examples
-const SAMPLE_DATA = [1, 2, 3, 1, 1, 1, 1];
-// K = 3
 
 export const steps = [
   {
-    title: "1. Initialize State",
-    codeLine: 4,
-    code: "int start = 0; int ans = 0; long long sum = 0;",
-    explanation: "We initialize our sliding window pointers. `start` and `end` both point to index 0. Our running `sum` is 0, and the maximum length found (`ans`) is 0. Target K is 3.",
+    title: '1. Initialize Sliding Window Pointers',
+    phase: 'INITIALIZATION',
+    codeLine: 11,
+    track: {
+      label: 'a (array)',
+      items: [
+        { val: 1, status: 'current' },
+        { val: 2, status: 'default' },
+        { val: 3, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' }
+      ]
+    },
     pointers: [
-      { index: 0, label: 'start', color: 'amber' },
-      { index: 0, label: 'end', color: 'indigo' }
+      { index: 0, label: 'start', color: 'accent' },
+      { index: 0, label: 'end', color: 'amber' }
     ],
-    highlightIndices: [],
-    hudText: "K=3 | Sum=0 | Max Length=0"
+    windowStart: 0,
+    windowEnd: 0,
+    metrics: [
+      { label: 'Target K', value: '3' },
+      { label: 'Window Sum', value: '1' },
+      { label: 'Window Length', value: '1' },
+      { label: 'Max Length', value: '0' }
+    ],
+    customCard: {
+      title: 'Window Bounds & Sum',
+      rows: [
+        { label: 'Subarray [start..end]', value: '[1] (idx 0..0)' },
+        { label: 'Current Sum', value: '1 (1 < 3)' },
+        { label: 'Action', value: 'Sum below target; expand end pointer' }
+      ]
+    },
+    formula: 'start = 0, end = 0; sum = a[0] = 1 < K (3)',
+    action: 'Place start and end at index 0. Add a[0]=1 to window sum.',
+    explain: 'Sum 1 is strictly less than target K=3. Window must expand to encompass more elements.',
+    intuition: 'A sliding window dynamically grows to meet or exceed target K, and shrinks only when exceeding it.'
   },
   {
-    title: "2. Expand Window (end=1)",
+    title: '2. Expand Window: end = 1 -> Sum = 1 + 2 = 3 (MATCH!)',
+    phase: 'MATCH_FOUND',
+    codeLine: 24,
+    track: {
+      label: 'a (array)',
+      items: [
+        { val: 1, status: 'match' },
+        { val: 2, status: 'match' },
+        { val: 3, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'start', color: 'accent' },
+      { index: 1, label: 'end', color: 'amber' }
+    ],
+    windowStart: 0,
+    windowEnd: 1,
+    metrics: [
+      { label: 'Target K', value: '3' },
+      { label: 'Window Sum', value: '3' },
+      { label: 'Window Length', value: '2' },
+      { label: 'Max Length', value: '2' }
+    ],
+    customCard: {
+      title: 'Target Match Discovered!',
+      rows: [
+        { label: 'Subarray [start..end]', value: '[1, 2] (idx 0..1)' },
+        { label: 'Current Sum', value: '1 + 2 = 3 == K' },
+        { label: 'Max Length Updated', value: 'max(0, 1 - 0 + 1) = 2' }
+      ]
+    },
+    formula: 'sum == K (3 == 3); maxLen = max(0, 1 - 0 + 1) = 2',
+    action: 'Advance end to 1. sum += a[1] (2) -> sum = 3. Exact match found! maxLen = 2.',
+    explain: 'Subarray [1, 2] at indices [0..1] sums exactly to 3. Record maxLen = 2.',
+    intuition: 'Whenever sum equals K, we record the span length before further expansion.'
+  },
+  {
+    title: '3. Expand Window: end = 2 -> Sum = 6 (> 3) -> Shrink',
+    phase: 'SHRINK_WINDOW',
     codeLine: 18,
-    code: "if (sum == k) { ans = max(ans, end - start + 1); }",
-    explanation: "We expanded `end` to index 1. The window [1, 2] has a sum of 3. Since sum equals K, we update our max length (`ans`) to 2 (indices 1 - 0 + 1).",
+    track: {
+      label: 'a (array)',
+      items: [
+        { val: 1, status: 'dimmed' },
+        { val: 2, status: 'dimmed' },
+        { val: 3, status: 'match' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' },
+        { val: 1, status: 'default' }
+      ]
+    },
     pointers: [
-      { index: 0, label: 'start', color: 'amber' },
-      { index: 1, label: 'end', color: 'indigo' }
+      { index: 2, label: 'start', color: 'accent' },
+      { index: 2, label: 'end', color: 'amber' }
     ],
-    highlightIndices: [0, 1],
-    hudText: "K=3 | Sum=3 | Max Length=2 (Update!)"
+    windowStart: 2,
+    windowEnd: 2,
+    metrics: [
+      { label: 'Target K', value: '3' },
+      { label: 'Window Sum', value: '3' },
+      { label: 'Window Length', value: '1' },
+      { label: 'Max Length', value: '2' }
+    ],
+    customCard: {
+      title: 'Shrink & Re-match',
+      rows: [
+        { label: 'Sum with a[2]=3', value: '3 + 3 = 6 (> K=3)' },
+        { label: 'Shrink Actions', value: 'Remove a[0]=1, a[1]=2 -> start moves to 2' },
+        { label: 'New Window', value: '[3] (sum=3 == K) -> length 1 <= maxLen 2' }
+      ]
+    },
+    formula: 'sum -= a[0], sum -= a[1]; sum = 3 == K; maxLen remains 2',
+    action: 'Adding a[2]=3 made sum=6. Shrink start until sum <= 3. Now start=2, sum=3, length=1.',
+    explain: 'Single-element subarray [3] at index 2 matches sum K=3, but length 1 does not exceed current max 2.',
+    intuition: 'The left pointer rapidly recovers the invariant by discarding accumulated prefix values.'
   },
   {
-    title: "3. Expand Window (end=2)",
-    codeLine: 12,
-    code: "sum += a[end];",
-    explanation: "We advance `end` to index 2 (value 3). Our window is now [1, 2, 3] and the sum jumps to 6. This is greater than our target K (3).",
+    title: '4. Expand Across Consecutive 1s (end: 3 -> 5)',
+    phase: 'EXPANDING',
+    codeLine: 24,
+    track: {
+      label: 'a (array)',
+      items: [
+        { val: 1, status: 'dimmed' },
+        { val: 2, status: 'dimmed' },
+        { val: 3, status: 'dimmed' },
+        { val: 1, status: 'match' },
+        { val: 1, status: 'match' },
+        { val: 1, status: 'match' },
+        { val: 1, status: 'default' }
+      ]
+    },
     pointers: [
-      { index: 0, label: 'start', color: 'amber' },
-      { index: 2, label: 'end', color: 'indigo' }
+      { index: 3, label: 'start', color: 'accent' },
+      { index: 5, label: 'end', color: 'amber' }
     ],
-    highlightIndices: [0, 1, 2],
-    hudText: "K=3 | Sum=6 | Max Length=2"
+    windowStart: 3,
+    windowEnd: 5,
+    metrics: [
+      { label: 'Target K', value: '3' },
+      { label: 'Window Sum', value: '3' },
+      { label: 'Window Length', value: '3' },
+      { label: 'Max Length', value: '3' }
+    ],
+    customCard: {
+      title: 'New Global Maximum Discovered!',
+      rows: [
+        { label: 'Subarray [start..end]', value: '[1, 1, 1] (idx 3..5)' },
+        { label: 'Current Sum', value: '1 + 1 + 1 = 3 == K' },
+        { label: 'Max Length Updated', value: 'max(2, 5 - 3 + 1) = 3 (NEW MAX!)' }
+      ]
+    },
+    formula: 'sum == 3 == K; maxLen = max(2, 5 - 3 + 1) = 3',
+    action: 'Window shifts to span [1, 1, 1] across indices 3..5. Sum is 3. Max length updates to 3!',
+    explain: 'Subarray [1, 1, 1] spanning indices 3 through 5 has length 3, strictly exceeding our previous best length of 2.',
+    intuition: 'Longer subarrays with smaller values can equal the same sum K. The sliding window naturally captures the longest such span.'
   },
   {
-    title: "4. Shrink Window (sum > k)",
-    codeLine: 14,
-    code: "while (sum > k) { sum -= a[start]; start++; }",
-    explanation: "Because sum (6) > K (3), we must shrink the window from the left. We subtract a[0] and a[1] from the sum, moving `start` to index 2. The window is now just [3], sum is 3.",
+    title: '5. Expand to Last Element (end = 6) & Finalize',
+    phase: 'COMPLETED',
+    codeLine: 29,
+    track: {
+      label: 'a (array)',
+      items: [
+        { val: 1, status: 'dimmed' },
+        { val: 2, status: 'dimmed' },
+        { val: 3, status: 'dimmed' },
+        { val: 1, status: 'dimmed' },
+        { val: 1, status: 'match' },
+        { val: 1, status: 'match' },
+        { val: 1, status: 'match' }
+      ]
+    },
     pointers: [
-      { index: 2, label: 'start', color: 'amber' },
-      { index: 2, label: 'end', color: 'indigo' }
+      { index: 4, label: 'start', color: 'accent' },
+      { index: 6, label: 'end', color: 'amber' }
     ],
-    highlightIndices: [2],
-    hudText: "K=3 | Sum=3 | Max Length=2"
-  },
-  {
-    title: "5. Expand Window (end=3)",
-    codeLine: 12,
-    code: "sum += a[end];",
-    explanation: "We advance `end` to index 3 (value 1). Window is [3, 1], sum becomes 4. Since 4 > 3, we will need to shrink again on the next internal step.",
-    pointers: [
-      { index: 2, label: 'start', color: 'amber' },
-      { index: 3, label: 'end', color: 'indigo' }
+    windowStart: 4,
+    windowEnd: 6,
+    metrics: [
+      { label: 'Max Subarray Length', value: '3' },
+      { label: 'Optimal Window', value: 'indices [3..5] or [4..6]' },
+      { label: 'Target K', value: '3' },
+      { label: 'Space Complexity', value: 'O(1) Auxiliary' }
     ],
-    highlightIndices: [2, 3],
-    hudText: "K=3 | Sum=4 | Max Length=2"
-  },
-  {
-    title: "6. Shrink Window (start=3)",
-    codeLine: 14,
-    code: "while (sum > k) { sum -= a[start]; start++; }",
-    explanation: "Sum (4) > K (3), so we shrink. Subtract a[2] (value 3) from sum. `start` moves to index 3. Window is now [1], sum is 1. We are below K, so we can expand again.",
-    pointers: [
-      { index: 3, label: 'start', color: 'amber' },
-      { index: 3, label: 'end', color: 'indigo' }
-    ],
-    highlightIndices: [3],
-    hudText: "K=3 | Sum=1 | Max Length=2"
-  },
-  {
-    title: "7. Expand Window (end=5)",
-    codeLine: 18,
-    code: "if (sum == k) { ans = max(ans, end - start + 1); }",
-    explanation: "Fast-forwarding: we expanded `end` to 4, then to 5. Our window [1, 1, 1] (indices 3 to 5) has a sum of 3. This matches K! Length is 5 - 3 + 1 = 3. We update `ans` to 3.",
-    pointers: [
-      { index: 3, label: 'start', color: 'amber' },
-      { index: 5, label: 'end', color: 'indigo' }
-    ],
-    highlightIndices: [3, 4, 5],
-    hudText: "K=3 | Sum=3 | Max Length=3 (New Max!)"
-  },
-  {
-    title: "8. Expand Window (end=6)",
-    codeLine: 12,
-    code: "sum += a[end];",
-    explanation: "We advance `end` to the final index 6. Window is [1, 1, 1, 1], sum becomes 4. This is greater than K.",
-    pointers: [
-      { index: 3, label: 'start', color: 'amber' },
-      { index: 6, label: 'end', color: 'indigo' }
-    ],
-    highlightIndices: [3, 4, 5, 6],
-    hudText: "K=3 | Sum=4 | Max Length=3"
-  },
-  {
-    title: "9. Final Shrink & Result",
-    codeLine: 14,
-    code: "while (sum > k) { sum -= a[start]; start++; }",
-    explanation: "We shrink from the left, moving `start` to index 4. The final window is [1, 1, 1] (indices 4 to 6). Sum is 3. Length is 3, which equals our max length. The loop finishes, returning 3.",
-    pointers: [
-      { index: 4, label: 'start', color: 'amber' },
-      { index: 6, label: 'end', color: 'indigo' }
-    ],
-    highlightIndices: [4, 5, 6],
-    hudText: "K=3 | Sum=3 | Max Length=3 (Final)"
+    customCard: {
+      title: 'Final Search Result',
+      rows: [
+        { label: 'Max Length', value: '3 elements' },
+        { label: 'Winning Subarrays', value: '[1, 1, 1] at indices [3..5] or [4..6]' },
+        { label: 'Total Operations', value: 'O(N) amortized window shifts' }
+      ]
+    },
+    formula: 'return maxLen; // 3',
+    action: 'End pointer reached the end of array. Maximum valid subarray length is 3.',
+    explain: 'Sliding window completed scanning in O(2N) total pointer increments with zero memory allocation.',
+    intuition: 'Because each index is advanced by start and end at most once, the algorithm scales linearly regardless of array size.'
   }
 ];
-
-export default function LongestSubarrayWithGivenSumVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[240px]">
-        <ArrayView items={SAMPLE_DATA} pointers={stepData.pointers || []} matchIndices={stepData.highlightIndices || []} />
-        
-        {/* Real-time HUD Status & Variables */}
-        <div className="mt-5 flex items-center gap-3 px-4 py-2 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
-          <span className="text-zinc-400">Status: <strong className="text-indigo-400">{stepData.hudText || 'Processing...'}</strong></span>
-        </div>
-      </div>
-
-      {/* 3. Explanation Footer */}
-      <div className="px-5 py-3 bg-[#0c0e16] border-t border-white/5 text-xs text-[var(--chalk-dim)] leading-relaxed font-sans">
-        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold">Explanation:</span>
-        {stepData.explanation}
-      </div>
-    </div>
-  );
-}

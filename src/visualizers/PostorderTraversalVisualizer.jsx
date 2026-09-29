@@ -1,17 +1,42 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Postorder Traversal of Binary Tree',
   category: 'Binary Trees',
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
-  spaceComplexity: 'O(N) recursion stack (O(H))',
-  description: 'Traverses a binary tree in Left -> Right -> Root order recursively, visiting child subtrees completely before processing their parent node.'
+  spaceComplexity: 'O(H) recursion stack',
+  description: 'Traverses a binary tree in Left -> Right -> Root order recursively, processing all child descendants completely before visiting their parent node.'
+};
+
+export const ideaMap = {
+  title: 'Postorder Traversal Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Traverse Left Subtree First',
+      detail: 'Descend down left pointers recursively until hitting base cases.'
+    },
+    {
+      id: 'step2',
+      label: 'Traverse Right Subtree Second',
+      detail: 'Descend down right child pointers recursively before touching parent.'
+    },
+    {
+      id: 'step3',
+      label: 'Visit Parent Node Last',
+      detail: 'Record current node only after both child subtrees have fully returned.'
+    },
+    {
+      id: 'step4',
+      label: 'Bottom-Up Evaluation',
+      detail: 'Natural order for node deletion, subtree height calculation, and postfix expressions.'
+    }
+  ]
 };
 
 export const solutions = {
   cpp: `// C++ Postorder Traversal (Recursive)
-// Time: O(N) | Space: O(H)
 #include <vector>
 using namespace std;
 
@@ -51,28 +76,32 @@ class TreeNode:
         self.right = right
 
 class Solution:
-    def postorderTraversal(self, root: TreeNode | None) -> list[int]:
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
         result = []
-
-        def postorder(node):
+        def dfs(node):
             if not node:
                 return
-            postorder(node.left)
-            postorder(node.right)
-            result.append(node.val)
-
-        postorder(root)
+            dfs(node.left)          # 1. Left
+            dfs(node.right)         # 2. Right
+            result.append(node.val) # 3. Root
+        dfs(root)
         return result`,
   java: `// Java Postorder Traversal (Recursive)
 import java.util.*;
 
-class Solution {
+class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int x) { val = x; }
+}
+
+public class Solution {
     private void postorder(TreeNode root, List<Integer> result) {
         if (root == null) return;
 
-        postorder(root.left, result);
-        postorder(root.right, result);
-        result.add(root.val);
+        postorder(root.left, result);  // 1. Left
+        postorder(root.right, result); // 2. Right
+        result.add(root.val);          // 3. Root
     }
 
     public List<Integer> postorderTraversal(TreeNode root) {
@@ -82,167 +111,155 @@ class Solution {
     }
 }`,
   javascript: `// JavaScript Postorder Traversal (Recursive)
-var postorderTraversal = function(root) {
+function postorderTraversal(root) {
     const result = [];
-
-    function postorder(node) {
+    function dfs(node) {
         if (!node) return;
-        postorder(node.left);
-        postorder(node.right);
-        result.push(node.val);
+        dfs(node.left);        // 1. Left
+        dfs(node.right);       // 2. Right
+        result.push(node.val); // 3. Root
     }
-
-    postorder(root);
+    dfs(root);
     return result;
-};`
+}`
+};
+
+const tree = {
+  val: 1,
+  left: {
+    val: 2,
+    left: { val: 4 },
+    right: { val: 5 }
+  },
+  right: {
+    val: 3,
+    left: { val: 6 },
+    right: { val: 7 }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Start Postorder at Root (Node 1): Left -> Right -> Root',
-    phase: 'INITIAL',
-    codeLine: 18,
-    activeNode: 1,
+    title: 'Initialize Postorder Traversal at Root (1)',
+    phase: 'SETUP',
+    tree,
+    activeVal: 1,
+    nodeLabels: { 1: 'Deferred Root' },
     traversal: [],
-    action: 'Descend to Left Child (Node 2)',
-    variables: { current: 1, rule: 'Left -> Right -> Root' },
-    explain: 'Postorder rule: Visit left subtree first, right subtree second, and current node last.',
-    intuition: 'Bottom-up node recording (ideal for tree deletion or height computation).'
+    traversalLabel: 'Postorder Output Stream: []',
+    variables: { current: 1, callStack: '[dfs(1)]', order: 'Left -> Right -> Root' },
+    metrics: [
+      { label: 'Current Node', value: '1 (Deferred)' },
+      { label: 'Output Size', value: '0 / 7' },
+      { label: 'Order Rule', value: 'Root Last' }
+    ],
+    explain: 'Starting Postorder Traversal on binary tree. Invariant: a node can only be recorded after both of its child subtrees are completely processed.',
+    action: 'Begin dfs(root). Immediately descend to 1.left (Node 2).',
+    intuition: 'Postorder processes leaves first and root last, making it ideal for memory deallocation and bottom-up DP on trees.',
+    formula: 'dfs(left) -> dfs(right) -> Visit(Node)'
   },
   {
-    title: '2. Node 4 has no children: Visit Node 4 -> Add 4 to result',
+    title: 'Descend to Leaf (4): First Node Recorded',
     phase: 'VISIT_LEAF',
-    codeLine: 27,
-    activeNode: 4,
+    tree,
+    activeVal: 4,
+    nodeLabels: { 1: 'Stack', 2: 'Stack', 4: 'First Visited Leaf' },
     traversal: [4],
-    action: 'Both children of 4 are null. Visit 4!',
-    variables: { visited: 4, next: 'Right child of 2 (Node 5)' },
-    explain: 'Node 4 leaves left and right branches. It is processed and added to the traversal.',
-    intuition: 'First node processed is leftmost leaf.'
+    traversalLabel: 'Postorder Output Stream: [4]',
+    variables: { recorded: 4, callStack: '[dfs(1), dfs(2), dfs(4)]' },
+    metrics: [
+      { label: 'Recorded Leaf', value: '4' },
+      { label: 'Stack Depth', value: '3' },
+      { label: 'Status', value: 'Leaf Unwound' }
+    ],
+    explain: 'Descent 1 -> 2 -> 4. Node 4 has no left or right children. Node 4 is the first node recorded into the postorder output stream: [4].',
+    action: 'result.push(4); Backtrack to Node 2.',
+    intuition: 'The deepest leftmost leaf is always the first node visited in postorder.',
+    formula: 'Output: [4]'
   },
   {
-    title: '3. Node 5 has no children: Visit Node 5 -> Add 5 to result',
+    title: 'Traverse Right Child (5) of Node (2)',
     phase: 'VISIT_LEAF',
-    codeLine: 27,
-    activeNode: 5,
+    tree,
+    activeVal: 5,
+    nodeLabels: { 4: 'Done', 5: 'Recorded Leaf', 2: 'Pending Both' },
     traversal: [4, 5],
-    action: 'Both children of 5 are null. Visit 5!',
-    variables: { visited: 5, next: 'Parent Node 2' },
-    explain: 'Both children of Node 2 (4 and 5) have now been traversed. Next, visit Node 2!',
-    intuition: 'Both children of 2 completed.'
+    traversalLabel: 'Postorder Output Stream: [4, 5]',
+    variables: { recorded: 5, callStack: '[dfs(1), dfs(2), dfs(5)]' },
+    metrics: [
+      { label: 'Recorded Leaf', value: '5' },
+      { label: 'Left of 2', value: 'Done (4)' },
+      { label: 'Right of 2', value: 'Done (5)' }
+    ],
+    explain: 'From Node 2, traverse right child dfs(2.right = 5). Node 5 is a leaf, so record Node 5: [4, 5].',
+    action: 'result.push(5); Backtrack to Node 2.',
+    intuition: 'Both children (4 and 5) of Node 2 have now been evaluated.',
+    formula: 'Output: [4, 5]'
   },
   {
-    title: '4. Both children of 2 done: Visit Node 2 -> Add 2 to result',
+    title: 'Visit Node (2): Both Children Satisfied',
     phase: 'VISIT_PARENT',
-    codeLine: 27,
-    activeNode: 2,
+    tree,
+    activeVal: 2,
+    nodeLabels: { 4: 'Done', 5: 'Done', 2: 'Recorded Parent' },
     traversal: [4, 5, 2],
-    action: 'Visit Node 2. Left subtree of Root 1 complete!',
-    variables: { visited: 2, leftSubtreeComplete: true },
-    explain: 'Node 2 is added. Traversal now descends to the right child of root (Node 3).',
-    intuition: 'Parent visited after both children.'
+    traversalLabel: 'Postorder Output Stream: [4, 5, 2]',
+    variables: { recorded: 2, leftSubtreeDone: 'true' },
+    metrics: [
+      { label: 'Recorded Parent', value: '2' },
+      { label: 'Left Subtree', value: 'Completed' },
+      { label: 'Stream Size', value: '3 / 7' }
+    ],
+    explain: 'Since both 2.left (4) and 2.right (5) are complete, Node 2 is now recorded into the stream: [4, 5, 2].',
+    action: 'result.push(2); Backtrack to Root 1.',
+    intuition: 'A parent is visited immediately after its children are finished.',
+    formula: 'Output: [4, 5, 2]'
   },
   {
-    title: '5. Visit Node 3 -> Add 3. Finally Visit Root Node 1 -> Add 1',
+    title: 'Traverse Right Subtree: Visit Leaves (6) and (7)',
+    phase: 'VISIT_RIGHT_LEAVES',
+    tree,
+    activeVal: 7,
+    nodeLabels: { 6: 'Recorded Leaf', 7: 'Recorded Leaf', 3: 'Pending' },
+    traversal: [4, 5, 2, 6, 7],
+    traversalLabel: 'Postorder Output Stream: [4, 5, 2, 6, 7]',
+    variables: { recordedLast: 7, rightLeaves: '6, 7 visited' },
+    metrics: [
+      { label: 'Right Leaves', value: '6 and 7' },
+      { label: 'Pending Node', value: 'Node 3' },
+      { label: 'Stream Size', value: '5 / 7' }
+    ],
+    explain: 'Branch down 1.right (3). Descend left to Node 6 (recorded), then right to Node 7 (recorded). Output: [4, 5, 2, 6, 7].',
+    action: 'result.push(6); result.push(7);',
+    intuition: 'The leaves of the right subtree are processed before their parent Node 3.',
+    formula: 'Output: [4, 5, 2, 6, 7]'
+  },
+  {
+    title: 'Visit Node (3) & Finally Visit Root (1)',
     phase: 'COMPLETED',
-    codeLine: 34,
-    activeNode: 1,
-    traversal: [4, 5, 2, 3, 1],
-    action: 'Traversal Complete! Root 1 visited last.',
-    variables: { finalPostorder: '[4, 5, 2, 3, 1]' },
-    explain: 'Right subtree (Node 3) visited, then Root Node 1 visited last. Sequence: [4, 5, 2, 3, 1].',
-    intuition: 'Postorder visits root node strictly at the very end.'
+    tree,
+    activeVal: 1,
+    nodeLabels: { 1: 'Final Root', 2: 'Done', 3: 'Done' },
+    traversal: [4, 5, 2, 6, 7, 3, 1],
+    traversalLabel: 'Final Postorder: [4, 5, 2, 6, 7, 3, 1]',
+    variables: { rootRecorded: 1, totalNodes: 7 },
+    metrics: [
+      { label: 'Final Root', value: '1' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(H)' }
+    ],
+    customCard: {
+      title: 'Postorder Traversal Summary',
+      rows: [
+        { label: 'Traversal Order', value: 'Left -> Right -> Root' },
+        { label: 'Result Stream', value: '4, 5, 2, 6, 7, 3, 1', accent: true },
+        { label: 'Root Position', value: 'Appears at the very end of the array' },
+        { label: 'Complexity', value: 'O(N) time, O(H) recursion stack space' }
+      ]
+    },
+    explain: 'Node 3 is recorded (both children complete). Finally, Root Node 1 is recorded. Postorder traversal of all 7 nodes complete: [4, 5, 2, 6, 7, 3, 1].',
+    action: 'Return result array.',
+    intuition: 'Postorder guarantees that every parent node appears strictly after all its descendants.',
+    formula: 'Result: [4, 5, 2, 6, 7, 3, 1]'
   }
 ];
-
-export default function PostorderTraversalVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Active Node: {step.activeNode ? `Node ${step.activeNode}` : 'Done'}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Rule: Left → Right → Root
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Postorder Visited = {step.traversal.length} / 5
-        </span>
-      </div>
-
-      {/* Binary Tree Graph */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Tree Visualization</span>
-
-        <div className="flex flex-col items-center gap-4 py-2 w-full">
-          {/* Level 0: Root 1 */}
-          <div className="flex justify-center">
-            <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm transition-all ${
-              step.activeNode === 1 
-                ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
-                : step.traversal.includes(1) 
-                ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
-                : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-            }`}>
-              1
-            </div>
-          </div>
-
-          {/* Level 1: Nodes 2 and 3 */}
-          <div className="flex justify-center gap-24">
-            {[2, 3].map((val) => (
-              <div key={val} className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                step.activeNode === val 
-                  ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
-                  : step.traversal.includes(val) 
-                  ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
-                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-              }`}>
-                {val}
-              </div>
-            ))}
-          </div>
-
-          {/* Level 2: Nodes 4 and 5 */}
-          <div className="flex justify-start gap-8 pl-12">
-            {[4, 5].map((val) => (
-              <div key={val} className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                step.activeNode === val 
-                  ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg' 
-                  : step.traversal.includes(val) 
-                  ? 'border-emerald-500 bg-emerald-500/20 text-emerald-300' 
-                  : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-              }`}>
-                {val}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Traversal Output Array */}
-      <div className="w-full bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col gap-2">
-        <span className="text-xs font-mono text-emerald-400 font-semibold uppercase tracking-wider">Postorder Traversal Array</span>
-        <div className="flex items-center gap-2">
-          {step.traversal.map((val, idx) => (
-            <span key={idx} className="flex items-center gap-1.5">
-              <span className="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-sm">
-                {val}
-              </span>
-              {idx < step.traversal.length - 1 && <span className="text-[var(--chalk-faint)] text-xs font-mono">→</span>}
-            </span>
-          ))}
-          {step.traversal.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic font-mono">Traversing children first...</span>}
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

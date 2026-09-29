@@ -1,258 +1,249 @@
-import React, { useState } from 'react';
-import LinkedListView from '../components/primitives/LinkedListView';
+export const rendererType = 'linked-list';
 
-// 0. Multi-language production solution code with detailed educational comments
+export const meta = {
+  title: 'Search Element in Linked List',
+  category: 'Linked List',
+  difficulty: 'Easy',
+  timeComplexity: 'O(N)',
+  spaceComplexity: 'O(1)',
+  description: 'Searches for a target key in a singly linked list in O(N) time and O(1) space by traversing node-by-node and returning true immediately upon finding a match, or false upon reaching NULL.'
+};
+
+export const ideaMap = {
+  title: 'Linked List Search Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Initialize Traversal',
+      detail: 'Point curr to head to preserve the original head reference.'
+    },
+    {
+      id: 'step2',
+      label: 'Inspect Current Node',
+      detail: 'Compare curr.data with target key.'
+    },
+    {
+      id: 'step3',
+      label: 'Early Return on Match',
+      detail: 'If curr.data == key, immediately terminate and return true.'
+    },
+    {
+      id: 'step4',
+      label: 'Advance Pointer',
+      detail: 'If not matched, set curr = curr.next; return false if curr becomes NULL.'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++ Optimal Solution: Linear Search in Linked List
-// Time Complexity: O(N) where N is the number of nodes in the Linked List
-// Space Complexity: O(1) as we only use a single pointer variable
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) : data(val), next(nullptr) {}
+};
 
 class Solution {
 public:
-    bool searchKey(int n, struct Node* head, int key) {
-        // Step 1: Initialize a traversal pointer to the head of the list.
-        // We use 'curr' to avoid modifying the original 'head' pointer.
-        struct Node* curr = head;
-        
-        // Step 2: Traverse the linked list until we reach the end (curr becomes NULL)
-        while(curr != NULL) {
-            
-            // Step 3: Check if the current node's data matches the target key
-            if(curr->data == key) {
-                // If a match is found, immediately return true
-                return true;
+    bool searchKey(Node* head, int key) {
+        Node* curr = head;
+
+        while (curr != nullptr) {
+            if (curr->data == key) {
+                return true; // Key found
             }
-            
-            // Step 4: If not found, move the pointer to the next node in the list
             curr = curr->next;
         }
-        
-        // Step 5: If the loop finishes and we haven't returned true, 
-        // the key is not in the list. Return false.
-        return false;
-    }
-};
-`,
-  python: `# Python 3 Optimal Solution: Linear Search in Linked List
-# Time Complexity: O(N) | Space Complexity: O(1)
 
-'''
+        return false; // Key not present
+    }
+};`,
+  python: `# Python 3 Optimal Solution: Linear Search in Linked List
 class Node:
     def __init__(self, data):
         self.data = data
         self.next = None
-'''
 
 class Solution:
-    def searchKey(self, n: int, head: 'Node', key: int) -> bool:
-        # Start our traversal at the head of the list
+    def searchKey(self, head: Node, key: int) -> bool:
         curr = head
-        
-        # Continue traversing as long as curr is not None
+
         while curr:
-            # Check for a match with the target key
             if curr.data == key:
                 return True
-                
-            # Move to the next node
             curr = curr.next
-            
-        # Key was never found during traversal
-        return False
-`,
-  java: `// Java Optimal Solution: Linear Search in Linked List
-// Time Complexity: O(N) | Space Complexity: O(1)
 
-/* Node class definition
+        return False`,
+  java: `// Java Optimal Solution: Linear Search in Linked List
 class Node {
     int data;
     Node next;
-    Node(int d)  { data = d;  next = null; }
-} */
+    Node(int d) { data = d; next = null; }
+}
 
-class Solution {
-    static boolean searchKey(int n, Node head, int key) {
-        // Initialize a current pointer for traversal
+public class Solution {
+    public static boolean searchKey(Node head, int key) {
         Node curr = head;
-        
-        // Loop through the list until the end is reached
-        while(curr != null) {
-            // Check if we have found the key
-            if(curr.data == key) {
-                return true; // Match found
+
+        while (curr != null) {
+            if (curr.data == key) {
+                return true;
             }
-            
-            // Advance the pointer to the next node
             curr = curr.next;
         }
-        
-        // Match not found after checking all nodes
+
         return false;
     }
-}
-`,
+}`,
   javascript: `// JavaScript Optimal Solution: Linear Search in Linked List
-// Time Complexity: O(N) | Space Complexity: O(1)
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+  }
+}
 
-/**
- * Definition for singly-linked list.
- * function Node(data) {
- *     this.data = data;
- *     this.next = null;
- * }
- */
+function searchKey(head, key) {
+  let curr = head;
 
-/**
- * @param {number} n
- * @param {Node} head
- * @param {number} key
- * @return {boolean}
- */
-var searchKey = function(n, head, key) {
-    let curr = head; // Traversal pointer
-    
-    // Traverse the list
-    while (curr !== null) {
-        if (curr.data === key) {
-            return true; // Return true immediately upon finding the key
-        }
-        curr = curr.next; // Move to the next node
+  while (curr !== null) {
+    if (curr.data === key) {
+      return true;
     }
-    
-    // If traversal completes without finding the key
-    return false;
-};
-`,
-};
+    curr = curr.next;
+  }
 
-export const meta = {
-  display_id: 'Q-089',
-  title: "Search Element In Linked List",
-  category: "4. Linked List",
-  difficulty: "Medium",
-  timeComplexity: "O(N)",
-  spaceComplexity: "O(1)",
-  description: "Given a linked list of n nodes and a key, the task is to check if the key is present in the linked list or not by traversing it sequentially."
+  return false;
+}`
 };
-
-// Realistic sample data from the problem example
-const SAMPLE_DATA = [1, 2, 3, 4];
 
 export const steps = [
   {
-    title: "1. Initialize Traversal Pointer",
-    codeLine: 2, 
-    code: "struct Node* curr = head;",
-    explanation: "We begin by creating a pointer `curr` and setting it to point to the `head` of the linked list. This allows us to traverse the list node by node without modifying our reference to the original head of the list.",
-    pointers: [{ index: 0, label: 'curr', color: 'indigo' }],
-    highlightIndices: [],
-    hudText: "curr pointing to Node(1) | Target Key = 3"
+    title: 'Initialize Search Traversal',
+    phase: 'SETUP',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head', 'curr'] },
+      { id: 1, val: 2, pointers: [] },
+      { id: 2, val: 3, pointers: [] },
+      { id: 3, val: 4, pointers: [] }
+    ],
+    pointers: { head: 0, curr: 0 },
+    variables: { targetKey: 3, currVal: 1, isFound: 'false' },
+    metrics: [
+      { label: 'Target Key', value: '3' },
+      { label: 'List Length', value: '4' },
+      { label: 'curr.data', value: '1' }
+    ],
+    explain: 'We are searching for target key = 3 in the Linked List 1 -> 2 -> 3 -> 4. We set curr = head.',
+    action: 'Initialize curr = head (Node 0).',
+    intuition: 'We must traverse sequentially because linked lists do not support random indexing like arrays.',
+    formula: 'curr = head'
   },
   {
-    title: "2. Check First Node",
-    codeLine: 4, 
-    code: "if(curr->data == key)",
-    explanation: "We check if the current node's data (1) matches our target key (3). Since 1 != 3, this condition is false, and we skip the return statement.",
-    pointers: [{ index: 0, label: 'curr', color: 'rose' }],
+    title: 'Inspect Node 0: val = 1 (No Match)',
+    phase: 'INSPECT',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head', 'curr'], isHighlighted: true },
+      { id: 1, val: 2, pointers: [] },
+      { id: 2, val: 3, pointers: [] },
+      { id: 3, val: 4, pointers: [] }
+    ],
+    pointers: { head: 0, curr: 0 },
     highlightIndices: [0],
-    hudText: "1 != 3. Target not found at current node."
+    variables: { currVal: 1, target: 3, match: 'false' },
+    metrics: [
+      { label: 'curr.data', value: '1' },
+      { label: 'Target', value: '3' },
+      { label: 'Match?', value: '1 != 3 (No)' }
+    ],
+    explain: 'curr is at Node 0. curr.data is 1 != 3. Match failed. Advance curr to curr.next.',
+    action: 'curr = curr.next;',
+    intuition: 'Step forward through the pointer reference.',
+    formula: '1 != 3 => advance'
   },
   {
-    title: "3. Advance Pointer",
-    codeLine: 6, 
-    code: "curr = curr->next;",
-    explanation: "Since the target wasn't found, we move our `curr` pointer to the next node in the list. We do this by assigning `curr` to the `next` memory address stored within the current node.",
-    pointers: [{ index: 1, label: 'curr', color: 'indigo' }],
-    highlightIndices: [],
-    hudText: "Moved curr to next node (Node(2))."
-  },
-  {
-    title: "4. Check Second Node",
-    codeLine: 4, 
-    code: "if(curr->data == key)",
-    explanation: "We again check if the current node's data (2) matches our target key (3). Since 2 != 3, we once again skip the return statement.",
-    pointers: [{ index: 1, label: 'curr', color: 'rose' }],
+    title: 'Inspect Node 1: val = 2 (No Match)',
+    phase: 'INSPECT',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'], isVisited: true },
+      { id: 1, val: 2, pointers: ['curr'], isHighlighted: true },
+      { id: 2, val: 3, pointers: [] },
+      { id: 3, val: 4, pointers: [] }
+    ],
+    pointers: { head: 0, curr: 1 },
     highlightIndices: [1],
-    hudText: "2 != 3. Target not found at current node."
+    variables: { currVal: 2, target: 3, match: 'false' },
+    metrics: [
+      { label: 'curr.data', value: '2' },
+      { label: 'Target', value: '3' },
+      { label: 'Match?', value: '2 != 3 (No)' }
+    ],
+    explain: 'curr is at Node 1. curr.data is 2 != 3. Match failed. Advance curr to curr.next.',
+    action: 'curr = curr.next;',
+    intuition: 'Continue linear scan.',
+    formula: '2 != 3 => advance'
   },
   {
-    title: "5. Advance Pointer Again",
-    codeLine: 6, 
-    code: "curr = curr->next;",
-    explanation: "We advance the `curr` pointer down the list one more step, reaching the third node.",
-    pointers: [{ index: 2, label: 'curr', color: 'indigo' }],
-    highlightIndices: [],
-    hudText: "Moved curr to next node (Node(3))."
-  },
-  {
-    title: "6. Check Third Node (Match Found!)",
-    codeLine: 4, 
-    code: "if(curr->data == key)",
-    explanation: "We check the current node's data (3) against our target key (3). This time, 3 == 3! The condition evaluates to true.",
-    pointers: [{ index: 2, label: 'curr', color: 'emerald' }],
+    title: 'Inspect Node 2: val = 3 (MATCH FOUND)',
+    phase: 'MATCH_FOUND',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'], isVisited: true },
+      { id: 1, val: 2, pointers: [], isVisited: true },
+      { id: 2, val: 3, pointers: ['curr', 'target'], isHighlighted: true, isModified: true },
+      { id: 3, val: 4, pointers: [] }
+    ],
+    pointers: { head: 0, curr: 2, target: 2 },
     highlightIndices: [2],
-    hudText: "3 == 3! Target matched!"
+    variables: { currVal: 3, target: 3, match: 'true' },
+    metrics: [
+      { label: 'curr.data', value: '3' },
+      { label: 'Target', value: '3' },
+      { label: 'Match?', value: '3 == 3 (YES!)' }
+    ],
+    customCard: {
+      title: 'Target Discovery Card',
+      rows: [
+        { label: 'Target Key', value: '3', accent: true },
+        { label: 'Found At Index', value: 'Index 2 (3rd node in list)' },
+        { label: 'Search Halted', value: 'Immediate early exit, node 4 unvisited' },
+        { label: 'Comparisons Made', value: '3 comparisons out of 4 total nodes' }
+      ]
+    },
+    explain: 'curr is at Node 2. curr.data == 3 == target! Target key found! We trigger an immediate early return.',
+    action: 'return true;',
+    intuition: 'No need to traverse the rest of the list once target is found.',
+    formula: 'curr.data == key => return true'
   },
   {
-    title: "7. Return True",
-    codeLine: 5, 
-    code: "return true;",
-    explanation: "Because we successfully found the element, we immediately return `true` and exit the function. We do not need to traverse the remainder of the linked list (Node 4 is never visited).",
-    pointers: [{ index: 2, label: 'Result', color: 'emerald' }],
-    highlightIndices: [2],
-    hudText: "Search successful. Returned true."
+    title: 'Search Execution Concluded',
+    phase: 'COMPLETED',
+    nodes: [
+      { id: 0, val: 1, pointers: ['head'], isVisited: true },
+      { id: 1, val: 2, pointers: [], isVisited: true },
+      { id: 2, val: 3, pointers: ['found'], isHighlighted: true },
+      { id: 3, val: 4, pointers: [] }
+    ],
+    pointers: { head: 0, found: 2 },
+    variables: { result: 'true', target: 3, nodesVisited: 3 },
+    metrics: [
+      { label: 'Search Result', value: 'FOUND (true)' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'Search Complexity Analysis',
+      rows: [
+        { label: 'Best Case', value: 'O(1) - target at head' },
+        { label: 'Worst / Average Case', value: 'O(N) - target at tail or not found' },
+        { label: 'Auxiliary Space', value: 'O(1) - single pointer variable' }
+      ]
+    },
+    explain: 'Target key 3 was successfully located in the Linked List at node index 2. Early return preserves optimal performance.',
+    action: 'Return true.',
+    intuition: 'Linear search achieves optimal O(N) time and constant auxiliary memory for singly linked lists.',
+    formula: 'Result: true'
   }
 ];
-
-export default function SearchElementInLinkedListVisualizer({ currentStep: externalStep, onStepChange }) {
-  const [internalStep, setInternalStep] = useState(0);
-  const stepIndex = externalStep !== undefined ? externalStep : internalStep;
-  const setStep = onStepChange || setInternalStep;
-  const stepData = steps[stepIndex] || steps[0];
-
-  const handleNext = () => { if (stepIndex < steps.length - 1) setStep(stepIndex + 1); };
-  const handlePrev = () => { if (stepIndex > 0) setStep(stepIndex - 1); };
-
-  return (
-    <div className="w-full flex flex-col bg-[#0b0d14] border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-      {/* 1. Sub-Header Bar */}
-      <div className="px-5 py-3 bg-[#0e111a] border-b border-white/5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
-            Step {stepIndex + 1} / {steps.length}
-          </span>
-          <h3 className="text-sm font-bold text-[var(--chalk)] font-mono">{stepData.title}</h3>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrev} disabled={stepIndex === 0} className="px-2.5 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-30 text-[var(--chalk-dim)] text-xs font-mono rounded border border-white/5 transition">
-            ← Prev
-          </button>
-          <button onClick={handleNext} disabled={stepIndex === steps.length - 1} className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-[var(--chalk)] text-xs font-mono font-medium rounded transition">
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Visualizer Canvas */}
-      <div className="p-6 flex flex-col items-center justify-center bg-[#08090e]/60 min-h-[240px]">
-        {/* Render a linked list visualization */}
-        <LinkedListView 
-          items={SAMPLE_DATA} 
-          pointers={stepData.pointers || []} 
-          matchIndices={stepData.highlightIndices || []} 
-        />
-        
-        {/* Real-time HUD Status & Variables */}
-        <div className="mt-8 flex items-center gap-3 px-5 py-2.5 rounded-lg bg-[#0e111a] border border-white/5 font-mono text-xs shadow-inner">
-          <span className="text-zinc-400">Status: <strong className={stepIndex >= 5 ? "text-emerald-400" : stepIndex % 2 === 1 ? "text-rose-400" : "text-indigo-400"}>{stepData.hudText || 'Processing...'}</strong></span>
-        </div>
-      </div>
-
-      {/* 3. Explanation Footer */}
-      <div className="px-5 py-4 bg-[#0c0e16] border-t border-white/5 text-xs text-[var(--chalk-dim)] leading-relaxed font-sans">
-        <span className="text-[var(--chalk-faint)] font-mono text-[11px] uppercase mr-2 font-bold tracking-wider">Explanation:</span>
-        <span className="opacity-90">{stepData.explanation}</span>
-      </div>
-    </div>
-  );
-}

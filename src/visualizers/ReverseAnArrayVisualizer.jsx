@@ -1,4 +1,4 @@
-import React from 'react';
+// DATA-ONLY — rendered by ArrayScanRenderer via rendererType
 
 export const meta = {
   title: 'Reverse an Array (In-Place Two Pointers)',
@@ -6,7 +6,21 @@ export const meta = {
   difficulty: 'Easy',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1) In-Place',
-  description: 'Reverses an array in-place by swapping symmetric elements from both ends using two pointers converging towards the center.'
+  description: 'Reverses an array in-place by swapping symmetric elements from both ends using two converging pointers in exactly ⌊N / 2⌋ swap operations.'
+};
+
+export const rendererType = 'array-scan';
+
+export const ideaMap = {
+  title: 'Converging Two-Pointer Reversal Strategy',
+  nodes: [
+    { id: 'root', label: 'In-Place Symmetric Swap Invariant', children: ['boundary-pointers', 'pairwise-swap', 'converge-step', 'termination-condition', 'complexity'] },
+    { id: 'boundary-pointers', label: '1. Opposing Bound Pointers', detail: 'Initialize left = 0 (head) and right = N - 1 (tail) at opposite ends of the array.' },
+    { id: 'pairwise-swap', label: '2. Symmetric Swap', detail: 'Exchange values at arr[left] and arr[right] in-place via a temporary scalar variable or tuple unpack.' },
+    { id: 'converge-step', label: '3. Converge Inward', detail: 'Advance left++ and decrement right-- to target the next inner pair of symmetric elements.' },
+    { id: 'termination-condition', label: '4. Crossing Guard (left >= right)', detail: 'Stop as soon as left meets or crosses right; all elements are guaranteed mirrored.' },
+    { id: 'complexity', label: '5. Optimal Resource Bounds', detail: 'Strictly O(N/2) ~ O(N) runtime requiring zero additional memory allocation.' }
+  ]
 };
 
 export const solutions = {
@@ -19,7 +33,8 @@ using namespace std;
 class Solution {
 public:
     void reverseArray(vector<int>& arr) {
-        int left = 0, right = arr.size() - 1;
+        int left = 0;
+        int right = (int)arr.size() - 1;
 
         while (left < right) {
             swap(arr[left], arr[right]);
@@ -28,19 +43,23 @@ public:
         }
     }
 };`,
-  python: `# Python 3 Optimal Two-Pointer Array Reversal
+  python: `# Python 3 Optimal In-Place Array Reversal
+# Time Complexity: O(N) | Space Complexity: O(1)
 class Solution:
     def reverseArray(self, arr: list[int]) -> None:
-        left, right = 0, len(arr) - 1
+        left = 0
+        right = len(arr) - 1
 
         while left < right:
             arr[left], arr[right] = arr[right], arr[left]
             left += 1
             right -= 1`,
-  java: `// Java Optimal Two-Pointer Array Reversal
+  java: `// Java Optimal In-Place Array Reversal
+// Time Complexity: O(N) | Space Complexity: O(1)
 class Solution {
     public void reverseArray(int[] arr) {
-        int left = 0, right = arr.length - 1;
+        int left = 0;
+        int right = arr.length - 1;
 
         while (left < right) {
             int temp = arr[left];
@@ -51,12 +70,16 @@ class Solution {
         }
     }
 }`,
-  javascript: `// JavaScript Optimal Two-Pointer Array Reversal
+  javascript: `// JavaScript Optimal In-Place Array Reversal
+// Time Complexity: O(N) | Space Complexity: O(1)
 var reverseArray = function(arr) {
-    let left = 0, right = arr.length - 1;
+    let left = 0;
+    let right = arr.length - 1;
 
     while (left < right) {
-        [arr[left], arr[right]] = [arr[right], arr[left]];
+        const temp = arr[left];
+        arr[left] = arr[right];
+        arr[right] = temp;
         left++;
         right--;
     }
@@ -65,109 +88,198 @@ var reverseArray = function(arr) {
 
 export const steps = [
   {
-    title: '1. Initialize Pointers: left = 0 (val 1), right = 4 (val 5)',
+    title: '1. Initialize Opposing Pointers: left = 0, right = 5',
     phase: 'INITIALIZATION',
     codeLine: 11,
-    array: [1, 2, 3, 4, 5],
-    left: 0,
-    right: 4,
-    variables: { left: 0, right: 4, 'arr[0]': 1, 'arr[4]': 5 },
-    explain: 'Start left pointer at index 0 and right pointer at index 4 (last element).',
-    intuition: 'Symmetric elements at indices i and (n - 1 - i) swap positions.'
+    track: {
+      label: 'arr (original)',
+      items: [
+        { val: 1, status: 'current' },
+        { val: 2, status: 'default' },
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'default' },
+        { val: 6, status: 'current' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'left', color: 'accent' },
+      { index: 5, label: 'right', color: 'amber' }
+    ],
+    activeIndices: [0, 5],
+    metrics: [
+      { label: 'Array Size', value: '6' },
+      { label: 'left', value: '0 (val: 1)' },
+      { label: 'right', value: '5 (val: 6)' },
+      { label: 'Swaps Completed', value: '0' }
+    ],
+    customCard: {
+      title: 'Initial Pointer Placement',
+      rows: [
+        { label: 'left pointer', value: 'Index 0 (first element 1)' },
+        { label: 'right pointer', value: 'Index 5 (last element 6)' },
+        { label: 'Loop Condition', value: 'while (left < right) -> 0 < 5 is True' }
+      ]
+    },
+    formula: 'left = 0, right = N - 1 = 5; while (left < right)',
+    action: 'Place left at index 0 and right at index 5. Ready to perform first symmetric swap.',
+    explain: 'Reversing an array means swapping elements at symmetric positions i and N - 1 - i.',
+    intuition: 'Two pointers converging towards the midpoint complete the entire reversal in N / 2 swaps.'
   },
   {
-    title: '2. Swap arr[0] (1) with arr[4] (5): [5, 2, 3, 4, 1]',
-    phase: 'SWAPPING',
-    codeLine: 15,
-    array: [5, 2, 3, 4, 1],
-    left: 0,
-    right: 4,
-    variables: { action: 'swap(arr[0], arr[4])', array: '[5, 2, 3, 4, 1]' },
-    explain: 'Swap outer pair. Advance left = 1, decrement right = 3.',
-    intuition: 'Outermost elements inverted.'
+    title: '2. Swap arr[0] and arr[5]: [6, 2, 3, 4, 5, 1]',
+    phase: 'SWAP',
+    codeLine: 14,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 6, status: 'match' },
+        { val: 2, status: 'default' },
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 5, status: 'default' },
+        { val: 1, status: 'match' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'swapped', color: 'accent' },
+      { index: 5, label: 'swapped', color: 'amber' }
+    ],
+    activeIndices: [0, 5],
+    metrics: [
+      { label: 'Swap Action', value: 'swap(arr[0], arr[5])' },
+      { label: 'New arr[0]', value: '6' },
+      { label: 'New arr[5]', value: '1' },
+      { label: 'Swaps Completed', value: '1 / 3' }
+    ],
+    customCard: {
+      title: 'Symmetric Swap #1',
+      rows: [
+        { label: 'Values Exchanged', value: '1 <-> 6' },
+        { label: 'Array State', value: '[6, 2, 3, 4, 5, 1]' },
+        { label: 'Next Step', value: 'Advance pointers: left = 1, right = 4' }
+      ]
+    },
+    formula: 'swap(arr[0], arr[5]); left++; right--; // left=1, right=4',
+    action: 'Exchange values at index 0 and 5. Values 1 and 6 trade places.',
+    explain: 'First and last positions are now correctly inverted. Pointers advance towards center.',
+    intuition: 'Each swap finalizes 2 symmetric positions simultaneously.'
   },
   {
-    title: '3. Swap arr[1] (2) with arr[3] (4): [5, 4, 3, 2, 1]',
-    phase: 'SWAPPING',
-    codeLine: 15,
-    array: [5, 4, 3, 2, 1],
-    left: 1,
-    right: 3,
-    variables: { action: 'swap(arr[1], arr[3])', array: '[5, 4, 3, 2, 1]' },
-    explain: 'Swap inner pair 2 and 4. Advance left = 2, decrement right = 2.',
-    intuition: 'Second layer inverted.'
+    title: '3. Swap arr[1] and arr[4]: [6, 5, 3, 4, 2, 1]',
+    phase: 'SWAP',
+    codeLine: 14,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 6, status: 'dimmed' },
+        { val: 5, status: 'match' },
+        { val: 3, status: 'default' },
+        { val: 4, status: 'default' },
+        { val: 2, status: 'match' },
+        { val: 1, status: 'dimmed' }
+      ]
+    },
+    pointers: [
+      { index: 1, label: 'left=1', color: 'accent' },
+      { index: 4, label: 'right=4', color: 'amber' }
+    ],
+    activeIndices: [1, 4],
+    metrics: [
+      { label: 'Swap Action', value: 'swap(arr[1], arr[4])' },
+      { label: 'New arr[1]', value: '5' },
+      { label: 'New arr[4]', value: '2' },
+      { label: 'Swaps Completed', value: '2 / 3' }
+    ],
+    customCard: {
+      title: 'Symmetric Swap #2',
+      rows: [
+        { label: 'Values Exchanged', value: '2 <-> 5' },
+        { label: 'Array State', value: '[6, 5, 3, 4, 2, 1]' },
+        { label: 'Next Step', value: 'Advance pointers: left = 2, right = 3' }
+      ]
+    },
+    formula: 'swap(arr[1], arr[4]); left++; right--; // left=2, right=3',
+    action: 'Exchange values at index 1 and 4. Values 2 and 5 trade places.',
+    explain: 'Second pair of elements is placed into reversed positions.',
+    intuition: 'Only the innermost pair remains to be swapped.'
   },
   {
-    title: '4. Convergence: left == right (2 == 2, Center element 3)',
+    title: '4. Swap arr[2] and arr[3]: [6, 5, 4, 3, 2, 1]',
+    phase: 'SWAP',
+    codeLine: 14,
+    track: {
+      label: 'arr',
+      items: [
+        { val: 6, status: 'dimmed' },
+        { val: 5, status: 'dimmed' },
+        { val: 4, status: 'match' },
+        { val: 3, status: 'match' },
+        { val: 2, status: 'dimmed' },
+        { val: 1, status: 'dimmed' }
+      ]
+    },
+    pointers: [
+      { index: 2, label: 'left=2', color: 'accent' },
+      { index: 3, label: 'right=3', color: 'amber' }
+    ],
+    activeIndices: [2, 3],
+    metrics: [
+      { label: 'Swap Action', value: 'swap(arr[2], arr[3])' },
+      { label: 'New arr[2]', value: '4' },
+      { label: 'New arr[3]', value: '3' },
+      { label: 'Swaps Completed', value: '3 / 3' }
+    ],
+    customCard: {
+      title: 'Symmetric Swap #3',
+      rows: [
+        { label: 'Values Exchanged', value: '3 <-> 4' },
+        { label: 'Array State', value: '[6, 5, 4, 3, 2, 1]' },
+        { label: 'Post-Increment', value: 'left = 3, right = 2 (left >= right)' }
+      ]
+    },
+    formula: 'swap(arr[2], arr[3]); left++; right--; // left=3, right=2',
+    action: 'Exchange values at index 2 and 3. Values 3 and 4 trade places.',
+    explain: 'Innermost pair is inverted. Pointers now cross (left = 3, right = 2).',
+    intuition: 'Pointers crossing signals that all elements have been mirrored.'
+  },
+  {
+    title: '5. Loop Termination & Reversal Complete: [6, 5, 4, 3, 2, 1]',
     phase: 'COMPLETED',
     codeLine: 18,
-    array: [5, 4, 3, 2, 1],
-    left: 2,
-    right: 2,
-    variables: { status: 'Reversal complete', result: '[5, 4, 3, 2, 1]', timeComplexity: 'O(N/2)' },
-    explain: 'Both pointers meet at index 2 (element 3). Loop terminates. The entire array is reversed!',
-    intuition: 'Completed in N/2 swaps with zero extra space.'
+    track: {
+      label: 'arr (reversed)',
+      items: [
+        { val: 6, status: 'match' },
+        { val: 5, status: 'match' },
+        { val: 4, status: 'match' },
+        { val: 3, status: 'match' },
+        { val: 2, status: 'match' },
+        { val: 1, status: 'match' }
+      ]
+    },
+    pointers: [
+      { index: 0, label: 'head', color: 'accent' },
+      { index: 5, label: 'tail', color: 'amber' }
+    ],
+    activeIndices: [0, 1, 2, 3, 4, 5],
+    metrics: [
+      { label: 'Final Result', value: '[6, 5, 4, 3, 2, 1]' },
+      { label: 'Total Swaps', value: '3 (N / 2)' },
+      { label: 'Time Complexity', value: 'O(N)' },
+      { label: 'Space Complexity', value: 'O(1) In-Place' }
+    ],
+    customCard: {
+      title: 'Reversal Completed',
+      rows: [
+        { label: 'Exit Condition', value: 'left (3) >= right (2) -> while loop terminates' },
+        { label: 'Memory Allocation', value: 'Zero auxiliary arrays (pure in-place mutation)' },
+        { label: 'Odd/Even Parity', value: 'Works identically for even and odd length arrays' }
+      ]
+    },
+    formula: 'left < right is false; array reversal complete',
+    action: 'left >= right. Loop terminates. Array is fully reversed in-place.',
+    explain: 'Array transformation [1, 2, 3, 4, 5, 6] -> [6, 5, 4, 3, 2, 1] complete.',
+    intuition: 'Two-pointer swapping is the mathematically optimal in-place reversal algorithm.'
   }
 ];
-
-export default function ReverseAnArrayVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Pointers Banner */}
-      <div className="flex items-center gap-4 text-xs font-mono">
-        <span className="px-3 py-1 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Left: {step.left}
-        </span>
-        <span className="px-3 py-1 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 font-semibold">
-          Right: {step.right}
-        </span>
-        <span className="text-xs font-mono text-[var(--chalk-dim)] px-3 py-1 rounded-lg bg-[#141622] border border-[#272b3d]">
-          Phase: {step.phase}
-        </span>
-      </div>
-
-      {/* Array Display */}
-      <div className="w-full flex items-center justify-center gap-2.5 py-4">
-        {step.array.map((val, idx) => {
-          const isLeft = step.left === idx;
-          const isRight = step.right === idx;
-          const isBoth = isLeft && isRight;
-
-          let style = 'bg-[#181a24] text-[var(--chalk)] border-[#2b2e40]';
-          if (step.phase === 'COMPLETED') {
-            style = 'bg-emerald-500/20 text-emerald-200 border-emerald-500/50 shadow-sm';
-          } else if (isBoth) {
-            style = 'bg-amber-500/25 text-amber-300 border-amber-400 scale-105 shadow-md';
-          } else if (isLeft) {
-            style = 'bg-blue-500/25 text-blue-300 border-blue-400 scale-105 shadow-md shadow-blue-500/20';
-          } else if (isRight) {
-            style = 'bg-purple-500/25 text-purple-300 border-purple-400 scale-105 shadow-md shadow-purple-500/20';
-          }
-
-          return (
-            <div key={idx} className="flex flex-col items-center gap-1.5 min-w-[50px]">
-              <div className="h-5 flex items-center text-[9px] font-mono font-bold">
-                {isBoth ? (
-                  <span className="px-1.5 py-0.5 rounded bg-amber-500 text-[var(--chalk)]">Center</span>
-                ) : (
-                  <>
-                    {isLeft && <span className="px-1.5 py-0.5 rounded bg-blue-500 text-[var(--chalk)]">L</span>}
-                    {isRight && <span className="px-1.5 py-0.5 rounded bg-purple-500 text-[var(--chalk)]">R</span>}
-                  </>
-                )}
-              </div>
-
-              <div className={`w-13 h-13 rounded-xl border flex items-center justify-center font-mono text-lg font-bold transition-all duration-300 ${style}`}>
-                {val}
-              </div>
-
-              <span className="text-[10px] font-mono text-[#5b6076]">[{idx}]</span>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}

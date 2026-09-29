@@ -1,654 +1,286 @@
-import React from 'react';
+export const rendererType = 'linked-list';
 
-export const approaches = {
-  intuitive: {
-    title: 'Intuitive: Two Pass (Stack)',
-    badge: 'O(N) Space',
-    complexity: { time: 'O(N)', space: 'O(N)' },
-    steps: [
-      {
-        title: '1. Traverse and store values',
-        codeLine: 4,
-        status: '<span class="prev-b">Stack: []</span>, <b>curr = 75</b>',
-        explain: 'First pass: Traverse the list and push all node values into a stack.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 0,
-        stack: []
-      },
-      {
-        title: '2. Push to stack',
-        codeLine: 6,
-        status: '<span class="prev-b">Stack: [75]</span>, <b>curr = 122</b>',
-        explain: 'Push 75 into stack, move to next node.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 1,
-        stack: [75]
-      },
-      {
-        title: '3. Push to stack',
-        codeLine: 6,
-        status: '<span class="prev-b">Stack: [75, 122]</span>, <b>curr = 59</b>',
-        explain: 'Push 122 into stack, move to next node.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 2,
-        stack: [75, 122]
-      },
-      {
-        title: '4. Push to stack',
-        codeLine: 6,
-        status: '<span class="prev-b">Stack: [75, 122, 59]</span>, <b>curr = null</b>',
-        explain: 'Push 59. Reached end of list. Stack now has values in reverse order.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: null,
-        stack: [75, 122, 59]
-      },
-      {
-        title: '5. Second pass: Overwrite values',
-        codeLine: 10,
-        status: '<span class="prev-b">Stack: [75, 122]</span>, <b>curr = 75 (updates to 59)</b>',
-        explain: 'Reset curr to head. Pop from stack and overwrite current node value.',
-        nodes: [59, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 0,
-        stack: [75, 122]
-      },
-      {
-        title: '6. Overwrite values',
-        codeLine: 10,
-        status: '<span class="prev-b">Stack: [75]</span>, <b>curr = 122 (updates to 122)</b>',
-        explain: 'Pop from stack and overwrite current node value.',
-        nodes: [59, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 1,
-        stack: [75]
-      },
-      {
-        title: '7. Overwrite values',
-        codeLine: 10,
-        status: '<span class="prev-b">Stack: []</span>, <b>curr = 59 (updates to 75)</b>',
-        explain: 'Pop from stack and overwrite current node value.',
-        nodes: [59, 122, 75],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 2,
-        stack: []
-      },
-      {
-        title: '8. Return head',
-        codeLine: 14,
-        status: '<b>Done</b>',
-        explain: 'The linked list values are reversed. Pointers remain exactly the same.',
-        nodes: [59, 122, 75],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: null,
-        stack: []
-      }
-    ],
-    solutions: {
-      cpp: `// C++ Intuitive approach - O(N) Time, O(N) Space
-#include <stack>
-Node* reverseDLL(Node *head) {
-    stack<int> st;
-    Node* curr = head;
-    while(curr != NULL) {
-        st.push(curr->data);
-        curr = curr->next;
-    }
-    curr = head;
-    while(curr != NULL) {
-        curr->data = st.top();
-        st.pop();
-        curr = curr->next;
-    }
-    return head;
-}`,
-      java: `// Java Intuitive approach - O(N) Time, O(N) Space
-import java.util.Stack;
-class Solution {
-    public Node reverseDLL(Node head) {
-        Stack<Integer> st = new Stack<>();
-        Node curr = head;
-        while(curr != null) {
-            st.push(curr.data);
-            curr = curr.next;
-        }
-        curr = head;
-        while(curr != null) {
-            curr.data = st.pop();
-            curr = curr.next;
-        }
-        return head;
-    }
-}`,
-      python: `# Python Intuitive approach - O(N) Time, O(N) Space
-def reverseDLL(head):
-    st = []
-    curr = head
-    while curr:
-        st.append(curr.data)
-        curr = curr.next
-    curr = head
-    while curr:
-        curr.data = st.pop()
-        curr = curr.next
-    return head`
-    }
-  },
-  better: {
-    title: 'Better: Pointer Swap Recursive',
-    badge: 'Recursive',
-    complexity: { time: 'O(N)', space: 'O(N) Stack' },
-    steps: [
-      {
-        title: 'See Optimal for full pointer swap logic.',
-        codeLine: 1,
-        status: '<b>Note:</b> Same logic as optimal but using call stack',
-        explain: 'The recursive approach swaps pointers on the way back up the call stack, but uses O(N) space. Skip to Optimal for the true O(1) space iterative solution.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: null
-      }
-    ],
-    solutions: {
-      cpp: `// C++ Recursive Pointer Swap
-Node* reverseDLL(Node* curr) {
-    if (!curr) return NULL;
-    Node* temp = curr->next;
-    curr->next = curr->prev;
-    curr->prev = temp;
-    if (!curr->prev) return curr;
-    return reverseDLL(curr->prev);
-}`,
-      java: `// Java Recursive Pointer Swap
-class Solution {
-    public Node reverseDLL(Node curr) {
-        if (curr == null) return null;
-        Node temp = curr.next;
-        curr.next = curr.prev;
-        curr.prev = temp;
-        if (curr.prev == null) return curr;
-        return reverseDLL(curr.prev);
-    }
-}`,
-      python: `# Python Recursive Pointer Swap
-def reverseDLL(curr):
-    if not curr: return None
-    temp = curr.next
-    curr.next = curr.prev
-    curr.prev = temp
-    if not curr.prev: return curr
-    return reverseDLL(curr.prev)`
-    }
-  },
-  optimal: {
-    title: 'Optimal: Single Pass Pointer Swap',
-    badge: 'O(1) Space',
-    complexity: { time: 'O(N)', space: 'O(1)' },
-    steps: [
-      {
-        title: '1. Initialize pointers',
-        codeLine: 2,
-        status: '<b>curr = Node(75)</b>, <span class="prev-b">ans = NULL</span>',
-        explain: 'We begin at the head node. We will swap the <code>next</code> and <code>prev</code> pointers for every node we visit.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 0,
-        nxtIdx: null,
-        ansIdx: null
-      },
-      {
-        title: '2. Save next node',
-        codeLine: 5,
-        status: '<b>curr = Node(75)</b>, <span class="prev-b">nxt = Node(122)</span>',
-        explain: 'Before modifying pointers, we must save <code>curr->next</code> in <code>nxt</code> so we don\'t lose track of the rest of the list.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: 1, prev: null },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 0,
-        nxtIdx: 1,
-        ansIdx: null
-      },
-      {
-        title: '3. Swap pointers for curr',
-        codeLine: 7,
-        status: '<b>curr = Node(75)</b>, <span class="prev-b">nxt = Node(122)</span>',
-        explain: 'Swap <code>curr->next</code> to point to <code>curr->prev</code> (NULL), and <code>curr->prev</code> to point to <code>nxt</code> (Node 122).',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 0,
-        nxtIdx: 1,
-        ansIdx: null
-      },
-      {
-        title: '4. Advance curr',
-        codeLine: 11,
-        status: '<b>curr = Node(122)</b>',
-        explain: 'Move curr forward. Since we swapped pointers, moving "forward" in the original list actually means traversing <code>curr->prev</code>!',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 1,
-        nxtIdx: null,
-        ansIdx: null
-      },
-      {
-        title: '5. Save next node',
-        codeLine: 5,
-        status: '<b>curr = Node(122)</b>, <span class="prev-b">nxt = Node(59)</span>',
-        explain: 'Save <code>curr->next</code> (which is Node 59).',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 2, prev: 0 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 1,
-        nxtIdx: 2,
-        ansIdx: null
-      },
-      {
-        title: '6. Swap pointers for curr',
-        codeLine: 7,
-        status: '<b>curr = Node(122)</b>, <span class="prev-b">nxt = Node(59)</span>',
-        explain: 'Swap! <code>next</code> becomes Node 75, and <code>prev</code> becomes Node 59.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 0, prev: 2 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 1,
-        nxtIdx: 2,
-        ansIdx: null
-      },
-      {
-        title: '7. Advance curr',
-        codeLine: 11,
-        status: '<b>curr = Node(59)</b>',
-        explain: 'Move curr to <code>curr->prev</code> (which points to Node 59).',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 0, prev: 2 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 2,
-        nxtIdx: null,
-        ansIdx: null
-      },
-      {
-        title: '8. Save next node',
-        codeLine: 5,
-        status: '<b>curr = Node(59)</b>, <span class="prev-b">nxt = NULL</span>',
-        explain: 'Save <code>curr->next</code>. This is the last node, so <code>nxt</code> is NULL.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 0, prev: 2 },
-          { next: null, prev: 1 }
-        ],
-        currIdx: 2,
-        nxtIdx: null,
-        ansIdx: null
-      },
-      {
-        title: '9. Swap pointers for curr',
-        codeLine: 7,
-        status: '<b>curr = Node(59)</b>, <span class="prev-b">nxt = NULL</span>',
-        explain: 'Swap pointers for the last node. <code>next</code> points to Node 122, <code>prev</code> points to NULL.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 0, prev: 2 },
-          { next: 1, prev: null }
-        ],
-        currIdx: 2,
-        nxtIdx: null,
-        ansIdx: null
-      },
-      {
-        title: '10. Check new head',
-        codeLine: 9,
-        status: '<b>curr = Node(59)</b>, <span class="prev-b">ans = Node(59)</span>',
-        explain: 'Since <code>curr->prev == NULL</code> after swapping, this node is the new head of the reversed list! Save it in <code>ans</code>.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 0, prev: 2 },
-          { next: 1, prev: null }
-        ],
-        currIdx: 2,
-        nxtIdx: null,
-        ansIdx: 2
-      },
-      {
-        title: '11. Advance curr to NULL',
-        codeLine: 11,
-        status: '<b>curr = NULL</b>',
-        explain: 'Move curr to <code>curr->prev</code>, which is NULL. The loop will terminate.',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 0, prev: 2 },
-          { next: 1, prev: null }
-        ],
-        currIdx: null,
-        nxtIdx: null,
-        ansIdx: 2
-      },
-      {
-        title: '12. Return reversed list',
-        codeLine: 13,
-        status: '<b>ans = Node(59)</b>',
-        explain: 'Return the new head pointer. The doubly linked list is fully reversed!',
-        nodes: [75, 122, 59],
-        links: [
-          { next: null, prev: 1 },
-          { next: 0, prev: 2 },
-          { next: 1, prev: null }
-        ],
-        currIdx: null,
-        nxtIdx: null,
-        ansIdx: 2
-      }
-    ],
-    solutions: {
-      cpp: `Node* reverseDLL(Node *head) {
-    Node* curr = head;
-    Node* ans = NULL;
-    while(curr != NULL) {
-        Node* nxt = curr->next;
-        curr->next = curr->prev;
-        curr->prev = nxt;
-        if(curr->prev == NULL) {
-            ans = curr;
-        }
-        curr = curr->prev;
-    }
-    return ans;
-}`,
-      java: `class Solution {
-    public Node reverseDLL(Node head) {
-        Node curr = head;
-        Node ans = null;
-        while (curr != null) {
-            Node nxt = curr.next;
-            curr.next = curr.prev;
-            curr.prev = nxt;
-            if (curr.prev == null) {
-                ans = curr;
-            }
-            curr = curr.prev;
-        }
-        return ans;
-    }
-}`,
-      python: `def reverseDLL(head):
-    curr = head
-    ans = None
-    while curr is not None:
-        nxt = curr.next
-        curr.next = curr.prev
-        curr.prev = nxt
-        if curr.prev is None:
-            ans = curr
-        curr = curr.prev
-    return ans`
-    }
-  }
-};
-
-export const solutions = approaches.optimal.solutions;
-export const steps = approaches.optimal.steps;
 export const meta = {
-  display_id: 'Q-093',
-  title: 'Reverse DLL',
-  category: '4. Linked List',
+  title: 'Reverse a Doubly Linked List',
+  category: 'Linked List',
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(1)',
-  description: 'Given a doubly linked list of n elements. The task is to reverse the doubly linked list.'
+  description: 'Reverses a Doubly Linked List in-place in O(N) time and O(1) auxiliary space by iteratively swapping the prev and next pointers of each node and reassigning head to the original tail.'
 };
 
-export default function ReverseDllVisualizer({
-  currentStep = 0,
-  approachTier = 'optimal'
-}) {
-  const activeApproach = approaches[approachTier] || approaches.optimal;
-  const activeSteps = activeApproach.steps;
-  const stepIndex = Math.min(Math.max(0, currentStep), activeSteps.length - 1);
-  const stepData = activeSteps[stepIndex] || activeSteps[0];
-
-  const nodeWidth = 60;
-  const nodeHeight = 40;
-  const nodeSpacing = 160;
-  const startX = 100;
-  const startY = 80;
-
-  const renderArrow = (fromIdx, toIdx, type, isNull) => {
-    const isSwapped = (type === 'next' && toIdx < fromIdx) || (type === 'prev' && toIdx > fromIdx);
-    
-    const x1 = startX + fromIdx * nodeSpacing;
-    const y1 = startY;
-    
-    if (isNull) {
-      // Draw short line dropping down to represent NULL
-      const nullX = x1 + (type === 'next' ? (isSwapped ? -30 : 30) : (isSwapped ? 30 : -30));
-      const nullY = y1 + (type === 'next' ? -35 : 35);
-      
-      return (
-        <g key={`null-${fromIdx}-${type}`}>
-          <path
-            d={`M ${type === 'next' ? x1 + 10 : x1 - 10} ${type === 'next' ? y1 - nodeHeight/2 : y1 + nodeHeight/2} L ${nullX} ${nullY}`}
-            stroke="var(--chalk-dim)"
-            strokeWidth="1.5"
-            strokeDasharray="4 4"
-            markerEnd="url(#arrowhead)"
-            fill="none"
-          />
-          <text x={nullX} y={nullY + (type === 'next' ? -5 : 12)} fill="var(--chalk-faint)" fontSize="10" fontWeight="bold" textAnchor="middle">
-            NULL
-          </text>
-        </g>
-      );
+export const ideaMap = {
+  title: 'DLL Reversal Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Iterate Nodes',
+      detail: 'Traverse list node-by-node maintaining curr and last pointers.'
+    },
+    {
+      id: 'step2',
+      label: 'Swap Pointers',
+      detail: 'For each node, swap curr.prev and curr.next.'
+    },
+    {
+      id: 'step3',
+      label: 'Advance curr',
+      detail: 'Move curr to curr.prev (which holds the original next node after swap).'
+    },
+    {
+      id: 'step4',
+      label: 'Update Head',
+      detail: 'Point head to last.prev, which becomes the new head of the reversed DLL.'
     }
-    
-    const x2 = startX + toIdx * nodeSpacing;
-    const y2 = startY;
+  ]
+};
 
-    let pathD = '';
-    
-    if (type === 'next') {
-      if (toIdx > fromIdx) { // Normal Next (rightward)
-        pathD = `M ${x1 + nodeWidth/2} ${y1 - 10} Q ${(x1 + x2)/2} ${y1 - 30} ${x2 - nodeWidth/2 - 4} ${y2 - 10}`;
-      } else { // Swapped Next (leftward)
-        pathD = `M ${x1 - nodeWidth/2} ${y1 - 10} Q ${(x1 + x2)/2} ${y1 - 70} ${x2 + nodeWidth/2 + 4} ${y2 - 10}`;
-      }
-    } else {
-      if (toIdx < fromIdx) { // Normal Prev (leftward)
-        pathD = `M ${x1 - nodeWidth/2} ${y1 + 10} Q ${(x1 + x2)/2} ${y1 + 30} ${x2 + nodeWidth/2 + 4} ${y2 + 10}`;
-      } else { // Swapped Prev (rightward)
-        pathD = `M ${x1 + nodeWidth/2} ${y1 + 10} Q ${(x1 + x2)/2} ${y1 + 70} ${x2 - nodeWidth/2 - 4} ${y2 + 10}`;
-      }
+export const solutions = {
+  cpp: `// C++ In-Place Reversal of Doubly Linked List
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node* prev;
+    Node(int val) : data(val), next(nullptr), prev(nullptr) {}
+};
+
+class Solution {
+public:
+    Node* reverseDLL(Node* head) {
+        if (!head || !head->next) return head;
+
+        Node* curr = head;
+        Node* last = nullptr;
+
+        while (curr != nullptr) {
+            last = curr->prev;
+            curr->prev = curr->next;
+            curr->next = last;
+            curr = curr->prev; // advances to original next
+        }
+
+        return last->prev; // new head
     }
+};`,
+  python: `# Python In-Place Reversal of Doubly Linked List
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+        self.prev = None
 
-    const strokeColor = type === 'next' ? 'var(--indigo)' : 'var(--teal)';
+class Solution:
+    def reverseDLL(self, head: Node) -> Node:
+        if not head or not head.next:
+            return head
 
-    return (
-      <path
-        key={`${fromIdx}-${toIdx}-${type}`}
-        d={pathD}
-        stroke={strokeColor}
-        strokeWidth="2"
-        fill="none"
-        markerEnd={`url(#arrowhead-${type})`}
-      />
-    );
-  };
+        curr = head
+        last = None
 
-  return (
-    <div className="w-full flex flex-col">
-      <div className="w-full py-6 flex items-center justify-center">
-        <svg viewBox="0 0 620 220" width="100%" height="220" className="max-w-full">
-          <defs>
-            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 Z" fill="var(--chalk-dim)"/>
-            </marker>
-            <marker id="arrowhead-next" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 Z" fill="var(--indigo)"/>
-            </marker>
-            <marker id="arrowhead-prev" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-              <path d="M0,0 L6,3 L0,6 Z" fill="var(--teal)"/>
-            </marker>
-          </defs>
+        while curr:
+            last = curr.prev
+            curr.prev = curr.next
+            curr.next = last
+            curr = curr.prev # moves forward along original chain
 
-          {/* Draw Links */}
-          {stepData.links && stepData.links.map((link, idx) => (
-            <g key={`links-${idx}`}>
-              {renderArrow(idx, link.next, 'next', link.next === null)}
-              {renderArrow(idx, link.prev, 'prev', link.prev === null)}
-            </g>
-          ))}
-
-          {/* Draw Nodes */}
-          {stepData.nodes && stepData.nodes.map((val, idx) => {
-            const cx = startX + idx * nodeSpacing;
-            const cy = startY;
-            const isActive = stepData.currIdx === idx;
-            const isAns = stepData.ansIdx === idx;
-            const isNxt = stepData.nxtIdx === idx;
-
-            return (
-              <g key={`node-${idx}`}>
-                <rect
-                  x={cx - nodeWidth / 2}
-                  y={cy - nodeHeight / 2}
-                  width={nodeWidth}
-                  height={nodeHeight}
-                  rx="6"
-                  fill="var(--board-raised)"
-                  stroke={isActive ? "var(--indigo)" : (isAns ? "var(--easy)" : "var(--line)")}
-                  strokeWidth={isActive || isAns ? "2.4" : "1.5"}
-                />
-                <text
-                  x={cx}
-                  y={cy + 5}
-                  fill="var(--chalk)"
-                  fontFamily="'JetBrains Mono', monospace"
-                  fontSize="15"
-                  fontWeight="600"
-                  textAnchor="middle"
-                >
-                  {val}
-                </text>
-                
-                {/* Labels */}
-                {isActive && (
-                  <text x={cx} y={cy - nodeHeight/2 - 12} fill="var(--indigo)" fontSize="13" fontWeight="bold" textAnchor="middle">
-                    curr
-                  </text>
-                )}
-                {isNxt && (
-                  <text x={cx} y={cy - nodeHeight/2 - (isActive ? 28 : 12)} fill="var(--teal)" fontSize="13" fontWeight="bold" textAnchor="middle">
-                    nxt
-                  </text>
-                )}
-                {isAns && (
-                  <text x={cx} y={cy + nodeHeight/2 + 20} fill="var(--easy)" fontSize="13" fontWeight="bold" textAnchor="middle">
-                    ans
-                  </text>
-                )}
-              </g>
-            );
-          })}
-
-          {/* Intuitive Stack Visualization */}
-          {stepData.stack !== undefined && (
-            <g transform="translate(480, 50)">
-              <text x="0" y="-10" fill="var(--chalk)" fontSize="13" fontWeight="bold">Stack (LIFO)</text>
-              <rect x="-10" y="0" width="70" height="120" fill="none" stroke="var(--line)" strokeWidth="1.5" strokeDasharray="4 4" />
-              {stepData.stack.map((val, i) => (
-                <g key={`stack-${i}`} transform={`translate(0, ${100 - i * 30})`}>
-                  <rect x="0" y="-20" width="50" height="26" rx="4" fill="var(--board-raised)" stroke="var(--teal)" strokeWidth="1.5" />
-                  <text x="25" y="-2" fill="var(--chalk)" fontFamily="'JetBrains Mono', monospace" fontSize="13" fontWeight="600" textAnchor="middle">{val}</text>
-                </g>
-              ))}
-            </g>
-          )}
-
-          {/* Pointer Legend for Optimal Approach */}
-          {!stepData.stack && (
-            <g transform="translate(10, 190)">
-              <rect x="0" y="0" width="12" height="12" rx="2" fill="var(--indigo)" />
-              <text x="18" y="10" fill="var(--chalk-dim)" fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif">Next Pointer</text>
-              
-              <rect x="100" y="0" width="12" height="12" rx="2" fill="var(--teal)" />
-              <text x="118" y="10" fill="var(--chalk-dim)" fontSize="11" fontFamily="'Plus Jakarta Sans', sans-serif">Prev Pointer</text>
-            </g>
-          )}
-        </svg>
-      </div>
-
-      {stepData.status && (
-        <div className="status-line text-center w-full mt-2" dangerouslySetInnerHTML={{ __html: stepData.status }} />
-      )}
-
-      {stepData.explain && (
-        <p className="explain text-center w-full mt-2 text-sm text-[var(--chalk-dim)]" dangerouslySetInnerHTML={{ __html: stepData.explain }} />
-      )}
-    </div>
-  );
+        return last.prev # new head`,
+  java: `// Java In-Place Reversal of Doubly Linked List
+class Node {
+    int data;
+    Node next, prev;
+    Node(int d) { data = d; next = prev = null; }
 }
+
+public class Solution {
+    public Node reverseDLL(Node head) {
+        if (head == null || head.next == null) return head;
+
+        Node curr = head;
+        Node last = null;
+
+        while (curr != null) {
+            last = curr.prev;
+            curr.prev = curr.next;
+            curr.next = last;
+            curr = curr.prev;
+        }
+
+        return last.prev;
+    }
+}`,
+  javascript: `// JavaScript In-Place Reversal of Doubly Linked List
+class Node {
+  constructor(data) {
+    this.data = data;
+    this.next = null;
+    this.prev = null;
+  }
+}
+
+function reverseDLL(head) {
+  if (!head || !head.next) return head;
+
+  let curr = head;
+  let last = null;
+
+  while (curr) {
+    last = curr.prev;
+    curr.prev = curr.next;
+    curr.next = last;
+    curr = curr.prev;
+  }
+
+  return last.prev;
+}`
+};
+
+export const steps = [
+  {
+    title: 'Initial Doubly Linked List',
+    phase: 'SETUP',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 10, pointers: ['head', 'curr'] },
+      { id: 1, val: 20, pointers: [] },
+      { id: 2, val: 30, pointers: [] },
+      { id: 3, val: 40, pointers: ['tail'] }
+    ],
+    pointers: { head: 0, curr: 0, tail: 3 },
+    variables: { curr: 10, last: 'null', head: 10 },
+    metrics: [
+      { label: 'Length', value: '4' },
+      { label: 'curr', value: '10' },
+      { label: 'last', value: 'null' }
+    ],
+    explain: 'Initial DLL: 10 <-> 20 <-> 30 <-> 40. We will iterate through every node and swap its prev and next pointers.',
+    action: 'Initialize curr = head, last = null.',
+    intuition: 'Swapping prev and next inverts each link. To step to the next unreversed node, we must follow curr.prev (since curr.next now points backwards).',
+    formula: 'swap(curr.prev, curr.next); curr = curr.prev'
+  },
+  {
+    title: 'Swap Pointers for Node 10',
+    phase: 'SWAP_NODE_10',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 10, pointers: ['curr'], isModified: true, isHighlighted: true },
+      { id: 1, val: 20, pointers: ['next'] },
+      { id: 2, val: 30, pointers: [] },
+      { id: 3, val: 40, pointers: [] }
+    ],
+    pointers: { curr: 0, next: 1 },
+    highlightIndices: [0],
+    variables: { '10.prev (old)': 'null', '10.next (old)': '20', '10.prev (new)': '20', '10.next (new)': 'null' },
+    metrics: [
+      { label: 'Node', value: '10' },
+      { label: 'New Next', value: 'null' },
+      { label: 'New Prev', value: '20' }
+    ],
+    explain: 'For Node 10: swap prev and next. Node 10 now points forward to null (it will become the new tail) and backward to 20.',
+    action: 'last = curr.prev; curr.prev = curr.next; curr.next = last; curr = curr.prev;',
+    intuition: 'Node 10 was the head, so its new next pointer is null, making it the tail of the reversed list.',
+    formula: '10.prev = 20, 10.next = null'
+  },
+  {
+    title: 'Swap Pointers for Node 20',
+    phase: 'SWAP_NODE_20',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 10, pointers: [] },
+      { id: 1, val: 20, pointers: ['curr'], isModified: true, isHighlighted: true },
+      { id: 2, val: 30, pointers: ['next'] },
+      { id: 3, val: 40, pointers: [] }
+    ],
+    pointers: { curr: 1, next: 2 },
+    highlightIndices: [1],
+    variables: { '20.prev (old)': '10', '20.next (old)': '30', '20.prev (new)': '30', '20.next (new)': '10' },
+    metrics: [
+      { label: 'Node', value: '20' },
+      { label: 'New Next', value: '10' },
+      { label: 'New Prev', value: '30' }
+    ],
+    explain: 'curr moves to Node 20. Swap prev and next: 20.next becomes 10, and 20.prev becomes 30.',
+    action: 'Advance curr to original next (Node 30).',
+    intuition: 'Node 20 now points to Node 10, reversing their relative orientation.',
+    formula: '20.prev = 30, 20.next = 10'
+  },
+  {
+    title: 'Swap Pointers for Node 30',
+    phase: 'SWAP_NODE_30',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 10, pointers: [] },
+      { id: 1, val: 20, pointers: [] },
+      { id: 2, val: 30, pointers: ['curr'], isModified: true, isHighlighted: true },
+      { id: 3, val: 40, pointers: ['next'] }
+    ],
+    pointers: { curr: 2, next: 3 },
+    highlightIndices: [2],
+    variables: { '30.prev (old)': '20', '30.next (old)': '40', '30.prev (new)': '40', '30.next (new)': '20' },
+    metrics: [
+      { label: 'Node', value: '30' },
+      { label: 'New Next', value: '20' },
+      { label: 'New Prev', value: '40' }
+    ],
+    explain: 'curr moves to Node 30. Swap prev and next: 30.next becomes 20, and 30.prev becomes 40.',
+    action: 'Advance curr to original next (Node 40).',
+    intuition: 'Each local swap propagates the global reversal without any auxiliary array or stack.',
+    formula: '30.prev = 40, 30.next = 20'
+  },
+  {
+    title: 'Swap Pointers for Node 40 (Tail)',
+    phase: 'SWAP_NODE_40',
+    isDoubly: true,
+    nodes: [
+      { id: 0, val: 10, pointers: [] },
+      { id: 1, val: 20, pointers: [] },
+      { id: 2, val: 30, pointers: [] },
+      { id: 3, val: 40, pointers: ['curr'], isModified: true, isHighlighted: true }
+    ],
+    pointers: { curr: 3 },
+    highlightIndices: [3],
+    variables: { '40.prev (old)': '30', '40.next (old)': 'null', '40.prev (new)': 'null', '40.next (new)': '30' },
+    metrics: [
+      { label: 'Node', value: '40' },
+      { label: 'New Next', value: '30' },
+      { label: 'New Prev', value: 'null' }
+    ],
+    explain: 'Node 40 was the tail: 40.next becomes 30, and 40.prev becomes null. curr advances to null.',
+    action: 'curr = null. Traversal terminates.',
+    intuition: 'Since 40.prev is now null, Node 40 is ready to be declared the new head of the DLL.',
+    formula: '40.prev = null, 40.next = 30'
+  },
+  {
+    title: 'Reversed DLL Fully Resolved',
+    phase: 'COMPLETED',
+    isDoubly: true,
+    nodes: [
+      { id: 3, val: 40, pointers: ['newHead'], isHighlighted: true },
+      { id: 2, val: 30, pointers: [] },
+      { id: 1, val: 20, pointers: [] },
+      { id: 0, val: 10, pointers: ['tail'] }
+    ],
+    pointers: { newHead: 0, tail: 3 },
+    variables: { head: 40, tail: 10, reversed: '40 <-> 30 <-> 20 <-> 10' },
+    metrics: [
+      { label: 'New Head', value: '40' },
+      { label: 'Time', value: 'O(N)' },
+      { label: 'Space', value: 'O(1)' }
+    ],
+    customCard: {
+      title: 'DLL Reversal Summary',
+      rows: [
+        { label: 'Original Order', value: '10 <-> 20 <-> 30 <-> 40' },
+        { label: 'Reversed Order', value: '40 <-> 30 <-> 20 <-> 10', accent: true },
+        { label: 'Algorithm', value: 'Single-pass pointer swap' },
+        { label: 'Space Complexity', value: 'O(1) in-place without auxiliary nodes' }
+      ]
+    },
+    explain: 'Return newHead = last.prev (Node 40). The Doubly Linked List is completely reversed in O(N) time with O(1) extra memory.',
+    action: 'Return newHead (40).',
+    intuition: 'In a DLL, reversing pointers directly inverts the list topology without needing value copying.',
+    formula: 'Result: [40 <-> 30 <-> 20 <-> 10]'
+  }
+];

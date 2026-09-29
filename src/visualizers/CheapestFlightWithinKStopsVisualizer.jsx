@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Cheapest Flights Within K Stops',
@@ -9,8 +9,35 @@ export const meta = {
   description: 'Finds the cheapest price from src to dst with at most K stops. Uses a Queue prioritized by stops count to guarantee stops increase monotonically (LeetCode 787).'
 };
 
+export const ideaMap = {
+  title: 'Constrained BFS Flight Scheduling Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Stops-Bounded Queue',
+      detail: 'Queue elements are ordered strictly by number of stops {stops, node, cost}, ensuring standard BFS level ordering.'
+    },
+    {
+      id: 'step2',
+      label: 'Stop-Count Pruning',
+      detail: 'If a path reaches node u with stops > K, discard it immediately as it violates the flight layover budget.'
+    },
+    {
+      id: 'step3',
+      label: 'Cost Vector Relaxation',
+      detail: 'When traversing flight (node, next, price), update dist[next] if cost + price < dist[next] and stops <= K.'
+    },
+    {
+      id: 'step4',
+      label: 'Destination Lookup',
+      detail: 'After the queue empties within K stops, dist[dst] holds the cheapest ticket, or -1 if unreachable.'
+    }
+  ]
+};
+
 export const solutions = {
   cpp: `// C++: Cheapest Flights Within K Stops (LeetCode 787)
+// Time: O(E * K) | Space: O(V + E)
 #include <vector>
 #include <queue>
 using namespace std;
@@ -49,7 +76,8 @@ int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int
     }
     return (dist[dst] == 1e9) ? -1 : dist[dst];
 }`,
-  java: `// Java: Cheapest Flights Within K Stops
+  java: `// Java: Cheapest Flights Within K Stops (LeetCode 787)
+// Time: O(E * K) | Space: O(V + E)
 import java.util.*;
 
 class Solution {
@@ -58,135 +86,200 @@ class Solution {
         for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
         for (int[] f : flights) adj.get(f[0]).add(new int[]{f[1], f[2]});
         
-        Queue<int[]> q = new LinkedList<>(); // {stops, node, cost}
-        q.add(new int[]{0, src, 0});
+        // {stops, node, cost}
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, src, 0});
+        
         int[] dist = new int[n];
         Arrays.fill(dist, (int)1e9);
         dist[src] = 0;
         
         while (!q.isEmpty()) {
-            int[] it = q.poll();
-            int stops = it[0], u = it[1], cost = it[2];
+            int[] curr = q.poll();
+            int stops = curr[0], node = curr[1], cost = curr[2];
+            
             if (stops > k) continue;
-            for (int[] edge : adj.get(u)) {
-                int v = edge[0], wt = edge[1];
-                if (cost + wt < dist[v] && stops <= k) {
-                    dist[v] = cost + wt;
-                    q.add(new int[]{stops + 1, v, cost + wt});
+            
+            for (int[] next : adj.get(node)) {
+                int adjNode = next[0], price = next[1];
+                if (cost + price < dist[adjNode] && stops <= k) {
+                    dist[adjNode] = cost + price;
+                    q.offer(new int[]{stops + 1, adjNode, cost + price});
                 }
             }
         }
-        return dist[dst] == 1e9 ? -1 : dist[dst];
+        return dist[dst] == (int)1e9 ? -1 : dist[dst];
     }
 }`,
-  python: `# Python: Cheapest Flights Within K Stops
-from collections import deque
+  python: `# Python: Cheapest Flights Within K Stops (LeetCode 787)
+# Time: O(E * K) | Space: O(V + E)
+from collections import deque, defaultdict
 
 def findCheapestPrice(n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:
-    adj = [[] for _ in range(n)]
+    adj = defaultdict(list)
     for u, v, w in flights:
         adj[u].append((v, w))
+        
+    q = deque([(0, src, 0)])  # (stops, node, cost)
     dist = [float('inf')] * n
     dist[src] = 0
-    q = deque([(0, src, 0)]) # stops, node, cost
     
     while q:
-        stops, u, cost = q.popleft()
-        if stops > k: continue
-        for v, w in adj[u]:
-            if cost + w < dist[v] and stops <= k:
-                dist[v] = cost + w
-                q.append((stops + 1, v, cost + w))
-    return dist[dst] if dist[dst] != float('inf') else -1
-`,
-  javascript: `// JavaScript: Cheapest Flights
+        stops, node, cost = q.popleft()
+        
+        if stops > k:
+            continue
+            
+        for adj_node, price in adj[node]:
+            if cost + price < dist[adj_node] and stops <= k:
+                dist[adj_node] = cost + price
+                q.append((stops + 1, adj_node, cost + price))
+                
+    return dist[dst] if dist[dst] != float('inf') else -1`,
+  javascript: `// JavaScript: Cheapest Flights Within K Stops (LeetCode 787)
+// Time: O(E * K) | Space: O(V + E)
 function findCheapestPrice(n, flights, src, dst, k) {
-  // Queue tracking {stops, node, cost}
-  return 0;
+  const adj = Array.from({ length: n }, () => []);
+  for (const [u, v, w] of flights) {
+    adj[u].push([v, w]);
+  }
+  
+  const q = [[0, src, 0]]; // [stops, node, cost]
+  const dist = new Array(n).fill(Infinity);
+  dist[src] = 0;
+  
+  while (q.length > 0) {
+    const [stops, node, cost] = q.shift();
+    if (stops > k) continue;
+    
+    for (const [adjNode, price] of adj[node]) {
+      if (cost + price < dist[adjNode] && stops <= k) {
+        dist[adjNode] = cost + price;
+        q.push([stops + 1, adjNode, cost + price]);
+      }
+    }
+  }
+  return dist[dst] === Infinity ? -1 : dist[dst];
 }`
 };
 
 export const steps = [
   {
-    title: '1. Flight Setup: src = 0, dst = 3, max K = 1 stop',
     phase: 'INIT',
-    codeLine: 13,
-    stops: 0,
-    costMap: { 0: 0, 1: 'INF', 2: 'INF', 3: 'INF' },
-    activeFlight: 'At Airport 0',
-    info: 'Starting at City 0 with cost 0 and stops = 0. Maximum allowed intermediate stops K = 1.'
+    title: '1. Flight Setup: src = City 0, dst = City 3, Max Stops K = 1',
+    arr: [0, 1, 2, 3],
+    auxiliaryTrack: ['$0', '∞', '∞', '∞'],
+    auxiliaryLabel: 'Cheapest Airfare Table (dist)',
+    activeIndices: [0],
+    customCard: {
+      title: 'Itinerary Parameters',
+      rows: [
+        { label: 'Origin Airport', value: 'City 0', accent: true },
+        { label: 'Destination', value: 'City 3' },
+        { label: 'Max Stops (K)', value: '1 intermediate layover max' },
+        { label: 'Available Flights', value: '0->1 ($100), 0->2 ($500), 1->2 ($100), 1->3 ($600), 2->3 ($100)' }
+      ]
+    },
+    variables: {
+      stops: 0,
+      activeAirport: 'City 0',
+      queue: '[(stops: 0, node: 0, cost: $0)]',
+      bestPriceToDst: '∞'
+    },
+    metrics: {
+      currentStops: '0 / 1',
+      activeFlight: 'At Airport 0',
+      priceToDst: 'INF'
+    },
+    explain: 'Starting at City 0 with cost $0 and stops = 0. Maximum allowed intermediate stops K = 1.',
+    intuition: 'BFS grouped by stops guarantees we only advance by 1 layover per level.'
   },
   {
-    title: '2. Stop 0 Flights: 0 -> 1 ($100), 0 -> 2 ($500)',
     phase: 'STOPS_0',
-    codeLine: 29,
-    stops: 0,
-    costMap: { 0: 0, 1: 100, 2: 500, 3: 'INF' },
-    activeFlight: 'Fly 0 -> 1 ($100) & 0 -> 2 ($500)',
-    info: 'Direct flights from city 0 to city 1 and 2 recorded with 0 intermediate stops.'
+    title: '2. Direct Flights: 0 -> 1 ($100) & 0 -> 2 ($500)',
+    arr: [0, 1, 2, 3],
+    auxiliaryTrack: ['$0', '$100', '$500', '∞'],
+    auxiliaryLabel: 'Cheapest Airfare Table (dist)',
+    activeIndices: [1, 2],
+    customCard: {
+      title: 'Direct Flight Discoveries (0 Stops)',
+      rows: [
+        { label: 'Flight 0 -> 1', value: 'Cost: $100 (0 stops)', accent: true },
+        { label: 'Flight 0 -> 2', value: 'Cost: $500 (0 stops)' },
+        { label: 'Enqueued Flights', value: '[(1, City 1, $100), (1, City 2, $500)]' }
+      ]
+    },
+    variables: {
+      stops: 0,
+      activeAirport: 'City 0',
+      queue: '[(1, 1, $100), (1, 2, $500)]',
+      bestPriceToDst: '∞'
+    },
+    metrics: {
+      currentStops: '0 / 1',
+      activeFlight: 'Departing 0',
+      priceToDst: 'INF'
+    },
+    explain: 'Direct flights from city 0 to city 1 ($100) and city 2 ($500) recorded with 0 intermediate stops.',
+    intuition: 'All direct outgoing connections from the source are processed at level 0.'
   },
   {
-    title: '3. Stop 1 Flights: 1 -> 2 ($100) & 1 -> 3 ($600)',
     phase: 'STOPS_1',
-    codeLine: 29,
-    stops: 1,
-    costMap: { 0: 0, 1: 100, 2: 200, 3: 700 },
-    activeFlight: 'Fly 1 -> 2: Total $200 (1 stop)',
-    info: 'From City 1, connecting flight to City 2 costs 100 + 100 = $200 (beating direct flight $500!).'
+    title: '3. Stop 1: Connecting Flights from City 1',
+    arr: [0, 1, 2, 3],
+    auxiliaryTrack: ['$0', '$100', '$200', '$700'],
+    auxiliaryLabel: 'Cheapest Airfare Table (dist)',
+    activeIndices: [2, 3],
+    customCard: {
+      title: '1-Stop Connecting Flights via City 1',
+      rows: [
+        { label: 'Flight 1 -> 2', value: '$100 + $100 = $200 (Beats direct $500!)', accent: true },
+        { label: 'Flight 1 -> 3', value: '$100 + $600 = $700 (First route to dst)' },
+        { label: 'Enqueued Flights', value: '[(2, City 2, $200), (2, City 3, $700)]' }
+      ]
+    },
+    variables: {
+      stops: 1,
+      activeAirport: 'City 1',
+      queue: '[(1, 2, $500), (2, 2, $200), (2, 3, $700)]',
+      bestPriceToDst: '$700'
+    },
+    metrics: {
+      currentStops: '1 / 1',
+      activeFlight: 'Connecting via City 1',
+      priceToDst: '$700'
+    },
+    explain: 'From City 1, connecting flight to City 2 costs 100 + 100 = $200 (beating the $500 direct flight). Connecting flight to City 3 costs $700.',
+    intuition: 'A connecting route can be dramatically cheaper than a direct flight.'
   },
   {
-    title: '4. Stop 1 Flight: 2 -> 3 ($100)',
     phase: 'STOPS_1_DST',
-    codeLine: 29,
-    stops: 1,
-    costMap: { 0: 0, 1: 100, 2: 200, 3: 300 },
-    activeFlight: 'Fly 2 -> 3: Total $300 (1 stop)',
-    info: 'From City 2 (reached via 1 with 1 stop), connecting flight to Destination 3 costs 200 + 100 = $300! Cheapest path within K=1 stops = $300.'
+    title: '4. Stop 1: Optimal Flight 2 -> 3 ($100) Discovered!',
+    arr: [0, 1, 2, 3],
+    auxiliaryTrack: ['$0', '$100', '$200', '$300'],
+    auxiliaryLabel: 'Final Cheapest Airfares (dist)',
+    activeIndices: [3],
+    customCard: {
+      title: 'Cheapest Route to Destination Finalized',
+      rows: [
+        { label: 'Best Route', value: '0 -> 1 -> 2 -> 3 (Total $300)', accent: true },
+        { label: 'Total Stops', value: '1 intermediate layover (Cities 1 & 2)' },
+        { label: 'Previous Dst Cost', value: '$700 -> Reduced to $300' },
+        { label: 'Status', value: 'Search Terminated (K=1 bound achieved)' }
+      ]
+    },
+    variables: {
+      stops: 1,
+      activeAirport: 'City 2',
+      queue: 'Empty []',
+      bestPriceToDst: '$300'
+    },
+    metrics: {
+      currentStops: '1 / 1',
+      activeFlight: '2 -> 3 Complete',
+      priceToDst: '$300'
+    },
+    explain: 'From City 2 (reached via City 1 with 1 stop), connecting flight to Destination 3 costs 200 + 100 = $300! Cheapest path within K=1 stops is $300.',
+    intuition: 'Bounded BFS terminates exploration once the stops budget is fully exhausted.'
   }
 ];
-
-export default function CheapestFlightWithinKStopsVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Max Stops (K): <strong className="text-cyan-200">1 Stop</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Target Price: <strong className="text-purple-200">${step.costMap[3]}</strong>
-        </div>
-      </div>
-
-      <div className="p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center text-xs font-mono text-[var(--chalk-dim)]">
-          <span>City Minimum Airfare Tracker</span>
-          <span className="text-cyan-400 font-bold">{step.activeFlight}</span>
-        </div>
-
-        <div className="grid grid-cols-4 gap-2.5 text-center font-mono text-xs">
-          {[0, 1, 2, 3].map(c => (
-            <div
-              key={c}
-              className={`p-3 rounded-xl border flex flex-col items-center transition-all ${
-                step.costMap[c] !== 'INF'
-                  ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-200 shadow'
-                  : 'bg-[var(--board-raised-2)] border-[var(--line)] text-[var(--chalk-faint)]'
-              }`}
-            >
-              <span className="font-bold">City {c}</span>
-              <span className="text-sm font-extrabold mt-1">
-                {step.costMap[c] === 'INF' ? 'INF' : `$${step.costMap[c]}`}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full p-3.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-xs font-mono text-[#94a3b8]">
-        {step.info}
-      </div>
-    </div>
-  );
-}

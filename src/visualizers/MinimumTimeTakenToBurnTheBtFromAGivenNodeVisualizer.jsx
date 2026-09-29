@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Minimum Time to Burn Binary Tree',
@@ -6,7 +6,33 @@ export const meta = {
   difficulty: 'Hard',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(N) parent map & BFS queue',
-  description: 'Calculates the minimum time required to burn an entire binary tree starting from a designated target node by tracking parent pointers and simulating radial BFS fire propagation.'
+  description: 'Calculates the minimum time required to burn an entire binary tree starting from a designated target node. Maps parent pointers via an initial BFS, then simulates radial fire spread (left, right, parent) using multi-directional level-order BFS.'
+};
+
+export const ideaMap = {
+  title: 'Radial Burning BFS Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Parent Pointer Mapping',
+      detail: 'Traverse the tree with BFS to build parentMap[child] = parent, converting the directed tree into an undirected graph.'
+    },
+    {
+      id: 'step2',
+      label: 'Target Node Ignition (t = 0)',
+      detail: 'Locate the start node and enqueue it into burnQueue with visited set initialized to {target}.'
+    },
+    {
+      id: 'step3',
+      label: '3-Way Radial Spread',
+      detail: 'At each time second, pop all currently burning nodes and spread to unburned left child, right child, and parent.'
+    },
+    {
+      id: 'step4',
+      label: 'Total Burn Time',
+      detail: 'Increment timer for each wave that burns at least one new node until all tree vertices are engulfed.'
+    }
+  ]
 };
 
 export const solutions = {
@@ -57,7 +83,6 @@ public:
         unordered_set<TreeNode*> visited;
         q.push(target);
         visited.insert(target);
-
         int time = 0;
 
         while (!q.empty()) {
@@ -68,7 +93,7 @@ public:
                 TreeNode* curr = q.front();
                 q.pop();
 
-                // Spread to left, right, and parent
+                // 3 Directions: Left, Right, Parent
                 if (curr->left && !visited.count(curr->left)) {
                     burnedNew = true;
                     visited.insert(curr->left);
@@ -91,77 +116,79 @@ public:
     }
 };`,
   java: `// Java: Minimum Time to Burn Binary Tree
+// Time Complexity: O(N) | Space Complexity: O(N)
 import java.util.*;
 
 class Solution {
-    private static TreeNode mapParents(TreeNode root, Map<TreeNode, TreeNode> parentMap, int target) {
+    private TreeNode mapParents(TreeNode root, Map<TreeNode, TreeNode> parentMap, int start) {
         Queue<TreeNode> q = new LinkedList<>();
-        q.add(root);
-        TreeNode targetNode = null;
+        q.offer(root);
+        TreeNode target = null;
 
         while (!q.isEmpty()) {
             TreeNode curr = q.poll();
-            if (curr.val == target) targetNode = curr;
+            if (curr.val == start) target = curr;
 
             if (curr.left != null) {
                 parentMap.put(curr.left, curr);
-                q.add(curr.left);
+                q.offer(curr.left);
             }
             if (curr.right != null) {
                 parentMap.put(curr.right, curr);
-                q.add(curr.right);
+                q.offer(curr.right);
             }
         }
-        return targetNode;
+        return target;
     }
 
-    public static int minTimeToBurn(TreeNode root, int start) {
+    public int minTimeToBurn(TreeNode root, int start) {
         Map<TreeNode, TreeNode> parentMap = new HashMap<>();
         TreeNode target = mapParents(root, parentMap, start);
 
         Queue<TreeNode> q = new LinkedList<>();
         Set<TreeNode> visited = new HashSet<>();
-        q.add(target);
+        q.offer(target);
         visited.add(target);
-
         int time = 0;
 
         while (!q.isEmpty()) {
             int size = q.size();
-            boolean burned = false;
+            boolean burnedNew = false;
 
             for (int i = 0; i < size; i++) {
                 TreeNode curr = q.poll();
 
                 if (curr.left != null && !visited.contains(curr.left)) {
-                    burned = true;
+                    burnedNew = true;
                     visited.add(curr.left);
-                    q.add(curr.left);
+                    q.offer(curr.left);
                 }
                 if (curr.right != null && !visited.contains(curr.right)) {
-                    burned = true;
+                    burnedNew = true;
                     visited.add(curr.right);
-                    q.add(curr.right);
+                    q.offer(curr.right);
                 }
                 if (parentMap.containsKey(curr) && !visited.contains(parentMap.get(curr))) {
-                    burned = true;
+                    burnedNew = true;
                     visited.add(parentMap.get(curr));
-                    q.add(parentMap.get(curr));
+                    q.offer(parentMap.get(curr));
                 }
             }
-            if (burned) time++;
+            if (burnedNew) time++;
         }
         return time;
     }
 }`,
-  python: `# Python 3: Minimum Time to Burn Binary Tree
+  python: `# Python: Minimum Time to Burn Binary Tree
+# Time Complexity: O(N) | Space Complexity: O(N)
 from collections import deque
 
-def min_time_to_burn(root, start):
+def minTimeToBurn(root, start):
     parent_map = {}
     target = None
     q = deque([root])
 
+    # Pass 1: Map parent references
     while q:
         curr = q.popleft()
         if curr.val == start:
@@ -173,6 +200,7 @@ def min_time_to_burn(root, start):
             parent_map[curr.right] = curr
             q.append(curr.right)
 
+    # Pass 2: Radial BFS fire spread
     burn_q = deque([target])
     visited = {target}
     time = 0
@@ -181,7 +209,7 @@ def min_time_to_burn(root, start):
         burned_new = False
         for _ in range(len(burn_q)):
             curr = burn_q.popleft()
-            for neighbor in (curr.left, curr.right, parent_map.get(curr)):
+            for neighbor in [curr.left, curr.right, parent_map.get(curr)]:
                 if neighbor and neighbor not in visited:
                     visited.add(neighbor)
                     burn_q.append(neighbor)
@@ -191,174 +219,181 @@ def min_time_to_burn(root, start):
 
     return time`,
   javascript: `// JavaScript: Minimum Time to Burn Binary Tree
+// Time Complexity: O(N) | Space Complexity: O(N)
 function minTimeToBurn(root, start) {
-    const parentMap = new Map();
-    let target = null;
-    const q = [root];
+  const parentMap = new Map();
+  let target = null;
+  const q = [root];
 
-    while (q.length > 0) {
-        const curr = q.shift();
-        if (curr.val === start) target = curr;
+  while (q.length > 0) {
+    const curr = q.shift();
+    if (curr.val === start) target = curr;
 
-        if (curr.left) {
-            parentMap.set(curr.left, curr);
-            q.push(curr.left);
-        }
-        if (curr.right) {
-            parentMap.set(curr.right, curr);
-            q.push(curr.right);
-        }
+    if (curr.left) {
+      parentMap.set(curr.left, curr);
+      q.push(curr.left);
     }
-
-    const burnQ = [target];
-    const visited = new Set([target]);
-    let time = 0;
-
-    while (burnQ.length > 0) {
-        let burnedNew = false;
-        const size = burnQ.length;
-
-        for (let i = 0; i < size; i++) {
-            const curr = burnQ.shift();
-            const neighbors = [curr.left, curr.right, parentMap.get(curr)];
-
-            for (const n of neighbors) {
-                if (n && !visited.has(n)) {
-                    visited.add(n);
-                    burnQ.push(n);
-                    burnedNew = true;
-                }
-            }
-        }
-        if (burnedNew) time++;
+    if (curr.right) {
+      parentMap.set(curr.right, curr);
+      q.push(curr.right);
     }
-    return time;
+  }
+
+  const burnQ = [target];
+  const visited = new Set([target]);
+  let time = 0;
+
+  while (burnQ.length > 0) {
+    let burnedNew = false;
+    const size = burnQ.length;
+
+    for (let i = 0; i < size; i++) {
+      const curr = burnQ.shift();
+      const neighbors = [curr.left, curr.right, parentMap.get(curr)];
+
+      for (const n of neighbors) {
+        if (n && !visited.has(n)) {
+          visited.add(n);
+          burnQ.push(n);
+          burnedNew = true;
+        }
+      }
+    }
+    if (burnedNew) time++;
+  }
+  return time;
 }`
+};
+
+const sampleTree = {
+  val: 1,
+  left: {
+    val: 2,
+    left: { val: 4, left: null, right: null },
+    right: { val: 5, left: null, right: null }
+  },
+  right: {
+    val: 3,
+    left: null,
+    right: { val: 6, left: null, right: null }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Target Ignition at t = 0: Fire starts at Target Node 2',
     phase: 'IGNITE',
-    codeLine: 43,
-    time: 0,
-    burning: [2],
-    explain: 'Parent pointers mapped. Fire ignited at target Node 2 at time t = 0.'
+    title: '1. Ignition at t = 0: Fire Ignited at Target Node 2',
+    tree: sampleTree,
+    activeVal: 2,
+    visitedVals: [2],
+    nodeLabels: { 2: 'Ignited (t=0)' },
+    customCard: {
+      title: 'Target Ignition & Parent Map',
+      rows: [
+        { label: 'Target Node', value: 'Node 2 (Ignition Origin)', accent: true },
+        { label: 'Parent Mapping', value: '2 -> 1, 4 -> 2, 5 -> 2, 3 -> 1, 6 -> 3' },
+        { label: 'Burning Set', value: '{ Node 2 }' },
+        { label: 'Elapsed Time', value: 't = 0 sec' }
+      ]
+    },
+    variables: {
+      time: 0,
+      activeFireWave: '[2]',
+      newlyBurned: '[2]',
+      totalBurned: 1
+    },
+    metrics: [
+      { label: 'Time Elapsed', value: '0s' },
+      { label: 'Active Fire', value: 'Node 2' },
+      { label: 'Burned Count', value: '1 / 6', highlight: true }
+    ],
+    explain: 'Parent references have been mapped via initial BFS. At time t = 0, fire is ignited at target Node 2.'
   },
   {
-    title: '2. Time t = 1: Fire spreads to Parent (1) and Children (4, 5)',
     phase: 'SPREAD_T1',
-    codeLine: 50,
-    time: 1,
-    burning: [2, 1, 4, 5],
-    explain: 'Adjacent nodes infected: Node 1 (parent), Node 4 (left child), Node 5 (right child).'
+    title: '2. Time t = 1: Fire Spreads 3-Ways to Parent (1) & Children (4, 5)',
+    tree: sampleTree,
+    activeVal: 2,
+    visitedVals: [2, 1, 4, 5],
+    nodeLabels: { 2: 'Burned', 1: 'Burned (t=1)', 4: 'Burned (t=1)', 5: 'Burned (t=1)' },
+    customCard: {
+      title: 'Radial Spread at t = 1',
+      rows: [
+        { label: 'Spread Source', value: 'Node 2' },
+        { label: 'Upward to Parent', value: 'Node 1 (parent of 2)', accent: true },
+        { label: 'Downward to Children', value: 'Node 4 (left), Node 5 (right)', accent: true },
+        { label: 'Newly Engulfed', value: '{ 1, 4, 5 }' }
+      ]
+    },
+    variables: {
+      time: 1,
+      activeFireWave: '[1, 4, 5]',
+      newlyBurned: '[1, 4, 5]',
+      totalBurned: 4
+    },
+    metrics: [
+      { label: 'Time Elapsed', value: '1s' },
+      { label: 'Wave Size', value: '3 nodes' },
+      { label: 'Burned Count', value: '4 / 6', highlight: true }
+    ],
+    explain: 'At t = 1, fire spreads simultaneously to unburned adjacent neighbors: parent 1, left child 4, and right child 5.'
   },
   {
-    title: '3. Time t = 2: Fire reaches Node 3 (right child of 1)',
     phase: 'SPREAD_T2',
-    codeLine: 50,
-    time: 2,
-    burning: [2, 1, 4, 5, 3],
-    explain: 'Fire spreads from Node 1 to Node 3.'
+    title: '3. Time t = 2: Fire Reaches Node 3 via Parent (1)',
+    tree: sampleTree,
+    activeVal: 3,
+    visitedVals: [2, 1, 4, 5, 3],
+    nodeLabels: { 2: 'Burned', 1: 'Burned', 4: 'Burned', 5: 'Burned', 3: 'Burned (t=2)' },
+    customCard: {
+      title: 'Radial Spread at t = 2',
+      rows: [
+        { label: 'Spread Source', value: 'Node 1 (right branch)' },
+        { label: 'Infected Node', value: 'Node 3 (right child of 1)', accent: true },
+        { label: 'Leaf Nodes 4 & 5', value: 'No unvisited neighbors' },
+        { label: 'Newly Engulfed', value: '{ 3 }' }
+      ]
+    },
+    variables: {
+      time: 2,
+      activeFireWave: '[3]',
+      newlyBurned: '[3]',
+      totalBurned: 5
+    },
+    metrics: [
+      { label: 'Time Elapsed', value: '2s' },
+      { label: 'Active Fire', value: 'Node 3' },
+      { label: 'Burned Count', value: '5 / 6', highlight: true }
+    ],
+    explain: 'From Node 1, fire catches right child Node 3 at t = 2. Leaves 4 and 5 have no unburned neighbors.'
   },
   {
-    title: '4. Time t = 3: Fire reaches Node 6 (right child of 3) & Complete!',
     phase: 'COMPLETE',
-    codeLine: 65,
-    time: 3,
-    burning: [2, 1, 4, 5, 3, 6],
-    explain: 'All 6 nodes consumed by fire. Total burn time = 3 units!'
+    title: '4. Time t = 3: Node 6 Engulfed & Entire Tree Burned in 3 Seconds!',
+    tree: sampleTree,
+    activeVal: 6,
+    visitedVals: [2, 1, 4, 5, 3, 6],
+    nodeLabels: { 1: 'Burned', 2: 'Burned', 3: 'Burned', 4: 'Burned', 5: 'Burned', 6: 'Burned (t=3)' },
+    customCard: {
+      title: 'Complete Tree Engulfed',
+      rows: [
+        { label: 'Final Burned Node', value: 'Node 6 (child of 3)', accent: true },
+        { label: 'Total Burn Time', value: '3 seconds', accent: true },
+        { label: 'Total Tree Nodes', value: 'All 6 nodes consumed' },
+        { label: 'Time Complexity', value: 'O(N) parent mapping + O(N) BFS' }
+      ]
+    },
+    variables: {
+      time: 3,
+      status: 'Entire Tree Burned',
+      totalBurned: 6,
+      minTimeToBurn: 3
+    },
+    metrics: [
+      { label: 'Total Time', value: '3s', highlight: true },
+      { label: 'Burned Count', value: '6 / 6' },
+      { label: 'Status', value: 'Engulfed' }
+    ],
+    explain: 'At t = 3, fire from Node 3 burns Node 6. The entire tree is engulfed. Minimum time to burn the complete tree from target Node 2 is 3 seconds.'
   }
 ];
-
-export default function MinimumTimeTakenToBurnTheBtFromAGivenNodeVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300">
-          Elapsed Time: <strong className="text-base text-amber-200">{step.time}s</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300">
-          Burned Nodes: <strong>{step.burning.length} / 6</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Radial Fire Propagation Wavefront</span>
-          <span className="text-amber-400 font-bold">BFS with Parent Pointers</span>
-        </div>
-
-        {/* Tree Topology with Flame Visuals */}
-        <div className="flex flex-col items-center gap-4 py-3 w-full">
-          {/* Level 0: 1 */}
-          <div
-            className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm transition-all ${
-              step.burning.includes(1)
-                ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-lg shadow-amber-500/30'
-                : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-            }`}
-          >
-            1
-          </div>
-
-          {/* Level 1: 2 (Target) and 3 */}
-          <div className="flex justify-center gap-16 w-full">
-            <div
-              className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                step.burning.includes(2)
-                  ? 'bg-rose-500/35 border-rose-400 text-rose-200 shadow-xl shadow-rose-500/30 ring-2 ring-rose-400/40'
-                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-              }`}
-            >
-              2 (Target)
-            </div>
-            <div
-              className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                step.burning.includes(3)
-                  ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-md'
-                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-              }`}
-            >
-              3
-            </div>
-          </div>
-
-          {/* Level 2: 4, 5, 6 */}
-          <div className="flex justify-between w-full px-12">
-            <div className="flex gap-4">
-              {[4, 5].map(v => (
-                <div
-                  key={v}
-                  className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                    step.burning.includes(v)
-                      ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-md'
-                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-                  }`}
-                >
-                  {v}
-                </div>
-              ))}
-            </div>
-
-            <div
-              className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs transition-all ${
-                step.burning.includes(6)
-                  ? 'bg-amber-500/30 border-amber-400 text-amber-200 shadow-md'
-                  : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-              }`}
-            >
-              6
-            </div>
-          </div>
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          Fire spreads simultaneously in 3 directions per node: left child, right child, and parent.
-        </div>
-      </div>
-    </div>
-  );
-}

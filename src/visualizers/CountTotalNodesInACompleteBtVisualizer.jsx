@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Count Nodes in a Complete Binary Tree',
@@ -6,12 +6,38 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O((log N)^2)',
   spaceComplexity: 'O(log N) recursion stack',
-  description: 'Counts total nodes in a complete binary tree in sub-linear O((log N)^2) time by comparing left and right boundary depths: if equal, the subtree is perfect with (1 << h) - 1 nodes.'
+  description: 'Counts the total number of nodes in a complete binary tree in sub-linear O((log N)^2) time by comparing the left and right boundary depths. If the heights match, the subtree is perfect and contains exactly (2^h - 1) nodes in O(log N) calculation.'
+};
+
+export const ideaMap = {
+  title: 'Complete Binary Tree Counting Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Boundary Height Measurement',
+      detail: 'Traverse left pointers to compute leftHeight (lh), and right pointers to compute rightHeight (rh) in O(log N).'
+    },
+    {
+      id: 'step2',
+      label: 'Perfect Subtree Shortcut (lh == rh)',
+      detail: 'If lh == rh, the tree is completely filled on all levels: return (1 << lh) - 1 nodes without inspecting internal nodes.'
+    },
+    {
+      id: 'step3',
+      label: 'Imperfect Subtree Fallback (lh != rh)',
+      detail: 'If lh != rh, recurse on child subtrees: 1 + countNodes(left) + countNodes(right).'
+    },
+    {
+      id: 'step4',
+      label: 'O((log N)^2) Sub-Linear Runtime',
+      detail: 'At each tree level, at most one child is imperfect, maintaining a total runtime of at most O(height^2) = O((log N)^2).'
+    }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++: Count Total Nodes in a Complete Binary Tree
-// Time Complexity: O((log N)^2) | Space: O(log N)
+  cpp: `// C++: Count Total Nodes in a Complete Binary Tree (LeetCode 222)
+// Time Complexity: O((log N)^2) | Space Complexity: O(log N)
 struct TreeNode {
     int val;
     TreeNode *left, *right;
@@ -40,12 +66,12 @@ private:
 
 public:
     int countNodes(TreeNode* root) {
-        if (root == nullptr) return 0;
+        if (!root) return 0;
 
         int lh = findLeftHeight(root);
         int rh = findRightHeight(root);
 
-        // If left height == right height, it is a perfect binary tree
+        // If heights match, perfect binary tree formula: (2^h) - 1
         if (lh == rh) {
             return (1 << lh) - 1;
         }
@@ -53,7 +79,8 @@ public:
         return 1 + countNodes(root->left) + countNodes(root->right);
     }
 };`,
-  java: `// Java: Count Total Nodes in a Complete Binary Tree
+  java: `// Java: Count Total Nodes in a Complete Binary Tree (LeetCode 222)
+// Time Complexity: O((log N)^2) | Space Complexity: O(log N)
 class Solution {
     private int getLeftHeight(TreeNode node) {
         int h = 0;
@@ -86,178 +113,211 @@ class Solution {
         return 1 + countNodes(root.left) + countNodes(root.right);
     }
 }`,
-  python: `# Python 3: Count Total Nodes in a Complete Binary Tree
-def count_nodes(root):
-    if not root:
-        return 0
+  python: `# Python: Count Total Nodes in a Complete Binary Tree (LeetCode 222)
+# Time Complexity: O((log N)^2) | Space Complexity: O(log N)
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
 
-    def left_height(node):
-        h = 0
-        while node:
-            h += 1
-            node = node.left
-        return h
+class Solution:
+    def countNodes(self, root: TreeNode | None) -> int:
+        if not root:
+            return 0
 
-    def right_height(node):
-        h = 0
-        while node:
-            h += 1
-            node = node.right
-        return h
+        def get_left_height(node):
+            h = 0
+            while node:
+                h += 1
+                node = node.left
+            return h
 
-    lh = left_height(root)
-    rh = right_height(root)
+        def get_right_height(node):
+            h = 0
+            while node:
+                h += 1
+                node = node.right
+            return h
 
-    if lh == rh:
-        return (1 << lh) - 1
+        lh = get_left_height(root)
+        rh = get_right_height(root)
 
-    return 1 + count_nodes(root.left) + count_nodes(root.right)`,
-  javascript: `// JavaScript: Count Total Nodes in a Complete Binary Tree
+        # If boundary heights match -> Perfect tree shortcut
+        if lh == rh:
+            return (1 << lh) - 1
+
+        return 1 + self.countNodes(root.left) + self.countNodes(root.right)`,
+  javascript: `// JavaScript: Count Total Nodes in a Complete Binary Tree (LeetCode 222)
+// Time Complexity: O((log N)^2) | Space Complexity: O(log N)
 function countNodes(root) {
-    if (!root) return 0;
+  if (!root) return 0;
 
-    function leftHeight(node) {
-        let h = 0;
-        while (node) {
-            h++;
-            node = node.left;
-        }
-        return h;
+  function getLeftHeight(node) {
+    let h = 0;
+    while (node) {
+      h++;
+      node = node.left;
     }
+    return h;
+  }
 
-    function rightHeight(node) {
-        let h = 0;
-        while (node) {
-            h++;
-            node = node.right;
-        }
-        return h;
+  function getRightHeight(node) {
+    let h = 0;
+    while (node) {
+      h++;
+      node = node.right;
     }
+    return h;
+  }
 
-    const lh = leftHeight(root);
-    const rh = rightHeight(root);
+  const lh = getLeftHeight(root);
+  const rh = getRightHeight(root);
 
-    if (lh === rh) {
-        return (1 << lh) - 1;
-    }
+  if (lh === rh) {
+    return (1 << lh) - 1;
+  }
 
-    return 1 + countNodes(root.left) + countNodes(root.right);
+  return 1 + countNodes(root.left) + countNodes(root.right);
 }`
+};
+
+const sampleTree = {
+  val: 1,
+  left: {
+    val: 2,
+    left: { val: 4, left: null, right: null },
+    right: { val: 5, left: null, right: null }
+  },
+  right: {
+    val: 3,
+    left: { val: 6, left: null, right: null },
+    right: null
+  }
 };
 
 export const steps = [
   {
-    title: '1. Root 1: Check Left Height (lh) vs Right Height (rh)',
-    phase: 'CHECK_ROOT',
-    codeLine: 31,
-    activeNode: 1,
-    lh: 3,
-    rh: 2,
-    formula: 'lh (3) != rh (2) &rarr; Not full at root',
-    count: null,
-    explain: 'Left height is 3, right height is 2. Since lh != rh, recurse on left and right subtrees: 1 + left + right.'
+    phase: 'ROOT_CHECK',
+    title: '1. Root 1: Left Height = 3, Right Height = 2 (lh != rh)',
+    tree: sampleTree,
+    activeVal: 1,
+    visitedVals: [1],
+    nodeLabels: { 1: 'lh:3, rh:2' },
+    customCard: {
+      title: 'Root Boundary Heights Check',
+      rows: [
+        { label: 'Current Node', value: 'Root 1', accent: true },
+        { label: 'Left Boundary Path', value: '1 -> 2 -> 4 (lh = 3)' },
+        { label: 'Right Boundary Path', value: '1 -> 3 -> null (rh = 2)' },
+        { label: 'Comparison', value: 'lh (3) != rh (2) -> Not Perfect' },
+        { label: 'Action', value: 'Recurse: 1 + count(left) + count(right)' }
+      ]
+    },
+    variables: {
+      activeNode: 1,
+      leftHeight: 3,
+      rightHeight: 2,
+      isPerfect: false,
+      runningTotal: 'Pending...'
+    },
+    metrics: [
+      { label: 'Left Height', value: '3' },
+      { label: 'Right Height', value: '2' },
+      { label: 'Subtree Type', value: 'Imperfect', highlight: true }
+    ],
+    explain: 'Leftmost descent gives height 3 (1->2->4). Rightmost descent gives height 2 (1->3). Since lh != rh, the tree is not perfect. Recurse into left and right subtrees.'
   },
   {
-    title: '2. Recurse Left Subtree (Root 2): lh = 2, rh = 2 &rarr; Perfect Subtree!',
-    phase: 'PERFECT_LEFT',
-    codeLine: 35,
-    activeNode: 2,
-    lh: 2,
-    rh: 2,
-    formula: '(1 << 2) - 1 = 3 nodes in O(log N)!',
-    count: 3,
-    explain: 'At Node 2, left height = 2, right height = 2. Left subtree is perfect! Directly calculate 2^2 - 1 = 3 nodes in O(log N).'
+    phase: 'LEFT_SUBTREE_PERFECT',
+    title: '2. Left Subtree at Node 2: lh = 2, rh = 2 &rarr; Perfect! (2^2 - 1 = 3)',
+    tree: sampleTree,
+    activeVal: 2,
+    visitedVals: [1, 2],
+    nodeLabels: { 1: 'Root', 2: 'lh:2, rh:2 (Perfect: 3)' },
+    customCard: {
+      title: 'Perfect Subtree Shortcut Triggered',
+      rows: [
+        { label: 'Current Node', value: 'Node 2', accent: true },
+        { label: 'Left Height (lh)', value: '2 -> 4 (h = 2)' },
+        { label: 'Right Height (rh)', value: '2 -> 5 (h = 2)' },
+        { label: 'Formula Applied', value: '(1 << 2) - 1 = 3 nodes', accent: true },
+        { label: 'Nodes Counted', value: 'Subtree {2, 4, 5} resolved in O(log N)!' }
+      ]
+    },
+    variables: {
+      activeNode: 2,
+      leftHeight: 2,
+      rightHeight: 2,
+      isPerfect: true,
+      subtreeNodeCount: 3
+    },
+    metrics: [
+      { label: 'Left Height', value: '2' },
+      { label: 'Right Height', value: '2' },
+      { label: 'Shortcut', value: '3 nodes (2^2 - 1)', highlight: true }
+    ],
+    explain: 'At Node 2, left height (2->4) equals right height (2->5) = 2. Node 2 is the root of a perfect binary tree! We instantly count (2^2 - 1) = 3 nodes without traversing further.'
   },
   {
-    title: '3. Recurse Right Subtree (Root 3): lh = 2, rh = 1 &rarr; Recurse',
-    phase: 'CHECK_RIGHT',
-    codeLine: 31,
-    activeNode: 3,
-    lh: 2,
-    rh: 1,
-    formula: 'lh (2) != rh (1)',
-    count: null,
-    explain: 'At Node 3, lh = 2, rh = 1. Recurse down to Node 6.'
+    phase: 'RIGHT_SUBTREE_CHECK',
+    title: '3. Right Subtree at Node 3: lh = 2, rh = 1 &rarr; Resolves to 2 Nodes',
+    tree: sampleTree,
+    activeVal: 3,
+    visitedVals: [1, 2, 3],
+    nodeLabels: { 1: 'Root', 2: 'Subtree: 3', 3: 'Subtree: 2' },
+    customCard: {
+      title: 'Right Subtree Evaluation',
+      rows: [
+        { label: 'Current Node', value: 'Node 3', accent: true },
+        { label: 'Left Child', value: 'Node 6 (Leaf -> 1 node)' },
+        { label: 'Right Child', value: 'null (0 nodes)' },
+        { label: 'Right Subtree Total', value: '1 (Node 3) + 1 (Node 6) = 2 nodes' }
+      ]
+    },
+    variables: {
+      activeNode: 3,
+      leftHeight: 2,
+      rightHeight: 1,
+      isPerfect: false,
+      subtreeNodeCount: 2
+    },
+    metrics: [
+      { label: 'Left Height', value: '2' },
+      { label: 'Right Height', value: '1' },
+      { label: 'Right Total', value: '2 nodes', highlight: true }
+    ],
+    explain: 'At Node 3, left child 6 is a single leaf (1 node) and right child is null (0 nodes). Subtree at 3 yields 1 + 1 + 0 = 2 nodes.'
   },
   {
-    title: '4. At Node 6 (Leaf): lh = 1, rh = 1 &rarr; 1 Node',
-    phase: 'LEAF_RIGHT',
-    codeLine: 35,
-    activeNode: 6,
-    lh: 1,
-    rh: 1,
-    formula: '(1 << 1) - 1 = 1 node',
-    count: 1,
-    explain: 'Node 6 is a leaf with 1 node. Total for right subtree = 1 (Node 3) + 1 (Node 6) = 2 nodes.'
-  },
-  {
-    title: '5. Combine All: Total Nodes = 1 + 3 (Left) + 2 (Right) = 6 Nodes!',
-    phase: 'FINAL',
-    codeLine: 38,
-    activeNode: 1,
-    lh: 3,
-    rh: 2,
-    formula: '1 + 3 + 2 = 6',
-    count: 6,
-    explain: 'Total nodes = 6 computed in O((log N)^2) time without visiting all nodes!'
+    phase: 'COMPLETE',
+    title: '4. Total Node Count: 1 (Root) + 3 (Left) + 2 (Right) = 6 Nodes!',
+    tree: sampleTree,
+    activeVal: null,
+    visitedVals: [1, 2, 3, 4, 5, 6],
+    nodeLabels: { 1: 'Total: 6', 2: 'Left: 3', 3: 'Right: 2', 4: 'Leaf', 5: 'Leaf', 6: 'Leaf' },
+    customCard: {
+      title: 'Complete Tree Count Summary',
+      rows: [
+        { label: 'Root Contribution', value: '1 node' },
+        { label: 'Left Subtree (Perfect)', value: '3 nodes (via 2^2 - 1 formula)' },
+        { label: 'Right Subtree', value: '2 nodes' },
+        { label: 'Total Complete Tree Nodes', value: '1 + 3 + 2 = 6 Nodes', accent: true },
+        { label: 'Time Complexity', value: 'O((log N)^2) strictly sub-linear' }
+      ]
+    },
+    variables: {
+      status: 'Count Completed',
+      totalCount: 6,
+      rootContrib: 1,
+      leftContrib: 3,
+      rightContrib: 2
+    },
+    metrics: [
+      { label: 'Total Nodes', value: '6', highlight: true },
+      { label: 'Formula', value: '1 + 3 + 2 = 6' },
+      { label: 'Complexity', value: 'O((log N)^2)' }
+    ],
+    explain: 'Summing all partitions: 1 for root + 3 from the perfect left subtree + 2 from the right subtree = 6 total nodes. Calculated in optimal sub-linear O((log N)^2) time.'
   }
 ];
-
-export default function CountTotalNodesInACompleteBtVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Active: <strong className="text-cyan-400">Node {step.activeNode}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Formula: <strong>{step.formula}</strong>
-        </div>
-        {step.count !== null && (
-          <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-            Computed: <strong>{step.count} nodes</strong>
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Complete Binary Tree (6 Nodes)</span>
-          <span className="text-emerald-400 font-bold">O((log N)^2) Algorithm</span>
-        </div>
-
-        <div className="flex flex-col items-center gap-4 py-3 w-full">
-          <div className={`w-11 h-11 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm ${step.activeNode === 1 ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}>
-            1
-          </div>
-
-          <div className="flex justify-center gap-16 w-full">
-            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === 2 ? 'bg-emerald-500/25 border-emerald-400 text-emerald-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}>
-              2
-            </div>
-            <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === 3 ? 'bg-purple-500/25 border-purple-400 text-purple-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}>
-              3
-            </div>
-          </div>
-
-          <div className="flex justify-start gap-4 -ml-12">
-            {[4, 5, 6].map(v => (
-              <div
-                key={v}
-                className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-mono font-bold text-xs ${step.activeNode === v ? 'bg-amber-500/25 border-amber-400 text-amber-200' : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'}`}
-              >
-                {v}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          If left height == right height: Subtree is full &rarr; directly return (1 &lt;&lt; h) - 1 in O(1)!
-        </div>
-      </div>
-    </div>
-  );
-}

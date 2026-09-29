@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Maximum Depth of Binary Tree',
@@ -9,9 +9,35 @@ export const meta = {
   description: 'Calculates the maximum depth (height) of a binary tree recursively using the bottom-up formula: 1 + max(depth(left), depth(right)).'
 };
 
+export const ideaMap = {
+  title: 'Maximum Depth (Height) Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Empty Tree Base Case',
+      detail: 'If root is null, depth is 0. Base case terminates recursion at leaf boundaries.'
+    },
+    {
+      id: 'step2',
+      label: 'Subtree Postorder Recursion',
+      detail: 'Recursively calculate the maximum depth of left and right child subtrees.'
+    },
+    {
+      id: 'step3',
+      label: '1 + max(left, right) Combining Step',
+      detail: 'Combine depths by taking the greater height of the two branches plus one for current node.'
+    },
+    {
+      id: 'step4',
+      label: 'Unwind & Return Global Depth',
+      detail: 'Return computed height up the call stack to reach final root height.'
+    }
+  ]
+};
+
 export const solutions = {
-  cpp: `// C++ Maximum Depth of Binary Tree (Recursive)
-// Time: O(N) | Space: O(H)
+  cpp: `// C++: Maximum Depth of Binary Tree (Recursive)
+// Time Complexity: O(N) | Space: O(H)
 #include <algorithm>
 using namespace std;
 
@@ -36,7 +62,26 @@ public:
         return 1 + max(leftDepth, rightDepth);
     }
 };`,
-  python: `# Python 3 Maximum Depth of Binary Tree
+  java: `// Java: Maximum Depth of Binary Tree
+// Time Complexity: O(N) | Space: O(H)
+class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int x) { val = x; }
+}
+
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if (root == null) return 0;
+
+        int leftDepth = maxDepth(root.left);
+        int rightDepth = maxDepth(root.right);
+
+        return 1 + Math.max(leftDepth, rightDepth);
+    }
+}`,
+  python: `# Python 3: Maximum Depth of Binary Tree
+# Time Complexity: O(N) | Space: O(H)
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
@@ -52,18 +97,8 @@ class Solution:
         right_depth = self.maxDepth(root.right)
 
         return 1 + max(left_depth, right_depth)`,
-  java: `// Java Maximum Depth of Binary Tree
-class Solution {
-    public int maxDepth(TreeNode root) {
-        if (root == null) return 0;
-
-        int leftDepth = maxDepth(root.left);
-        int rightDepth = maxDepth(root.right);
-
-        return 1 + Math.max(leftDepth, rightDepth);
-    }
-}`,
-  javascript: `// JavaScript Maximum Depth of Binary Tree
+  javascript: `// JavaScript: Maximum Depth of Binary Tree
+// Time Complexity: O(N) | Space: O(H)
 var maxDepth = function(root) {
     if (!root) return 0;
 
@@ -74,122 +109,216 @@ var maxDepth = function(root) {
 };`
 };
 
+const sampleTree = {
+  val: 3,
+  left: { val: 9, left: null, right: null },
+  right: {
+    val: 20,
+    left: { val: 15, left: null, right: null },
+    right: { val: 7, left: null, right: null }
+  }
+};
+
 export const steps = [
   {
-    title: '1. Root Node 3: Find 1 + max(depth(left), depth(right))',
-    phase: 'INITIAL',
-    codeLine: 18,
-    activeNode: 3,
-    nodeHeights: { 3: '?', 9: '?', 20: '?', 15: '?', 7: '?' },
-    variables: { root: 3, formula: '1 + max(lh, rh)' },
-    explain: 'To compute depth at root 3, we must compute height of left child (9) and right child (20).',
-    intuition: 'Recursive depth-first postorder evaluation.'
+    phase: 'INITIALIZE',
+    title: 'Initialize Depth Evaluation at Root Node (3)',
+    activeVal: 3,
+    tree: sampleTree,
+    visitedVals: [],
+    nodeLabels: { 3: 'h=?' },
+    customCard: {
+      title: 'Recursive Height Invariant',
+      rows: [
+        { label: 'Target Equation', value: 'depth(root) = 1 + max(depth(left), depth(right))' },
+        { label: 'Current Evaluation', value: 'Must compute left subtree (Node 9) and right subtree (Node 20)', accent: true },
+        { label: 'Call Stack State', value: '[maxDepth(3)]' }
+      ]
+    },
+    variables: {
+      currNode: 3,
+      leftDepth: 'Pending...',
+      rightDepth: 'Pending...',
+      callStackDepth: 1
+    },
+    metrics: {
+      visitedCount: 1,
+      currentMaxDepth: 0,
+      activeBranch: 'Root (3)'
+    },
+    explain: 'To calculate the maximum depth at root 3, we initiate postorder DFS to compute the height of the left child (9) and right child (20).'
   },
   {
-    title: '2. Node 9 (Left Leaf): Both children null -> Depth = 1 + max(0, 0) = 1',
-    phase: 'EVAL_LEAF',
-    codeLine: 23,
-    activeNode: 9,
-    nodeHeights: { 3: '?', 9: 1, 20: '?', 15: '?', 7: '?' },
-    variables: { node: 9, leftH: 0, rightH: 0, height: 1 },
-    explain: 'Node 9 has no children. Base cases return 0. Depth of node 9 is 1.',
-    intuition: 'Leaf depth is always 1.'
+    phase: 'EVAL_LEFT_LEAF',
+    title: 'Evaluate Node 9: Left Leaf Depth = 1',
+    activeVal: 9,
+    tree: sampleTree,
+    visitedVals: [9],
+    nodeLabels: { 3: 'h=?', 9: 'h=1' },
+    customCard: {
+      title: 'Leaf Node Depth Formula',
+      rows: [
+        { label: 'Base Case Check', value: '9.left == null (0), 9.right == null (0)', accent: true },
+        { label: 'Height Formula', value: '1 + max(0, 0) = 1' },
+        { label: 'Return Value', value: 'Returns 1 to caller frame for Node 3' }
+      ]
+    },
+    variables: {
+      currNode: 9,
+      leftDepth: 0,
+      rightDepth: 0,
+      computedHeight: 1,
+      callStackDepth: 2
+    },
+    metrics: {
+      visitedCount: 2,
+      currentMaxDepth: 1,
+      activeBranch: 'Left Subtree (9)'
+    },
+    explain: 'Node 9 has both left and right pointers as null. Each null base case returns 0. Thus, depth(9) = 1 + max(0, 0) = 1. Return 1 to parent frame.'
   },
   {
-    title: '3. Leaves of Right Subtree: Node 15 and Node 7 each have Depth = 1',
-    phase: 'EVAL_LEAF',
-    codeLine: 23,
-    activeNode: 15,
-    nodeHeights: { 3: '?', 9: 1, 20: '?', 15: 1, 7: 1 },
-    variables: { node15Depth: 1, node7Depth: 1 },
-    explain: 'Nodes 15 and 7 are both leaf nodes with depth 1.',
-    intuition: 'Subtree leaf depths computed.'
+    phase: 'RECURSE_RIGHT_SUBTREE',
+    title: 'Recurse into Right Subtree: Node 20',
+    activeVal: 20,
+    tree: sampleTree,
+    visitedVals: [9, 20],
+    nodeLabels: { 3: 'h=?', 9: 'h=1', 20: 'h=?' },
+    customCard: {
+      title: 'Right Subtree Recurse',
+      rows: [
+        { label: 'Subproblem', value: 'Calculate depth(20) = 1 + max(depth(15), depth(7))' },
+        { label: 'Pending Left Child', value: 'Descend to node 15 first', accent: true },
+        { label: 'Call Stack State', value: '[maxDepth(3), maxDepth(20)]' }
+      ]
+    },
+    variables: {
+      currNode: 20,
+      leftDepth: 'Pending...',
+      rightDepth: 'Pending...',
+      callStackDepth: 2
+    },
+    metrics: {
+      visitedCount: 3,
+      currentMaxDepth: 1,
+      activeBranch: 'Right Subtree (20)'
+    },
+    explain: 'Return control to root 3 with leftDepth = 1. Now branch into right child 20. Node 20 must compute its left child (15) and right child (7).'
   },
   {
-    title: '4. Node 20: Depth = 1 + max(depth(15), depth(7)) = 1 + max(1, 1) = 2',
-    phase: 'EVAL_PARENT',
-    codeLine: 23,
-    activeNode: 20,
-    nodeHeights: { 3: '?', 9: 1, 20: 2, 15: 1, 7: 1 },
-    variables: { node: 20, leftChildH: 1, rightChildH: 1, height: 2 },
-    explain: 'Right child 20 has height 1 + max(1, 1) = 2.',
-    intuition: 'Right branch height is 2.'
+    phase: 'EVAL_LEAF_15',
+    title: 'Evaluate Leaf Node 15: Depth = 1',
+    activeVal: 15,
+    tree: sampleTree,
+    visitedVals: [9, 20, 15],
+    nodeLabels: { 3: 'h=?', 9: 'h=1', 20: 'h=?', 15: 'h=1' },
+    customCard: {
+      title: 'Node 15 Evaluation',
+      rows: [
+        { label: 'Base Cases', value: '15.left == null (0), 15.right == null (0)', accent: true },
+        { label: 'Result for 15', value: '1 + max(0, 0) = 1' }
+      ]
+    },
+    variables: {
+      currNode: 15,
+      leftDepth: 0,
+      rightDepth: 0,
+      computedHeight: 1,
+      callStackDepth: 3
+    },
+    metrics: {
+      visitedCount: 4,
+      currentMaxDepth: 1,
+      activeBranch: 'Node 15'
+    },
+    explain: 'Node 15 is a leaf with no children. Returns 1 + max(0, 0) = 1 to parent frame (Node 20).'
   },
   {
-    title: '5. Root Node 3: Depth = 1 + max(depth(9), depth(20)) = 1 + max(1, 2) = 3',
-    phase: 'COMPLETED',
-    codeLine: 23,
-    activeNode: 3,
-    nodeHeights: { 3: 3, 9: 1, 20: 2, 15: 1, 7: 1 },
-    variables: { rootHeight: 3, maxDepth: 3 },
-    explain: 'Root node 3 calculates 1 + max(1, 2) = 3. The maximum depth of the binary tree is 3.',
-    intuition: 'Path: 3 -> 20 -> 15 (or 7) has 3 nodes.'
+    phase: 'EVAL_LEAF_7',
+    title: 'Evaluate Leaf Node 7: Depth = 1',
+    activeVal: 7,
+    tree: sampleTree,
+    visitedVals: [9, 20, 15, 7],
+    nodeLabels: { 3: 'h=?', 9: 'h=1', 20: 'h=?', 15: 'h=1', 7: 'h=1' },
+    customCard: {
+      title: 'Node 7 Evaluation',
+      rows: [
+        { label: 'Base Cases', value: '7.left == null (0), 7.right == null (0)', accent: true },
+        { label: 'Result for 7', value: '1 + max(0, 0) = 1' }
+      ]
+    },
+    variables: {
+      currNode: 7,
+      leftDepth: 0,
+      rightDepth: 0,
+      computedHeight: 1,
+      callStackDepth: 3
+    },
+    metrics: {
+      visitedCount: 5,
+      currentMaxDepth: 1,
+      activeBranch: 'Node 7'
+    },
+    explain: 'Node 7 is also a leaf node with depth 1. Returns 1 to parent frame (Node 20).'
+  },
+  {
+    phase: 'COMBINE_NODE_20',
+    title: 'Combine Depths for Node 20: 1 + max(1, 1) = 2',
+    activeVal: 20,
+    tree: sampleTree,
+    visitedVals: [9, 20, 15, 7],
+    nodeLabels: { 3: 'h=?', 9: 'h=1', 20: 'h=2', 15: 'h=1', 7: 'h=1' },
+    customCard: {
+      title: 'Node 20 Computation Complete',
+      rows: [
+        { label: 'Left Child (15) Depth', value: '1' },
+        { label: 'Right Child (7) Depth', value: '1' },
+        { label: 'Combined Height', value: '1 + max(1, 1) = 2', accent: true },
+        { label: 'Unwind', value: 'Returns 2 to root Node 3' }
+      ]
+    },
+    variables: {
+      currNode: 20,
+      leftDepth: 1,
+      rightDepth: 1,
+      computedHeight: 2,
+      callStackDepth: 2
+    },
+    metrics: {
+      visitedCount: 5,
+      currentMaxDepth: 2,
+      activeBranch: 'Node 20'
+    },
+    explain: 'Node 20 combines the results of its children: 1 + max(1, 1) = 2. It returns 2 to the root frame (Node 3).'
+  },
+  {
+    phase: 'COMPLETE',
+    title: 'Combine at Root: 1 + max(depth(9), depth(20)) = 1 + max(1, 2) = 3',
+    activeVal: 3,
+    tree: sampleTree,
+    visitedVals: [3, 9, 20, 15, 7],
+    nodeLabels: { 3: 'h=3 (MAX)', 9: 'h=1', 20: 'h=2', 15: 'h=1', 7: 'h=1' },
+    customCard: {
+      title: 'Global Maximum Depth Resolved',
+      rows: [
+        { label: 'Left Subtree Height', value: '1 (Node 9)' },
+        { label: 'Right Subtree Height', value: '2 (Node 20 subtree)' },
+        { label: 'Root Calculation', value: '1 + max(1, 2) = 3', accent: true },
+        { label: 'Deepest Path', value: '3 -> 20 -> 15 (or 7) [3 nodes]' }
+      ]
+    },
+    variables: {
+      currNode: 3,
+      leftDepth: 1,
+      rightDepth: 2,
+      maxDepth: 3,
+      callStackDepth: 1
+    },
+    metrics: {
+      visitedCount: 5,
+      currentMaxDepth: 3,
+      finalResult: 3
+    },
+    explain: 'Root node 3 calculates 1 + max(1, 2) = 3. The maximum depth of the entire binary tree is 3!'
   }
 ];
-
-export default function MaximumDepthInBtVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Evaluating Node: {step.activeNode}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Formula: 1 + max(left, right)
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Max Depth = {step.nodeHeights[3] === 3 ? 3 : 'Computing...'}
-        </span>
-      </div>
-
-      {/* Binary Tree Heights View */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-6 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Binary Tree & Evaluated Heights</span>
-
-        <div className="flex flex-col items-center gap-4 py-2 w-full">
-          {/* Root 3 */}
-          <div className="flex justify-center">
-            <div className={`w-14 h-14 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-              step.activeNode === 3 ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-emerald-500/50 bg-emerald-500/15 text-emerald-300'
-            }`}>
-              <span className="text-sm">Val: 3</span>
-              <span className="text-[10px] text-amber-400">h={step.nodeHeights[3]}</span>
-            </div>
-          </div>
-
-          {/* Level 1: 9 and 20 */}
-          <div className="flex justify-center gap-24">
-            {[9, 20].map((val) => (
-              <div key={val} className={`w-14 h-14 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-              }`}>
-                <span className="text-sm">Val: {val}</span>
-                <span className="text-[10px] text-amber-400">h={step.nodeHeights[val]}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Level 2: 15 and 7 */}
-          <div className="flex justify-end gap-6 pr-12">
-            {[15, 7].map((val) => (
-              <div key={val} className={`w-13 h-13 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold transition-all ${
-                step.activeNode === val ? 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40' : 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]'
-              }`}>
-                <span className="text-sm">Val: {val}</span>
-                <span className="text-[10px] text-amber-400">h={step.nodeHeights[val]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

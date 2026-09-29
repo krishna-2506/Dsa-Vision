@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Construct BT from Postorder & Inorder',
@@ -6,11 +6,37 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(N) hash map & recursion stack',
-  description: 'Reconstructs a unique binary tree given its postorder (where the root is always the last element) and inorder traversals using recursive array partitioning.'
+  description: 'Reconstructs a unique binary tree given its postorder traversal (where root is always the last element) and inorder traversal. A hash map provides O(1) root lookup in the inorder array to partition left and right subtrees.'
+};
+
+export const ideaMap = {
+  title: 'Postorder & Inorder Tree Reconstruction Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Root Identification (Postorder Tail)',
+      detail: 'The last element in the current postorder range postorder[postEnd] is guaranteed to be the root of the subtree.'
+    },
+    {
+      id: 'step2',
+      label: 'Inorder Root Position Lookup',
+      detail: 'Find inRoot = inMap[root.val] in O(1) time using a precomputed hash map.'
+    },
+    {
+      id: 'step3',
+      label: 'Subtree Size Partitioning',
+      detail: 'numsLeft = inRoot - inStart. Inorder splits into left [inStart, inRoot - 1] and right [inRoot + 1, inEnd].'
+    },
+    {
+      id: 'step4',
+      label: 'Postorder Segment Division',
+      detail: 'Postorder splits into left [postStart, postStart + numsLeft - 1] and right [postStart + numsLeft, postEnd - 1].'
+    }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++: Construct Binary Tree from Postorder and Inorder
+  cpp: `// C++: Construct Binary Tree from Postorder and Inorder (LeetCode 106)
 // Time Complexity: O(N) | Space Complexity: O(N)
 #include <vector>
 #include <unordered_map>
@@ -51,14 +77,22 @@ public:
                      inorder, 0, inorder.size() - 1, inMap);
     }
 };`,
-  java: `// Java: Construct Binary Tree from Postorder and Inorder
+  java: `// Java: Construct Binary Tree from Postorder and Inorder (LeetCode 106)
+// Time Complexity: O(N) | Space Complexity: O(N)
 import java.util.HashMap;
 import java.util.Map;
 
 class Solution {
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+        Map<Integer, Integer> inMap = new HashMap<>();
+        for (int i = 0; i < inorder.length; i++) {
+            inMap.put(inorder[i], i);
+        }
+        return build(postorder, 0, postorder.length - 1, inorder, 0, inorder.length - 1, inMap);
+    }
+
     private TreeNode build(int[] postorder, int postStart, int postEnd,
-                           int[] inorder, int inStart, int inEnd,
-                           Map<Integer, Integer> inMap) {
+                           int[] inorder, int inStart, int inEnd, Map<Integer, Integer> inMap) {
         if (postStart > postEnd || inStart > inEnd) return null;
 
         TreeNode root = new TreeNode(postorder[postEnd]);
@@ -72,24 +106,16 @@ class Solution {
 
         return root;
     }
-
-    public TreeNode buildTree(int[] inorder, int[] postorder) {
-        Map<Integer, Integer> inMap = new HashMap<>();
-        for (int i = 0; i < inorder.length; i++) {
-            inMap.put(inorder[i], i);
-        }
-        return build(postorder, 0, postorder.length - 1,
-                     inorder, 0, inorder.length - 1, inMap);
-    }
 }`,
-  python: `# Python 3: Construct Binary Tree from Postorder and Inorder
+  python: `# Python: Construct Binary Tree from Postorder and Inorder (LeetCode 106)
+# Time Complexity: O(N) | Space Complexity: O(N)
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
         self.left = left
         self.right = right
 
-def build_tree(inorder: list[int], postorder: list[int]):
+def buildTree(inorder: list[int], postorder: list[int]) -> TreeNode | None:
     in_map = {val: i for i, val in enumerate(inorder)}
 
     def build(post_start, post_end, in_start, in_end):
@@ -101,166 +127,178 @@ def build_tree(inorder: list[int], postorder: list[int]):
         in_root = in_map[root_val]
         nums_left = in_root - in_start
 
-        root.left = build(post_start, post_start + nums_left - 1,
-                          in_start, in_root - 1)
-        root.right = build(post_start + nums_left, post_end - 1,
-                           in_root + 1, in_end)
+        root.left = build(post_start, post_start + nums_left - 1, in_start, in_root - 1)
+        root.right = build(post_start + nums_left, post_end - 1, in_root + 1, in_end)
 
         return root
 
     return build(0, len(postorder) - 1, 0, len(inorder) - 1)`,
-  javascript: `// JavaScript: Construct Binary Tree from Postorder and Inorder
+  javascript: `// JavaScript: Construct Binary Tree from Postorder and Inorder (LeetCode 106)
+// Time Complexity: O(N) | Space Complexity: O(N)
 function buildTree(inorder, postorder) {
-    const inMap = new Map();
-    for (let i = 0; i < inorder.length; i++) {
-        inMap.set(inorder[i], i);
-    }
+  const inMap = new Map();
+  inorder.forEach((val, i) => inMap.set(val, i));
 
-    function build(postStart, postEnd, inStart, inEnd) {
-        if (postStart > postEnd || inStart > inEnd) return null;
+  function build(postStart, postEnd, inStart, inEnd) {
+    if (postStart > postEnd || inStart > inEnd) return null;
 
-        const rootVal = postorder[postEnd];
-        const root = { val: rootVal, left: null, right: null };
-        const inRoot = inMap.get(rootVal);
-        const numsLeft = inRoot - inStart;
+    const rootVal = postorder[postEnd];
+    const root = { val: rootVal, left: null, right: null };
+    const inRoot = inMap.get(rootVal);
+    const numsLeft = inRoot - inStart;
 
-        root.left = build(postStart, postStart + numsLeft - 1, inStart, inRoot - 1);
-        root.right = build(postStart + numsLeft, postEnd - 1, inRoot + 1, inEnd);
+    root.left = build(postStart, postStart + numsLeft - 1, inStart, inRoot - 1);
+    root.right = build(postStart + numsLeft, postEnd - 1, inRoot + 1, inEnd);
 
-        return root;
-    }
+    return root;
+  }
 
-    return build(0, postorder.length - 1, 0, inorder.length - 1);
+  return build(0, postorder.length - 1, 0, inorder.length - 1);
 }`
+};
+
+const treeRootOnly = {
+  val: 3,
+  left: null,
+  right: null
+};
+
+const treeRootLeft = {
+  val: 3,
+  left: { val: 9, left: null, right: null },
+  right: null
+};
+
+const treeRootBoth = {
+  val: 3,
+  left: { val: 9, left: null, right: null },
+  right: { val: 20, left: null, right: null }
+};
+
+const treeFinal = {
+  val: 3,
+  left: { val: 9, left: null, right: null },
+  right: {
+    val: 20,
+    left: { val: 15, left: null, right: null },
+    right: { val: 7, left: null, right: null }
+  }
 };
 
 export const steps = [
   {
-    title: '1. Root from Postorder: Last Element &rarr; postorder[4] = 3',
     phase: 'ROOT_DISCOVERY',
-    codeLine: 20,
-    rootVal: 3,
-    inRootIdx: 1,
-    leftSub: [9],
-    rightSub: [15, 20, 7],
-    explain: 'In postorder (Left, Right, Root), the root is always at postEnd (3). In inorder, index 1.'
+    title: '1. Root = postorder[last] = 3. Inorder Split: Left [9], Right [15, 20, 7]',
+    tree: treeRootOnly,
+    activeVal: 3,
+    visitedVals: [3],
+    nodeLabels: { 3: 'Root: 3' },
+    customCard: {
+      title: 'Postorder Root Identification',
+      rows: [
+        { label: 'Postorder Array', value: '[9, 15, 7, 20, 3]' },
+        { label: 'Inorder Array', value: '[9, 3, 15, 20, 7]' },
+        { label: 'Root Element', value: 'postorder[4] = 3 (Tail)', accent: true },
+        { label: 'Inorder Split', value: 'Left: [9] | Right: [15, 20, 7]' }
+      ]
+    },
+    variables: {
+      postorder: '[9, 15, 7, 20, 3]',
+      inorder: '[9, 3, 15, 20, 7]',
+      rootVal: 3,
+      leftSubtreeSize: 1,
+      rightSubtreeSize: 3
+    },
+    metrics: [
+      { label: 'Root', value: '3' },
+      { label: 'Left Size', value: '1' },
+      { label: 'Right Size', value: '3', highlight: true }
+    ],
+    explain: 'In postorder, the last element is always the root (3). Locating 3 in inorder (index 1) partitions the left subtree [9] from the right subtree [15, 20, 7].'
   },
   {
-    title: '2. Split Inorder: Left = [9] (size 1), Right = [15, 20, 7] (size 3)',
-    phase: 'SPLIT',
-    codeLine: 23,
-    rootVal: 3,
-    inRootIdx: 1,
-    leftSub: [9],
-    rightSub: [15, 20, 7],
-    explain: 'Left subtree size = 1. Left postorder slice = [9], Right postorder slice = [15, 7, 20].'
-  },
-  {
-    title: '3. Build Right Subtree Root: postorder slice end &rarr; 20',
-    phase: 'BUILD_RIGHT',
-    codeLine: 27,
-    rootVal: 20,
-    inRootIdx: 3,
-    leftSub: [15],
-    rightSub: [7],
-    explain: 'Right subtree root is 20. In inorder, 15 is to left of 20 and 7 is to right.'
-  },
-  {
-    title: '4. Build Leaves 15 and 7 under 20',
-    phase: 'BUILD_LEAVES',
-    codeLine: 25,
-    rootVal: 15,
-    inRootIdx: 2,
-    leftSub: [],
-    rightSub: [],
-    explain: 'Both 15 and 7 attached to node 20.'
-  },
-  {
-    title: '5. Build Left Subtree: Root = 9 (Leaf node under 3)',
     phase: 'BUILD_LEFT',
-    codeLine: 25,
-    rootVal: 9,
-    inRootIdx: 0,
-    leftSub: [],
-    rightSub: [],
-    explain: 'Node 9 attached as left child of 3. Full tree reconstructed!'
+    title: '2. Construct Left Child: postorder[0] = 9 (Leaf Node)',
+    tree: treeRootLeft,
+    activeVal: 9,
+    visitedVals: [3, 9],
+    nodeLabels: { 3: 'Root', 9: 'Left Child' },
+    customCard: {
+      title: 'Left Subtree Construction',
+      rows: [
+        { label: 'Postorder Segment', value: '[9]' },
+        { label: 'Inorder Segment', value: '[9]' },
+        { label: 'Created Node', value: 'Node 9', accent: true },
+        { label: 'Attachment', value: 'root.left = Node 9' }
+      ]
+    },
+    variables: {
+      activeSubtree: 'Left Subtree',
+      nodeVal: 9,
+      isLeaf: true
+    },
+    metrics: [
+      { label: 'Created Node', value: '9' },
+      { label: 'Parent', value: '3' },
+      { label: 'Status', value: 'Left Subtree Done', highlight: true }
+    ],
+    explain: 'Left subtree segment has 1 element: postorder [9], inorder [9]. Node 9 is a leaf and connects as root.left.'
+  },
+  {
+    phase: 'BUILD_RIGHT_ROOT',
+    title: '3. Construct Right Subtree Root: postorder[3] = 20',
+    tree: treeRootBoth,
+    activeVal: 20,
+    visitedVals: [3, 9, 20],
+    nodeLabels: { 3: 'Root', 9: 'Left', 20: 'Right Subtree Root' },
+    customCard: {
+      title: 'Right Subtree Partitioning',
+      rows: [
+        { label: 'Postorder Right', value: '[15, 7, 20]' },
+        { label: 'Inorder Right', value: '[15, 20, 7]' },
+        { label: 'Subtree Root', value: '20 (Tail of postorder [15, 7, 20])', accent: true },
+        { label: 'Children Split', value: 'Left: [15] | Right: [7]' }
+      ]
+    },
+    variables: {
+      activeSubtree: 'Right Subtree',
+      nodeVal: 20,
+      subLeft: 15,
+      subRight: 7
+    },
+    metrics: [
+      { label: 'Right Root', value: '20' },
+      { label: 'Sub-Left', value: '15' },
+      { label: 'Sub-Right', value: '7', highlight: true }
+    ],
+    explain: 'Right subtree postorder segment is [15, 7, 20]. The root of this subtree is its tail element, 20. In inorder, 20 separates left child 15 and right child 7.'
+  },
+  {
+    phase: 'COMPLETE',
+    title: '4. Final Tree Reconstructed with Leaves 15 and 7',
+    tree: treeFinal,
+    activeVal: null,
+    visitedVals: [3, 9, 20, 15, 7],
+    nodeLabels: { 3: 'Root', 9: 'Leaf', 20: 'Branch', 15: 'Leaf', 7: 'Leaf' },
+    customCard: {
+      title: 'Postorder Reconstruction Complete',
+      rows: [
+        { label: 'Total Nodes', value: '5 nodes assembled' },
+        { label: 'Postorder Verification', value: '[9, 15, 7, 20, 3] (Exact Match!)', accent: true },
+        { label: 'Inorder Verification', value: '[9, 3, 15, 20, 7] (Exact Match!)', accent: true },
+        { label: 'Runtime Complexity', value: 'O(N) with hash map lookup' }
+      ]
+    },
+    variables: {
+      status: 'Fully Constructed',
+      nodeCount: 5,
+      height: 3
+    },
+    metrics: [
+      { label: 'Total Nodes', value: '5' },
+      { label: 'Height', value: '3' },
+      { label: 'Verification', value: 'EXACT MATCH', highlight: true }
+    ],
+    explain: 'Leaves 15 and 7 attach to node 20. The entire binary tree is uniquely reconstructed from postorder and inorder sequences in O(N) time.'
   }
 ];
-
-export default function ConstructTheBinaryTreeFromPostorderAndInorderTraversalVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-  const postorder = [9, 15, 7, 20, 3];
-  const inorder = [9, 3, 15, 20, 7];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk-dim)]">
-          Subtree Root: <strong className="text-cyan-400">Node {step.rootVal}</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Postorder Pivot: <strong>Last Element = Root</strong>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Postorder &amp; Inorder Partitioning</span>
-          <span className="text-emerald-400 font-bold">O(N) Construction</span>
-        </div>
-
-        <div className="flex flex-col gap-3 w-full py-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-[#6e7596] w-20">Postorder:</span>
-            <div className="flex gap-2">
-              {postorder.map((v, i) => (
-                <span
-                  key={i}
-                  className={`w-9 h-9 rounded-lg border flex items-center justify-center font-mono font-bold text-xs ${
-                    v === step.rootVal
-                      ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200'
-                      : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-                  }`}
-                >
-                  {v}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-[#6e7596] w-20">Inorder:</span>
-            <div className="flex gap-2">
-              {inorder.map((v, i) => {
-                const isLeft = step.leftSub.includes(v);
-                const isRight = step.rightSub.includes(v);
-                const isRoot = v === step.rootVal;
-
-                return (
-                  <span
-                    key={i}
-                    className={`w-9 h-9 rounded-lg border flex items-center justify-center font-mono font-bold text-xs ${
-                      isRoot
-                        ? 'bg-cyan-500/25 border-cyan-400 text-cyan-200'
-                        : isLeft
-                        ? 'bg-emerald-500/20 border-emerald-400 text-emerald-200'
-                        : isRight
-                        ? 'bg-purple-500/20 border-purple-400 text-purple-200'
-                        : 'bg-[#181a26] border-[#31364d] text-[#6a718f]'
-                    }`}
-                  >
-                    {v}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          In Postorder, root is at postEnd &rarr; right child is constructed before left child.
-        </div>
-      </div>
-    </div>
-  );
-}

@@ -1,35 +1,48 @@
-import React from 'react';
+export const rendererType = 'array-scan';
 
 export const meta = {
   title: 'Combination Sum',
   category: 'Recursion / Backtracking',
   difficulty: 'Medium',
-  timeComplexity: 'O(2^T * K) where T is target / min(candidates)',
-  spaceComplexity: 'O(K * X) combinations',
-  description: 'Finds all unique combinations of candidates that sum up to target using pick / not-pick backtracking with unlimited element reuse.'
+  timeComplexity: 'O(2^T * K) where T = target / min(candidates)',
+  spaceComplexity: 'O(K * X) combinations recursion stack',
+  description: 'Finds all unique combinations in candidates where the candidate numbers sum to target. The same number may be chosen from candidates an unlimited number of times.'
 };
+
+export const ideaMap = [
+  {
+    title: 'Pick / Not-Pick Backtracking',
+    description: 'At each index, we decide to either pick candidates[ind] (subtracting from remaining target and remaining at ind for unlimited reuse) or not pick it (advancing to ind + 1).'
+  },
+  {
+    title: 'Base Cases & Termination',
+    description: 'If remaining target == 0, the current combination is recorded. If remaining target < 0 or ind == candidates.length, backtrack and try alternate branches.'
+  },
+  {
+    title: 'Exhaustive Solution Space',
+    description: 'Because we only advance forward or reuse the current element, all discovered combinations are guaranteed unique without duplicates.'
+  }
+];
 
 export const solutions = {
   cpp: `// C++ Combination Sum (Backtracking - Pick / Not Pick)
-// Time: O(2^T) | Space: O(T)
+// Time: O(2^T * K) | Space: O(K * X)
 #include <vector>
 using namespace std;
 
 class Solution {
 private:
     void findCombinations(int ind, int target, vector<int>& arr, vector<int>& current, vector<vector<int>>& result) {
-        // Base case: target is satisfied
+        // Base case: target satisfied
         if (target == 0) {
             result.push_back(current);
             return;
         }
 
-        // Base case: end of array reached
-        if (ind == arr.size()) {
-            return;
-        }
+        // Base case: out of bounds
+        if (ind == arr.size()) return;
 
-        // Pick choice: pick current element if it does not exceed target
+        // Pick choice: pick current element if it does not exceed remaining target
         if (arr[ind] <= target) {
             current.push_back(arr[ind]);
             findCombinations(ind, target - arr[ind], arr, current, result); // stay at ind for reuse
@@ -65,7 +78,7 @@ class Solution:
                 backtrack(ind, remain - candidates[ind], current)
                 current.pop()
 
-            # Not pick choice
+            # Not-pick choice (advance index)
             backtrack(ind + 1, remain, current)
 
         backtrack(0, target, [])
@@ -81,12 +94,14 @@ class Solution {
         }
         if (ind == arr.length) return;
 
+        // Pick choice
         if (arr[ind] <= target) {
             curr.add(arr[ind]);
             backtrack(ind, target - arr[ind], arr, curr, result);
             curr.remove(curr.size() - 1);
         }
 
+        // Not-pick choice
         backtrack(ind + 1, target, arr, curr, result);
     }
 
@@ -107,12 +122,14 @@ var combinationSum = function(candidates, target) {
         }
         if (ind === candidates.length) return;
 
+        // Pick choice (unlimited reuse: remain at ind)
         if (candidates[ind] <= remain) {
             current.push(candidates[ind]);
             backtrack(ind, remain - candidates[ind], current);
             current.pop();
         }
 
+        // Not-pick choice (move to ind + 1)
         backtrack(ind + 1, remain, current);
     }
 
@@ -123,147 +140,254 @@ var combinationSum = function(candidates, target) {
 
 export const steps = [
   {
-    title: '1. Candidates: [2, 3, 6, 7], Target = 7. Start at index 0',
+    title: '1. Initialization: Candidates [2, 3, 6, 7], Target = 7',
     phase: 'INITIAL',
-    codeLine: 35,
-    candidates: [2, 3, 6, 7],
-    currentIndex: 0,
-    remainingTarget: 7,
-    currentCombo: [],
-    results: [],
-    variables: { ind: 0, candidate: 2, remain: 7, current: '[]' },
-    explain: 'At each candidate, decide whether to PICK it (can be reused) or NOT PICK it (move to next candidate).',
-    intuition: 'The pick decision can repeat as long as candidates[i] <= target.'
+    codeLine: 43,
+    arr: [
+      { val: 2, state: 'pointer', label: 'ind=0' },
+      { val: 3, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' }
+    ],
+    pointers: [{ name: 'ind', index: 0 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [] },
+      { label: 'Found Combinations', items: [] }
+    ],
+    customCard: {
+      title: 'Backtracking State',
+      rows: [
+        { label: 'Active Candidate', value: '2 (ind: 0)' },
+        { label: 'Remaining Target', value: '7' },
+        { label: 'Current Branch', value: 'Root [ind=0, remain=7]' },
+        { label: 'Action', value: 'Evaluate Pick vs Not-Pick on candidates[0]' }
+      ]
+    },
+    variables: { ind: 0, candidate: 2, remain: 7, current: '[]', resultCount: 0 },
+    explain: 'Start recursive backtracking at index 0 with target 7. Each candidate can be picked multiple times or skipped entirely.',
+    intuition: 'At each node, we branch into Pick (if candidate <= target, staying at ind) and Not-Pick (advancing to ind + 1).'
   },
   {
-    title: '2. Pick 2 repeatedly: [2, 2, 2], Target remaining = 7 - 6 = 1',
-    phase: 'PICK_REPEATED',
-    codeLine: 24,
-    candidates: [2, 3, 6, 7],
-    currentIndex: 0,
-    remainingTarget: 1,
-    currentCombo: [2, 2, 2],
-    results: [],
-    variables: { ind: 0, picked: 2, count: 3, remain: 1 },
-    explain: 'Picked 2 three times. Target is now 1. Candidate 2 exceeds 1 (2 > 1), so we must explore next candidates.',
-    intuition: 'Cannot pick 2 again since 2 > 1.'
+    title: '2. Pick 2 (First Time): Target becomes 7 - 2 = 5',
+    phase: 'PICK',
+    codeLine: 34,
+    arr: [
+      { val: 2, state: 'active', label: 'picked' },
+      { val: 3, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' }
+    ],
+    pointers: [{ name: 'ind', index: 0 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [2] },
+      { label: 'Found Combinations', items: [] }
+    ],
+    customCard: {
+      title: 'Recursive Call',
+      rows: [
+        { label: 'Candidate Picked', value: '2' },
+        { label: 'Remaining Target', value: '5 (7 - 2)' },
+        { label: 'Current Stack', value: '[2]' },
+        { label: 'Stay at Index', value: 'ind = 0 (unlimited reuse)' }
+      ]
+    },
+    variables: { ind: 0, candidate: 2, remain: 5, current: '[2]', resultCount: 0 },
+    explain: '2 <= 7, so we pick 2 and push it to current. We recurse with ind = 0 and remain = 5.',
+    intuition: 'Staying at ind = 0 enables picking candidate 2 repeatedly as long as it fits.'
   },
   {
-    title: '3. Backtrack one 2 to [2, 2], explore candidate 3: 2 + 2 + 3 = 7 -> Match Found!',
-    phase: 'MATCH_FOUND',
-    codeLine: 12,
-    candidates: [2, 3, 6, 7],
-    currentIndex: 1,
-    remainingTarget: 0,
-    currentCombo: [2, 2, 3],
-    results: [[2, 2, 3]],
-    variables: { matchedCombo: '[2, 2, 3]', sum: 7, remain: 0 },
-    explain: 'Backtrack 2, then try candidate 3: 4 + 3 = 7. Remaining target is 0. Valid combination [2, 2, 3] recorded!',
-    intuition: 'Sum equals target. Base case triggered.'
+    title: '3. Pick 2 (Second Time): Target becomes 5 - 2 = 3',
+    phase: 'PICK',
+    codeLine: 34,
+    arr: [
+      { val: 2, state: 'active', label: 'picked x2' },
+      { val: 3, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' }
+    ],
+    pointers: [{ name: 'ind', index: 0 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [2, 2] },
+      { label: 'Found Combinations', items: [] }
+    ],
+    customCard: {
+      title: 'Recursive Call',
+      rows: [
+        { label: 'Candidate Picked', value: '2' },
+        { label: 'Remaining Target', value: '3 (5 - 2)' },
+        { label: 'Current Stack', value: '[2, 2]' },
+        { label: 'Stay at Index', value: 'ind = 0' }
+      ]
+    },
+    variables: { ind: 0, candidate: 2, remain: 3, current: '[2, 2]', resultCount: 0 },
+    explain: '2 <= 5, so we pick 2 again. Current combination is [2, 2] and remaining target is 3.',
+    intuition: 'Repeat pick until the element cannot fit into the remaining target.'
   },
   {
-    title: '4. Backtrack completely, move to candidate 7: Pick 7 -> Match Found!',
-    phase: 'MATCH_FOUND',
-    codeLine: 12,
-    candidates: [2, 3, 6, 7],
-    currentIndex: 3,
-    remainingTarget: 0,
-    currentCombo: [7],
-    results: [[2, 2, 3], [7]],
-    variables: { matchedCombo: '[7]', sum: 7, remain: 0 },
-    explain: 'Candidate 7 matches target 7 directly. Valid combination [7] recorded!',
-    intuition: 'Single-element combination.'
+    title: '4. Pick 2 (Third Time): Target becomes 3 - 2 = 1',
+    phase: 'PICK',
+    codeLine: 34,
+    arr: [
+      { val: 2, state: 'active', label: 'picked x3' },
+      { val: 3, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' }
+    ],
+    pointers: [{ name: 'ind', index: 0 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [2, 2, 2] },
+      { label: 'Found Combinations', items: [] }
+    ],
+    customCard: {
+      title: 'Recursive Call',
+      rows: [
+        { label: 'Candidate Picked', value: '2' },
+        { label: 'Remaining Target', value: '1 (3 - 2)' },
+        { label: 'Current Stack', value: '[2, 2, 2]' },
+        { label: 'Next Candidate Check', value: '2 > 1 (Cannot pick 2 again)' }
+      ]
+    },
+    variables: { ind: 0, candidate: 2, remain: 1, current: '[2, 2, 2]', resultCount: 0 },
+    explain: '2 <= 3, pick 2 again. Now remaining target = 1. Since 2 > 1, picking 2 is no longer valid; advance index to explore other candidates.',
+    intuition: 'Subsequent candidates (3, 6, 7) all exceed remaining target 1, leading to backtracks.'
   },
   {
-    title: '5. Completed: All Branches Explored -> Combinations: [[2, 2, 3], [7]]',
-    phase: 'COMPLETED',
+    title: '5. Backtrack one 2 to [2, 2], Advance to Index 1 (Candidate 3)',
+    phase: 'BACKTRACK',
     codeLine: 36,
-    candidates: [2, 3, 6, 7],
-    currentIndex: 3,
-    remainingTarget: 0,
-    currentCombo: [],
-    results: [[2, 2, 3], [7]],
-    variables: { allCombinations: '[[2, 2, 3], [7]]', totalValid: 2 },
-    explain: 'Exhaustive exploration completed. The two unique combinations summing to 7 are [2, 2, 3] and [7].',
+    arr: [
+      { val: 2, state: 'inactive' },
+      { val: 3, state: 'pointer', label: 'ind=1' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' }
+    ],
+    pointers: [{ name: 'ind', index: 1 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [2, 2] },
+      { label: 'Found Combinations', items: [] }
+    ],
+    customCard: {
+      title: 'Backtrack & Advance',
+      rows: [
+        { label: 'Popped', value: '2' },
+        { label: 'Current Stack', value: '[2, 2]' },
+        { label: 'Remaining Target', value: '3' },
+        { label: 'Active Candidate', value: 'candidates[1] = 3' }
+      ]
+    },
+    variables: { ind: 1, candidate: 3, remain: 3, current: '[2, 2]', resultCount: 0 },
+    explain: 'Pop the last 2 from [2, 2, 2], restoring remaining target to 3. Advance to candidate 3 at ind = 1.',
+    intuition: 'Backtracking undoes the state change so sibling branches can be explored cleanly.'
+  },
+  {
+    title: '6. Pick Candidate 3: Remaining Target = 3 - 3 = 0 -> Match 1 Found!',
+    phase: 'MATCH_FOUND',
+    codeLine: 23,
+    arr: [
+      { val: 2, state: 'match', label: 'in combo' },
+      { val: 3, state: 'match', label: 'in combo' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'inactive' }
+    ],
+    pointers: [{ name: 'ind', index: 1 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [2, 2, 3] },
+      { label: 'Found Combinations', items: ['[2, 2, 3]'] }
+    ],
+    customCard: {
+      title: 'Solution Found!',
+      rows: [
+        { label: 'Matched Combo', value: '[2, 2, 3]' },
+        { label: 'Sum', value: '2 + 2 + 3 = 7' },
+        { label: 'Remaining Target', value: '0' },
+        { label: 'Status', value: 'Base Case Triggered -> Added to Result' }
+      ]
+    },
+    variables: { ind: 1, candidate: 3, remain: 0, current: '[2, 2, 3]', resultCount: 1 },
+    explain: 'Candidate 3 matches remaining target 3 exactly. Remaining target = 0! Record valid combination [2, 2, 3].',
+    intuition: 'Base case target == 0 triggers recording of a deep copy of current.'
+  },
+  {
+    title: '7. Backtrack to Root & Advance to Index 3 (Candidate 7)',
+    phase: 'EXPLORE',
+    codeLine: 40,
+    arr: [
+      { val: 2, state: 'inactive' },
+      { val: 3, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'pointer', label: 'ind=3' }
+    ],
+    pointers: [{ name: 'ind', index: 3 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [] },
+      { label: 'Found Combinations', items: ['[2, 2, 3]'] }
+    ],
+    customCard: {
+      title: 'Exploring Candidate 7',
+      rows: [
+        { label: 'Current Stack', value: '[]' },
+        { label: 'Remaining Target', value: '7' },
+        { label: 'Active Candidate', value: 'candidates[3] = 7' },
+        { label: 'Check', value: '7 <= 7 -> Pick' }
+      ]
+    },
+    variables: { ind: 3, candidate: 7, remain: 7, current: '[]', resultCount: 1 },
+    explain: 'After exploring all branches starting with 2, 3, and 6, we backtrack to the root and examine candidate 7.',
+    intuition: 'Candidate 7 matches target 7 directly in one step.'
+  },
+  {
+    title: '8. Pick Candidate 7: Remaining Target = 7 - 7 = 0 -> Match 2 Found!',
+    phase: 'MATCH_FOUND',
+    codeLine: 23,
+    arr: [
+      { val: 2, state: 'inactive' },
+      { val: 3, state: 'inactive' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'match', label: 'matched' }
+    ],
+    pointers: [{ name: 'ind', index: 3 }],
+    auxiliaryTrack: [
+      { label: 'Current Combination', items: [7] },
+      { label: 'Found Combinations', items: ['[2, 2, 3]', '[7]'] }
+    ],
+    customCard: {
+      title: 'Solution Found!',
+      rows: [
+        { label: 'Matched Combo', value: '[7]' },
+        { label: 'Sum', value: '7' },
+        { label: 'Remaining Target', value: '0' },
+        { label: 'Status', value: 'Added to Result' }
+      ]
+    },
+    variables: { ind: 3, candidate: 7, remain: 0, current: '[7]', resultCount: 2 },
+    explain: 'Picked candidate 7. Remaining target is 0. Record valid combination [7].',
+    intuition: 'A single element can satisfy the target on its own.'
+  },
+  {
+    title: '9. Completed: All Backtracking Branches Explored',
+    phase: 'COMPLETED',
+    codeLine: 47,
+    arr: [
+      { val: 2, state: 'match' },
+      { val: 3, state: 'match' },
+      { val: 6, state: 'inactive' },
+      { val: 7, state: 'match' }
+    ],
+    pointers: [],
+    auxiliaryTrack: [
+      { label: 'Final Combinations', items: ['[2, 2, 3]', '[7]'] }
+    ],
+    customCard: {
+      title: 'Final Summary',
+      rows: [
+        { label: 'Total Combinations', value: '2' },
+        { label: 'Combinations', value: '[[2, 2, 3], [7]]' },
+        { label: 'Search Space', value: 'Exhaustive Pick/Not-Pick Complete' },
+        { label: 'Complexity', value: 'O(2^T * K) Time | O(K * X) Space' }
+      ]
+    },
+    variables: { totalCombinations: 2, finalResult: '[[2, 2, 3], [7]]' },
+    explain: 'Entire recursion tree traversed. Exactly two unique combinations sum to 7: [2, 2, 3] and [7].',
     intuition: 'Pick / not-pick tree guarantees all unique valid combinations are discovered.'
   }
 ];
-
-export default function CombinationSumVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Metric badges */}
-      <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-mono">
-        <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
-          Active Candidate: Index {step.currentIndex} (val: {step.candidates[step.currentIndex]})
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-300 font-semibold">
-          Remaining Target: {step.remainingTarget}
-        </span>
-        <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold">
-          Found Combos: {step.results.length}
-        </span>
-      </div>
-
-      {/* Candidates array selection */}
-      <div className="w-full bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-5 flex flex-col items-center gap-3">
-        <span className="text-xs font-mono text-[var(--chalk-dim)] uppercase tracking-wider">Candidate Numbers Pool</span>
-
-        <div className="flex items-center justify-center gap-3">
-          {step.candidates.map((val, idx) => {
-            const isCurrent = idx === step.currentIndex;
-            const isPicked = step.currentCombo.includes(val);
-
-            let borderClass = 'border-[var(--line)] bg-[var(--board-raised-2)] text-[var(--chalk-dim)]';
-            if (isCurrent) {
-              borderClass = 'border-amber-500 bg-amber-500/25 text-amber-300 ring-2 ring-amber-500/40 shadow-lg';
-            } else if (isPicked) {
-              borderClass = 'border-blue-500/50 bg-blue-500/20 text-blue-300';
-            }
-
-            return (
-              <div key={idx} className={`w-14 h-16 rounded-xl border flex flex-col items-center justify-center font-mono font-bold transition-all ${borderClass}`}>
-                <span className="text-base">{val}</span>
-                <span className="text-[9px] text-[var(--chalk-faint)]">[{idx}]</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Current Backtracking Stack & Output */}
-      <div className="w-full grid grid-cols-2 gap-4">
-        <div className="bg-[var(--board-raised)] border border-[var(--line)] rounded-2xl p-4 flex flex-col items-center gap-2">
-          <span className="text-xs font-mono text-[var(--chalk-dim)]">Current Combination</span>
-          <div className="flex items-center gap-1.5 min-h-[40px] flex-wrap justify-center">
-            {step.currentCombo.map((val, idx) => (
-              <span key={idx} className="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono font-bold text-sm">
-                {val}
-              </span>
-            ))}
-            {step.currentCombo.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Empty</span>}
-          </div>
-        </div>
-
-        <div className="bg-[var(--board-raised)] border border-emerald-500/30 rounded-2xl p-4 flex flex-col items-center gap-2">
-          <span className="text-xs font-mono text-emerald-400">Target Matches Found</span>
-          <div className="flex flex-col items-center gap-1 min-h-[40px]">
-            {step.results.map((res, idx) => (
-              <span key={idx} className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs">
-                [{res.join(', ')}]
-              </span>
-            ))}
-            {step.results.length === 0 && <span className="text-xs text-[var(--chalk-faint)] italic">Searching...</span>}
-          </div>
-        </div>
-      </div>
-
-      {/* Step Explanation */}
-      <div className="w-full bg-[var(--board-raised-2)] border border-[var(--line)] rounded-xl p-3 text-xs font-mono text-center text-[var(--chalk-dim)]">
-        {step.explain}
-      </div>
-    </div>
-  );
-}

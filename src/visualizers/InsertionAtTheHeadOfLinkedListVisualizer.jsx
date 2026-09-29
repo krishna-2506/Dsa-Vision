@@ -1,56 +1,58 @@
-import React from 'react';
+// DATA-ONLY — rendered by LinkedListRenderer via rendererType
 
 export const meta = {
   title: 'Insertion at the Head of Linked List',
-  category: 'Linked List',
+  category: 'Linked List & Pointer Operations',
   difficulty: 'Easy',
-  timeComplexity: 'O(1)',
-  spaceComplexity: 'O(1)',
-  description: 'Inserts a new node at the beginning of a singly linked list in O(1) time by creating a new node, pointing its next pointer to the current head, and reassigning head.'
+  timeComplexity: 'O(1) Constant Time',
+  spaceComplexity: 'O(1) Auxiliary',
+  description: 'Inserts a new node at the beginning of a singly linked list in strictly O(1) time by creating the node, pointing its next pointer to the current head, and updating the head pointer.'
+};
+
+export const rendererType = 'linked-list';
+
+export const ideaMap = {
+  title: 'Constant-Time Head Insertion Strategy',
+  nodes: [
+    { id: 'root', label: 'O(1) Head Insertion Invariant', children: ['node-allocation', 'point-to-head', 'head-reassignment', 'null-safety', 'complexity'] },
+    { id: 'node-allocation', label: '1. Allocate New Node', detail: 'Allocate heap memory for newNode with data = val and next = nullptr.' },
+    { id: 'point-to-head', label: '2. Link to Current Head', detail: 'Assign newNode->next = head to anchor the existing list as the new node\'s successor.' },
+    { id: 'head-reassignment', label: '3. Reassign Head Pointer', detail: 'Set head = newNode. The new node becomes the primary entry point of the list.' },
+    { id: 'null-safety', label: '4. Empty List Compatibility', detail: 'If head was initially NULL, newNode->next becomes NULL, correctly establishing a 1-node list.' },
+    { id: 'complexity', label: '5. Constant Resource Bounds', detail: 'Executes in strictly O(1) constant time without inspecting any downstream nodes.' }
+  ]
 };
 
 export const solutions = {
-  cpp: `// C++ O(1) Insertion at Head of Singly Linked List
-#include <iostream>
-using namespace std;
-
-struct Node {
-    int data;
-    Node* next;
-    Node(int val) : data(val), next(nullptr) {}
-};
-
+  cpp: `// C++ Optimal O(1) Insertion at Head of Linked List
+// Time Complexity: O(1) | Space Complexity: O(1)
+/**
+ * Definition for singly-linked list.
+ * struct Node {
+ *     int data;
+ *     Node* next;
+ *     Node(int x) : data(x), next(nullptr) {}
+ * };
+ */
 class Solution {
 public:
     Node* insertAtHead(Node* head, int val) {
-        Node* newNode = new Node(val);
-        newNode->next = head;
-        head = newNode;
+        Node* newNode = new Node(val); // 1. Allocate node
+        newNode->next = head;          // 2. Link to existing list
+        head = newNode;                // 3. Update head pointer
         return head;
     }
 };`,
-  python: `# Python 3 O(1) Insertion at Head of Linked List
-class Node:
-    def __init__(self, data=0, next=None):
-        self.data = data
-        self.next = next
-
+  python: `# Python 3 Optimal O(1) Insertion at Head of Linked List
+# Time Complexity: O(1) | Space Complexity: O(1)
 class Solution:
-    def insertAtHead(self, head: Node, val: int) -> Node:
+    def insertAtHead(self, head: Optional[Node], val: int) -> Node:
         new_node = Node(val)
         new_node.next = head
         head = new_node
         return head`,
-  java: `// Java O(1) Insertion at Head of Linked List
-class Node {
-    int data;
-    Node next;
-    Node(int data) {
-        this.data = data;
-        this.next = null;
-    }
-}
-
+  java: `// Java Optimal O(1) Insertion at Head of Linked List
+// Time Complexity: O(1) | Space Complexity: O(1)
 class Solution {
     public Node insertAtHead(Node head, int val) {
         Node newNode = new Node(val);
@@ -59,14 +61,8 @@ class Solution {
         return head;
     }
 }`,
-  javascript: `// JavaScript O(1) Insertion at Head of Linked List
-class Node {
-    constructor(data) {
-        this.data = data;
-        this.next = null;
-    }
-}
-
+  javascript: `// JavaScript Optimal O(1) Insertion at Head of Linked List
+// Time Complexity: O(1) | Space Complexity: O(1)
 var insertAtHead = function(head, val) {
     const newNode = new Node(val);
     newNode.next = head;
@@ -77,129 +73,144 @@ var insertAtHead = function(head, val) {
 
 export const steps = [
   {
-    title: '1. Initial State: Existing List [10 -> 20 -> 30 -> NULL], Insert Val = 5',
-    phase: 'INITIAL',
+    title: '1. Current List State: [2] -> [3] -> [4] -> NULL, Target Value = 1',
+    phase: 'INITIALIZATION',
+    codeLine: 12,
+    nodes: [
+      { id: 2, val: 2, pointers: ['head'], isHighlighted: true },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 4, pointers: ['tail'] }
+    ],
+    metrics: [
+      { label: 'Existing Length', value: '3' },
+      { label: 'Insert Value', value: '1' },
+      { label: 'Current Head', value: 'Node(2)' },
+      { label: 'Operation', value: 'Insert at Head' }
+    ],
+    customCard: {
+      title: 'Initial Configuration',
+      rows: [
+        { label: 'Input Value', value: 'val = 1' },
+        { label: 'Current Head', value: 'Node 2' },
+        { label: 'Target Structure', value: '[1] -> [2] -> [3] -> [4] -> NULL' }
+      ]
+    },
+    formula: 'Node* insertAtHead(Node* head, int val = 1);',
+    action: 'Inspect existing list with head pointing to Node 2. Value 1 is to be prepended.',
+    explain: 'Insertion at the head does not require traversing the list, guaranteeing O(1) time complexity.',
+    intuition: 'Because we hold direct access to head, we can prepend a node instantaneously.'
+  },
+  {
+    title: '2. Allocate New Node: Node(1)',
+    phase: 'ALLOCATION',
+    codeLine: 13,
+    nodes: [
+      { id: 1, val: 1, pointers: ['newNode'], isHighlighted: true },
+      { id: 2, val: 2, pointers: ['head'] },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 4, pointers: ['tail'] }
+    ],
+    metrics: [
+      { label: 'New Node', value: 'Node(1)' },
+      { label: 'newNode->next', value: 'nullptr' },
+      { label: 'Current Head', value: 'Node(2)' },
+      { label: 'Allocated Space', value: '1 Node' }
+    ],
+    customCard: {
+      title: 'Heap Allocation Step',
+      rows: [
+        { label: 'Statement', value: 'Node* newNode = new Node(1)' },
+        { label: 'Memory Allocated', value: 'sizeof(Node) on heap' },
+        { label: 'Initial Pointer', value: 'newNode->next = nullptr' }
+      ]
+    },
+    formula: 'Node* newNode = new Node(val); // Node(1)',
+    action: 'Allocate a new Node with value 1 in heap memory. newNode pointer created.',
+    explain: 'A freestanding node is created holding value 1 with next pointing to nullptr.',
+    intuition: 'The node exists independently until we wire its next pointer to head.'
+  },
+  {
+    title: '3. Link New Node to Existing Head: newNode->next = head',
+    phase: 'LINKING',
     codeLine: 14,
-    nodes: [10, 20, 30],
-    newNodeVal: 5,
-    newNodeLinked: false,
-    headIdx: 0,
-    variables: { insertVal: 5, currentHead: 10, list: '[10 -> 20 -> 30]' },
-    explain: 'Current list has head pointing to node 10. We want to prepend node with value 5.',
-    intuition: 'Inserting at head requires zero traversals — only 2 pointer assignments in constant O(1) time.'
+    nodes: [
+      { id: 1, val: 1, pointers: ['newNode'], isModified: true },
+      { id: 2, val: 2, pointers: ['head'], isHighlighted: true },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 4, pointers: ['tail'] }
+    ],
+    metrics: [
+      { label: 'Link Established', value: 'newNode -> Node(2)' },
+      { label: 'head Pointer', value: 'Still points to Node(2)' },
+      { label: 'Connection', value: '1 -> 2 -> 3 -> 4' }
+    ],
+    customCard: {
+      title: 'Pointer Linking Step',
+      rows: [
+        { label: 'Operation', value: 'newNode->next = head' },
+        { label: 'Result', value: 'Node 1 now points to Node 2' },
+        { label: 'Precaution', value: 'Must link BEFORE moving head pointer' }
+      ]
+    },
+    formula: 'newNode->next = head; // Node(1)->next = Node(2)',
+    action: 'Set newNode->next = head. Node 1 now points forward to Node 2.',
+    explain: 'Connecting newNode to head attaches the entire preexisting list onto the new node without loss.',
+    intuition: 'Order of assignment is critical: if head was moved first, the reference to Node 2 would be permanently lost.'
   },
   {
-    title: '2. Allocate New Node(5) in Memory',
-    phase: 'CREATE_NODE',
+    title: '4. Reassign Head Pointer: head = newNode',
+    phase: 'HEAD_UPDATE',
     codeLine: 15,
-    nodes: [10, 20, 30],
-    newNodeVal: 5,
-    newNodeLinked: false,
-    headIdx: 0,
-    variables: { newNode: 'Node(5)', 'newNode->next': 'NULL', head: 'Node(10)' },
-    explain: 'Node* newNode = new Node(5) creates the new element in heap memory. Its next pointer initially defaults to NULL.',
-    intuition: 'Prepare the node before linking it into the chain.'
+    nodes: [
+      { id: 1, val: 1, pointers: ['head (new)'], isHighlighted: true, isModified: true },
+      { id: 2, val: 2, pointers: [] },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 4, pointers: ['tail'] }
+    ],
+    metrics: [
+      { label: 'New Head', value: 'Node(1)' },
+      { label: 'New List Length', value: '4' },
+      { label: 'Prepend Time', value: 'O(1) operations' }
+    ],
+    customCard: {
+      title: 'Head Pointer Reassignment',
+      rows: [
+        { label: 'Operation', value: 'head = newNode' },
+        { label: 'New Head Node', value: 'Node 1' },
+        { label: 'List Sequence', value: '[1] -> [2] -> [3] -> [4] -> NULL' }
+      ]
+    },
+    formula: 'head = newNode; // head now references Node(1)',
+    action: 'Update head = newNode. Node 1 is officially the head of the list.',
+    explain: 'The head pointer is reassigned to Node 1. The operation is finalized.',
+    intuition: 'Updating the single head scalar variable takes O(1) time regardless of list size.'
   },
   {
-    title: '3. Link newNode->next = head',
-    phase: 'LINK_NEXT',
+    title: '5. Insertion Complete: Return New Head',
+    phase: 'COMPLETED',
     codeLine: 16,
-    nodes: [10, 20, 30],
-    newNodeVal: 5,
-    newNodeLinked: true,
-    headIdx: 0,
-    variables: { 'newNode->next': 'Node(10)', status: 'Connected to existing list' },
-    explain: 'Point newNode->next to the current head (10). Now newNode references the entire subsequent list.',
-    intuition: 'Crucial order: always connect newNode->next to head BEFORE moving head, otherwise references to the rest of the list are lost!'
-  },
-  {
-    title: '4. Update head = newNode: List is now [5 -> 10 -> 20 -> 30 -> NULL]',
-    phase: 'UPDATE_HEAD',
-    codeLine: 17,
-    nodes: [5, 10, 20, 30],
-    newNodeVal: null,
-    newNodeLinked: false,
-    headIdx: 0,
-    variables: { newHead: 5, length: 4, operation: 'Complete O(1)' },
-    explain: 'Reassign head to point to the new node (5). The insertion is complete in O(1) time and O(1) auxiliary space.',
-    intuition: 'Head pointer updated. Return new head.'
+    nodes: [
+      { id: 1, val: 1, pointers: ['head'], isHighlighted: true },
+      { id: 2, val: 2, pointers: [] },
+      { id: 3, val: 3, pointers: [] },
+      { id: 4, val: 4, pointers: ['tail'], isHighlighted: true }
+    ],
+    metrics: [
+      { label: 'Final Length', value: '4 nodes' },
+      { label: 'Time Complexity', value: 'O(1) Constant' },
+      { label: 'Space Complexity', value: 'O(1) Auxiliary' }
+    ],
+    customCard: {
+      title: 'Operation Summary',
+      rows: [
+        { label: 'Final List', value: '[1] -> [2] -> [3] -> [4] -> NULL' },
+        { label: 'Total Operations', value: 'Exactly 2 pointer assignments' },
+        { label: 'Complexity Guarantee', value: 'Strictly O(1) time complexity' }
+      ]
+    },
+    formula: 'return head; // [1 -> 2 -> 3 -> 4 -> NULL]',
+    action: 'Return new head pointer. Prepend operation complete.',
+    explain: 'The linked list now begins with Node 1 and smoothly chains into the rest of the list.',
+    intuition: 'Linked lists provide true O(1) prepend capability, unlike dynamic arrays that require O(N) shifting.'
   }
 ];
-
-export default function InsertionAtTheHeadOfLinkedListVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      {/* Header Info */}
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <span className="px-4 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300 font-mono text-sm font-semibold">
-          Operation: Insert at Head
-        </span>
-        {step.newNodeVal !== null && (
-          <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-xs font-semibold">
-            New Node Value = {step.newNodeVal}
-          </span>
-        )}
-      </div>
-
-      {/* Visual LinkedList Chain */}
-      <div className="w-full p-6 rounded-2xl bg-[var(--board-raised-2)] border border-[var(--line)] flex flex-col items-center gap-6">
-        {/* Floating New Node Stage */}
-        {step.newNodeVal !== null && (
-          <div className="flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-[10px] font-mono text-amber-400 font-bold bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
-              newNode
-            </span>
-            <div className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center font-mono text-lg font-bold ${
-              step.newNodeLinked ? 'border-emerald-400 bg-emerald-500/20 text-emerald-300' : 'border-amber-400 bg-amber-500/20 text-amber-300'
-            }`}>
-              {step.newNodeVal}
-            </div>
-            {step.newNodeLinked && (
-              <span className="text-xs font-mono text-emerald-400">newNode &rarr; head (10)</span>
-            )}
-          </div>
-        )}
-
-        {/* Existing List Nodes */}
-        <div className="flex items-center justify-center flex-wrap gap-2 py-2">
-          {step.nodes.map((val, idx) => {
-            const isHead = idx === 0;
-
-            return (
-              <React.Fragment key={idx}>
-                <div className="relative flex flex-col items-center">
-                  {isHead && (
-                    <span className="absolute -top-6 text-[10px] font-mono text-cyan-400 font-bold bg-cyan-500/20 px-2 py-0.5 rounded border border-cyan-500/30">
-                      head
-                    </span>
-                  )}
-                  <div className={`w-14 h-14 rounded-xl border flex items-center justify-center font-mono text-base font-bold ${
-                    isHead ? 'bg-cyan-500/15 border-cyan-400 text-cyan-200' : 'bg-[var(--board-raised)] border-[var(--line)] text-[var(--chalk)]'
-                  }`}>
-                    {val}
-                  </div>
-                </div>
-
-                {/* Pointer Arrow */}
-                <div className="text-[var(--chalk-dim)] text-lg font-bold">&rarr;</div>
-              </React.Fragment>
-            );
-          })}
-
-          {/* NULL Terminator */}
-          <div className="w-14 h-14 rounded-xl border border-dashed border-[#3b4261] bg-[#101117] flex items-center justify-center font-mono text-xs text-[var(--chalk-dim)]">
-            NULL
-          </div>
-        </div>
-      </div>
-
-      {/* Complexity Banner */}
-      <div className="w-full p-3 rounded-xl bg-[var(--board-raised)] border border-[var(--line)] flex items-center justify-around font-mono text-xs text-[var(--chalk-dim)]">
-        <div>Time Complexity: <strong className="text-emerald-400">O(1)</strong></div>
-        <div>Auxiliary Space: <strong className="text-emerald-400">O(1)</strong></div>
-      </div>
-    </div>
-  );
-}

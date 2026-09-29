@@ -1,4 +1,4 @@
-import React from 'react';
+export const rendererType = 'tree';
 
 export const meta = {
   title: 'Lowest Common Ancestor in Binary Tree',
@@ -6,7 +6,33 @@ export const meta = {
   difficulty: 'Medium',
   timeComplexity: 'O(N)',
   spaceComplexity: 'O(H) recursion stack',
-  description: 'Finds the lowest common ancestor (LCA) node of two given nodes p and q in a binary tree where both branches converge.'
+  description: 'Finds the lowest common ancestor (LCA) node of two given nodes p and q in a binary tree where both target branches converge.'
+};
+
+export const ideaMap = {
+  title: 'Lowest Common Ancestor Recursive Strategy',
+  nodes: [
+    {
+      id: 'step1',
+      label: 'Identity / Null Base Case',
+      detail: 'If root is null or root matches p or q, immediately return root.'
+    },
+    {
+      id: 'step2',
+      label: 'Explore Left & Right Branches',
+      detail: 'Recursively search left subtree (lowestCommonAncestor(root.left, p, q)) and right subtree.'
+    },
+    {
+      id: 'step3',
+      label: 'Convergence Decision',
+      detail: 'If both left and right recursive calls return non-null, current node is the LCA.'
+    },
+    {
+      id: 'step4',
+      label: 'Bubble Non-Null Child',
+      detail: 'If only one subtree found a target, return that non-null child pointer upwards.'
+    }
+  ]
 };
 
 export const solutions = {
@@ -14,7 +40,8 @@ export const solutions = {
 // Time Complexity: O(N) | Space Complexity: O(H)
 struct TreeNode {
     int val;
-    TreeNode *left, *right;
+    TreeNode *left;
+    TreeNode *right;
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
@@ -29,7 +56,7 @@ public:
         TreeNode* left = lowestCommonAncestor(root->left, p, q);
         TreeNode* right = lowestCommonAncestor(root->right, p, q);
 
-        // If both subtrees return non-null, root is the LCA
+        // If both subtrees return non-null, root is the convergence point (LCA)
         if (left != nullptr && right != nullptr) {
             return root;
         }
@@ -38,6 +65,13 @@ public:
     }
 };`,
   java: `// Java: Lowest Common Ancestor in Binary Tree
+// Time Complexity: O(N) | Space Complexity: O(H)
+class TreeNode {
+    int val;
+    TreeNode left, right;
+    TreeNode(int x) { val = x; }
+}
+
 class Solution {
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         if (root == null || root == p || root == q) {
@@ -51,22 +85,31 @@ class Solution {
             return root;
         }
 
-        return left != null ? left : right;
+        return (left != null) ? left : right;
     }
 }`,
   python: `# Python 3: Lowest Common Ancestor in Binary Tree
-def lowest_common_ancestor(root, p, q):
-    if not root or root == p or root == q:
-        return root
+# Time Complexity: O(N) | Space Complexity: O(H)
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
 
-    left = lowest_common_ancestor(root.left, p, q)
-    right = lowest_common_ancestor(root.right, p, q)
+class Solution:
+    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+        if not root or root == p or root == q:
+            return root
 
-    if left and right:
-        return root
+        left = self.lowestCommonAncestor(root.left, p, q)
+        right = self.lowestCommonAncestor(root.right, p, q)
 
-    return left if left else right`,
+        if left and right:
+            return root
+
+        return left if left else right`,
   javascript: `// JavaScript: Lowest Common Ancestor in Binary Tree
+// Time Complexity: O(N) | Space Complexity: O(H)
 function lowestCommonAncestor(root, p, q) {
     if (!root || root === p || root === q) {
         return root;
@@ -83,108 +126,198 @@ function lowestCommonAncestor(root, p, q) {
 }`
 };
 
+const treeRoot = {
+  val: 3,
+  left: {
+    val: 5,
+    left: { val: 6, left: null, right: null },
+    right: {
+      val: 2,
+      left: { val: 7, left: null, right: null },
+      right: { val: 4, left: null, right: null }
+    }
+  },
+  right: {
+    val: 1,
+    left: { val: 0, left: null, right: null },
+    right: { val: 8, left: null, right: null }
+  }
+};
+
 export const steps = [
   {
-    title: '1. Target Nodes: Find LCA of p = Node 5 and q = Node 1',
-    phase: 'INIT',
-    codeLine: 14,
-    activeNode: 3,
-    lcaFound: null,
-    explain: 'Start DFS at Root 3. Check if root is null or matches p (5) or q (1).'
+    phase: 'INITIALIZE',
+    title: 'Initialize LCA Search: Find LCA of Node(5) and Node(1)',
+    activeVal: 3,
+    tree: treeRoot,
+    visitedVals: [],
+    nodeLabels: { 3: 'ROOT', 5: 'TARGET P', 1: 'TARGET Q' },
+    customCard: {
+      title: 'LCA Problem Invariant',
+      rows: [
+        { label: 'Target P', value: 'Node(5)' },
+        { label: 'Target Q', value: 'Node(1)' },
+        { label: 'Base Case Check', value: 'Root 3 != 5 and Root 3 != 1 -> Search both subtrees', accent: true },
+        { label: 'Next Branch', value: 'Recurse into left subtree: lowestCommonAncestor(3.left, 5, 1)' }
+      ]
+    },
+    variables: {
+      currNode: 3,
+      p: 5,
+      q: 1,
+      'leftResult': 'Pending...',
+      'rightResult': 'Pending...',
+      callStackDepth: 1
+    },
+    metrics: {
+      lcaFound: false,
+      nodesExamined: 1,
+      currentBranch: 'Root (3)'
+    },
+    explain: 'Initiate search at Root 3 for targets p = 5 and q = 1. Root 3 is neither null nor equal to p or q. Recurse into left child (5).'
   },
   {
-    title: '2. Search Left Subtree of 3: Traverse down to Node 5 (Matches p!)',
-    phase: 'LEFT_HIT',
-    codeLine: 14,
-    activeNode: 5,
-    lcaFound: null,
-    explain: 'At Node 5, root == p &rarr; returns Node 5 up to Root 3. Left branch returns 5.'
+    phase: 'FOUND_TARGET_P',
+    title: 'Visit Node 5: Base Case Match (root == p)!',
+    activeVal: 5,
+    tree: treeRoot,
+    visitedVals: [5],
+    nodeLabels: { 3: 'ROOT', 5: 'FOUND (p=5)', 1: 'TARGET Q' },
+    customCard: {
+      title: 'Target P Encountered',
+      rows: [
+        { label: 'Identity Check', value: 'currNode (5) === p (5) -> TRUE', accent: true },
+        { label: 'Return Action', value: 'Return Node(5) up to parent caller frame (Node 3)' },
+        { label: 'Optimization', value: 'No need to search deeper beneath Node 5; return immediately' }
+      ]
+    },
+    variables: {
+      currNode: 5,
+      p: 5,
+      'root == p': 'true',
+      returning: 'Node(5)',
+      callStackDepth: 2
+    },
+    metrics: {
+      lcaFound: false,
+      nodesExamined: 2,
+      currentBranch: 'Left Subtree (5)'
+    },
+    explain: 'At Node 5, root == p is true. The algorithm immediately returns Node 5 up the call stack to Root 3 without needing to search its children.'
   },
   {
-    title: '3. Search Right Subtree of 3: Traverse to Node 1 (Matches q!)',
-    phase: 'RIGHT_HIT',
-    codeLine: 14,
-    activeNode: 1,
-    lcaFound: null,
-    explain: 'At Node 1, root == q &rarr; returns Node 1 up to Root 3. Right branch returns 1.'
+    phase: 'RETURN_TO_ROOT',
+    title: 'Back at Root 3: Left Branch Returned Node 5 -> Explore Right Branch',
+    activeVal: 3,
+    tree: treeRoot,
+    visitedVals: [5],
+    nodeLabels: { 3: 'ROOT [left=5]', 5: 'FOUND (p=5)', 1: 'TARGET Q' },
+    customCard: {
+      title: 'Branch Conjunction Progress',
+      rows: [
+        { label: 'Left Subtree Result', value: 'Node(5) (Non-null!)', accent: true },
+        { label: 'Next Branch', value: 'Recurse into right subtree: lowestCommonAncestor(3.right, 5, 1)' },
+        { label: 'Potential Convergence', value: 'If right returns non-null, Root 3 is the LCA!' }
+      ]
+    },
+    variables: {
+      currNode: 3,
+      left: 'Node(5)',
+      right: 'Searching...',
+      callStackDepth: 1
+    },
+    metrics: {
+      lcaFound: false,
+      nodesExamined: 2,
+      currentBranch: 'Right Subtree (1)'
+    },
+    explain: 'Root 3 receives Node 5 from its left branch. Now it initiates recursion on its right child (Node 1).'
   },
   {
-    title: '4. At Root 3: left != null (5) AND right != null (1) &rarr; Root 3 is the LCA!',
-    phase: 'LCA_DISCOVERED',
-    codeLine: 22,
-    activeNode: 3,
-    lcaFound: 3,
-    explain: 'Both left and right calls returned non-null pointers! Therefore, Root 3 is the Lowest Common Ancestor.'
+    phase: 'FOUND_TARGET_Q',
+    title: 'Visit Node 1: Base Case Match (root == q)!',
+    activeVal: 1,
+    tree: treeRoot,
+    visitedVals: [5, 1],
+    nodeLabels: { 3: 'ROOT [left=5]', 5: 'FOUND (p=5)', 1: 'FOUND (q=1)' },
+    customCard: {
+      title: 'Target Q Encountered',
+      rows: [
+        { label: 'Identity Check', value: 'currNode (1) === q (1) -> TRUE', accent: true },
+        { label: 'Return Action', value: 'Return Node(1) up to caller frame (Node 3)' },
+        { label: 'Branch Result', value: 'Right branch returns Node(1)' }
+      ]
+    },
+    variables: {
+      currNode: 1,
+      q: 1,
+      'root == q': 'true',
+      returning: 'Node(1)',
+      callStackDepth: 2
+    },
+    metrics: {
+      lcaFound: false,
+      nodesExamined: 3,
+      currentBranch: 'Right Subtree (1)'
+    },
+    explain: 'At Node 1, root == q is true. The algorithm immediately returns Node 1 to Root 3.'
+  },
+  {
+    phase: 'CONVERGENCE_DETECTED',
+    title: 'At Root 3: Both Left (5) and Right (1) are Non-Null -> Root 3 is the LCA!',
+    activeVal: 3,
+    tree: treeRoot,
+    visitedVals: [3, 5, 1],
+    nodeLabels: { 3: 'LCA (CONVERGENCE)', 5: 'P (CHILD)', 1: 'Q (CHILD)' },
+    customCard: {
+      title: 'Convergence Invariant Satisfied',
+      rows: [
+        { label: 'left != null', value: 'TRUE (left = Node 5)' },
+        { label: 'right != null', value: 'TRUE (right = Node 1)' },
+        { label: 'LCA Theorem', value: 'When both subtrees return non-null, root is the Lowest Common Ancestor!', accent: true },
+        { label: 'Decision', value: 'return root (Node 3)' }
+      ]
+    },
+    variables: {
+      currNode: 3,
+      left: 'Node(5)',
+      right: 'Node(1)',
+      'left != null && right != null': 'true',
+      LCA: 'Node(3)'
+    },
+    metrics: {
+      lcaFound: true,
+      nodesExamined: 3,
+      finalLCA: 3
+    },
+    explain: 'Both left and right recursive calls returned non-null pointers (5 and 1). This confirms that p and q lie in opposing subtrees of Node 3. Therefore, Node 3 is the Lowest Common Ancestor!'
+  },
+  {
+    phase: 'COMPLETE',
+    title: 'LCA Computation Complete: Result = Node(3)',
+    activeVal: 3,
+    tree: treeRoot,
+    visitedVals: [3, 5, 1],
+    nodeLabels: { 3: 'LCA = 3', 5: 'p = 5', 1: 'q = 1' },
+    customCard: {
+      title: 'Final Ancestor Summary',
+      rows: [
+        { label: 'Lowest Common Ancestor', value: 'Node(3)', accent: true },
+        { label: 'Time Complexity', value: 'O(N) - single recursive traversal' },
+        { label: 'Space Complexity', value: 'O(H) - call stack height' }
+      ]
+    },
+    variables: {
+      resultLCA: 3,
+      p: 5,
+      q: 1,
+      status: 'VERIFIED'
+    },
+    metrics: {
+      lcaFound: true,
+      nodesExamined: 3,
+      finalLCA: 3
+    },
+    explain: 'LCA search has completed successfully. Node 3 is returned as the lowest common ancestor of nodes 5 and 1.'
   }
 ];
-
-export default function LcaInBtVisualizer({ currentStep = 0 }) {
-  const step = steps[Math.min(currentStep, steps.length - 1)] || steps[0];
-
-  return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono">
-        <div className="px-3.5 py-1.5 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-300">
-          Target p: <strong>Node 5</strong>
-        </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">
-          Target q: <strong>Node 1</strong>
-        </div>
-        {step.lcaFound !== null && (
-          <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-            LCA Node: <strong>Node {step.lcaFound}</strong>
-          </div>
-        )}
-      </div>
-
-      <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-[var(--board-raised)] border border-[var(--line)] shadow-2xl w-full">
-        <div className="text-xs font-mono text-[var(--chalk-dim)] flex items-center justify-between w-full px-2">
-          <span>Binary Tree Search &amp; Convergence</span>
-          <span className="text-emerald-400 font-bold">LCA Node Discovery</span>
-        </div>
-
-        <div className="flex flex-col items-center gap-5 py-3 w-full">
-          {/* Root 3 */}
-          <div
-            className={`w-14 h-14 rounded-full border-2 flex items-center justify-center font-mono font-bold text-base transition-all ${
-              step.lcaFound === 3
-                ? 'bg-emerald-500/30 border-emerald-400 text-emerald-100 shadow-xl shadow-emerald-500/30 scale-110'
-                : step.activeNode === 3
-                ? 'bg-amber-500/25 border-amber-400 text-amber-200'
-                : 'bg-[#181a26] border-[#31364d] text-[var(--chalk)]'
-            }`}
-          >
-            3
-          </div>
-
-          {/* Children 5 and 1 */}
-          <div className="flex justify-center gap-20 w-full">
-            <div
-              className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm ${
-                step.activeNode === 5
-                  ? 'bg-purple-500/30 border-purple-400 text-purple-100 shadow-lg'
-                  : 'bg-purple-500/15 border-purple-500/40 text-purple-300'
-              }`}
-            >
-              5 (p)
-            </div>
-
-            <div
-              className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-mono font-bold text-sm ${
-                step.activeNode === 1
-                  ? 'bg-cyan-500/30 border-cyan-400 text-cyan-100 shadow-lg'
-                  : 'bg-cyan-500/15 border-cyan-500/40 text-cyan-300'
-              }`}
-            >
-              1 (q)
-            </div>
-          </div>
-        </div>
-
-        <div className="text-xs font-mono text-[var(--chalk-dim)] bg-[var(--board-raised-2)] px-4 py-2 rounded-xl border border-[var(--line)] text-center w-full">
-          If left returns p and right returns q, current node is the lowest common ancestor where paths diverge.
-        </div>
-      </div>
-    </div>
-  );
-}

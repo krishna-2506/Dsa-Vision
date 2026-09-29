@@ -78,7 +78,11 @@ export default function DualArrayTrack({
 
               {/* Row Values */}
               <div className="flex items-center gap-1 sm:gap-1.5">
-                {track.items.map((val, idx) => {
+                {track.items.map((item, idx) => {
+                  const isObj = typeof item === 'object' && item !== null;
+                  const val = isObj ? (item.val ?? item.value) : item;
+                  const itemStatus = isObj ? item.status : null;
+
                   const isI = activeI === idx;
                   const isPrev = activePrev === idx;
 
@@ -88,6 +92,8 @@ export default function DualArrayTrack({
                     cellClass = 'bg-[var(--accent-subtle)] border-2 border-[var(--border-accent)] text-[var(--accent-bright)] font-bold';
                   } else if (isPrev) {
                     cellClass = 'bg-amber-500/10 border-2 border-amber-500/30 text-amber-300 font-semibold';
+                  } else if (itemStatus && UI_TOKENS.cell[itemStatus]) {
+                    cellClass = UI_TOKENS.cell[itemStatus];
                   } else if (val !== null && val !== undefined && val !== '-') {
                     cellClass = 'bg-[var(--board-raised-2)] border border-[var(--line)] text-[var(--chalk)]';
                   }
